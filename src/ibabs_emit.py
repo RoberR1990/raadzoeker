@@ -12,6 +12,31 @@ def iso(d):
 def schoon(t,n=None):
     t=re.sub(r'[ \t]+',' ',(t or '').replace('\r','')); t=re.sub(r'\n\s*\n+','\n',t).strip()
     return t[:n] if n else t
+def debat_index():
+    """Geeft een functie (titel, trefwoord, vanaf) -> datums van raadsvergaderingen waarin de titel letterlijk valt."""
+    import glob
+    norm=lambda s:' '+re.sub(r'[^a-z0-9à-ÿ]+',' ',s.lower())+' '
+    dz=zstandard.ZstdDecompressor(); per={}
+    for p in glob.glob(os.path.join(DOCS,'data','raad','*.zst')):
+        Y=json.loads(dz.decompress(open(p,'rb').read(),max_output_size=10**9))
+        for i,tx in enumerate(Y['s']['t']):
+            if Y['s']['k'][i] in(0,4):
+                n=norm(tx)
+                for kw in(' rekenkamer',' ombudsman'):
+                    if kw in n: per.setdefault(kw,{}).setdefault(Y['M'][Y['s']['m'][i]][0],[]).append(n)
+    def dichtbij(seg,n,kw):
+        ks=[m.start() for m in re.finditer(re.escape(kw),seg)]
+        p=seg.find(n)
+        while p>=0:
+            if any(abs(p-k)<400 for k in ks): return True
+            p=seg.find(n,p+1)
+        return False
+    def f(titel,kw,vanaf):
+        # alleen als de titel binnen ~400 tekens van het woord rekenkamer/ombudsman valt, en pas na publicatie
+        n=norm(titel)
+        if len(n.split())<2 and len(n)<12: return []   # te korte titels geven ruis
+        return sorted(d for d,segs in per.get(kw,{}).items() if d>=vanaf and any(n in s and dichtbij(s,n,kw) for s in segs))
+    return f
 def main():
     L=json.load(open(os.path.join(WERK,'ibabs','lijsten.json'),encoding='utf8'))
     rows=[]; st=collections.Counter()
@@ -44,8 +69,22 @@ def main():
             if d.get('tekst'): tekst+=('\n\n' if tekst else '')+schoon(d['tekst'],20000)
             rows.append([k,datum,schoon(r.get('title')),schoon(wie),status,stx,tekst,r['DT_RowId'],r.get('externalid') or ''])
             st[naam]+=1; st[naam+'_detail']+=bool(D); st[naam+'_tekst']+=bool(d.get('tekst'))
+    # stap 5: Rekenkamer Rotterdam en Ombudsman Rotterdam-Rijnmond (extern.py); itemId is hier een volledige url
+    soorten=[s[1] for s in SOORTEN]+['Rekenkamerrapport','Ombudsman']
+    deb=debat_index()
+    for k,naam in ((len(SOORTEN),'rekenkamer'),(len(SOORTEN)+1,'ombudsman')):
+        p=os.path.join(WERK,'extern',naam+'.json')
+        if not os.path.exists(p): continue
+        for x in json.load(open(p,encoding='utf8')):
+            tx=re.sub(r'^'+re.escape(x['titel'])+r'\s*(Rekenkamer Rotterdam, \d\d-\d\d-\d{4})?\s*','',x['tekst'].strip())
+            stx='lopend onderzoek' if x.get('status')=='lopend' else (x.get('soort','').lower())
+            wie=x.get('domein') or ''
+            d=deb(x['titel'],' '+naam,x['datum']) if x.get('status')!='lopend' else []
+            if d: stx=(stx+' · ' if stx else '')+'genoemd in '+str(len(d))+' raadsvergadering'+('en' if len(d)>1 else '')
+            rows.append([k,x['datum'],x['titel'],wie,0,stx,schoon(tx),x['url'],'',d])
+            st[naam]+=1; st[naam+'_debat']+=bool(d)
     rows.sort(key=lambda x:x[1],reverse=True)
-    out={'soorten':[s[1] for s in SOORTEN],'s':rows}
+    out={'soorten':soorten,'s':rows}
     raw=json.dumps(out,ensure_ascii=False,separators=(',',':')).encode('utf8')
     z=zstandard.ZstdCompressor(level=19).compress(raw)
     os.makedirs(os.path.join(DOCS,'data','ibabs'),exist_ok=True)
