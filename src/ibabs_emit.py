@@ -38,6 +38,29 @@ def debat_index():
         if len(n.split())<2 and len(n)<12: return []   # te korte titels geven ruis
         return sorted(d for d,segs in per.get(kw,{}).items() if d>=vanaf and any(n in s and dichtbij(s,n,kw) for s in segs))
     return f
+def koppel_moties(L):
+    """Koppelt moties/amendementen uit de notulen (raad JAAR.zst, veld mo) aan iBabs: datum +-3 dagen en titel.
+    Schrijft docs/data/ibabs/moties.json: {"JAAR:index": "bb-nummer"}."""
+    import glob,difflib,datetime
+    n=lambda s:re.sub(r'[^a-z0-9]+',' ',s.lower()).strip()
+    by=collections.defaultdict(list)
+    for k in('moties','amendementen'):
+        for r in L[k]:
+            if r.get('externalid'): by[iso(r['registrationdate'])].append((n(r['title']),r['externalid']))
+    dz=zstandard.ZstdDecompressor(); out={}; tot=0
+    for p in sorted(glob.glob(os.path.join(DOCS,'data','raad','*.zst'))):
+        y=os.path.basename(p)[:4]; Y=json.loads(dz.decompress(open(p,'rb').read(),max_output_size=10**9))
+        for k,m in enumerate(Y['mo']):
+            if m[1] not in('M','A'): continue
+            tot+=1; d=datetime.date.fromisoformat(Y['M'][Y['s']['m'][m[0]]][0]); t=n(m[3]); best=(0,None)
+            for o in range(-3,4):
+                for tt,bb in by.get(str(d+datetime.timedelta(o)),[]):
+                    s=difflib.SequenceMatcher(None,t,tt).ratio()
+                    if len(tt)>=12 and tt in t: s=max(s,0.9)   # notulentitel met ruis eromheen
+                    if s>best[0]: best=(s,bb)
+            if best[0]>=0.75: out[f'{y}:{k}']=best[1]
+    json.dump(out,open(os.path.join(DOCS,'data','ibabs','moties.json'),'w',encoding='utf8'),separators=(',',':'))
+    print('moties gekoppeld',len(out),'van',tot)
 def main():
     L=json.load(open(os.path.join(WERK,'ibabs','lijsten.json'),encoding='utf8'))
     rows=[]; st=collections.Counter()
@@ -109,5 +132,6 @@ def main():
     open(os.path.join(DOCS,'data','ibabs','stukken.zst'),'wb').write(z)
     import time; stand=time.strftime('%d-%m-%Y',time.localtime(os.path.getmtime(os.path.join(WERK,'ibabs','lijsten.json'))))
     json.dump({'stand':stand,'z':len(z),'raw':len(raw),'n':len(rows),'per':{s[1]:st[s[0]] for s in SOORTEN}},open(os.path.join(DOCS,'data','ibabs','meta.json'),'w',encoding='utf8'),ensure_ascii=False)
+    koppel_moties(L)
     print(len(rows),'stukken',round(len(raw)/1e6,1),'MB raw',round(len(z)/1e6,2),'MB zst',dict(st))
 if __name__=='__main__': main()

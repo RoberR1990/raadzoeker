@@ -551,7 +551,10 @@ function motionList(s){
   return out;
 }
 const MT={M:'Motie',A:'Amendement',S:'Subamendement',V:'Voorstel'};
+let MK=null;   // koppeling motie uit notulen -> bb-nummer in iBabs
+
 function renderMotions(s){
+  if(META.ibabs&&!MK){MK={};fetch('data/ibabs/moties.json?v='+META.ibabs.h).then(r=>r.json()).then(j=>{MK=j;lastKey='';update(true);}).catch(()=>{});}
   MO=motionList(s);const terms=parseTerms(s.q||s.q2,false);
   const aan=MO.filter(o=>o.m[4]).length;
   let h=tabsHTML()+'<div class="summary"><div class="n"><b>'+nf(MO.length)+'</b> stemmingen · <b>'+nf(aan)+'</b> aangenomen · <b>'+nf(MO.length-aan)+'</b> verworpen</div>'+
@@ -559,7 +562,7 @@ function renderMotions(s){
    '<p class="hint">Uit de stemuitslagen in de notulen gehaald (moties, amendementen en voorstellen waarover is gestemd). De zoekterm zoekt hier in de titel; het partijfilter kijkt of de fractie bij de genoemde voor- of tegenstemmers staat. De notulen noemen meestal alleen de minderheid. Spreker- en rolfilter gelden hier niet.</p>';
   if(!MO.length)h+='<div class="empty">Geen stemmingen gevonden met deze zoekterm en filters.</div>';
   h+='<div class="mol">'+MO.slice(0,shown*2).map((o,k)=>{const m=o.m,t=m[3];
-    return '<div class="mo" data-mo="'+k+'"><span class="date">'+fdate(o.d)+'</span><span class="res '+(m[4]?'ja':'nee')+'">'+(m[4]?'aangenomen':'verworpen')+(m[5]>=0?' '+m[5]+'–'+m[6]:(m[4]?' · unaniem':''))+'</span><a class="ti" data-act="mread"><span class="ty">'+MT[m[1]]+(m[2]?' '+esc(m[2]):'')+'</span> '+markup(t,ranges(t,terms),0,t.length)+'</a>'+(m[8]?'<span class="fr">'+(m[7]==='v'?'Voor':'Tegen')+': '+esc(m[8])+'</span>':'')+'</div>';}).join('')+'</div>';
+    return '<div class="mo" data-mo="'+k+'"><span class="date">'+fdate(o.d)+'</span><span class="res '+(m[4]?'ja':'nee')+'">'+(m[4]?'aangenomen':'verworpen')+(m[5]>=0?' '+m[5]+'–'+m[6]:(m[4]?' · unaniem':''))+'</span><a class="ti" data-act="mread"><span class="ty">'+MT[m[1]]+(m[2]?' '+esc(m[2]):'')+'</span> '+markup(t,ranges(t,terms),0,t.length)+'</a>'+(m[8]?'<span class="fr">'+(m[7]==='v'?'Voor':'Tegen')+': '+esc(m[8])+'</span>':'')+(MK&&MK[o.D.y+':'+o.D.mo.indexOf(m)]?'<a class="fr" data-stuk="'+MK[o.D.y+':'+o.D.mo.indexOf(m)]+'" style="cursor:pointer">officiële tekst en afdoening →</a>':'')+'</div>';}).join('')+'</div>';
   if(MO.length>shown*2)h+='<div class="more-row"><button class="btn primary" id="more" type="button">Toon meer ('+nf(MO.length-shown*2)+' resterend)</button></div>';
   $('out').innerHTML=h;$('mres').value=MRES;$('sort').value=wantSort==='old'?'old':'new';
 }
@@ -569,7 +572,7 @@ function loadStukken(){
   if(STL)return STL;
   STL=fetch('data/ibabs/stukken.zst?v='+META.ibabs.h).then(r=>{if(!r.ok)throw new Error(r.status);return r.arrayBuffer();}).then(b=>{
     const D=JSON.parse(new TextDecoder().decode(fzstd.decompress(new Uint8Array(b))));
-    D.N=D.s.map(r=>norm(r[2]+' '+r[3]+' '+r[6]));ST=D;lastKey='';update(true);
+    D.N=D.s.map(r=>norm(r[2]+' '+r[3]+' '+r[8]+' '+r[6]));ST=D;lastKey='';update(true);
   }).catch(e=>{$('out').innerHTML=tabsHTML()+'<div class="empty">Officiële stukken laden mislukt: '+esc(e.message)+'</div>';});
   return STL;
 }
@@ -822,11 +825,12 @@ $('reset').addEventListener('click',()=>{for(const f of F)$(f).value=f==='fk'?'0
 $('out').addEventListener('change',e=>{if(e.target.id==='sort'){wantSort=e.target.value;update(false);}if(e.target.id==='mres'){MRES=e.target.value;update(false);}if(e.target.id==='ztype'){ZT=e.target.value;update(false);}if(e.target.id==='osrt'){OS=e.target.value;update(false);}if(e.target.id==='ostat'){OST=e.target.value;update(false);}});
 $('out').addEventListener('toggle',e=>{if(e.target.classList&&e.target.classList.contains('mt')&&e.target.open)fillMeeting(e.target);},true);
 $('out').addEventListener('click',e=>{
-  const t=e.target.closest('[data-act],[data-year],[data-party],[data-spk],[data-item],[data-theme],[data-view],[data-mode],#more,#csv');if(!t)return;
+  const t=e.target.closest('[data-act],[data-year],[data-party],[data-spk],[data-item],[data-theme],[data-view],[data-stuk],[data-mode],#more,#csv');if(!t)return;
   if(t.dataset.mode){MODE=t.dataset.mode;update(false);return;}
   if(t.id==='more'){shown+=PAGE*2;VIEW==='m'?renderMotions(state()):VIEW==='z'?renderToez(state()):VIEW==='o'?renderStukken(state()):renderResults(state());return;}
   if(t.id==='csv'){exportCSV();return;}
   if(t.dataset.view){VIEW=t.dataset.view;update(false);return;}
+  if(t.dataset.stuk){$('q').value=t.dataset.stuk;$('q2').value='';OS='';OST='';VIEW='o';update(false);window.scrollTo(0,0);return;}
   if(t.dataset.theme){$('q').value=t.dataset.theme;VIEW='t';update(false);window.scrollTo(0,0);return;}
   if(t.dataset.year){const y=t.dataset.year,on=$('fd1').value===y+'-01-01'&&$('fd2').value===y+'-12-31';$('fd1').value=on?'':y+'-01-01';$('fd2').value=on?'':y+'-12-31';update(false);return;}
   if(t.dataset.party){$('fp').value=$('fp').value===t.dataset.party?'':t.dataset.party;update(false);return;}
