@@ -4,8 +4,9 @@
 #   status: 0 onbekend/geen, 1 aangenomen, 2 verworpen, 3 ingetrokken/aangehouden, 4 open (toezegging/motie niet afgedaan), 5 afgedaan
 import json,os,re,zstandard,collections
 from paden import WERK,DOCS
+WIJK=[('ongevraagd','Ongevraagd wijkraadadvies'),('wijkakkoorden','Wijkakkoord of wijkplan'),('reacties','Collegereactie op wijkplan'),('verslagen','Wijkverslag')]
 SOORTEN=[('toezeggingen','Toezegging'),('moties','Motie'),('amendementen','Amendement'),('initiatiefvoorstellen','Initiatiefvoorstel'),
-         ('raadsvoorstellen','Raadsvoorstel'),('besluiten','Collegebesluit'),('brieven','Collegebrief'),('schriftelijke_vragen','Schriftelijke vragen')]
+         ('raadsvoorstellen','Raadsvoorstel'),('besluiten','Collegebesluit'),('brieven','Collegebrief'),('schriftelijke_vragen','Schriftelijke vragen'),('wijkraadadviezen','Wijkraadadvies')]
 def iso(d):
     m=re.match(r'\s*(\d\d)-(\d\d)-(\d{4})',d or '')
     return f'{m.group(3)}-{m.group(2)}-{m.group(1)}' if m else ''
@@ -70,7 +71,7 @@ def main():
             rows.append([k,datum,schoon(r.get('title')),schoon(wie),status,stx,tekst,r['DT_RowId'],r.get('externalid') or ''])
             st[naam]+=1; st[naam+'_detail']+=bool(D); st[naam+'_tekst']+=bool(d.get('tekst'))
     # stap 5: Rekenkamer Rotterdam en Ombudsman Rotterdam-Rijnmond (extern.py); itemId is hier een volledige url
-    soorten=[s[1] for s in SOORTEN]+['Rekenkamerrapport','Ombudsman']
+    soorten=[s[1] for s in SOORTEN]+['Rekenkamerrapport','Ombudsman']+[x[1] for x in WIJK]
     deb=debat_index()
     for k,naam in ((len(SOORTEN),'rekenkamer'),(len(SOORTEN)+1,'ombudsman')):
         p=os.path.join(WERK,'extern',naam+'.json')
@@ -83,6 +84,23 @@ def main():
             if d: stx=(stx+' · ' if stx else '')+'genoemd in '+str(len(d))+' raadsvergadering'+('en' if len(d)>1 else '')
             rows.append([k,x['datum'],x['titel'],wie,0,stx,schoon(tx),x['url'],'',d])
             st[naam]+=1; st[naam+'_debat']+=bool(d)
+    # stap 6: wijkraden (wijkraden.py), url naar wijkraad.rotterdam.nl
+    p=os.path.join(WERK,'ibabs','wijk.jsonl')
+    if os.path.exists(p):
+        ki={x[0]:len(SOORTEN)+2+i for i,x in enumerate(WIJK)}
+        for l in open(p,encoding='utf8'):
+            try: d=json.loads(l)
+            except Exception: continue
+            r=d['lijst']; D=d.get('detail',{}); datum=iso(r.get('registrationdate'))
+            if datum<'2018': continue
+            wie=r.get('Wijk') or ''
+            if r.get('wethouder'): wie+=' · '+r['wethouder']
+            stx=''
+            if d['soort']=='ongevraagd': stx='beantwoord '+r['datumantwoord'][:10] if r.get('datumantwoord') else 'nog niet beantwoord'
+            tekst=schoon(D.get('Omschrijving'))
+            if d.get('tekst'): tekst+=('\n\n' if tekst else '')+schoon(d['tekst'],20000)
+            rows.append([ki[d['soort']],datum,schoon(r.get('title')),wie,0,stx,tekst,'https://wijkraad.rotterdam.nl/Reports/Item/'+d['id'],''])
+            st['wijk_'+d['soort']]+=1; st['wijk_tekst']+=bool(d.get('tekst'))
     rows.sort(key=lambda x:x[1],reverse=True)
     out={'soorten':soorten,'s':rows}
     raw=json.dumps(out,ensure_ascii=False,separators=(',',':')).encode('utf8')
