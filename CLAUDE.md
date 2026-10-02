@@ -60,4 +60,11 @@ Hulpmodules: `subs.py` (ondertitels uitlijnen), `motions.py` (stemuitslag), `toe
 3. ~~Ontbrekende 14 themasamenvattingen maken en tonen (gelabeld als AI).~~ Klaar 2-10-2026.
 4. Raadsstukken en de griffielijst van toezeggingen/moties uit iBabs.
 5. Rekenkamer Rotterdam en ombudsman.
-6. Wijkraden.
+6. Wijkraden: adviezen, reacties college, wijkakkoorden.
+7. Officiële bekendmakingen (Gemeenteblad, verordeningen; open API): wat er na het debat is vastgesteld.
+8. CBS-wijkcijfers en Wijkprofiel Rotterdam naast de wijkthema's.
+9. Open Raadsinformatie (VNG/Open State): zelfde soort data voor andere gemeenten, route naar G4.
+10. Tweede Kamer open data: landelijk debat over hetzelfde dossier.
+11. MRDH en Provinciale Staten Zuid-Holland: regionale besluiten OV en wonen.
+
+Niet doen: lokale media (Rijnmond, AD) overnemen, auteursrecht; hooguit linken. Afgesproken 2-10-2026.
