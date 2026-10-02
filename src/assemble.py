@@ -1,6 +1,6 @@
-import json,sys
-tpl=open('template.html',encoding='utf8').read()
-import os
+import json,sys,os
+from paden import SRC
+tpl=open(f'{SRC}/template.html',encoding='utf8').read()
 OUT=os.environ.get('RZ_OUT','out')
 meta=json.load(open(os.environ.get('RZ_META',f'{OUT}/meta.json')))
 only=sys.argv[2].split(',') if len(sys.argv)>2 else None
@@ -20,9 +20,9 @@ for y in meta['years']:
     z=open(f"{OUT}/{y['y']}.zst",'rb').read(); assert len(z)==y['z']
     e=enc91(z); assert '</' not in e and '<!--' not in e
     data+='<script type="application/octet-stream" id="d%s">%s</script>\n'%(y['y'],e)
-fz=open('js/node_modules/fzstd/umd/index.js').read()
+fz=open(f'{SRC}/js/node_modules/fzstd/umd/index.js',encoding='utf8').read()
 assert '</script' not in fz
-if OUT!='out':
+if meta.get('kind')=='c':   # commissies -> Commissiezoeker-teksten
     import variant; tpl=variant.apply(tpl,meta)
 html=tpl.replace('/*META*/',json.dumps(meta,ensure_ascii=False).replace('</','<\\/')).replace('/*DATA*/',data).replace('/*FZSTD*/','/* fzstd 0.1.1, MIT, (c) Arjun Barrett */\n'+fz)
 open(sys.argv[1],'w',encoding='utf8').write(html)

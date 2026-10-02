@@ -1,4 +1,5 @@
 import asyncio
+from paden import DOCS; URL='file:///'+DOCS.replace(chr(92),'/')+'/'
 from playwright.async_api import async_playwright
 async def main():
     async with async_playwright() as p:
@@ -7,7 +8,7 @@ async def main():
         pg=await ctx.new_page(); errs=[]
         pg.on('console',lambda m: errs.append(m.text) if m.type=='error' and 'ERR_TUNNEL' not in m.text else None)
         pg.on('pageerror',lambda e: errs.append('PAGEERR '+str(e)))
-        await pg.goto('file:///home/claude/work/raadzoeker.html')
+        await pg.goto(URL+'raadzoeker.html')
         await pg.wait_for_function("document.getElementById('loadtxt').textContent.includes('spreekbeurten ·')",timeout=120000)
         await pg.click('.tabs [data-view=z]'); await pg.wait_for_timeout(300)
         print('toez:',await pg.inner_text('.summary .n')); await pg.screenshot(path='v4_toez.png')

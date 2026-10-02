@@ -1,5 +1,5 @@
 import json,re,collections,statistics,sys
-RAW='/home/claude/raw'
+from paden import RAW
 h=json.load(open(f'{RAW}/header.json'))
 A=json.load(open('agendas.json'))
 MND={m:i+1 for i,m in enumerate('januari februari maart april mei juni juli augustus september oktober november december'.split())}

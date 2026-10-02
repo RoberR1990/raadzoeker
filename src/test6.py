@@ -1,4 +1,5 @@
 import asyncio,sys
+from paden import DOCS; URL='file:///'+DOCS.replace(chr(92),'/')+'/'
 from playwright.async_api import async_playwright
 async def main():
     async with async_playwright() as p:
@@ -6,7 +7,7 @@ async def main():
         pg=await b.new_page(viewport={'width':1280,'height':1100},locale='nl-NL'); errs=[]
         pg.on('console',lambda m: errs.append(m.text) if m.type=='error' and 'ERR_TUNNEL' not in m.text else None)
         pg.on('pageerror',lambda e: errs.append('PAGEERR '+str(e)))
-        await pg.goto('file:///home/claude/work/'+sys.argv[1])
+        await pg.goto(URL+''+sys.argv[1])
         await pg.wait_for_function("document.getElementById('loadtxt').textContent.includes('spreekbeurten ·')",timeout=180000)
         print(await pg.inner_text('#loadtxt'),'|',await pg.inner_text('.sub'))
         await pg.screenshot(path='c_home.png')

@@ -1,6 +1,5 @@
 
 import json,re,unicodedata,collections,sys
-sys.path.insert(0,'.')
 import themes
 import os
 OUT=os.environ.get('RZ_OUT','out'); YSEL=os.environ.get('RZ_YEARS'); SPOKEN=(4,) if OUT!='out' else (0,4)

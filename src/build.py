@@ -1,5 +1,5 @@
 import json,re,collections,difflib,unicodedata,os,sys
-RAW='/home/claude/raw'
+from paden import RAW
 h=json.load(open(f'{RAW}/header.json'))
 A=json.load(open('agendas.json'))
 S=json.load(open('segs.json'))

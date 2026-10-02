@@ -1,4 +1,5 @@
 import asyncio,time
+from paden import DOCS; URL='file:///'+DOCS.replace(chr(92),'/')+'/'
 from playwright.async_api import async_playwright
 async def main():
     async with async_playwright() as p:
@@ -8,7 +9,7 @@ async def main():
         pg=await ctx.new_page(); errs=[]
         pg.on('console',lambda m: errs.append(m.text) if m.type in('error',) else None)
         pg.on('pageerror',lambda e: errs.append('PAGEERR '+str(e)))
-        await pg.goto('file:///home/claude/work/raadzoeker.html#q=parkeernorm&fp=VVD')
+        await pg.goto(URL+'raadzoeker.html#q=parkeernorm&fp=VVD')
         await pg.wait_for_function("document.getElementById('loadtxt').textContent.includes('vergaderingen met')",timeout=120000)
         print('hash restore ->',await pg.inner_text('.summary .n'), '| fp=',await pg.input_value('#fp'))
         await pg.click('.card [data-act=full]'); print('full len',len(await pg.inner_text('.card .snip')))
