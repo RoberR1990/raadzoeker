@@ -2,9 +2,9 @@
 
 Zoektool voor wat er in de Rotterdamse gemeenteraad en raadscommissies is gezegd: notulen, automatische ondertiteling, moties, toezeggingen en thema's. Bedoeld voor beleidsmakers en adviseurs.
 
-- `docs/` — de site
+- `docs/` — de site, met de jaardata in `docs/data/`
 - `src/` — pijplijn en app
-- `data/` — gecomprimeerde data per jaar en AI-samenvattingen
+- `data/` — AI-samenvattingen
 
 Zie `CLAUDE.md` voor opbouw, dataformaat, beperkingen en volgende stappen.
 
