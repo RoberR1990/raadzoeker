@@ -5,9 +5,9 @@ Zoektool voor wat er in de Rotterdamse gemeenteraad en raadscommissies is gezegd
 ## Mappen
 
 - `docs/` — de site (GitHub Pages, map `/docs` op `main`). `index.html` is de startpagina; `raadzoeker.html` en `commissiezoeker-*.html` zijn op zichzelf staande bestanden met alle data erin.
-- `src/` — pijplijn en app. Let op: de scripts zijn geschreven voor één platte werkmap (alles naast elkaar, uitvoer in `out/` en `outc/`). Ze zijn hier ongewijzigd neergezet; paden moeten nog worden aangepast aan deze mappenindeling.
+- `src/` — pijplijn en app. Alle paden staan in `src/paden.py` (overschrijfbaar met env `RZ_BRON`, `RZ_WERK`, `RZ_STAND`). `src/oud/` = losse patches die al in `template.html` zitten (niet opnieuw toepassen).
 - `data/raad/`, `data/commissies/` — per jaar `JAAR.zst` (JSON, zstd niveau 22) plus `meta*.json`. Dit is de invoer voor `assemble.py`.
-- `data/sum/` — AI-samenvattingen per debat, 2026 (Sonnet-subagents).
+- `data/sum/` — AI-samenvattingen per debat, 2026 (Sonnet-subagents). `index.json` koppelt id aan (datum, agendapunt); afgeleid uit de gebouwde data omdat de oorspronkelijke invoerbestanden weg zijn (122 van 137 gekoppeld, net als voorheen).
 - `data/tsum/` — AI-samenvattingen per thema. 27 van 41 klaar (id = index in de platte themalijst uit `themes.py`). Ontbreken: 24–26 en 30–40. Nog niet ingebouwd in de app. `INSTRUCTIES.md` is de opdracht voor de subagent; de invoerbestanden (`in_NN.txt`) staan niet in git en moeten opnieuw uit de data worden gemaakt.
 
 ## Niet in git (te groot), wel op Roberts pc in `D:\Downloads Chrome`
@@ -15,6 +15,16 @@ Zoektool voor wat er in de Rotterdamse gemeenteraad en raadscommissies is gezegd
 - `raadzoeker-bundle (1).dat` (335 MB): agenda-html en notulen-pdf's raad 2018–2026. Formaat: 8 bytes `RZBUNDL1`, uint32 LE headerlengte, JSON-header `{meetings, docs, files:[{name,size}]}`, dan de bestanden achter elkaar.
 - `raadzoeker-ondertitels.json.gz`, `raadzoeker-ondertitels-2.json.gz`: ondertitels raad.
 - `raadzoeker-commissies-meta.json.gz`, `raadzoeker-commissies-subs-c.json.gz`, `raadzoeker-commissies-subs-i.json.gz`: commissies.
+
+## Bouwen
+
+Vanuit de repo-root, Python 3.12 met `pymupdf beautifulsoup4 lxml numpy zstandard`, en eenmalig `npm install` in `src/js`:
+
+- `python src/maak.py` — alleen de site: `data/` → `docs/*.html` (geen bronbestanden nodig, ca. 1 min).
+- `python src/maak.py alles` — volledige pijplijn uit de bronbestanden → `data/` → `docs/` (ca. 10 min). Ook `raad` of `commissies` los.
+- Tussenbestanden (ca. 1 GB) in de werkmap `D:\Downloads Chromeaadzoeker-werk` (C: is vol). `bron.py` pakt daar de bundle uit en zet ondertitels/commissiemeta klaar.
+- Getest 2-10-2026: herbouw uit de bronnen geeft byte-identieke `data/` en `docs/`, op één teller na (`tot.sp` telt nu ook ondertitelde spreekbeurten, zoals de code doet).
+- `maak.py` zet `PYTHONUTF8=1`; zonder dat leest Windows de json als cp1252 en krijg je kapotte namen.
 
 ## Pijplijn (raad)
 
@@ -45,7 +55,7 @@ Hulpmodules: `subs.py` (ondertitels uitlijnen), `motions.py` (stemuitslag), `toe
 
 ## Volgende stappen (afgesproken volgorde)
 
-1. Paden in `src/` aanpassen aan deze mappenindeling; build herhaalbaar maken.
+1. ~~Paden in `src/` aanpassen aan deze mappenindeling; build herhaalbaar maken.~~ Klaar 2-10-2026.
 2. Data per jaar als los bestand laten laden (nu 20 MB vooraf); commissies weer één tool.
 3. Ontbrekende 14 themasamenvattingen maken en tonen (gelabeld als AI).
 4. Raadsstukken en de griffielijst van toezeggingen/moties uit iBabs.

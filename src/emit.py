@@ -1,6 +1,6 @@
 import pickle,json,re,collections,zstandard,base64,gzip,os,sys
-sys.path.insert(0,'.')
 import subs, motions, toez
+from paden import DATA,STAND
 import build as B   # reruns build (cheap) and gives REG/person/key etc.
 A=B.A; DOC=B.DOC; out=B.out_dates; SPL=B.SPL; PAL=B.PAL; ROLES=B.ROLES; TL=B.TL
 def vref(a):
@@ -48,7 +48,7 @@ for date,(dl,rows) in sorted(out.items()):
         stats[s['kind']]+=1
 # meetings without notulen
 import datetime
-today='2026-10-02'
+today=STAND
 nm=0
 for a in sorted(A,key=lambda a:a['date']):
     if a['id'] in used or a['date']>today or 'VERVALLEN' in a['label']: continue
@@ -105,7 +105,7 @@ for a in sorted(A,key=lambda a:a['date']):
         for st,it,w in sorted(turns,key=lambda x:(x[1],x[0])): add(imap[it],3,w[0],w[1],w[2],st,''); stats['tl']+=1
 print('meetings without notulen:',nm,stats)
 os.makedirs('out',exist_ok=True)
-meta={'spk':SPL,'par':PAL,'roles':ROLES,'years':[],'built':'2026-10-02','src':'https://gemeenteraad.rotterdam.nl'}
+meta={'spk':SPL,'par':PAL,'roles':ROLES,'years':[],'built':STAND,'src':'https://gemeenteraad.rotterdam.nl'}
 cctx=zstandard.ZstdCompressor(level=22)
 tot=0
 for y in sorted(years):
@@ -130,10 +130,10 @@ for y in sorted(years):
     Y['tz']=tz; stats['toez']+=len(tz)
     import glob
     src={}
-    for f in glob.glob('sum/in_*.json'):
-        for d in json.load(open(f)): src[d['id']]=(d['datum'],d['agendapunt'])
+    # id -> (datum, agendapunt); de oorspronkelijke invoerbestanden zijn niet bewaard, data/sum/index.json is daaruit afgeleid
+    for k,v in json.load(open(f'{DATA}/sum/index.json')).items(): src[int(k)]=tuple(v)
     summ={}
-    for f in glob.glob('sum/out_*.json'):
+    for f in sorted(glob.glob(f'{DATA}/sum/out_*.json')):
         for d in json.load(open(f)):
             if d['id'] in src: summ.setdefault(src[d['id']],d)
     sm={}

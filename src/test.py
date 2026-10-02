@@ -1,4 +1,5 @@
 import asyncio,time,sys,json
+from paden import DOCS; URL='file:///'+DOCS.replace(chr(92),'/')+'/'
 from playwright.async_api import async_playwright
 async def main():
     async with async_playwright() as p:
@@ -10,7 +11,7 @@ async def main():
         pg.on('console',lambda m: errs.append(m.text) if m.type in('error','warning') else None)
         pg.on('pageerror',lambda e: errs.append('PAGEERR '+str(e)))
         t=time.time()
-        await pg.goto('file:///home/claude/work/raadzoeker.html')
+        await pg.goto(URL+'raadzoeker.html')
         await pg.wait_for_function("document.getElementById('loadtxt').textContent.includes('spreekbeurten')",timeout=120000)
         print('loaded in',round(time.time()-t,1),'s |',await pg.inner_text('#loadtxt'))
         await pg.screenshot(path='s_browse.png')

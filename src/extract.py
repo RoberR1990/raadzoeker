@@ -1,6 +1,6 @@
 import pymupdf, json, os, re, sys
 from multiprocessing import Pool
-RAW='/home/claude/raw'
+from paden import RAW
 def page_lines(p):
     spans=[]; pageno=None
     for b in p.get_text('dict')['blocks']:

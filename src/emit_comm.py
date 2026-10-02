@@ -1,9 +1,9 @@
 import json,re,collections,gzip,bisect,sys,os,zstandard,io,contextlib
-sys.path.insert(0,'.')
 with contextlib.redirect_stdout(io.StringIO()):
     import build as B
 import toez
-U='/mnt/user-data/uploads/Downloads Chrome/'
+from paden import BRON,STAND
+U=BRON+os.sep
 M=json.load(open('cmeta.json'))
 R={}
 for f in ['raadzoeker-commissies-subs-c.json.gz','raadzoeker-commissies-subs-i.json.gz']:
@@ -87,7 +87,7 @@ for a in sorted(M['ag'],key=lambda a:a['label']):
 print(st)
 cctx=zstandard.ZstdCompressor(level=22)
 os.makedirs('outc',exist_ok=True)
-meta={'spk':SPL,'par':PAL,'roles':ROLES,'years':[],'built':'2026-10-02','src':'https://gemeenteraad.rotterdam.nl','kind':'c','cats':sorted({m[2] for Y in years.values() for m in Y['M']})}
+meta={'spk':SPL,'par':PAL,'roles':ROLES,'years':[],'built':STAND,'src':'https://gemeenteraad.rotterdam.nl','kind':'c','cats':sorted({m[2] for Y in years.values() for m in Y['M']})}
 for y in sorted(years):
     Y=years[y];S=Y['s'];tz=[]
     for i,t in enumerate(S['t']):
