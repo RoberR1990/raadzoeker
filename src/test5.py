@@ -1,5 +1,5 @@
 import asyncio
-from paden import DOCS; URL='file:///'+DOCS.replace(chr(92),'/')+'/'
+URL='http://localhost:8765/'   # eerst: python -m http.server 8765 -d docs  (ophalen werkt niet via file://)
 from playwright.async_api import async_playwright
 async def main():
     async with async_playwright() as p:

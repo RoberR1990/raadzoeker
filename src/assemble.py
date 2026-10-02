@@ -1,29 +1,20 @@
-import json,sys,os
+# template.html + meta -> één html-pagina. De jaardata zelf blijft als los bestand naast de pagina staan
+# (OUT/JAAR.zst) en wordt in de browser opgehaald; meta krijgt de map (relatief t.o.v. de pagina) en een hash per jaar.
+import json,sys,os,hashlib
 from paden import SRC
 tpl=open(f'{SRC}/template.html',encoding='utf8').read()
 OUT=os.environ.get('RZ_OUT','out')
-meta=json.load(open(os.environ.get('RZ_META',f'{OUT}/meta.json')))
+meta=json.load(open(os.environ.get('RZ_META',f'{OUT}/meta.json'),encoding='utf8'))
 only=sys.argv[2].split(',') if len(sys.argv)>2 else None
 if only: meta['years']=[y for y in meta['years'] if y['y'] in only]
-import numpy as np
-ALPH=''.join(chr(c) for c in range(33,127) if c not in (60,62,38)); assert len(ALPH)==91
-LUT=np.frombuffer(ALPH.encode(),dtype=np.uint8)
-def enc91(b):
-    bits=np.unpackbits(np.frombuffer(b,dtype=np.uint8))
-    pad=(-len(bits))%13
-    if pad: bits=np.concatenate([bits,np.zeros(pad,dtype=np.uint8)])
-    v=bits.reshape(-1,13).astype(np.uint32)@(1<<np.arange(12,-1,-1,dtype=np.uint32))
-    out=np.empty(len(v)*2,dtype=np.uint8); out[0::2]=LUT[v//91]; out[1::2]=LUT[v%91]
-    return out.tobytes().decode('ascii')
-data=''
 for y in meta['years']:
-    z=open(f"{OUT}/{y['y']}.zst",'rb').read(); assert len(z)==y['z']
-    e=enc91(z); assert '</' not in e and '<!--' not in e
-    data+='<script type="application/octet-stream" id="d%s">%s</script>\n'%(y['y'],e)
+    z=open(f"{OUT}/{y['y']}.zst",'rb').read(); assert len(z)==y['z'],y['y']
+    y['h']=hashlib.sha1(z).hexdigest()[:10]
+meta['dir']=os.path.relpath(OUT,os.path.dirname(os.path.abspath(sys.argv[1]))).replace(os.sep,'/')+'/'
 fz=open(f'{SRC}/js/node_modules/fzstd/umd/index.js',encoding='utf8').read()
 assert '</script' not in fz
 if meta.get('kind')=='c':   # commissies -> Commissiezoeker-teksten
     import variant; tpl=variant.apply(tpl,meta)
-html=tpl.replace('/*META*/',json.dumps(meta,ensure_ascii=False).replace('</','<\\/')).replace('/*DATA*/',data).replace('/*FZSTD*/','/* fzstd 0.1.1, MIT, (c) Arjun Barrett */\n'+fz)
+html=tpl.replace('/*META*/',json.dumps(meta,ensure_ascii=False).replace('</','<\\/')).replace('/*FZSTD*/','/* fzstd 0.1.1, MIT, (c) Arjun Barrett */\n'+fz)
 open(sys.argv[1],'w',encoding='utf8').write(html)
 print(sys.argv[1],len(html.encode())/1e6,'MB')
