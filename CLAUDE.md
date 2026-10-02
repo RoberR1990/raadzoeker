@@ -22,7 +22,7 @@ Vanuit de repo-root, Python 3.12 met `pymupdf beautifulsoup4 lxml numpy zstandar
 
 - `python src/maak.py` — alleen de site: `data/` → `docs/*.html` (geen bronbestanden nodig, ca. 1 min).
 - `python src/maak.py alles` — volledige pijplijn uit de bronbestanden → `data/` → `docs/` (ca. 10 min). Ook `raad` of `commissies` los.
-- Tussenbestanden (ca. 1 GB) in de werkmap `D:\Downloads Chromeaadzoeker-werk` (C: is vol). `bron.py` pakt daar de bundle uit en zet ondertitels/commissiemeta klaar.
+- Tussenbestanden (ca. 1 GB) in de werkmap `D:\Downloads Chrome\raadzoeker-werk` (C: is vol). `bron.py` pakt daar de bundle uit en zet ondertitels/commissiemeta klaar.
 - Getest 2-10-2026: herbouw uit de bronnen geeft byte-identieke `data/` en `docs/`, op één teller na (`tot.sp` telt nu ook ondertitelde spreekbeurten, zoals de code doet).
 - `maak.py` zet `PYTHONUTF8=1`; zonder dat leest Windows de json als cp1252 en krijg je kapotte namen.
 
