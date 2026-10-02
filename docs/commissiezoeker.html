@@ -626,7 +626,7 @@ function exportCSV(){
 function zoomHTML(){
   const cur=TSTR[$('q').value.trim()];if(!cur)return '';
   const th=cur.th;
-  return '<div class="zoom"><span class="zl">Thema <b>'+esc(th[0])+'</b>'+(th[2].length?' · zoom in:':'')+'</span>'+(th[2].length?'<button type="button" class="chip'+(cur.sub<0?' on':'')+'" data-theme="'+esc(th[1])+'">Alles</button>'+th[2].map((s,k)=>'<button type="button" class="chip'+(cur.sub===k?' on':'')+'" data-theme="'+esc(s[1])+'" title="'+esc(s[1])+'">'+esc(s[0])+'</button>').join(''):'')+'</div>'+tsumHTML(th);
+  return '<div class="zoom"><span class="zl">Thema <b>'+esc(th[0])+'</b>'+(th[2].length?' · zoom in:':'')+'</span>'+(th[2].length?'<button type="button" class="chip'+(cur.sub<0?' on':'')+'" data-theme="'+esc(th[1])+'">Alles</button>'+th[2].map((s,k)=>'<button type="button" class="chip'+(cur.sub===k?' on':'')+'" data-theme="'+esc(s[1])+'" title="'+esc(s[1])+'">'+esc(s[0])+'</button>').join(''):'')+(META.ibabs?'<a class="zl" data-view="o" style="margin-left:auto;cursor:pointer">Officiële stukken bij dit thema →</a>':'')+'</div>'+tsumHTML(th);
 }
 /* themasamenvatting (door AI, op basis van een selectie fragmenten uit de raad 2018–2026) */
 const cit=x=>x.citaat?'<span class="cit" title="Letterlijk uit een fragment; zoek erop om het in context te lezen">“'+esc(x.citaat)+'”</span>':'';

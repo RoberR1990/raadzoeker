@@ -42,7 +42,7 @@ Hulpmodules: `subs.py` (ondertitels uitlijnen), `motions.py` (stemuitslag), `toe
 
 - Raad: `gemeenteraad.rotterdam.nl` (iBabs). Vergadering: `/Agenda/Index/{agendaId}`. Lijsten: `/Agenda/RetrieveAgendasForYear?agendatypeId={id}&year={j}` (raad = 100002367).
 - Video: Company Webcast (`sdk.companywebcast.com`, `seek({timestamp})`) en voor 2023–2024 Connect Live (`connectlive.ibabs.eu/Player/Player/{agendaId}`).
-- Wijkraden: `wijkraad.rotterdam.nl` (39 raden, besluitenlijsten als pdf, geen video). Nog niet opgehaald.
+- Wijkraden: `wijkraad.rotterdam.nl` is ook iBabs. `wijkraden.py` haalt 4 rapportages op (ongevraagde adviezen 41, wijkakkoorden en -plannen 39, collegereacties op wijkplannen 39, wijkverslagen 154) met detail en pdf-tekst; de gevraagde wijkraadadviezen (783 sinds 2022) staan in de raads-iBabs (`ibabs_items.py wijkraadadviezen`). Alles in tabblad Officiële stukken; de themabalk heeft een link 'Officiële stukken bij dit thema' (zelfde zoektermen, dus bij een wijkthema ook de wijkraadstukken). Vergaderingen/besluitenlijsten van de wijkraden zelf nog niet opgehaald. `ibabs.py` heeft één gedeelde limiet voor alle iBabs-hosts, ook over processen heen (`.slot`/`.laatste` in de werkmap).
 - Officiële stukken (iBabs-rapportages, `/Reports/Details/{id}`, data via POST `/Reports/GetReportData/{id}`, max 100 rijen per keer; detail `/Reports/Item/{id}`; pdf via `/Document/View/{documentId}`). Scripts: `ibabs.py` (ophaler, 1 verzoek/sec, cache in werkmap, stopt bij 403/429/captcha), `ibabs_lijsten.py` (alle lijsten), `ibabs_items.py <soorten>` (details + motietekst, hervatbaar), `ibabs_emit.py` → `docs/data/ibabs/stukken.zst`, tabblad "Officiële stukken". Vanaf 2018: 6.556 toezeggingen, 6.842 moties, 260 amendementen, 67 initiatiefvoorstellen, 802 raadsvoorstellen (vanaf 2022 in iBabs), 950 collegebesluiten, 10.522 collegebrieven, 4.425 schriftelijke vragen. Details en motieteksten alleen voor toezeggingen, moties, amendementen, initiatief- en raadsvoorstellen; brieven/vragen/besluiten alleen lijst + link.
 - Rekenkamer Rotterdam (`rekenkamer.rotterdam.nl/onderzoeken`, 67 Rotterdamse onderzoeken vanaf 2017) en Ombudsman Rotterdam-Rijnmond (`orr.nl`, WordPress-API, 53 rapporten/jaarverslagen/brieven die Rotterdam noemen): `extern.py`, opgenomen in hetzelfde tabblad. "Besproken" = raadsvergaderingen waarin de rapporttitel letterlijk binnen 400 tekens van "rekenkamer"/"ombudsman" valt, na publicatie (26 van 67 rekenkamerrapporten; ombudsmanrapporten worden zo nooit gevonden).
 
@@ -62,7 +62,7 @@ Hulpmodules: `subs.py` (ondertitels uitlijnen), `motions.py` (stemuitslag), `toe
 3. ~~Ontbrekende 14 themasamenvattingen maken en tonen (gelabeld als AI).~~ Klaar 2-10-2026.
 4. Raadsstukken en de griffielijst van toezeggingen/moties uit iBabs.
 5. ~~Rekenkamer Rotterdam en ombudsman.~~ Klaar 3-10-2026.
-6. Wijkraden: adviezen, reacties college, wijkakkoorden.
+6. ~~Wijkraden: adviezen, reacties college, wijkakkoorden.~~ Klaar 3-10-2026 (zonder vergaderverslagen van de wijkraden zelf).
 7. Officiële bekendmakingen (Gemeenteblad, verordeningen; open API): wat er na het debat is vastgesteld.
 8. CBS-wijkcijfers en Wijkprofiel Rotterdam naast de wijkthema's.
 9. Open Raadsinformatie (VNG/Open State): zelfde soort data voor andere gemeenten, route naar G4.

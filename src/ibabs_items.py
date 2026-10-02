@@ -6,7 +6,7 @@ import json,os,re,sys,html,time
 import ibabs
 from paden import WERK
 VANAF=2018
-PDF={'moties','amendementen','initiatiefvoorstellen'}
+PDF={'moties','amendementen','initiatiefvoorstellen','wijkraadadviezen'}
 def tekst(s): return re.sub(r'[ \t]+',' ',html.unescape(re.sub(r'<[^>]+>',' ',s))).strip()
 def parse(h):
     b=h[h.find('id="maincontent"'):h.find('<footer')]
@@ -26,17 +26,21 @@ def parse(h):
 def jaar(r):
     m=re.search(r'(\d{4})\s*$',(r.get('registrationdate') or r.get('datumbesluit') or '').strip())
     return int(m.group(1)) if m else None
-def pdftekst(url):
+def pdftekst(url,base=''):
     import pymupdf
     # /Reports/Document/... is een viewer; de pdf zelf staat op /Document/View/{documentId}
-    b=ibabs.get('/Document/View/'+re.search(r'documentId=([0-9a-f-]+)',url).group(1),binary=True)
+    b=ibabs.get(base+'/Document/View/'+re.search(r'documentId=([0-9a-f-]+)',url).group(1),binary=True)
     if not b.startswith(b'%PDF'): return None
     with pymupdf.open(stream=b,filetype='pdf') as doc: return '\n'.join(p.get_text() for p in doc).strip()
 def soort(naam,rows):
     out=os.path.join(WERK,'ibabs',f'items_{naam}.jsonl')
     klaar=set()
     if os.path.exists(out):
-        for l in open(out,encoding='utf8'): klaar.add(json.loads(l)['id'])
+        goed=[]
+        for l in open(out,encoding='utf8'):
+            try: klaar.add(json.loads(l)['id']); goed.append(l)
+            except Exception: pass   # half geschreven regel na een onderbreking
+        open(out,'w',encoding='utf8').writelines(goed)
     todo=[r for r in rows if (jaar(r) or 0)>=VANAF and r['DT_RowId'] not in klaar]
     print(naam,'te doen',len(todo),'al klaar',len(klaar),flush=True)
     t0=time.time()
