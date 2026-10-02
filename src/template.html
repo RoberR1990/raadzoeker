@@ -573,6 +573,7 @@ function loadStukken(){
   }).catch(e=>{$('out').innerHTML=tabsHTML()+'<div class="empty">Officiële stukken laden mislukt: '+esc(e.message)+'</div>';});
   return STL;
 }
+const stUrl=r=>r[7].startsWith('http')?r[7]:SRC+'/Reports/Item/'+r[7];
 function stukList(s){
   const terms=parseTerms(s.q||s.q2,s.ww),al=s.fp?(PALIAS[s.fp]||[norm(s.fp)]):null,out=[];
   ST.s.forEach((r,k)=>{
@@ -592,21 +593,21 @@ function renderStukken(s){
    '<select id="osrt" aria-label="Soort" style="margin-left:auto"><option value="">Alle soorten</option>'+ST.soorten.map((x,k)=>'<option value="'+k+'">'+esc(x)+'</option>').join('')+'</select>'+
    '<select id="ostat" aria-label="Status"><option value="">Elke status</option><option value="1">Aangenomen</option><option value="2">Verworpen</option><option value="3">Ingetrokken / aangehouden</option><option value="4">Nog niet afgedaan</option><option value="5">Afgedaan</option></select>'+
    '<button class="btn small" id="csv" type="button">Exporteer (CSV)</button><select id="sort" aria-label="Sortering"><option value="new">Nieuwste eerst</option><option value="old">Oudste eerst</option></select></div>'+
-   '<p class="hint">De officiële registratie van de griffie in iBabs, vanaf 2018: toezeggingen met afdoening, moties, amendementen, initiatief- en raadsvoorstellen, collegebesluiten, collegebrieven en schriftelijke vragen. De zoekterm zoekt in titel, indiener en, waar opgehaald, de omschrijving en de volledige tekst van de motie. Het partijfilter kijkt naar de indiener. Klik op een titel om het stuk in iBabs te openen.'+(META.ibabs.stand?' Stand '+esc(META.ibabs.stand)+'.':'')+'</p>';
+   '<p class="hint">De officiële registratie van de griffie in iBabs, vanaf 2018: toezeggingen met afdoening, moties, amendementen, initiatief- en raadsvoorstellen, collegebesluiten, collegebrieven en schriftelijke vragen. Daarnaast de rapporten van de Rekenkamer Rotterdam en de Ombudsman Rotterdam-Rijnmond, met de raadsvergaderingen waarin de titel letterlijk valt. De zoekterm zoekt in titel, indiener en, waar opgehaald, de omschrijving en de volledige tekst van de motie. Het partijfilter kijkt naar de indiener. Klik op een titel om het stuk in iBabs te openen.'+(META.ibabs.stand?' Stand '+esc(META.ibabs.stand)+'.':'')+'</p>';
   if(!SR.length)h+='<div class="empty">Geen stukken gevonden met deze zoekterm en filters.</div>';
   h+='<div class="mol">'+SR.slice(0,shown*2).map(r=>{const tx=r[6];let sn='';
     if(tx){const nt=norm(tx);let p=-1;for(const t of terms){const q=nt.indexOf(t.t);if(q>=0&&(p<0||q<p))p=q;}
       const a=p<0?0:Math.max(0,p-120),b=Math.min(tx.length,(p<0?0:p)+240),rg=ranges(tx,terms);
       sn='<details class="stx"><summary>'+(a?'…':'')+markup(tx,rg,a,b).replace(/\n/g,' ')+(b<tx.length?'…':'')+'</summary><div class="full">'+markup(tx,rg,0,tx.length).replace(/\n/g,'<br>')+'</div></details>';}
     return '<div class="mo"><span class="date">'+fdate(r[1])+'</span><span class="tag">'+esc(ST.soorten[r[0]])+'</span>'+(r[5]?'<span class="res '+cls[r[4]]+'">'+esc(r[5])+'</span>':'')+
-      '<a class="ti" href="'+SRC+'/Reports/Item/'+r[7]+'" target="_blank" rel="noopener">'+markup(r[2],ranges(r[2],terms),0,r[2].length)+' ↗</a>'+(r[3]?'<span class="fr">'+esc(r[3])+'</span>':'')+sn+'</div>';}).join('')+'</div>';
+      '<a class="ti" href="'+stUrl(r)+'" target="_blank" rel="noopener">'+markup(r[2],ranges(r[2],terms),0,r[2].length)+' ↗</a>'+(r[3]?'<span class="fr">'+esc(r[3])+'</span>':'')+(r[9]&&r[9].length?'<span class="fr">Besproken: '+r[9].slice(-6).map(d=>'<a data-theme="&quot;'+esc(r[2])+'&quot;" title="Zoek dit rapport in de debatten">'+fdate(d)+'</a>').join(', ')+(r[9].length>6?' en eerder':'')+'</span>':'')+sn+'</div>';}).join('')+'</div>';
   if(SR.length>shown*2)h+='<div class="more-row"><button class="btn primary" id="more" type="button">Toon meer ('+nf(SR.length-shown*2)+' resterend)</button></div>';
   $('out').innerHTML=h;$('osrt').value=OS;$('ostat').value=OST;$('sort').value=wantSort==='old'?'old':'new';
 }
 function exportCSV(){
   const stamp=META.built;
   if(VIEW==='o'){const rows=[['datum','soort','titel','indiener / portefeuillehouder','status','bb-nummer','omschrijving','bron']];
-    for(const r of SR)rows.push([r[1],ST.soorten[r[0]],r[2],r[3],r[5],r[8],r[6].slice(0,2000),SRC+'/Reports/Item/'+r[7]]);
+    for(const r of SR)rows.push([r[1],ST.soorten[r[0]],r[2],r[3],r[5],r[8],r[6].slice(0,2000),stUrl(r)]);
     download('raadzoeker-stukken-'+stamp+'.csv',rows);return;}
   if(VIEW==='z'){const rows=[['datum','collegelid','partij','rol','soort','toezegging','agendapunt','notulenpagina','videotijd','bron']];
     for(const o of TZ){const D=o.D,i=o.z[0],S=D.s,m=D.M[S.m[i]],w=who(D,i);rows.push([o.d,w.name,w.party,w.role,o.z[3]?'schriftelijk terugkomen / informeren':'toezegging',S.t[i].slice(o.z[1],o.z[2]),itemLabel(D,S.i[i]),S.d[i]>=0&&S.pg[i]?S.pg[i]:'',S.v[i]>=0?hms(S.v[i]):'',m[1]?SRC+'/Agenda/Index/'+m[1]:'']);}
