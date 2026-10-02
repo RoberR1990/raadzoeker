@@ -4,7 +4,7 @@ Zoektool voor wat er in de Rotterdamse gemeenteraad en raadscommissies is gezegd
 
 ## Mappen
 
-- `docs/` — de site (GitHub Pages, map `/docs` op `main`). `index.html` is de startpagina; `raadzoeker.html` en `commissiezoeker-*.html` zijn op zichzelf staande bestanden met alle data erin.
+- `docs/` — de site. Hosting: Cloudflare Pages, gekoppeld aan deze repo (branch `main`, uitvoermap `docs`, geen build-commando), afgeschermd met Cloudflare Access (alleen toegelaten e-mailadressen). Elke push naar `main` zet de site vanzelf opnieuw online. Limiet: 25 MB per bestand (grootste nu 20,8 MB), dus stap 2 hieronder heeft haast. `_headers` vraagt zoekmachines niet te indexeren. `index.html` is de startpagina; `raadzoeker.html` en `commissiezoeker-*.html` zijn op zichzelf staande bestanden met alle data erin.
 - `src/` — pijplijn en app. Let op: de scripts zijn geschreven voor één platte werkmap (alles naast elkaar, uitvoer in `out/` en `outc/`). Ze zijn hier ongewijzigd neergezet; paden moeten nog worden aangepast aan deze mappenindeling.
 - `data/raad/`, `data/commissies/` — per jaar `JAAR.zst` (JSON, zstd niveau 22) plus `meta*.json`. Dit is de invoer voor `assemble.py`.
 - `data/sum/` — AI-samenvattingen per debat, 2026 (Sonnet-subagents).
