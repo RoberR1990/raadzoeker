@@ -1,7 +1,7 @@
 # template.html + meta -> één html-pagina. De jaardata zelf blijft als los bestand naast de pagina staan
 # (OUT/JAAR.zst) en wordt in de browser opgehaald; meta krijgt de map (relatief t.o.v. de pagina) en een hash per jaar.
 import json,sys,os,hashlib
-from paden import SRC
+from paden import SRC,DATA
 tpl=open(f'{SRC}/template.html',encoding='utf8').read()
 OUT=os.environ.get('RZ_OUT','out')
 meta=json.load(open(os.environ.get('RZ_META',f'{OUT}/meta.json'),encoding='utf8'))
@@ -13,6 +13,9 @@ for y in meta['years']:
 meta['dir']=os.path.relpath(OUT,os.path.dirname(os.path.abspath(sys.argv[1]))).replace(os.sep,'/')+'/'
 fz=open(f'{SRC}/js/node_modules/fzstd/umd/index.js',encoding='utf8').read()
 assert '</script' not in fz
+if meta.get('kind')!='c':   # raad: themasamenvattingen (AI) uit data/tsum
+    import glob
+    meta['tsum']={d['id']:d for f in sorted(glob.glob(f'{DATA}/tsum/out_*.json')) for d in json.load(open(f,encoding='utf8'))}
 if meta.get('kind')=='c':   # commissies -> Commissiezoeker-teksten
     import variant; tpl=variant.apply(tpl,meta)
 html=tpl.replace('/*META*/',json.dumps(meta,ensure_ascii=False).replace('</','<\\/')).replace('/*FZSTD*/','/* fzstd 0.1.1, MIT, (c) Arjun Barrett */\n'+fz)

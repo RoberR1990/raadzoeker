@@ -7,7 +7,7 @@ Zoektool voor wat er in de Rotterdamse gemeenteraad en raadscommissies is gezegd
 - `docs/` — de site. Hosting: Cloudflare Pages, gekoppeld aan deze repo (branch `main`, uitvoermap `docs`, geen build-commando), afgeschermd met Cloudflare Access (alleen toegelaten e-mailadressen). Elke push naar `main` zet de site vanzelf opnieuw online. Limiet: 25 MB per bestand (grootste jaarbestand nu 7,7 MB). `_headers` vraagt zoekmachines niet te indexeren. `index.html` is de startpagina; `raadzoeker.html` en `commissiezoeker.html` (2022–2026) zijn kleine pagina's (0,13 MB) die de jaardata uit `docs/data/raad/` en `docs/data/commissies/` ophalen (`JAAR.zst` = JSON, zstd niveau 22, plus `meta.json`; alle downloads starten tegelijk, verwerken nieuwste jaar eerst). `commissiezoeker-2022-2023/2024-2025/2026.html` zijn alleen nog doorverwijzingen.
 - `src/` — pijplijn en app. Alle paden staan in `src/paden.py` (overschrijfbaar met env `RZ_BRON`, `RZ_WERK`, `RZ_STAND`). `src/oud/` = losse patches die al in `template.html` zitten (niet opnieuw toepassen).
 - `data/sum/` — AI-samenvattingen per debat, 2026 (Sonnet-subagents). `index.json` koppelt id aan (datum, agendapunt); afgeleid uit de gebouwde data omdat de oorspronkelijke invoerbestanden weg zijn (122 van 137 gekoppeld, net als voorheen).
-- `data/tsum/` — AI-samenvattingen per thema. 27 van 41 klaar (id = index in de platte themalijst uit `themes.py`). Ontbreken: 24–26 en 30–40. Nog niet ingebouwd in de app. `INSTRUCTIES.md` is de opdracht voor de subagent; de invoerbestanden (`in_NN.txt`) staan niet in git en moeten opnieuw uit de data worden gemaakt.
+- `data/tsum/` — AI-samenvattingen per thema, alle 41 (id = index in de platte themalijst uit `themes.py`). In de Raadzoeker zichtbaar boven de resultaten als je een thema kiest, gelabeld als AI. 0–23 en 27–29 eerder gemaakt; 24–26 en 30–40 op 2-10-2026 met Haiku-subagents. `INSTRUCTIES.md` = opdracht. Invoer maken: `python src/tsum_in.py 24,25,26 08` (naar de werkmap); controle: `python src/tsum_check.py 08` (namen/getallen die niet in de bron staan).
 
 ## Niet in git (te groot), wel op Roberts pc in `D:\Downloads Chrome`
 
@@ -49,7 +49,7 @@ Hulpmodules: `subs.py` (ondertitels uitlijnen), `motions.py` (stemuitslag), `toe
 - Toezeggingen zijn herkend op formulering, geen officiële griffielijst.
 - Agendapunt kan soms verkeerd gekoppeld zijn.
 - Thema "Noord" vangt ook Diergaarde Blijdorp.
-- AI-samenvattingen zijn alleen steekproefsgewijs gecontroleerd.
+- AI-samenvattingen zijn alleen steekproefsgewijs gecontroleerd. Bij de nieuwe themasamenvattingen namen twee subagents straatnamen over uit het voorbeeldbestand (30, 33) en verzon er één standpunten (25); die drie zijn opnieuw gemaakt met strengere regels. De overige 11 zijn alleen automatisch gecontroleerd op namen en getallen.
 - Stemgedrag: betrouwbaar voor patronen per fractie, niet per raadslid.
 - Sprong naar het juiste videomoment bij Connect Live is niet geverifieerd.
 
@@ -57,7 +57,7 @@ Hulpmodules: `subs.py` (ondertitels uitlijnen), `motions.py` (stemuitslag), `toe
 
 1. ~~Paden in `src/` aanpassen aan deze mappenindeling; build herhaalbaar maken.~~ Klaar 2-10-2026.
 2. ~~Data per jaar als los bestand laten laden (nu 20 MB vooraf); commissies weer één tool.~~ Klaar 2-10-2026.
-3. Ontbrekende 14 themasamenvattingen maken en tonen (gelabeld als AI).
+3. ~~Ontbrekende 14 themasamenvattingen maken en tonen (gelabeld als AI).~~ Klaar 2-10-2026.
 4. Raadsstukken en de griffielijst van toezeggingen/moties uit iBabs.
 5. Rekenkamer Rotterdam en ombudsman.
 6. Wijkraden.
