@@ -22,5 +22,7 @@ Regels:
 - Bij wijken en gebieden: beschrijf welke onderwerpen over die wijk in de raad terugkomen.
 - Sommige fragmenten zijn automatische ondertiteling (2026) en bevatten herkenningsfouten: wees terughoudend met namen en cijfers daaruit.
 - Elk thema uit het bestand precies één keer, met het juiste id.
+- Lees GEEN andere bestanden dan het invoerbestand (ook geen eerdere uitvoer als voorbeeld): elke naam, straat, wijk en fractie moet letterlijk in de fragmenten van dít thema staan.
+- Een fractie bij "standpunten" alleen als minstens twee fragmenten van die fractie het standpunt dragen. Geen beweringen over groei of afname tenzij de trendcijfers dat laten zien.
 
 Antwoord na het schrijven alleen met het aantal thema's en het pad van het uitvoerbestand.
