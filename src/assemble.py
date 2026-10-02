@@ -16,6 +16,10 @@ assert '</script' not in fz
 if meta.get('kind')!='c':   # raad: themasamenvattingen (AI) uit data/tsum
     import glob
     meta['tsum']={d['id']:d for f in sorted(glob.glob(f'{DATA}/tsum/out_*.json')) for d in json.load(open(f,encoding='utf8'))}
+    ib=os.path.join(os.path.dirname(os.path.abspath(sys.argv[1])),'data','ibabs')
+    if os.path.exists(f'{ib}/stukken.zst'):   # officiële stukken uit iBabs (ibabs_emit.py)
+        z=open(f'{ib}/stukken.zst','rb').read(); m=json.load(open(f'{ib}/meta.json',encoding='utf8'))
+        meta['ibabs']={'h':hashlib.sha1(z).hexdigest()[:10],'n':m['n'],'per':m['per'],'stand':m.get('stand','')}
 if meta.get('kind')=='c':   # commissies -> Commissiezoeker-teksten
     import variant; tpl=variant.apply(tpl,meta)
 html=tpl.replace('/*META*/',json.dumps(meta,ensure_ascii=False).replace('</','<\\/')).replace('/*FZSTD*/','/* fzstd 0.1.1, MIT, (c) Arjun Barrett */\n'+fz)
