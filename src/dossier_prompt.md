@@ -12,6 +12,7 @@ Regels (streng):
 - Negeer bronnen die over iets anders gaan dan dit onderwerp (andere betekenis van hetzelfde woord).
 - Gebruik geen namen van bewoners of insprekers. Namen van raadsleden en wethouders mogen.
 - Liever minder punten die kloppen dan veel punten.
+- STAND VAN ZAKEN: de laatste zin van de kern, van de eerste alinea van de verdieping en van elke intro (tijdlijn, fracties, college, wijken, open) beschrijft de meest recente stand van zaken: bij voorkeur uit 2026, anders de meest recente bron, en noemt dan expliciet maand en jaar ("In juli 2026 …", "Sinds maart 2025 is er geen nieuw besluit …"). Gebruik daarvoor de nieuwste bron die over dit punt iets zegt. Zo weet de lezer bij elk onderdeel wat nu de stand is.
 
 Een "zin" is steeds: {"zin": "…", "bron": "D12", "citaat": "…"}.
 
