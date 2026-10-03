@@ -16,7 +16,7 @@ O=[
  ('Afval, zwerfvuil en grofvuil',[r'zwerfafval',r'zwerfvuil',r'grofvuil',r'afvalinzameling',r'bijplaatsing',r'ondergrondse container',r'dumping']),
  ('Ratten en ongedierte',[r'\bratten',r'rattenoverlast',r'ongedierte']),
  ('Vuurwerk en jaarwisseling',[r'vuurwerk',r'jaarwisseling',r'oud en nieuw']),
- ('Explosies bij woningen en bedrijven',[r'explosie',r'aanslagen op (woningen|panden)',r'cobra']),
+ ('Explosies bij woningen en bedrijven',[r'explosie(?!v)',r'aanslagen? op (woningen|panden|bedrijven)',r'cobra']),   # niet: explosieven
  ('Ondermijning en drugscriminaliteit',[r'ondermijning',r'drugscriminaliteit',r'cocaine',r'drugshandel']),
  ('Cameratoezicht',[r'cameratoezicht',r'camera.?s']),
  ('Jongerenoverlast en jeugdcriminaliteit',[r'jongerenoverlast',r'jeugdcriminaliteit',r'jeugdgroep',r'messen',r'wapenbezit']),
