@@ -6,6 +6,8 @@ import json,os,re,sys,html,time
 import ibabs
 from paden import WERK
 VANAF=2018
+STOP=None   # --minuten N: netjes stoppen na N minuten (hervatbaar)
+class TijdOp(Exception): pass
 PDF={'moties','amendementen','initiatiefvoorstellen','wijkraadadviezen'}
 def tekst(s): return re.sub(r'[ \t]+',' ',html.unescape(re.sub(r'<[^>]+>',' ',s))).strip()
 def parse(h):
@@ -55,10 +57,16 @@ def soort(naam,rows):
                     except Exception as e: d['tekstfout']=str(e)[:200]
             f.write(json.dumps(d,ensure_ascii=False)+'\n'); f.flush()
             if k%200==0: print(naam,k,'/',len(todo),round((time.time()-t0)/60),'min',flush=True)
+            if STOP and time.time()>STOP: raise TijdOp()
 if __name__=='__main__':
     L=json.load(open(os.path.join(WERK,'ibabs','lijsten.json'),encoding='utf8'))
+    args=sys.argv[1:]
+    if '--minuten' in args:
+        i=args.index('--minuten'); STOP=time.time()+60*float(args[i+1]); del args[i:i+2]
     try:
-        for naam in sys.argv[1:]: soort(naam,L[naam])
+        for naam in args: soort(naam,L[naam])
+    except TijdOp:
+        print('tijd op, later verder',flush=True); sys.exit(0)
     except ibabs.Blokkade as e:
         print('BLOKKADE, gestopt:',e,flush=True); sys.exit(2)
     print('klaar',flush=True)
