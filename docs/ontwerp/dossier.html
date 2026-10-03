@@ -22,6 +22,19 @@
 .balk2{display:grid;grid-template-columns:minmax(0,10em) 1fr 2.8em;gap:8px;align-items:center;font-size:14px}
 .balk2 i{display:block;height:10px;border-radius:2px;background:var(--groen-d)}
 .balk2 .v{text-align:right}
+.tl{overflow-x:auto}.tl>svg{min-width:720px;width:100%;height:auto;display:block}.tl .leg svg{flex:none}
+.tl .leg{display:flex;flex-wrap:wrap;gap:6px 20px;font-size:14px;margin-top:8px}
+.tl .leg span{display:inline-flex;align-items:center;gap:6px}
+table.tafel{width:100%;border-collapse:collapse;font-size:14px}
+table.tafel th{text-align:left;font-weight:700;padding:4px 8px 4px 0;border-bottom:1.5px solid var(--zwart)}
+table.tafel td{padding:5px 8px 5px 0;border-bottom:1px solid var(--grijs2)}
+table.tafel .bar{display:block;height:8px;background:var(--grijs2);border-radius:2px;min-width:60px}
+table.tafel .bar i{display:block;height:8px;background:var(--groen);border-radius:2px}
+.verwant{display:flex;flex-wrap:wrap;gap:8px}
+.verwant a{display:inline-flex;gap:8px;align-items:baseline;border:1px solid var(--lijn);border-radius:999px;padding:6px 12px;text-decoration:none}
+.verwant a:hover{border-color:var(--zwart)}
+.mini svg{width:100%;height:auto;display:block}.mini path.h{fill:var(--grijs2)}.mini path.w{fill:var(--water)}.mini path.g{stroke:#fff;stroke-width:1.2;cursor:pointer}.mini path.g:hover{stroke:#000}
+.nip .item summary .pijl{display:none}.nip .item .ctx{margin-top:8px}
 @media (max-width:900px){.raster{grid-template-columns:minmax(0,1fr)}.cijfers{grid-template-columns:repeat(2,minmax(0,1fr))}.kop .acties{margin-left:0;align-items:flex-start}}
 </style></head>
 <body>
@@ -41,9 +54,9 @@
 <script src="ontwerp.js"></script>
 <script>
 kop('dossier');
-let DATA=null,CUR=null,SOORT='mot',FILTER='open';
+let DATA=null,KAART=null,CUR=null,SOORT='mot',FILTER='open';
 const VAST=['Wonen','Parkeren','Asiel & migratie','Werk & inkomen','Energie & klimaat','Veiligheid & handhaving','Onderwijs','Zorg, welzijn & jeugd'];
-fetch('dossiers.json').then(r=>r.json()).then(d=>{DATA=d;
+Promise.all(['dossiers.json','kaart.json'].map(f=>fetch(f).then(r=>r.json()))).then(([d,k])=>{DATA=d;KAART=k;
   const onderw=DATA.dossiers.filter(x=>x.groep!=='Wijken en gebieden');
   $('vast').innerHTML='<span class="sub" style="align-self:center">Veel gekozen:</span>'+VAST.map(n=>{const x=DATA.dossiers.find(o=>o.naam===n);return x?`<a href="#${slug(x.naam)}">${esc(n)}</a>`:'';}).join('');
   zoeklijst($('zoek'),$('keuze'),()=>DATA.dossiers,x=>{location.hash=slug(x.naam);});
@@ -57,6 +70,26 @@ function trendSvg(d){
   for(let t=0;t<=mx;t+=step)g+=`<line x1="${L}" x2="${W-6}" y1="${y(t)}" y2="${y(t)}" stroke="#DBE7EA"/><text x="${L-6}" y="${y(t)+4}" text-anchor="end" font-size="12" fill="#3E4B50">${t}</text>`;
   ys.forEach((yr,i)=>{const x=L+i*bw+bw*.2,w=bw*.6,last=i===ys.length-1;g+=`<rect x="${x}" y="${y(v[i])}" width="${w}" height="${H-B-y(v[i])}" rx="2" fill="${last?'#99CCA0':'#00811F'}"><title>${yr}: ${String(v[i]).replace('.',',')} per 100.000 woorden (${d.trendn[i]} keer)</title></rect><text x="${x+w/2}" y="${H-9}" text-anchor="middle" font-size="12" fill="#000">'${yr.slice(2)}</text>`;});
   return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Aandacht per jaar: ${ys.map((y,i)=>y+' '+v[i]).join(', ')}">${g}</svg>`;
+}
+/* 1 tijdlijn: debatten (bollen naar omvang), moties (aangenomen/verworpen), toezeggingen, rekenkamer */
+function tijdlijnSvg(d){
+  const v=d.verdieping.tl,W=1100,L=110,R=14,y0=new Date('2018-01-01'),y1=new Date('2026-12-31'),x=s=>L+(new Date(s)-y0)/(y1-y0)*(W-L-R);
+  const rij={deb:46,mot:104,toez:146,rk:186},H=214;let g='';
+  for(let y=2018;y<=2026;y++){const xx=x(y+'-01-01');g+=`<line x1="${xx}" x2="${xx}" y1="18" y2="${H-22}" stroke="#DBE7EA"/><text x="${xx+4}" y="${H-6}" font-size="13" fill="#3E4B50">${y}</text>`;}
+  [['deb','Debatten'],['mot','Moties'],['toez','Toezeggingen'],['rk','Rekenkamer']].forEach(([k,n])=>{g+=`<text x="0" y="${rij[k]+5}" font-size="14" fill="#000">${n}</text><line x1="${L}" x2="${W-R}" y1="${rij[k]}" y2="${rij[k]}" stroke="#EFF4F6" stroke-width="2"/>`;});
+  const mx=Math.max(1,...v.deb.map(e=>e[1]));
+  v.deb.forEach(([dt,c])=>{g+=`<circle cx="${x(dt).toFixed(1)}" cy="${rij.deb}" r="${(2+Math.sqrt(c/mx)*16).toFixed(1)}" fill="#00811F" fill-opacity=".35" stroke="#00811F"><title>${fd(dt)}: ${c} keer genoemd</title></circle>`;});
+  v.mot.forEach(([dt,s])=>{g+=`<rect x="${(x(dt)-1.5).toFixed(1)}" y="${rij.mot-14}" width="3" height="28" fill="${s==='a'?'#00811F':s==='v'?'#9DAFB6':'#DBE7EA'}"><title>${fd(dt)}: motie ${s==='a'?'aangenomen':s==='v'?'verworpen':'ingetrokken of aangehouden'}</title></rect>`;});
+  v.toez.forEach(dt=>{g+=`<rect x="${(x(dt)-1.5).toFixed(1)}" y="${rij.toez-10}" width="3" height="20" fill="#00548F"><title>${fd(dt)}: toezegging</title></rect>`;});
+  v.rk.forEach(([dt,ti])=>{const xx=x(dt);g+=`<path d="M${xx} ${rij.rk-9}L${xx+9} ${rij.rk}L${xx} ${rij.rk+9}L${xx-9} ${rij.rk}Z" fill="#EDB500" stroke="#6b5200"><title>${fd(dt)}: Rekenkamer, ${esc(ti)}</title></path>`;});
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Tijdlijn 2018 tot 2026 van debatten, moties, toezeggingen en rekenkamerrapporten">${g}</svg>`;
+}
+/* 2 afhandeling: aangenomen moties per jaar, waarvan afgedaan */
+function afhSvg(d){
+  const pj=d.verdieping.pj,ys=Object.keys(pj),W=520,H=170,L=30,B=24,mx=Math.max(1,...ys.map(y=>pj[y][0])),bw=(W-L)/ys.length,y=v=>H-B-(v/mx)*(H-B-14);let g='';
+  ys.forEach((yr,i)=>{const [a,af]=pj[yr],xx=L+i*bw+bw*.2,w=bw*.6;
+    g+=`<rect x="${xx}" y="${y(a)}" width="${w}" height="${H-B-y(a)}" fill="#EDB500" stroke="#6b5200" stroke-width=".5"><title>${yr}: ${a} aangenomen, ${a-af} nog open</title></rect><rect x="${xx}" y="${y(af)}" width="${w}" height="${H-B-y(af)}" fill="#00811F"><title>${yr}: ${af} afgedaan</title></rect><text x="${xx+w/2}" y="${H-7}" text-anchor="middle" font-size="12">'${yr.slice(2)}</text>${a?`<text x="${xx+w/2}" y="${y(a)-4}" text-anchor="middle" font-size="11" fill="#3E4B50">${a}</text>`:''}`;});
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Aangenomen moties per jaar en hoeveel daarvan afgedaan">${g}</svg>`;
 }
 function lijst(){
   const d=CUR,bron=SOORT==='mot'?d.moties:d.toez,s=SOORT==='mot'?'motie':'toez';
@@ -85,6 +118,8 @@ function toon(d){
     <div class="cijfer"><span class="groot num">${nf(t.open)}</span><span>toezeggingen open</span><div class="sub">${t.te_laat?`<span class="stip laat"></span>${t.te_laat} over de termijn`:'geen over de termijn'}</div></div>
     <div class="cijfer"><span class="groot num">${ch>0?'+':''}${ch}%</span><span>aandacht</span><div class="sub">2026 tot nu t.o.v. 2025</div></div>
   </div>
+  <section class="vlak tl" aria-labelledby="tlk" style="margin-top:24px"><h2 id="tlk">Tijdlijn</h2>${tijdlijnSvg(d)}
+    <div class="leg"><span><svg width="14" height="14"><circle cx="7" cy="7" r="6" fill="#00811F" fill-opacity=".35" stroke="#00811F"/></svg>debat, groter is vaker genoemd</span><span><svg width="6" height="14"><rect width="3" height="14" fill="#00811F"/></svg>motie aangenomen</span><span><svg width="6" height="14"><rect width="3" height="14" fill="#9DAFB6"/></svg>verworpen</span><span><svg width="6" height="14"><rect width="3" height="14" fill="#00548F"/></svg>toezegging</span><span><svg width="14" height="14"><path d="M7 0L14 7L7 14L0 7Z" fill="#EDB500" stroke="#6b5200"/></svg>rekenkamerrapport</span></div></section>
   <div class="raster">
     <div class="kol">
       <section class="vlak accent" aria-labelledby="mtk"><h2 id="mtk">Moties en toezeggingen</h2>
@@ -92,6 +127,8 @@ function toon(d){
         <div class="filters chips" id="filt"></div>
         <div class="lijst" id="lijst"></div>
         <p class="sub" style="margin-top:16px" id="meer"></p></section>
+      ${d.verdieping.nip.length?`<section class="vlak nip" aria-labelledby="nipk"><h2 id="nipk">Waar de raad het oneens was</h2><p class="sub" style="margin-bottom:12px">De nipste stemmingen over moties bij dit onderwerp.</p>
+        <div class="lijst">${d.verdieping.nip.map(r=>rij(r,'motie',DATA.stand).replace('<details class="item">','<details class="item" open>')).join('')}</div></section>`:''}
       ${ts?`<section class="vlak samen" aria-labelledby="ik"><h2 id="ik">In het kort <span class="ai">AI-samenvatting, kan fouten bevatten</span></h2><p style="max-width:68ch">${esc(ts.kern)}</p>
         <details><summary>Standpunten per fractie en ontwikkeling</summary>
         ${ts.standpunten&&ts.standpunten.length?'<ul>'+ts.standpunten.map(s=>`<li>${esc(s.wie)}: ${esc(s.punt)}${s.citaat?`<span class="cit">‘${esc(s.citaat)}’</span>`:''}</li>`).join('')+'</ul>':''}
@@ -102,17 +139,30 @@ function toon(d){
         <p class="sub" style="margin-top:16px"><a href="../raadzoeker.html#q=${encodeURIComponent(d.termen)}">Alles wat er letterlijk over is gezegd</a></p></section>
     </div>
     <div class="kol">
+      <section class="vlak grafiek" aria-labelledby="afk"><h2 id="afk">Wat werkt de raad af?</h2>${afhSvg(d)}
+        <p style="margin-top:8px"><span class="stip af"></span>afgedaan <span class="stip open" style="margin-left:12px"></span>nog open</p>
+        ${d.verdieping.dl!==null?`<p style="margin-top:8px">Een aangenomen motie over ${esc(d.naam.toLowerCase())} is gemiddeld na <b class="num">${d.verdieping.dl} dagen</b> afgedaan. In de hele stad is dat ${d.verdieping.stad_dl} dagen.</p><p class="sub">Mediaan van ${d.verdieping.dln} afgedane moties.</p>`:''}</section>
+      <section class="vlak" aria-labelledby="ver"><h2 id="ver">Hangt samen met</h2>
+        ${d.verdieping.ver.length?`<div class="verwant">${d.verdieping.ver.map(([n,p,l])=>`<a href="dossier.html#${slug(n)}" title="In ${p}% van de spreekbeurten over ${esc(d.naam.toLowerCase())} gaat het ook over ${esc(n.toLowerCase())}">${esc(n)} <span class="sub num">${String(l).replace('.',',')}×</span></a>`).join('')}</div><p class="sub" style="margin-top:8px">Hoeveel keer vaker dan toeval deze onderwerpen in dezelfde spreekbeurt vallen.</p>`:'<p class="leeg">Geen duidelijke verbanden.</p>'}
+        <h3 style="margin:24px 0 8px">In welke wijken?</h3><div class="mini" id="mini"></div><p class="sub" id="minitxt" style="margin-top:8px"></p></section>
       <section class="vlak grafiek" aria-labelledby="ap"><h2 id="ap">Aandacht per jaar</h2>${trendSvg(d)}<p class="sub" style="margin-top:8px">Keren genoemd per 100.000 gesproken woorden in de raad. 2026 loopt tot oktober.</p></section>
       <section class="vlak" aria-labelledby="wp"><h2 id="wp">Wie praat erover?</h2>
         <div class="balken">${d.partijen.slice(0,7).map(p=>`<div class="balk2"><span>${esc(p[0])}</span><i style="width:${p[1]/pmx*100}%"></i><span class="v num">${String(p[1]).replace('.',',')}</span></div>`).join('')}</div>
         ${cl.length?`<h3 style="margin:24px 0 8px">Uit het college</h3><div class="balken">${cl.map(p=>`<div class="balk2"><span>${esc(p[0])}</span><i style="width:${p[1]/cmx*100}%;background:var(--blauw)"></i><span class="v num">${String(p[1]).replace('.',',')}</span></div>`).join('')}</div>`:''}
-        <p class="sub" style="margin-top:12px">Per 100.000 woorden van die fractie of dat collegelid.</p></section>
+        <p class="sub" style="margin-top:12px">Per 100.000 woorden van die fractie of dat collegelid.</p>
+        ${d.verdieping.ind.length?`<h3 style="margin:24px 0 8px">Wie dient moties in?</h3><table class="tafel"><thead><tr><th>Fractie (eerste indiener)</th><th class="num">Ingediend</th><th>Aangenomen</th></tr></thead><tbody>${d.verdieping.ind.map(([p,n,a])=>`<tr><td>${esc(p)}</td><td class="num">${n}</td><td><span style="display:flex;gap:8px;align-items:center"><span class="bar" style="flex:1"><i style="width:${a/n*100}%"></i></span><span class="num">${Math.round(a/n*100)}%</span></span></td></tr>`).join('')}</tbody></table>`:''}
+        ${d.verdieping.tz.length?`<h3 style="margin:24px 0 8px">Wie zegt toe?</h3><table class="tafel"><thead><tr><th>Collegelid</th><th class="num">Toezeggingen</th><th class="num">Nog open</th></tr></thead><tbody>${d.verdieping.tz.map(([w,n,o])=>`<tr><td>${esc(w)}</td><td class="num">${n}</td><td class="num">${o}</td></tr>`).join('')}</tbody></table>`:''}</section>
       <section class="vlak" aria-labelledby="rv"><h2 id="rv">Rekenkamer en vragen</h2>
         <div class="lijst">${d.rekenkamer.lijst.length?d.rekenkamer.lijst.map(r=>rij(r,'stuk',DATA.stand)).join(''):'<p class="leeg">Geen rekenkamerrapport over dit onderwerp gevonden.</p>'}</div>
         <h3 style="margin:24px 0 8px">Schriftelijke vragen (${nf(d.sv.n)})</h3>
         <div class="lijst">${d.sv.lijst.slice(0,4).map(r=>rij(r,'stuk',DATA.stand)).join('')}</div></section>
     </div>
   </div>`;
+  // 6 mini-kaart: in welke gebieden valt dit onderwerp (deel van de spreekbeurten)
+  const W=d.verdieping.wijk,wm=Math.max(.1,...Object.values(W));
+  $('mini').innerHTML=`<svg viewBox="0 0 ${KAART.w} ${KAART.h}"><path class="h" d="${KAART.havens}"/>${KAART.gebieden.map(g=>{const v=W[g.naam]||0,f=v/wm;return `<a href="wijk.html#${slug(g.naam)}"><path class="g" d="${g.d}" fill="${f>.75?'#004C31':f>.5?'#00811F':f>.25?'#4EB051':f>.1?'#99CCA0':'#E1EFE2'}"><title>${esc(g.naam)}: in ${String(v).replace('.',',')}% van de spreekbeurten</title></path></a>`;}).join('')}<path class="w" d="${KAART.water}"/></svg>`;
+  const t3=Object.entries(W).sort((a,b)=>b[1]-a[1]).slice(0,3);
+  $('minitxt').textContent=t3.length&&t3[0][1]>0?`Valt het vaakst samen met ${t3.map(x=>x[0]).join(', ')}. Donkerder is vaker; klik op een gebied.`:'Geen duidelijke koppeling met gebieden.';
   deel($('deelrij'),d.naam+' in de Rotterdamse raad',new URL('deel/'+slug(d.naam)+'.html',location.href).href);
   lijst();window.scrollTo({top:0});
 }
