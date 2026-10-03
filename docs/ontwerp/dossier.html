@@ -5,9 +5,10 @@
 <style>
 .kop{display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap;margin:40px 0 24px}
 .kop .acties{margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;gap:8px}
-.cijfers{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
-.cijfer{background:var(--wit);border-radius:var(--r);padding:20px 24px}
-.cijfer .groot{display:block;margin-bottom:8px}
+.cijfers{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.cijfer{background:var(--wit);border-radius:var(--r);padding:10px 16px;font-size:15px;line-height:1.3}
+.cijfer .groot{font-size:26px;margin-right:6px}
+.cijfer .sub{font-size:13px;margin-top:2px}
 .raster{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(0,1fr);gap:24px;margin-top:24px;align-items:start}
 .kol{display:grid;gap:24px;min-width:0}
 .schakel{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
@@ -77,12 +78,12 @@ function toon(d){
   const wijk=d.groep==='Wijken en gebieden';
   $('dossier').innerHTML=`
   <div class="kop"><div><div class="sub">${esc(d.groep)}</div><h1>${esc(d.naam)}</h1></div>
-    <div class="acties"><a class="knop" href="briefing.html#${slug(d.naam)}">Maak een briefing (A4)</a>${wijk?`<a href="wijk.html#${slug(d.naam)}">Bekijk als wijk</a>`:''}</div></div>
+    <div class="acties"><a class="knop" href="briefing.html#${slug(d.naam)}">Maak een briefing (A4)</a><span class="sub" id="deelrij"></span><a class="sub" href="deel/${slug(d.naam)}.png" target="_blank" rel="noopener">Deelkaart als afbeelding</a>${wijk?`<a href="wijk.html#${slug(d.naam)}">Bekijk als wijk</a>`:''}</div></div>
   <div class="cijfers">
-    <div class="cijfer"><span class="groot num">${nf(m.aangenomen)}</span>aangenomen moties sinds 2018<div class="sub">${nf(m.afgedaan)} afgedaan, ${nf(m.verworpen)} verworpen</div></div>
-    <div class="cijfer"><span class="groot num">${nf(m.open)}</span><span class="stip open"></span>moties nog in uitvoering<div class="sub">${m.te_laat?`<span class="stip laat"></span>${m.te_laat} over de termijn`:'geen over de termijn'}</div></div>
-    <div class="cijfer"><span class="groot num">${nf(t.open)}</span><span class="stip open"></span>toezeggingen open<div class="sub">${t.te_laat?`<span class="stip laat"></span>${t.te_laat} over de termijn`:'geen over de termijn'}</div></div>
-    <div class="cijfer"><span class="groot num">${ch>0?'+':''}${ch}%</span>aandacht in 2026 tot nu, ten opzichte van 2025<div class="sub">gemeten per 100.000 woorden, dus eerlijk vergelijkbaar</div></div>
+    <div class="cijfer"><span class="groot num">${nf(m.aangenomen)}</span><span>moties aangenomen</span><div class="sub">sinds 2018 · ${nf(m.afgedaan)} afgedaan</div></div>
+    <div class="cijfer"><span class="groot num">${nf(m.open)}</span><span>in uitvoering</span><div class="sub">${m.te_laat?`<span class="stip laat"></span>${m.te_laat} over de termijn`:'geen over de termijn'}</div></div>
+    <div class="cijfer"><span class="groot num">${nf(t.open)}</span><span>toezeggingen open</span><div class="sub">${t.te_laat?`<span class="stip laat"></span>${t.te_laat} over de termijn`:'geen over de termijn'}</div></div>
+    <div class="cijfer"><span class="groot num">${ch>0?'+':''}${ch}%</span><span>aandacht</span><div class="sub">2026 tot nu t.o.v. 2025</div></div>
   </div>
   <div class="raster">
     <div class="kol">
@@ -112,6 +113,7 @@ function toon(d){
         <div class="lijst">${d.sv.lijst.slice(0,4).map(r=>rij(r,'stuk',DATA.stand)).join('')}</div></section>
     </div>
   </div>`;
+  deel($('deelrij'),d.naam+' in de Rotterdamse raad',new URL('deel/'+slug(d.naam)+'.html',location.href).href);
   lijst();window.scrollTo({top:0});
 }
 document.addEventListener('click',e=>{const s=e.target.closest('[data-soort]'),f=e.target.closest('[data-f]');

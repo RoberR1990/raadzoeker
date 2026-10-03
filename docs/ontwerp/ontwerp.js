@@ -46,6 +46,7 @@ function rij(r,soort,stand){
   const laat=dl&&!af&&dl<stand,isAf=/afgedaan(?! )|afgedaan \d/.test(r[3])&&!/nog niet afgedaan/.test(r[3]);
   const status=isAf?`<span><span class="stip af"></span>Afgedaan${af?' op '+fd(af):''}</span>`:laat?`<span><span class="stip laat"></span>${dagen(dl,stand)} dagen over de termijn</span>`:dl?`<span><span class="stip open"></span>Afdoening verwacht ${fd(dl)}</span>`:r[3]?`<span>${esc(r[3])}</span>`:'';
   const c=r[6]||{};let ctx='';
+  if(c.s)ctx+=stemHTML(c.s);
   if(c.c)ctx+=`<div><b>Aanleiding</b> ‘${esc(c.c)}’</div>`;
   if(c.v)ctx+=`<div><b>Verzoek aan het college</b> ‘${esc(c.v)}’</div>`;
   if(c.o)ctx+=`<div><b>Toegezegd</b> ‘${esc(c.o)}’</div>`;
@@ -67,4 +68,14 @@ function deel(el,titel,url){
   const u=encodeURIComponent(url),t=encodeURIComponent(titel);
   el.innerHTML=`<span class="sub">Delen:</span> <a href="mailto:?subject=${t}&body=${t}%0A${u}">E-mail</a> · <a href="https://teams.microsoft.com/share?href=${u}&msgText=${t}" target="_blank" rel="noopener">Teams</a> · <a href="https://wa.me/?text=${t}%20${u}" target="_blank" rel="noopener">WhatsApp</a> · <button type="button" class="kopie" style="font:inherit;background:none;border:0;padding:0;text-decoration:underline;cursor:pointer">Kopieer link</button>`;
   el.querySelector('.kopie').addEventListener('click',e=>{navigator.clipboard.writeText(url).then(()=>{e.target.textContent='Link gekopieerd';},()=>{prompt('Kopieer deze link',url);});});
+}
+
+/* stemhalfrond: 45 zetels, voor groen, tegen grijs; s=[aangenomen,voor,tegen,zijde,fracties] uit de notulen */
+const ZETELS=(()=>{const rij=[[1,15],[.84,12],[.68,10],[.52,8]],z=[];for(const [r,n] of rij)for(let i=0;i<n;i++){const a=Math.PI*(1-i/(n-1));z.push([a,60+52*r*Math.cos(a),58-52*r*Math.sin(a)]);}return z.sort((p,q)=>q[0]-p[0]);})();
+function stemHTML(s){
+  const [aan,voor,tegen,zijde,fr]=s;
+  if(voor<0)return `<div><b>Stemming</b> ${aan?'Aangenomen':'Verworpen'} zonder hoofdelijke telling (meestal: met algemene stemmen of zonder stemming).</div>`;
+  const tot=voor+tegen;let dots='';ZETELS.forEach((z,i)=>{const kl=i<voor?'#00811F':i<tot?'#65757C':'#DBE7EA';dots+=`<circle cx="${z[1].toFixed(1)}" cy="${z[2].toFixed(1)}" r="2.9" fill="${kl}"/>`;});
+  return `<div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap"><svg viewBox="0 0 120 62" width="132" height="68" role="img" aria-label="${voor} voor, ${tegen} tegen">${dots}</svg>
+    <div><b>${aan?'Aangenomen':'Verworpen'}</b> met <span class="num">${voor}</span> stemmen voor en <span class="num">${tegen}</span> tegen.${fr?`<br><span class="sub">${zijde==='v'?'Voor':'Tegen'} stemden: ${esc(fr)}.</span>`:''}</div></div>`;
 }

@@ -4,6 +4,16 @@
 <link rel="stylesheet" href="stijl.css">
 <style>
 .intro{max-width:68ch;margin-top:16px}
+.toc{position:sticky;top:0;z-index:5;background:var(--grijs);padding:12px 0;margin-top:24px;border-bottom:1px solid var(--lijn)}
+.toc ol{list-style:none;margin:0;padding:0;display:flex;gap:8px;flex-wrap:wrap}
+.toc a{display:inline-flex;min-height:40px;align-items:center;padding:6px 12px;border:1px solid var(--lijn);border-radius:999px;background:var(--wit);text-decoration:none;font-size:15px}
+.toc a:hover,.toc a.on{border-color:var(--zwart)}
+.toc a.on{background:var(--zwart);color:var(--wit)}
+.blok{scroll-margin-top:80px}
+.sv{display:grid;gap:6px}
+.sv div{display:grid;grid-template-columns:minmax(0,11em) minmax(0,1fr) 3.5em;gap:12px;align-items:end;font-size:14px}
+.sv .kol{display:flex;gap:3px;align-items:flex-end;height:36px}
+.sv .kol i{flex:1;background:var(--blauw);border-radius:2px 2px 0 0;min-height:1px}
 .blok{margin-top:64px}
 .blok>h2{margin-bottom:8px}
 .blok>p.sub{max-width:72ch;margin-bottom:16px}
@@ -42,27 +52,39 @@ table.hm a{text-decoration:none}table.hm a:hover{text-decoration:underline}
   <h1>Lab</h1>
   <p class="intro">Een zandbak met experimentele visualisaties. Wat zie je als je acht jaar raadsinformatie op een andere manier bekijkt? Niet alles is af, en elk beeld is een signaal om verder te kijken, geen eindconclusie.</p>
 
+  <nav class="toc" aria-label="Inhoud van het Lab"><ol>
+    <li><a href="#wrapped">Raad Wrapped</a></li><li><a href="#onderwerpen">Onderwerpen door de jaren</a></li><li><a href="#samen">Samen indienen</a></li>
+    <li><a href="#slaag">Slagingskans moties</a></li><li><a href="#beloftes">Open beloftes</a></li><li><a href="#snelheid">Snelheid toezeggingen</a></li>
+    <li><a href="#vragen">Schriftelijke vragen</a></li><li><a href="#stokpaardjes">Stokpaardjes</a></li></ol></nav>
   <section class="blok" id="wrapped" aria-labelledby="h-wr"><h2 id="h-wr">Raad Wrapped</h2>
     <p class="sub">Elk jaar in vier kaarten. Kies een jaar.</p>
     <div class="jr" id="wjr"></div><div class="wr" id="wkaarten"></div></section>
 
-  <section class="blok" aria-labelledby="h-hm"><h2 id="h-hm">Onderwerpen door de jaren</h2>
+  <section class="blok" id="onderwerpen" aria-labelledby="h-hm"><h2 id="h-hm">Onderwerpen door de jaren</h2>
     <p class="sub">Per onderwerp: in welk jaar sprak de raad er relatief het meest over? Donkerder is meer, gemeten per 100.000 woorden en per onderwerp geschaald. Klik op een onderwerp om het te openen.</p>
     <div class="vlak scroll" id="heat"></div></section>
 
-  <section class="blok" aria-labelledby="h-sa"><h2 id="h-sa">Wie dient samen moties in?</h2>
+  <section class="blok" id="samen" aria-labelledby="h-sa"><h2 id="h-sa">Wie dient samen moties in?</h2>
     <p class="sub">Raadsperiode 2022–2026. Elk vakje is het aantal moties dat twee fracties samen indienden. Zo zie je wie elkaar opzoekt, ook over de grens van coalitie en oppositie.</p>
     <div class="vlak scroll" id="matrix"></div></section>
 
-  <section class="blok" aria-labelledby="h-sl"><h2 id="h-sl">Hoe vaak wordt een motie aangenomen?</h2>
+  <section class="blok" id="slaag" aria-labelledby="h-sl"><h2 id="h-sl">Hoe vaak wordt een motie aangenomen?</h2>
     <p class="sub">Raadsperiode 2022–2026: het deel van de moties dat een fractie (mede) indiende en dat werd aangenomen. Coalitiepartijen scoren hoog, omdat de coalitie haar moties vooraf afstemt.</p>
     <div class="vlak"><div class="staaf" id="slaag"></div></div></section>
 
-  <section class="blok" aria-labelledby="h-dl"><h2 id="h-dl">Hoe snel worden toezeggingen afgehandeld?</h2>
+  <section class="blok" id="beloftes" aria-labelledby="h-ob"><h2 id="h-ob">Open beloftes per collegelid</h2>
+    <p class="sub">Hoeveel toezeggingen van elk collegelid nu nog openstaan, en hoeveel daarvan over de verwachte datum zijn. Alle jaren; alleen collegeleden met minstens vijf open toezeggingen.</p>
+    <div class="vlak"><div class="staaf" id="openper"></div></div></section>
+
+  <section class="blok" id="snelheid" aria-labelledby="h-dl"><h2 id="h-dl">Hoe snel worden toezeggingen afgehandeld?</h2>
     <p class="sub">Raadsperiode 2022–2026: de mediane tijd tussen toezegging en afdoening, per collegelid met minstens 25 afgehandelde toezeggingen, en het deel dat later klaar was dan de verwachte datum. Een snelle afdoening zegt niet alles: sommige toezeggingen zijn groot werk.</p>
     <div class="vlak"><div class="as" id="as"></div><div class="dots" id="door"></div></div></section>
 
-  <section class="blok" aria-labelledby="h-st"><h2 id="h-st">Stokpaardjes per fractie</h2>
+  <section class="blok" id="vragen" aria-labelledby="h-sv"><h2 id="h-sv">Schriftelijke vragen door de jaren</h2>
+    <p class="sub">Hoeveel schriftelijke vragen elke fractie per jaar stelde, 2018–2026. Een piek zegt vaak iets over een actueel dossier of een nieuwe fractie.</p>
+    <div class="vlak"><div class="sv" id="sv"></div></div></section>
+
+  <section class="blok" id="stokpaardjes" aria-labelledby="h-st"><h2 id="h-st">Stokpaardjes per fractie</h2>
     <p class="sub">Waar spreekt een fractie relatief vaker over dan de andere fracties? Per onderwerp geschaald: het donkerste vakje is de fractie die er het meest over spreekt. Alleen raadsleden, niet wethouders.</p>
     <div class="vlak scroll" id="stok"></div></section>
   <p class="voet">Gegevens: notulen en ondertiteling van de gemeenteraad en iBabs, stand 2 oktober 2026. <a href="over.html">Over deze tool</a>.</p>
@@ -98,6 +120,15 @@ Promise.all(['lab.json','dossiers.json'].map(f=>fetch(f).then(r=>r.json()))).the
   const dmx=Math.ceil(Math.max(...L.door.map(x=>x[1]))/50)*50;
   $('as').innerHTML=`<span></span><span><span>0 dagen</span><span>${dmx/2}</span><span>${dmx} dagen</span></span><span>later dan verwacht</span>`;
   $('door').innerHTML=L.door.map(([w,d,n,o])=>`<div><span>${esc(w)}</span><span class="lijn" title="mediaan ${d} dagen, ${n} toezeggingen"><i style="left:${d/dmx*100}%"></i></span><span class="num">${d} dagen · ${o}%</span></div>`).join('');
+  // open beloftes per collegelid
+  const omx=Math.max(...L.openper.map(x=>x[1]));
+  $('openper').innerHTML=L.openper.map(([w,n,l])=>`<div><span>${esc(w)}</span><span class="bar" title="${n} open, ${l} over de termijn" style="width:${n/omx*100}%"><i style="width:${l/n*100}%;background:var(--laat)"></i></span><span class="num">${n}</span></div>`).join('')+'<p class="sub" style="margin-top:8px"><span class="stip laat"></span>deel over de termijn · grijs: nog binnen de termijn</p>';
+  // schriftelijke vragen per fractie per jaar
+  const svmx=Math.max(...Object.values(L.sv).flatMap(o=>Object.values(o)));
+  $('sv').innerHTML=Object.entries(L.sv).map(([p,o])=>{const tot=Object.values(o).reduce((a,b)=>a+b,0);return `<div><span>${esc(p)}</span><span class="kol" title="${L.jaren.map(y=>y+': '+(o[y]||0)).join(', ')}">${L.jaren.map(y=>`<i style="height:${(o[y]||0)/svmx*100}%"></i>`).join('')}</span><span class="num">${tot}</span></div>`;}).join('')+`<p class="sub" style="margin-top:8px">Elk staafje is een jaar, van ${L.jaren[0]} tot ${L.jaren[L.jaren.length-1]}; rechts het totaal.</p>`;
+  // inhoudsopgave volgt het scrollen
+  const links=[...document.querySelectorAll('.toc a')];const obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting)links.forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+e.target.id));});},{rootMargin:'-30% 0px -60% 0px'});
+  document.querySelectorAll('section.blok').forEach(s=>obs.observe(s));
   // stokpaardjes: partijen x onderwerpen, per onderwerp geschaald
   const ON=L.thema.map((t,k)=>[t,k]).filter(([t])=>t[1]!=='Wijken en gebieden'&&t[0]!=='Toezeggingen');
   $('stok').innerHTML=`<table class="hm matrix"><thead><tr><th></th>${L.tpart.map(p=>`<th class="k">${esc(p)}</th>`).join('')}</tr></thead><tbody>${ON.map(([t,k])=>{const row=L.tp[k],mx=Math.max(...row,0.1);return `<tr><th><a href="dossier.html#${slug(t[0])}">${esc(t[0])}</a></th>${row.map((v,i)=>{const f=v/mx;return `<td style="background:${tint(f)}" title="${esc(L.tpart[i])} over ${esc(t[0])}: ${String(v).replace('.',',')} per 100.000 woorden"></td>`;}).join('')}</tr>`;}).join('')}</tbody></table>`;

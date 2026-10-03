@@ -37,6 +37,15 @@ def main():
     tsum={d['id']:d for f in glob.glob(f'{DATA}/tsum/out_*.json') for d in json.load(open(f,encoding='utf8'))}
     kaart=json.load(open(f'{DOCS}/ontwerp/kaart.json',encoding='utf8')); INW={g['naam']:g['inw'] for g in kaart['gebieden']}
     ST=zload(f'{DOCS}/data/ibabs/stukken.zst'); S=ST['soorten']
+    # stemuitslag uit de notulen per motie (bb-nummer), via de koppeling notulen <-> iBabs
+    STEM={}
+    for key,bb in json.load(open(f'{DOCS}/data/ibabs/moties.json')).items():
+        y,k=key.split(':'); STEM.setdefault(y,{})[int(k)]=bb
+    for y,kk in list(STEM.items()):
+        Y=zload(f'{DOCS}/data/raad/{y}.zst')
+        for k,bb in kk.items():
+            m=Y['mo'][k]; STEM[bb]=[m[4],m[5],m[6],m[7],m[8]]   # aangenomen, voor, tegen, zijde (v/t), genoemde fracties
+        del STEM[y]
     per=collections.defaultdict(list)
     for r in ST['s']:
         ft=fold(r[2]); fx=fold(r[6][:6000])
@@ -67,7 +76,10 @@ def main():
                         if k in ONDERW: wt[g][y][k]+=1
     def rij(r):
         x=[r[1],r[2],r[3].split(' (')[0].split(' · ')[0],r[5],r[7] if r[7].startswith('http') else 'https://gemeenteraad.rotterdam.nl/Reports/Item/'+r[7],r[8]]
-        if S[r[0]] in('Motie','Amendement','Initiatiefvoorstel'): x.append(motiekern(r[6]))
+        if S[r[0]] in('Motie','Amendement','Initiatiefvoorstel'):
+            c=motiekern(r[6])
+            if r[8] in STEM: c['s']=STEM[r[8]]
+            x.append(c)
         elif S[r[0]]=='Toezegging': x.append({'o':kort(re.sub(r'\s+',' ',r[6].split('\nStand van zaken')[0]),260)} if r[6] else {})
         else: x.append({})
         return x
@@ -144,6 +156,20 @@ def lab(ST,S,I,TH,ONDERW,GEB):
         if d1:
             dl[wie].append((datetime.date.fromisoformat(d1)-datetime.date.fromisoformat(d0)).days)
             if dv and d1>dv: ov[wie]+=1
+    # open toezeggingen per collegelid nu (alle jaren), en hoeveel over de termijn
+    ot=collections.Counter(); otl=collections.Counter()
+    for r in ST['s']:
+        if S[r[0]]=='Toezegging' and r[4]==4:
+            w=re.sub(r'\s*\(.*','',r[3].split(' · ')[0]).strip(); ot[w]+=1
+            dv=iso((re.search(r'verwacht ([\d-]+)',r[5]) or [None,''])[1])
+            if dv and dv<STAND: otl[w]+=1
+    openper=[[w,n,otl[w]] for w,n in ot.most_common() if n>=5]
+    # schriftelijke vragen per fractie per jaar
+    svj=collections.defaultdict(collections.Counter)
+    for r in L['schriftelijke_vragen']:
+        d=iso(r['registrationdate'])
+        if d>='2018' and r.get('partij'): svj[norm(r['partij'].split('\n')[0])][d[:4]]+=1
+    svtop=[p for p,_ in sorted(svj.items(),key=lambda x:-sum(x[1].values()))[:12]]
     door=sorted([[w,round(statistics.median(v)),len(v),round(100*ov[w]/len(v))] for w,v in dl.items() if len(v)>=25],key=lambda x:x[1])
     # Wrapped per jaar
     mot=[r for r in ST['s'] if S[r[0]]=='Motie']; wr={}
@@ -159,7 +185,8 @@ def lab(ST,S,I,TH,ONDERW,GEB):
         wr[y]={'gebied':[TH[g[0]][1][0],TH[g[1]][1][0],TH[g[2]][1][0]],'moties':len(my),'aangenomen':sum(1 for r in my if r[4] in(1,4,5)),
                'toppartij':pc.most_common(3),'stijger':stijger}
     lab={'periode':[P0,P1],'partijen':partijen,'ind':{p:ind[p] for p in partijen},'aang':{p:aang[p] for p in partijen},
-         'pair':[[a,b,n] for (a,b),n in pair.items() if a in partijen and b in partijen],'door':door,'wrapped':wr,
+         'pair':[[a,b,n] for (a,b),n in pair.items() if a in partijen and b in partijen],'door':door,'wrapped':wr,'openper':openper,
+         'sv':{p:dict(svj[p]) for p in svtop},
          'thema':[[TH[k][1][0],TH[k][0]] for k in range(len(TH))],'ty':I['ty'],'jaren':I['years'],'tp':I['tp'],'tpart':I['parties']}
     json.dump(lab,open(f'{DOCS}/ontwerp/lab.json','w',encoding='utf8'),ensure_ascii=False,separators=(',',':'))
     print('lab',len(partijen),'partijen',len(lab['pair']),'paren',len(door),'collegeleden',os.path.getsize(f'{DOCS}/ontwerp/lab.json')//1000,'kB')
