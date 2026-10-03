@@ -86,7 +86,7 @@ mark{background:var(--groen-zacht);color:inherit;padding:0 2px;border-radius:2px
 .item .ctx b{font-weight:700}
 @media (max-width:700px){
   h1{font-size:30px}.pagina{padding:24px 16px 40px}.sectie{margin-top:40px}
-  .balk .in{padding:8px 16px;gap:8px}.merk small{display:none}.balk nav.rechts{margin-left:0}
+  .balk .in{padding:8px 16px;gap:4px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}.balk .in::-webkit-scrollbar{display:none}.merk small{display:none}.balk nav{flex-wrap:nowrap}.balk nav a{white-space:nowrap;padding:8px 10px;font-size:15px}.balk nav.rechts{margin-left:0}.tag{display:none}
   .item summary{grid-template-columns:minmax(0,1fr) auto}.item summary .d{grid-column:1/-1}.item .meta{grid-column:1/-1}.item .ctx{margin-left:0}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
