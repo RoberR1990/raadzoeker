@@ -20,7 +20,8 @@ if __name__=='__main__':
         for l in open(OUT,encoding='utf8'):
             try: klaar.add(json.loads(l)['id'])
             except Exception: pass
-    todo=[r for r in L if (I.jaar(r) or 0)>=2018 and r['DT_RowId'] not in klaar]
+    alleen=args[args.index('--alleen')+1] if '--alleen' in args else None   # gericht ophalen op titel
+    todo=[r for r in L if (I.jaar(r) or 0)>=2018 and r['DT_RowId'] not in klaar and (not alleen or re.search(alleen,(r.get('title') or '').lower()))]
     todo.sort(key=lambda r:r['registrationdate'][6:10]+r['registrationdate'][3:5]+r['registrationdate'][:2],reverse=True)   # nieuwste eerst
     print('te doen',len(todo),'klaar',len(klaar),flush=True)
     try:
