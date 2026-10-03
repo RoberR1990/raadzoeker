@@ -1,0 +1,246 @@
+<title>Raadzoeker Stadsbeeld</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,400..800&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: havenkaart als binnenkomer (tegelkaart van de gebieden langs de Maas), daaronder stadspols en drie modules als ingangen */
+:root{
+  --bg:#F3F6F7;--surface:#FFFFFF;--ink:#0F1E2B;--muted:#5A6B78;--line:#D7E0E5;
+  --water:#BBD6E6;--accent:#0B6E79;--accent-ink:#FFFFFF;--heat:#E8590C;--tile:#E6EDF1;--ok:#2F7D4F;--warn:#B7791F;
+  --f-display:"Archivo",system-ui,sans-serif;--f-body:"Public Sans",system-ui,sans-serif;--f-data:"IBM Plex Mono",ui-monospace,monospace;
+  --r:10px;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0C151D;--surface:#13202B;--ink:#E6EEF3;--muted:#93A5B3;--line:#233543;--water:#1D4760;--accent:#3FB8C4;--accent-ink:#06222A;--heat:#FF7A3D;--tile:#1A2A37;--ok:#5CC08A;--warn:#E3B04B;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0C151D;--surface:#13202B;--ink:#E6EEF3;--muted:#93A5B3;--line:#233543;--water:#1D4760;--accent:#3FB8C4;--accent-ink:#06222A;--heat:#FF7A3D;--tile:#1A2A37;--ok:#5CC08A;--warn:#E3B04B;color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font:16px/1.55 var(--f-body)}
+.wrap{max-width:1120px;margin:0 auto;padding-inline:20px;padding-block:0 48px}
+a{color:var(--accent)}
+h1,h2,h3{font-family:var(--f-display);font-stretch:112%;line-height:1.08;text-wrap:balance;margin:0}
+.eyebrow{font:600 12px/1 var(--f-body);letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.mono{font-family:var(--f-data);font-variant-numeric:tabular-nums}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* kop */
+.top{display:flex;align-items:center;gap:16px;padding-block:18px;flex-wrap:wrap}
+.logo{font:800 20px/1 var(--f-display);font-stretch:125%;letter-spacing:-.01em}
+.logo span{color:var(--accent)}
+nav{display:flex;gap:4px;flex-wrap:wrap;margin-left:auto}
+nav a{font-size:14px;text-decoration:none;color:var(--ink);padding:7px 11px;border-radius:999px}
+nav a.on{background:var(--ink);color:var(--bg)}
+.proto{font:500 11px/1 var(--f-data);color:var(--warn);border:1px solid currentColor;border-radius:4px;padding:4px 6px}
+
+/* hero */
+.hero{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:28px;align-items:start;padding-block:18px 8px}
+.hero h1{font-size:clamp(32px,5vw,56px);font-weight:800}
+.hero h1 em{font-style:normal;color:var(--heat)}
+.lead{color:var(--muted);max-width:52ch;margin:12px 0 0}
+.mapcard{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;margin-top:20px}
+.map{position:relative;width:100%;aspect-ratio:9/5.4}
+.map svg{position:absolute;inset:0;width:100%;height:100%}
+.tile{position:absolute;width:calc(100%/9 - 6px);aspect-ratio:1;border-radius:8px;border:0;cursor:pointer;display:flex;flex-direction:column;justify-content:space-between;padding:6px;text-align:left;color:var(--ink);background:var(--tile);transition:background .5s,transform .15s;font:inherit}
+.tile:hover{transform:translateY(-2px)}
+.tile.sel{box-shadow:0 0 0 2px var(--ink)}
+.tile b{font:600 clamp(8px,1.15vw,11.5px)/1.05 var(--f-body);word-break:break-word}
+.tile i{font:500 clamp(9px,1.3vw,13px)/1 var(--f-data);font-style:normal}
+.tile.hot{color:#fff}
+.ctrl{display:flex;align-items:center;gap:12px;margin-top:12px}
+.ctrl button{border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:999px;width:36px;height:36px;cursor:pointer;font-size:14px}
+.ctrl input{flex:1;accent-color:var(--heat)}
+.yr{font:700 28px/1 var(--f-display);font-stretch:125%;min-width:3.2ch;text-align:right}
+.legend{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);margin-top:8px}
+.legend .bar{height:8px;flex:0 0 120px;border-radius:4px;background:linear-gradient(90deg,var(--tile),var(--heat))}
+
+.side{display:flex;flex-direction:column;gap:14px;padding-top:6px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px}
+.panel h3{font-size:22px;margin:4px 0 2px}
+.rank{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:7px}
+.rank li{display:grid;grid-template-columns:minmax(0,9.5em) 1fr 3.2em;gap:8px;align-items:center;font-size:14px}
+.rank .b{height:10px;border-radius:5px;background:var(--heat)}
+.rank .v{text-align:right;color:var(--muted)}
+.spark{width:100%;height:70px;display:block;margin-top:10px}
+.btn{display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:var(--accent-ink);border:0;border-radius:999px;padding:9px 15px;font:600 14px/1 var(--f-body);text-decoration:none;cursor:pointer;margin-top:12px}
+
+/* stadspols */
+section{padding-block:34px 0}
+.sechead{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.sechead h2{font-size:clamp(24px,3.2vw,34px)}
+.sechead p{margin:0;color:var(--muted)}
+.pols{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr) minmax(0,1fr);gap:14px}
+.list{list-style:none;margin:0;padding:0}
+.list li{display:grid;gap:2px;padding:10px 0;border-top:1px solid var(--line)}
+.list li:first-child{border-top:0;padding-top:4px}
+.list .t{font-weight:600}
+.list .m{font-size:13px;color:var(--muted)}
+.pill{display:inline-block;font:600 11px/1 var(--f-body);padding:4px 7px;border-radius:999px;background:color-mix(in srgb,var(--warn) 18%,transparent);color:var(--warn)}
+.big{font:800 54px/1 var(--f-display);font-stretch:118%}
+.big small{font:500 14px/1.3 var(--f-body);display:block;color:var(--muted);margin-top:6px}
+.words{display:grid;gap:9px;margin-top:6px}
+.word{display:grid;grid-template-columns:minmax(0,1fr) 72px;gap:8px;align-items:center;font-size:14px}
+.word svg{width:72px;height:22px}
+
+/* modules */
+.mods{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.mod{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.mod h3{font-size:24px}
+.mod p{margin:0;color:var(--muted);font-size:15px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:6px 10px;font-size:13px;cursor:pointer;color:var(--ink)}
+.chip.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.stat{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.stat div{background:var(--bg);border-radius:8px;padding:10px}
+.stat b{font:700 24px/1 var(--f-display);display:block}
+.stat span{font-size:12px;color:var(--muted)}
+.a4{background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:14px 16px;font-size:12.5px;line-height:1.45}
+.a4 h4{font:700 14px/1.2 var(--f-display);margin:0 0 6px}
+.a4 .r{display:flex;gap:6px;padding:4px 0;border-top:1px dashed var(--line)}
+.a4 .r b{min-width:8.5em;font-weight:600}
+/* wrapped */
+.wrapped{position:relative;height:240px}
+.card{position:absolute;inset:0;border-radius:16px;padding:20px;display:flex;flex-direction:column;justify-content:space-between;color:#fff;transition:transform .5s,opacity .5s}
+.card .k{font:600 12px/1 var(--f-body);letter-spacing:.09em;text-transform:uppercase;opacity:.85}
+.card .w{font:800 clamp(34px,4.6vw,48px)/1 var(--f-display);font-stretch:120%}
+.card p{margin:0;font-size:14px;opacity:.92}
+.c1{background:#0B6E79}.c2{background:#E8590C}.c3{background:#24324A}
+.dots{display:flex;gap:6px}
+.dots button{width:9px;height:9px;border-radius:50%;border:0;background:var(--line);cursor:pointer;padding:0}
+.dots button.on{background:var(--ink)}
+footer{margin-top:44px;padding-top:16px;border-top:1px solid var(--line);font-size:13px;color:var(--muted)}
+@media (max-width:880px){.hero,.pols,.mods{grid-template-columns:minmax(0,1fr)}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="logo">Raad<span>zoeker</span></div>
+    <span class="proto">SCHETS · echte data, niet alles klikbaar</span>
+    <nav aria-label="Modules"><a class="on" href="#">Stadsbeeld</a><a href="#dossier">Mijn dossier</a><a href="#briefing">Briefing</a><a href="#wrapped">Raad Wrapped</a><a href="#">Archief</a></nav>
+  </header>
+
+  <div class="hero">
+    <div>
+      <span class="eyebrow">Gemeenteraad Rotterdam · 2018–2026</span>
+      <h1>Waar praat de raad over <em>jouw</em> stad?</h1>
+      <p class="lead">Elk vak is een gebied. Hoe feller de kleur, hoe vaker de raad het noemde, per 100.000 gesproken woorden. Schuif door de jaren of druk op afspelen.</p>
+      <div class="mapcard">
+        <div class="map" id="map" role="group" aria-label="Tegelkaart van Rotterdamse gebieden">
+          <svg viewBox="0 0 900 540" preserveAspectRatio="none" aria-hidden="true"><path d="M0,300 C120,270 200,330 330,300 C430,278 470,250 560,262 C660,276 760,250 900,262 L900,300 C760,290 660,316 560,302 C470,292 430,318 330,340 C200,368 120,312 0,342 Z" fill="var(--water)"/><text x="560" y="292" font-family="IBM Plex Mono,monospace" font-size="16" fill="var(--muted)">Nieuwe Maas</text></svg>
+        </div>
+        <div class="ctrl">
+          <button id="play" type="button" aria-label="Afspelen door de jaren">▶</button>
+          <input id="slider" type="range" min="0" max="8" value="7" aria-label="Jaar">
+          <span class="yr mono" id="yr">2025</span>
+        </div>
+        <div class="legend"><span>weinig</span><span class="bar"></span><span>veel aandacht</span></div>
+      </div>
+    </div>
+    <div class="side">
+      <div class="panel">
+        <span class="eyebrow" id="rankh">Meest besproken in 2025</span>
+        <ul class="rank" id="rank"></ul>
+      </div>
+      <div class="panel" id="detail">
+        <span class="eyebrow">Gebied</span>
+        <h3 id="dname">Feijenoord</h3>
+        <div class="m" id="dtxt" style="font-size:14px;color:var(--muted)"></div>
+        <svg class="spark" id="dspark" viewBox="0 0 300 70" preserveAspectRatio="none"></svg>
+        <a class="btn" href="#">Open de wijkpagina →</a>
+      </div>
+    </div>
+  </div>
+
+  <section aria-labelledby="pols">
+    <div class="sechead"><h2 id="pols">Stadspols</h2><p>Wat de raad recent besloot en wat nog openstaat.</p></div>
+    <div class="pols">
+      <div class="panel">
+        <span class="eyebrow">Net aangenomen · raad 10 september 2026</span>
+        <ul class="list" id="recent"></ul>
+      </div>
+      <div class="panel">
+        <span class="eyebrow">Beloftemonitor</span>
+        <div class="big mono" style="margin-top:10px">431<small>toezeggingen van het college staan nog open</small></div>
+        <div class="big mono" style="margin-top:18px">500<small>aangenomen moties zijn nog niet afgedaan</small></div>
+        <a class="btn" href="#">Bekijk per wethouder →</a>
+      </div>
+      <div class="panel">
+        <span class="eyebrow">Opkomende woorden</span>
+        <div class="words" id="words"></div>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="mods">
+    <div class="sechead"><h2 id="mods">Aan de slag</h2><p>Drie ingangen voor je eigen werk.</p></div>
+    <div class="mods">
+      <div class="mod" id="dossier">
+        <span class="eyebrow">Mijn dossier</span>
+        <h3>Wat vindt de raad van jouw onderwerp?</h3>
+        <div class="chips" id="chips"><button class="chip on" type="button">Wonen</button><button class="chip" type="button">Parkeren</button><button class="chip" type="button">Asiel &amp; migratie</button><button class="chip" type="button">Energie &amp; klimaat</button><button class="chip" type="button">+ 37 meer</button></div>
+        <div class="stat"><div><b class="mono">90</b><span>aangenomen moties over wonen nog open</span></div><div><b class="mono">14</b><span>openstaande toezeggingen</span></div></div>
+        <p>Plus: wie er het meest over spreekt, de trend sinds 2018 en de laatste debatten.</p>
+      </div>
+      <div class="mod" id="briefing">
+        <span class="eyebrow">Briefing</span>
+        <h3>Voorbereiden op de commissie in één A4</h3>
+        <div class="a4">
+          <h4>Briefing · Parkeren · oktober 2026</h4>
+          <div class="r"><b>Moties (2022–2026)</b><span>34 aangenomen, 9 nog niet afgedaan</span></div>
+          <div class="r"><b>Toezeggingen</b><span>3 open, waarvan 1 over de termijn</span></div>
+          <div class="r"><b>Standpunten</b><span>per fractie, met citaat en datum</span></div>
+          <div class="r"><b>Rekenkamer</b><span>relevante rapporten en aanbevelingen</span></div>
+        </div>
+        <p>Kies een onderwerp of agendapunt; de pagina stelt het overzicht samen uit de officiële stukken. Voorbeeldcijfers.</p>
+      </div>
+      <div class="mod" id="wrapped">
+        <span class="eyebrow">Raad Wrapped 2025</span>
+        <div class="wrapped" id="wcards">
+          <div class="card c1"><span class="k">Woord van het jaar</span><span class="w">de Silja</span><p>Het opvangschip voor asielzoekers. In 2025 vier keer zo vaak genoemd als het jaar ervoor.</p></div>
+          <div class="card c2"><span class="k">Meest besproken gebied</span><span class="w">Feijenoord</span><p>Het gebied dat de raad in 2025 het vaakst noemde, ruim vóór Centrum en Charlois.</p></div>
+          <div class="card c3"><span class="k">Moties in 2025</span><span class="w mono">820</span><p>381 aangenomen. GroenLinks diende er de meeste in (152), gevolgd door Leefbaar Rotterdam en PvdA.</p></div>
+        </div>
+        <div class="dots" id="wdots"></div>
+      </div>
+    </div>
+  </section>
+
+  <footer>Schets voor het nieuwe ontwerp van de Raadzoeker. Cijfers zijn echt (notulen, ondertiteling en iBabs, stand 2 oktober 2026), behalve de briefing, die is een voorbeeld. Aandacht per gebied = hoe vaak de gebiedsnamen vallen; een signaal, geen meting. Onofficieel hulpmiddel, geen product van de griffie.</footer>
+</div>
+
+<script>
+const D={"years": ["2018", "2019", "2020", "2021", "2022", "2023", "2024", "2025", "2026"], "geb": {"Centrum": {"ty": [4.8, 4.2, 5.1, 6.3, 6.2, 11.9, 7.7, 9.6, 5.9], "n": [41, 63, 48, 87, 64, 138, 97, 128, 46]}, "Delfshaven": {"ty": [4.2, 3.2, 5.2, 8.0, 4.3, 12.8, 7.6, 3.4, 3.6], "n": [36, 48, 49, 111, 44, 149, 96, 46, 28]}, "Noord": {"ty": [2.3, 2.4, 13.0, 13.7, 4.0, 3.6, 4.4, 6.3, 3.7], "n": [20, 36, 124, 189, 41, 42, 56, 85, 29]}, "Kralingen-Crooswijk": {"ty": [11.9, 5.8, 3.3, 5.9, 8.4, 14.4, 4.0, 7.8, 11.4], "n": [102, 88, 31, 82, 87, 167, 50, 104, 89]}, "Feijenoord": {"ty": [33.7, 10.5, 15.8, 14.6, 11.9, 7.5, 6.0, 18.7, 10.0], "n": [290, 158, 150, 202, 123, 87, 75, 250, 78]}, "IJsselmonde": {"ty": [4.5, 3.6, 4.2, 5.9, 6.7, 4.9, 4.2, 4.3, 5.9], "n": [39, 54, 40, 81, 69, 57, 53, 58, 46]}, "Charlois": {"ty": [22.9, 5.0, 8.2, 9.8, 13.5, 10.9, 10.7, 8.6, 15.0], "n": [197, 76, 78, 135, 139, 127, 135, 115, 117]}, "Hillegersberg-Schiebroek": {"ty": [1.3, 4.8, 2.3, 2.2, 4.2, 6.8, 2.6, 1.3, 3.7], "n": [11, 73, 22, 30, 43, 79, 33, 17, 29]}, "Overschie": {"ty": [0.3, 1.1, 2.2, 0.8, 4.4, 2.3, 6.2, 5.2, 2.8], "n": [3, 17, 21, 11, 45, 27, 78, 69, 22]}, "Prins Alexander": {"ty": [17.3, 8.6, 4.7, 5.5, 3.6, 4.8, 6.9, 7.0, 8.7], "n": [149, 130, 45, 76, 37, 56, 87, 94, 68]}, "Hoogvliet": {"ty": [0.7, 0.4, 3.2, 2.3, 1.0, 1.5, 0.2, 1.3, 3.1], "n": [6, 6, 30, 32, 10, 17, 2, 18, 24]}, "Pernis": {"ty": [0.8, 0.1, 0.9, 5.0, 2.0, 0.3, 0.1, 2.6, 1.7], "n": [7, 1, 9, 69, 21, 4, 1, 35, 13]}, "Rozenburg": {"ty": [3.5, 0.5, 2.4, 2.7, 7.7, 5.8, 1.1, 3.0, 2.7], "n": [30, 7, 23, 38, 79, 67, 14, 40, 21]}, "Hoek van Holland": {"ty": [7.8, 4.3, 2.8, 11.9, 3.0, 4.2, 4.0, 4.6, 2.6], "n": [67, 65, 27, 164, 31, 49, 51, 62, 20]}}, "rise": [["silja", 343, 0, [0.0, 0.0, 0.0, 0.0, 0.0, 0.95, 8.13, 35.76, 72.18]], ["spreidingswet", 153, 2, [0.0, 0.0, 0.0, 0.0, 0.61, 0.24, 16.27, 19.32, 25.2]], ["netcongestie", 90, 0, [0.0, 0.0, 0.0, 0.0, 0.0, 0.47, 15.39, 14.39, 8.54]], ["gebiedsambitiedocument", 88, 0, [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.76, 8.63, 19.65]], ["flexwoningen", 56, 0, [0.0, 0.0, 0.0, 0.0, 0.0, 2.13, 3.74, 10.89, 1.28]], ["projectambitiedocument", 46, 0, [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.98, 5.14, 8.97]], ["femicide", 55, 1, [0.0, 0.0, 0.0, 0.19, 0.0, 0.47, 4.4, 4.32, 14.52]], ["leegstandsverordening", 46, 1, [0.0, 0.0, 0.0, 0.19, 0.0, 0.24, 1.1, 8.43, 2.14]], ["ambitiedocument", 63, 7, [0.0, 0.18, 1.41, 0.19, 0.0, 0.95, 4.62, 8.63, 8.97]], ["overlastgevers", 51, 6, [0.31, 0.18, 0.0, 0.39, 0.61, 1.18, 1.98, 8.22, 4.7]]], "recent": [["2026-09-10", "Geen schimmelwoningen voor gemeentelijk huisvesting", "Leefbaar Rotterdam", "aangenomen · nog niet afgedaan · verwacht 03-12-2026"], ["2026-09-10", "Pak femicide en vrouwenhaat aan bij de wortel", "BIJ1", "aangenomen · nog niet afgedaan · verwacht 03-12-2026"], ["2026-09-10", "Lokale crisislijn voor huisdieren van slachtoffers van geweld", "Partij voor de Dieren", "aangenomen · nog niet afgedaan · verwacht 03-12-2026"], ["2026-09-10", "Prioriteer bij uitplaatsing van de Silja", "PRO", "aangenomen · nog niet afgedaan · verwacht 03-12-2026"], ["2026-09-10", "Bescherm kinderrechten nu", "Partij voor de Dieren", "aangenomen · nog niet afgedaan · verwacht 03-12-2026"], ["2026-09-10", "Maak menswaardige opvang de norm", "BIJ1", "aangenomen · nog niet afgedaan · verwacht 03-12-2026"]], "open_toez": 431, "open_mot": 500, "w25": {"moties": 820, "aangenomen": 381, "toez": 963, "sv": 494, "brieven": 2694, "topgebied": "Feijenoord", "toppartij": [["GroenLinks", 152], ["Leefbaar Rotterdam", 103], ["PvdA", 102]], "woord": "silja"}, "dossier": {"thema": "Wonen", "open_toez": 14, "open_mot": 90, "ty": [174.2, 133.8, 103.8, 189.0, 120.9, 158.8, 180.3, 168.0, 185.2], "partijen": [["Leefbaar Rotterdam", 142.6], ["VVD", 244.1], ["GroenLinks", 215.3], ["D66", 166.3], ["PvdA", 209.9], ["DENK", 221.4], ["50PLUS", 223.6], ["CDA", 128.5], ["SP", 381.6], ["ChristenUnie-SGP", 158.6], ["Partij voor de Dieren", 87.4], ["NIDA", 210.5], ["Volt", 131.8]]}};
+const POS={ /* tegelkaart: [kolom, rij] in een raster van 9 x 5, ongeveer zoals de gebieden liggen */
+ "Hoek van Holland":[0,1],"Overschie":[3,0],"Hillegersberg-Schiebroek":[5,0],"Delfshaven":[3,1],"Noord":[4,1],"Kralingen-Crooswijk":[5,1],
+ "Prins Alexander":[6,1],"Centrum":[4,2],"Rozenburg":[1,3],"Pernis":[2,3],"Charlois":[3,3],"Feijenoord":[4,3],"IJsselmonde":[5,3],"Hoogvliet":[2,4]};
+const map=document.getElementById('map'),YRS=D.years;let yi=7,sel='Feijenoord',timer=null;
+const MAX=20;
+const tiles={};
+for(const [n,[c,r]] of Object.entries(POS)){
+  const b=document.createElement('button');b.type='button';b.className='tile';
+  b.style.left=`calc(${c}*100%/9 + 3px)`;b.style.top=`calc(${r}*100%/5.4*1.0 + 3px)`;
+  b.innerHTML=`<b>${n.replace('-','-<wbr>')}</b><i></i>`;b.addEventListener('click',()=>{sel=n;draw();});
+  map.appendChild(b);tiles[n]=b;
+}
+function heat(v){const p=Math.min(100,Math.round(v/MAX*100));return `color-mix(in srgb,var(--heat) ${p}%,var(--tile))`;}
+function spark(svg,vals,hi){const w=300,h=70,mx=Math.max(...vals,1);const pts=vals.map((v,i)=>[i/(vals.length-1)*w,h-6-(v/mx)*(h-14)]);
+  svg.innerHTML=`<path d="M${pts.map(p=>p.join(',')).join(' L')} L${w},${h} L0,${h} Z" fill="color-mix(in srgb,var(--heat) 15%,transparent)"/><polyline points="${pts.map(p=>p.join(',')).join(' ')}" fill="none" stroke="var(--heat)" stroke-width="2.5" vector-effect="non-scaling-stroke"/><circle cx="${pts[hi][0]}" cy="${pts[hi][1]}" r="4.5" fill="var(--ink)"/>`;}
+function draw(){
+  const y=YRS[yi];document.getElementById('yr').textContent=y;document.getElementById('slider').value=yi;
+  for(const [n,t] of Object.entries(tiles)){const v=D.geb[n].ty[yi];t.style.background=heat(v);t.classList.toggle('hot',v/MAX>.55);t.classList.toggle('sel',n===sel);t.querySelector('i').textContent=v.toFixed(1).replace('.',',');t.setAttribute('aria-label',`${n}: ${v} per 100.000 woorden in ${y}`);}
+  const r=Object.entries(D.geb).map(([n,g])=>[n,g.ty[yi]]).sort((a,b)=>b[1]-a[1]).slice(0,6),mx=r[0][1]||1;
+  document.getElementById('rankh').textContent='Meest besproken in '+y;
+  document.getElementById('rank').innerHTML=r.map(([n,v])=>`<li><span>${n}</span><span class="b" style="width:${v/mx*100}%"></span><span class="v mono">${v.toFixed(1).replace('.',',')}</span></li>`).join('');
+  const g=D.geb[sel];document.getElementById('dname').textContent=sel;
+  const prev=yi?g.ty[yi-1]:null,ch=prev?Math.round((g.ty[yi]-prev)/Math.max(prev,.1)*100):null;
+  document.getElementById('dtxt').innerHTML=`${g.n[yi]} keer genoemd in ${y}`+(ch!==null?` · <b style="color:var(--ink)">${ch>0?'+':''}${ch}%</b> t.o.v. ${YRS[yi-1]}`:'');
+  spark(document.getElementById('dspark'),g.ty,yi);
+}
+document.getElementById('slider').addEventListener('input',e=>{yi=+e.target.value;draw();});
+document.getElementById('play').addEventListener('click',e=>{if(timer){clearInterval(timer);timer=null;e.target.textContent='▶';return;}e.target.textContent='❚❚';yi=0;draw();timer=setInterval(()=>{yi++;if(yi>=YRS.length){clearInterval(timer);timer=null;yi=YRS.length-1;e.target.textContent='▶';}draw();},900);});
+document.getElementById('recent').innerHTML=D.recent.slice(0,5).map(r=>`<li><span class="t">${r[1]}</span><span class="m">${r[2]} · <span class="pill">nog niet afgedaan</span> · uiterlijk ${r[3].split('verwacht ')[1]||''}</span></li>`).join('');
+document.getElementById('words').innerHTML=D.rise.slice(0,6).map(w=>{const v=w[3],mx=Math.max(...v),pts=v.map((x,i)=>`${i/(v.length-1)*72},${20-(x/mx)*18}`).join(' ');
+  return `<div class="word"><span><b>${w[0]}</b> <span class="mono" style="color:var(--muted);font-size:12px">${w[1]}×</span></span><svg viewBox="0 0 72 22" aria-hidden="true"><polyline points="${pts}" fill="none" stroke="var(--accent)" stroke-width="2"/></svg></div>`;}).join('');
+// Wrapped-kaarten bladeren
+const cards=[...document.querySelectorAll('#wcards .card')],dots=document.getElementById('wdots');let wi=0;
+function wshow(){cards.forEach((c,i)=>{const d=(i-wi+cards.length)%cards.length;c.style.transform=`translate(${d*10}px,${d*10}px) scale(${1-d*.04})`;c.style.zIndex=10-d;c.style.opacity=d>2?0:1;});[...dots.children].forEach((b,i)=>b.classList.toggle('on',i===wi));}
+cards.forEach((c,i)=>{const b=document.createElement('button');b.type='button';b.setAttribute('aria-label','Kaart '+(i+1));b.onclick=()=>{wi=i;wshow();};dots.appendChild(b);c.style.cursor='pointer';c.onclick=()=>{wi=(wi+1)%cards.length;wshow();};});
+wshow();draw();
+</script>
