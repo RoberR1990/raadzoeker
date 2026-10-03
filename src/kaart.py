@@ -35,37 +35,40 @@ def pad(coords,eps,minopp=0):
                 d+='M'+' '.join(f'{x:.1f},{y:.1f}' for x,y in pts)+'Z'; ringen.append(pts)
     return d,ringen
 def geom(g): return [g['coordinates']] if g['type']=='Polygon' else g['coordinates']
-wk=json.load(open(os.path.join(WERK,'kaart','wijken.json'),encoding='utf8'))
-wat=json.load(open(os.path.join(WERK,'kaart','water.json'),encoding='utf8'))
-gebieden=[];havens=[]
-for f in wk['features']:
-    p=f['properties']; nm=NAAM.get(p['wijknaam'],p['wijknaam'])
-    if p['water']=='JA': continue
-    d,ringen=pad(geom(f['geometry']),0.6)
-    if not d: continue
-    if nm in GEBIED:
-        groot=max(ringen,key=opp); cx,cy=zw(groot)
-        gebieden.append({'naam':nm,'inw':max(0,p.get('aantalInwoners') or 0),'d':d,'lx':round(cx),'ly':round(cy)})
-    else: havens.append(d)
-def binnen(pt,ring):
-    x,y=pt;c=False
-    for i in range(len(ring)):
-        (x1,y1),(x2,y2)=ring[i-1],ring[i]
-        if (y1>y)!=(y2>y) and x<(x2-x1)*(y-y1)/(y2-y1+1e-12)+x1: c=not c
-    return c
-land=[]   # ringen van alle wijken (gebieden en havens), om water buiten de gemeente weg te laten
-for f in wk['features']:
-    if f['properties']['water']=='JA': continue
-    for poly in geom(f['geometry']):
-        r=[xy(x,y) for x,y in poly[0]]; land.append((r,min(p[0] for p in r),max(p[0] for p in r),min(p[1] for p in r),max(p[1] for p in r)))
-water=''
-for f in wat['features']:
-    d,ringen=pad(geom(f['geometry']),0.7,minopp=6)
-    if not ringen: continue
-    groot=max(ringen,key=opp); c=zw(groot); A=opp(groot)
-    raakt=any(c[0]>=a and c[0]<=b and c[1]>=y0 and c[1]<=y1 and binnen(c,r) for r,a,b,y0,y1 in land)
-    if raakt or A>3000: water+=d   # in de gemeente, of een grote rivier/zee
-out={'w':W,'h':H,'gebieden':gebieden,'havens':''.join(havens),'water':water,
-     'bron':'CBS Wijk- en buurtkaart 2024 en BRT TOP10NL (Kadaster), via PDOK'}
-json.dump(out,open(os.path.join(DOCS,'ontwerp','kaart.json'),'w',encoding='utf8'),ensure_ascii=False,separators=(',',':'))
-print(W,H,len(gebieden),'gebieden',len(havens),'havens',round(os.path.getsize(os.path.join(DOCS,'ontwerp','kaart.json'))/1000),'kB')
+def main():
+    wk=json.load(open(os.path.join(WERK,'kaart','wijken.json'),encoding='utf8'))
+    wat=json.load(open(os.path.join(WERK,'kaart','water.json'),encoding='utf8'))
+    gebieden=[];havens=[]
+    for f in wk['features']:
+        p=f['properties']; nm=NAAM.get(p['wijknaam'],p['wijknaam'])
+        if p['water']=='JA': continue
+        d,ringen=pad(geom(f['geometry']),0.6)
+        if not d: continue
+        if nm in GEBIED:
+            groot=max(ringen,key=opp); cx,cy=zw(groot)
+            gebieden.append({'naam':nm,'inw':max(0,p.get('aantalInwoners') or 0),'d':d,'lx':round(cx),'ly':round(cy)})
+        else: havens.append(d)
+    def binnen(pt,ring):
+        x,y=pt;c=False
+        for i in range(len(ring)):
+            (x1,y1),(x2,y2)=ring[i-1],ring[i]
+            if (y1>y)!=(y2>y) and x<(x2-x1)*(y-y1)/(y2-y1+1e-12)+x1: c=not c
+        return c
+    land=[]   # ringen van alle wijken (gebieden en havens), om water buiten de gemeente weg te laten
+    for f in wk['features']:
+        if f['properties']['water']=='JA': continue
+        for poly in geom(f['geometry']):
+            r=[xy(x,y) for x,y in poly[0]]; land.append((r,min(p[0] for p in r),max(p[0] for p in r),min(p[1] for p in r),max(p[1] for p in r)))
+    water=''
+    for f in wat['features']:
+        d,ringen=pad(geom(f['geometry']),0.7,minopp=6)
+        if not ringen: continue
+        groot=max(ringen,key=opp); c=zw(groot); A=opp(groot)
+        raakt=any(c[0]>=a and c[0]<=b and c[1]>=y0 and c[1]<=y1 and binnen(c,r) for r,a,b,y0,y1 in land)
+        if raakt or A>3000: water+=d   # in de gemeente, of een grote rivier/zee
+    out={'w':W,'h':H,'gebieden':gebieden,'havens':''.join(havens),'water':water,
+         'bron':'CBS Wijk- en buurtkaart 2024 en BRT TOP10NL (Kadaster), via PDOK'}
+    json.dump(out,open(os.path.join(DOCS,'ontwerp','kaart.json'),'w',encoding='utf8'),ensure_ascii=False,separators=(',',':'))
+    print(W,H,len(gebieden),'gebieden',len(havens),'havens',round(os.path.getsize(os.path.join(DOCS,'ontwerp','kaart.json'))/1000),'kB')
+
+if __name__=='__main__': main()
