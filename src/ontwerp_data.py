@@ -5,7 +5,7 @@
 # lab.json: samenwerking tussen fracties, slagingskans moties, doorlooptijd toezeggingen, Wrapped per jaar.
 import json,os,re,collections,unicodedata,zstandard,glob,statistics,datetime
 from paden import DOCS,DATA,STAND,WERK
-import themes
+import themes,onderwerpen
 def fold(s): return ''.join(c for c in unicodedata.normalize('NFD',s.lower()) if unicodedata.category(c)!='Mn').replace('’',"'").replace('‘',"'")
 def rx(terms):
     ps=[]
@@ -34,6 +34,7 @@ def main():
     TH=[(g[0],t) for g in themes.T for t in g[1]]; R=[rx(t[1]) for _,t in TH]
     GEB=[k for k,(g,_) in enumerate(TH) if g=='Wijken en gebieden' and TH[k][1][0]!='Nationaal Programma Rotterdam Zuid']
     ONDERW=[k for k,(g,t) in enumerate(TH) if g!='Wijken en gebieden' and t[0]!='Toezeggingen']
+    OND=onderwerpen.actief(); NT=len(TH); R2=R+[onderwerpen.rx(pp) for _,pp in OND]   # concrete onderwerpen na de thema's
     tsum={d['id']:d for f in glob.glob(f'{DATA}/tsum/out_*.json') for d in json.load(open(f,encoding='utf8'))}
     kaart=json.load(open(f'{DOCS}/ontwerp/kaart.json',encoding='utf8')); INW={g['naam']:g['inw'] for g in kaart['gebieden']}
     ST=zload(f'{DOCS}/data/ibabs/stukken.zst'); S=ST['soorten']
@@ -49,12 +50,13 @@ def main():
     per=collections.defaultdict(list)
     for r in ST['s']:
         ft=fold(r[2]); fx=fold(r[6][:6000])
-        for k,rr in enumerate(R):
+        for k,rr in enumerate(R2):
             if rr.search(ft) or len(rr.findall(fx))>=3: per[k].append(r)
     # debatten (raad): treffers per vergadering/agendapunt per thema, beste fragment; onderwerpen per gebied per jaar
     deb=collections.defaultdict(collections.Counter); best={}; spk=collections.defaultdict(collections.Counter)
     wt=collections.defaultdict(lambda:collections.defaultdict(collections.Counter))
     co=collections.defaultdict(collections.Counter); segn=collections.Counter(); NSEG=[0]   # samen genoemd in een spreekbeurt
+    WY=collections.Counter(); WP=collections.Counter(); KY=collections.defaultdict(collections.Counter); KP=collections.defaultdict(collections.Counter)   # woorden en treffers per jaar/fractie (voor onderwerpen)
     for p in sorted(glob.glob(f'{DOCS}/data/raad/*.zst')):
         Y=zload(p); s=Y['s']; y=os.path.basename(p)[:4]
         for i,t in enumerate(s['t']):
@@ -62,14 +64,20 @@ def main():
             f=fold(t); mt=Y['M'][s['m'][i]]; it=Y['I'][s['i'][i]]
             key=(mt[0],mt[1] or '',(it[1]+' '+it[2]).strip())
             raak={}
-            for k,rr in enumerate(R):
+            for k,rr in enumerate(R2):
                 h=rr.findall(f)
                 if h: raak[k]=len(h)
+            nw=len(t.split()); WY[y]+=nw
+            if s['pa'][i]>=0: WP[PAR[s['pa'][i]]]+=nw
+            for k,c in raak.items():
+                if k>=NT:
+                    KY[k][y]+=c
+                    if s['pa'][i]>=0: KP[k][PAR[s['pa'][i]]]+=c
             for k,c in raak.items():
                 deb[k][key]+=c
                 if s['sp'][i]>=0: spk[(k,key)][SPK[s['sp'][i]][0]+(' ('+PAR[s['pa'][i]]+')' if s['pa'][i]>=0 else '')]+=c
                 if c>best.get((k,key),(0,))[0]:
-                    m=R[k].search(f); a=max(0,m.start()-140); b=min(len(t),m.end()+200)
+                    m=R2[k].search(f); a=max(0,m.start()-140); b=min(len(t),m.end()+200)
                     best[(k,key)]=(c,('…' if a else '')+re.sub(r'\s+',' ',t[a:b]).strip()+('…' if b<len(t) else ''),m.start()-a+(1 if a else 0),m.end()-m.start(),s['k'][i])
             NSEG[0]+=1
             for k in raak:
@@ -116,20 +124,18 @@ def main():
         ver=[[TH[j][1][0],round(100*c/n),round((c/n)/(segn[j]/N),1)] for j,c in co[k].items() if j in ONDERW and c>=15]
         ver=sorted(ver,key=lambda x:-x[2])[:6]
         wijk={TH[g][1][0]:round(100*co[k][g]/n,1) for g in GEB if g!=k}
+        if k>=NT: ver=sorted([[TH[j][1][0],round(100*c/n),round((c/n)/(segn[j]/N),1)] for j,c in co[k].items() if j<NT and j in ONDERW and c>=5],key=lambda x:-x[2])[:6]
         return {'tl':tl,'pj':pj,'dl':round(statistics.median(dl)) if dl else None,'dln':len(dl),'stad_dl':STAD_MED,
                 'ind':[[p,c,ok[p]] for p,c in ind.most_common(8)],'tz':[[w,c,tzo[w]] for w,c in tz.most_common(5)],
                 'nip':[rij(r) for r in nip[:6]],'ver':ver,'wijk':wijk}
-    for k,(groep,t) in enumerate(TH):
+    def dossier(k,groep,t,trend,trendn,partijen,college,ts):
         rs=per[k]
         mot=[r for r in rs if S[r[0]]=='Motie']; aan=[r for r in mot if r[4] in(1,4,5)]
         toez=[r for r in rs if S[r[0]]=='Toezegging']
         def laat(r): d=iso((re.search(r'verwacht ([\d-]+)',r[5]) or [None,''])[1]); return bool(d) and d<STAND
         top=sorted(deb[k].items(),key=lambda x:(-(x[0][0]>='2025'),-x[1]))[:6]
         d={'id':k,'naam':t[0],'groep':groep,'termen':t[1],'sub':[s[0] for s in t[2]],
-           'trend':I['ty'][k],'trendn':I['tyn'][k],'jaren':jaren,
-           'partijen':sorted(zip(I['parties'],I['tp'][k]),key=lambda x:-x[1]),
-           'college':sorted([(c,v) for c,v in zip(I['coll'],I['tw'][k])],key=lambda x:-x[1])[:5],
-           'tsum':tsum.get(k),
+           'trend':trend,'trendn':trendn,'jaren':jaren,'partijen':partijen,'college':college,'tsum':ts,
            'moties':{'aangenomen':len(aan),'open':sum(1 for r in mot if r[4]==4),'afgedaan':sum(1 for r in mot if r[4]==5),
                      'verworpen':sum(1 for r in mot if r[4]==2),'te_laat':sum(1 for r in mot if r[4]==4 and laat(r)),
                      'lijst':[rij(r) for r in mot if r[4]==4][:12],'af':[rij(r) for r in mot if r[4]==5][:12],
@@ -147,10 +153,22 @@ def main():
             alles=collections.Counter(); [alles.update(v) for v in wt[k].values()]
             d['onderwerpen']['alle']=[[TH[j][1][0],c] for j,c in alles.most_common(8)]
             d['wijkraad']=[rij(r) for r in ST['s'] if (S[r[0]].startswith(('Wijk','Ongevraagd','Collegereactie'))) and R[k].search(fold(r[3]+' '+r[2]))][:15]
-        out.append(d)
+        return d
+    for k,(groep,t) in enumerate(TH):
+        out.append(dossier(k,groep,t,I['ty'][k],I['tyn'][k],sorted(zip(I['parties'],I['tp'][k]),key=lambda x:-x[1]),
+                           sorted([(c,v) for c,v in zip(I['coll'],I['tw'][k])],key=lambda x:-x[1])[:5],tsum.get(k)))
+    ond=[]
+    for j,(naam,pp) in enumerate(OND):
+        k=NT+j; trn=[KY[k][y] for y in jaren]; tr=[round(KY[k][y]/max(1,WY[y])*1e5,1) for y in jaren]
+        pa=sorted([(p,round(c/max(1,WP[p])*1e5,1)) for p,c in KP[k].items() if WP[p]>20000],key=lambda x:-x[1])
+        d=dossier(k,onderwerpen.THEMA[naam],(naam,onderwerpen.termen(pp),[]),tr,trn,pa,[],None); d['soort']='onderwerp'
+        d['verdieping']['ver']=[v for v in d['verdieping']['ver'] if v[0]!=d['groep']]   # eigen thema is geen verband
+        d['ai']=os.path.exists(f'{DOCS}/ontwerp/samenvattingen/'+re.sub(r'[^a-z0-9]+','-',fold(naam)).strip('-')+'.json')
+        ond.append(d)
     # stadsbreed: onderwerpen per jaar (per 100.000 woorden)
     stad={y:sorted([[TH[k][1][0],I['ty'][k][j]] for k in ONDERW],key=lambda x:-x[1])[:6] for j,y in enumerate(jaren)}
     json.dump({'stand':STAND,'dossiers':out,'stad':stad},open(f'{DOCS}/ontwerp/dossiers.json','w',encoding='utf8'),ensure_ascii=False,separators=(',',':'))
+    json.dump({'stand':STAND,'onderwerpen':ond},open(f'{DOCS}/ontwerp/onderwerpen.json','w',encoding='utf8'),ensure_ascii=False,separators=(',',':'))   # concrete onderwerpen, apart geladen
     print('dossiers',len(out),os.path.getsize(f'{DOCS}/ontwerp/dossiers.json')//1000,'kB')
     lab(ST,S,I,TH,ONDERW,GEB)
     start(ST,S,I,meta,out,stad)
