@@ -18,7 +18,10 @@
 .kaart path.g.sel{stroke:#000;stroke-width:2.5}
 .kaart path.h{fill:var(--grijs2)}
 .kaart path.w{fill:var(--water);pointer-events:none}
-.kaart text{font:13px var(--font);paint-order:stroke;stroke:#fff;stroke-width:3px;stroke-linejoin:round;fill:#000;pointer-events:none}
+.kaart text{font:700 17px var(--font);paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;fill:#000;pointer-events:none}
+.kaart text.klein{font-size:14px}
+.kaart .hint{position:absolute;left:24px;top:68px;font-size:15px;background:var(--wit);padding:4px 10px;border-radius:999px;box-shadow:0 1px 3px rgba(0,0,0,.15);transition:opacity .6s}
+.kaart .hint[hidden]{display:block!important;opacity:0}
 .kaart .jaar{position:absolute;left:24px;top:20px;font-size:40px;line-height:1}
 .bed{display:flex;align-items:center;gap:16px;margin-top:16px}
 .bed button{width:44px;height:44px;border-radius:50%;border:2px solid var(--zwart);background:var(--wit);cursor:pointer;font-size:14px;flex:none}
@@ -31,7 +34,8 @@
 .ond a{display:grid;grid-template-columns:minmax(0,1fr) 3.4em;gap:8px;text-decoration:none;padding:6px 0;border-bottom:1px solid var(--grijs2)}
 .ond a:hover span:first-child{text-decoration:underline}
 .ond i{display:block;height:6px;border-radius:2px;background:var(--groen);margin-top:4px}
-.signalen{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:40px}
+.signalen{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.signalen>div{background:var(--wit);border-radius:var(--r);padding:24px;border-top:4px solid var(--grijs2)}
 .signalen h3{margin-bottom:8px}
 .woorden{display:grid;gap:4px}
 .woorden a{display:grid;grid-template-columns:minmax(0,1fr) 80px;gap:8px;align-items:center;padding:4px 0}
@@ -68,7 +72,7 @@
     <h2 id="kk" class="koptekst">Waar praat de raad over?</h2>
     <div class="kaartraster">
       <div class="vlak">
-        <div class="kaart" id="kaart" role="group" aria-label="Kaart van Rotterdam: hoe vaak de raad elk gebied noemt"><span class="jaar num" id="jaar" aria-hidden="true"></span></div>
+        <div class="kaart" id="kaart" role="group" aria-label="Kaart van Rotterdam: hoe vaak de raad elk gebied noemt"><span class="jaar num" id="jaar" aria-hidden="true"></span><span class="hint" id="hint" aria-hidden="true">▶ Zo verandert de aandacht door de jaren</span></div>
         <div class="bed"><button id="speel" type="button" aria-pressed="false" aria-label="Afspelen door de jaren">▶</button><input id="schuif" type="range" min="0" max="8" value="8" aria-label="Jaar"><span class="sub num" id="jaar2"></span></div>
         <div class="legenda" id="legenda"></div>
       </div>
@@ -122,7 +126,7 @@ Promise.all(['start.json','dossiers.json','kaart.json'].map(f=>fetch(f).then(r=>
   const KL=[[0,'#E1EFE2'],[3,'#99CCA0'],[6,'#4EB051'],[10,'#00811F'],[15,'#004C31']];
   const klasse=v=>KL.filter(k=>v>=k[0]).pop()[1];
   $('legenda').innerHTML=KL.map((k,i)=>`<span><i style="background:${k[1]}"></i>${i<KL.length-1?k[0]+'–'+KL[i+1][0]:k[0]+'+'}</span>`).join('')+'<span class="sub">keer per 100.000 woorden</span>';
-  $('kaart').insertAdjacentHTML('beforeend',`<svg viewBox="0 0 ${K.w} ${K.h}"><path class="h" d="${K.havens}"/>${K.gebieden.map(g=>`<path class="g" data-n="${esc(g.naam)}" d="${g.d}" tabindex="0" role="button"></path>`).join('')}<path class="w" d="${K.water}"/>${K.gebieden.map(g=>`<text x="${g.lx}" y="${g.ly}" text-anchor="middle">${esc(g.naam.replace('Hillegersberg-Schiebroek','Hillegersberg-S.').replace('Kralingen-Crooswijk','Kralingen-C.'))}</text>`).join('')}</svg>`);
+  $('kaart').insertAdjacentHTML('beforeend',`<svg viewBox="0 0 ${K.w} ${K.h}"><path class="h" d="${K.havens}"/>${K.gebieden.map(g=>`<path class="g" data-n="${esc(g.naam)}" d="${g.d}" tabindex="0" role="button"></path>`).join('')}<path class="w" d="${K.water}"/>${K.gebieden.map(g=>`<text x="${g.lx}" y="${g.ly+6}" text-anchor="middle" class="${['Pernis','Rozenburg','Hoek van Holland'].includes(g.naam)?'klein':''}">${esc(g.naam.replace('Hillegersberg-Schiebroek','Hillegersberg').replace('Kralingen-Crooswijk','Kralingen').replace('Prins Alexander','Alexander').replace('Hoek van Holland','Hoek v. Holland'))}</text>`).join('')}</svg>`);
   let yi=YRS.length-1,sel=null,tm=null;
   function paneel(){const y=YRS[yi],j=yi;
     if(!sel){$('pkop').textContent='Hele stad, '+y;$('ptitel').textContent='Meest besproken onderwerpen';$('ptekst').textContent='Klik op een gebied om te zien waar het daar over gaat.';
@@ -145,6 +149,11 @@ Promise.all(['start.json','dossiers.json','kaart.json'].map(f=>fetch(f).then(r=>
   const speel=$('speel');speel.addEventListener('click',()=>{if(tm){clearInterval(tm);tm=null;speel.textContent='▶';speel.setAttribute('aria-pressed','false');return;}
     speel.textContent='❚❚';speel.setAttribute('aria-pressed','true');yi=0;teken();tm=setInterval(()=>{yi++;if(yi>=YRS.length-1){clearInterval(tm);tm=null;yi=YRS.length-1;speel.textContent='▶';speel.setAttribute('aria-pressed','false');}teken();},900);});
   teken();
+  // openingsanimatie: één keer 2018 → 2026 om te laten zien dat de kaart kan afspelen, dan stilstaan op de huidige stand
+  const rustig=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(!rustig){yi=0;teken();let n=0;const intro=setInterval(()=>{if(tm||sel!==null){clearInterval(intro);$('hint').hidden=true;return;}yi++;teken();
+    if(yi>=YRS.length-1){clearInterval(intro);setTimeout(()=>{$('hint').hidden=true;},1200);}},420);}
+  else $('hint').hidden=true;
 });
 </script>
 </body></html>
