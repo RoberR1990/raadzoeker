@@ -1,0 +1,40 @@
+/* Ontwerpschermen Raadzoeker, naar de huisstijl van gemeente Rotterdam (onzestijl.rotterdam.nl):
+   groen en wit voeren de boventoon, tekst altijd zwart, contrastgrijs als ondergrond, geen kapitalen,
+   links onderstreept, citaten met enkele aanhalingstekens. Lettertype Bolder als dat op de pc staat, anders Arial. */
+:root{
+  --groen:#00811F;--groen-d:#004C31;--groen-zacht:#E1EFE2;--grijs:#EFF4F6;--grijs2:#DBE7EA;--lijn:#CAD6DA;
+  --wit:#FFFFFF;--zwart:#000000;--sub:#3E4B50;
+  --open:#EDB500;--laat:#E30613;--blauw:#00548F;
+  --font:"Bolder",Arial,Helvetica,sans-serif;--r:8px;
+}
+*{box-sizing:border-box}
+html{background:var(--grijs)}
+body{margin:0;background:var(--grijs);color:var(--zwart);font:16px/1.5 var(--font)}
+a{color:var(--zwart);text-decoration:underline;text-underline-offset:2px}
+a:hover{color:var(--groen)}
+h1,h2,h3,h4{font-family:var(--font);font-weight:800;line-height:1.15;margin:0;text-wrap:balance}
+:focus-visible{outline:3px solid var(--groen);outline-offset:2px}
+.num{font-variant-numeric:tabular-nums}
+
+/* balk */
+.balk{background:var(--groen);color:var(--wit)}
+.balk .in{max-width:1180px;margin:0 auto;padding:12px 20px;display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.merk{font-weight:800;font-size:21px;color:var(--wit);text-decoration:none}
+.balk nav{display:flex;gap:2px;flex-wrap:wrap}
+.balk nav a{color:var(--wit);text-decoration:none;padding:7px 12px;border-radius:999px;font-size:15px}
+.balk nav a.on,.balk nav a:hover{background:var(--wit);color:var(--zwart)}
+.onoff{margin-left:auto;font-size:13px;color:var(--wit);opacity:.9}
+.pagina{max-width:1180px;margin:0 auto;padding:24px 20px 56px}
+
+/* blokken: wit vlak op grijs */
+.vlak{background:var(--wit);border-radius:var(--r);padding:20px}
+.vlak h2{font-size:21px;margin-bottom:12px}
+.label{font-size:14px;color:var(--sub)}
+.knop{display:inline-flex;align-items:center;gap:8px;background:var(--groen);color:var(--wit);border:0;border-radius:999px;padding:11px 18px;font:700 15px/1 var(--font);text-decoration:none;cursor:pointer}
+.knop:hover{background:var(--groen-d);color:var(--wit)}
+.knop.wit{background:var(--wit);color:var(--zwart);border:2px solid var(--zwart)}
+.ai{display:inline-block;font-size:12.5px;background:var(--grijs);border-radius:4px;padding:2px 7px;color:var(--zwart)}
+.stip{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:middle}
+.stip.open{background:var(--open)}.stip.laat{background:var(--laat)}.stip.af{background:var(--groen)}
+.cit{display:block;font-size:14px;color:var(--sub);margin-top:2px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}

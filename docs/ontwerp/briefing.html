@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
+<title>Briefing · Raadzoeker</title>
+<link rel="stylesheet" href="stijl.css">
+<style>
+.bediening{display:flex;gap:12px;align-items:end;flex-wrap:wrap;margin-bottom:18px}
+.bediening label{display:block;font-weight:700;margin-bottom:6px}
+.bediening select{font:16px var(--font);padding:10px 12px;border:2px solid var(--zwart);border-radius:var(--r);background:var(--wit);min-width:16em;max-width:100%}
+.bediening .tip{font-size:14px;color:var(--sub);flex-basis:100%}
+.a4{background:var(--wit);width:min(210mm,100%);margin:0 auto;padding:16mm 16mm 14mm;box-shadow:0 1px 3px rgba(0,0,0,.12);font-size:10.5pt;line-height:1.4}
+.a4 header{display:flex;justify-content:space-between;gap:12px;border-bottom:3px solid var(--groen);padding-bottom:8px;margin-bottom:12px}
+.a4 h1{font-size:22pt}
+.a4 .meta{font-size:9pt;color:var(--sub);text-align:right}
+.a4 h2{font-size:12.5pt;margin:14px 0 6px;padding-top:8px;border-top:1px solid var(--grijs2)}
+.a4 h2:first-of-type{border-top:0;padding-top:0}
+.kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:4px 0 2px}
+.kpi div{background:var(--grijs);border-radius:6px;padding:8px 10px}
+.kpi b{display:block;font-size:17pt;line-height:1}
+.kpi span{font-size:8.5pt}
+table{width:100%;border-collapse:collapse;font-size:9.5pt}
+th{text-align:left;font-weight:700;border-bottom:1.5px solid var(--zwart);padding:3px 6px 3px 0}
+td{border-bottom:1px solid var(--grijs2);padding:4px 6px 4px 0;vertical-align:top}
+td.dt{white-space:nowrap;width:5.6em}
+.stand ul{margin:4px 0;padding-left:16px}.stand li{margin:3px 0}
+.cit{font-size:9pt}
+.bron{font-size:8pt;color:var(--sub);margin-top:14px;border-top:1px solid var(--grijs2);padding-top:6px}
+.trend{display:flex;align-items:flex-end;gap:3px;height:34px;margin-top:4px}
+.trend i{flex:1;background:var(--groen);border-radius:2px 2px 0 0}
+.trend i:last-child{background:#99CCA0}
+@media (max-width:700px){.a4{padding:18px}.kpi{grid-template-columns:repeat(2,1fr)}}
+@media print{
+  @page{size:A4;margin:0}
+  html,body{background:#fff}
+  .balk,.bediening,.voet{display:none!important}
+  .pagina{padding:0;max-width:none}
+  .a4{box-shadow:none;width:210mm}
+  a{text-decoration:none}
+}
+</style></head>
+<body>
+<header class="balk"><div class="in">
+  <a class="merk" href="startpagina.html">Raadzoeker</a>
+  <nav aria-label="Modules"><a href="dossier.html">Mijn dossier</a><a class="on" href="briefing.html">Briefing</a><a href="startpagina.html">Stadsbeeld</a><a href="../raadzoeker.html">Archief</a></nav>
+  <span class="onoff">Ontwerp · onofficieel hulpmiddel</span>
+</div></header>
+<main class="pagina">
+  <div class="bediening">
+    <div><label for="thema">Briefing over</label><select id="thema"></select></div>
+    <button class="knop" id="print" type="button">Afdrukken of opslaan als pdf</button>
+    <a class="knop wit" id="naar" href="dossier.html">Open het dossier</a>
+    <p class="tip">Eén A4 om je voor te bereiden op een commissie, een raadsvoorstel of een gesprek met de wethouder. Samengesteld uit openbare raadsinformatie.</p>
+  </div>
+  <article class="a4" id="a4"><p>Briefing laden…</p></article>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const nf=n=>Number(n).toLocaleString('nl-NL');
+const MND=['jan','feb','mrt','apr','mei','jun','jul','aug','sep','okt','nov','dec'];
+const fd=d=>{const [y,m,dd]=d.split('-');return +dd+' '+MND[+m-1]+' '+y;};
+let DATA=null;
+fetch('dossiers.json').then(r=>r.json()).then(d=>{DATA=d;
+  const groups={};d.dossiers.forEach(x=>(groups[x.groep]=groups[x.groep]||[]).push(x));
+  $('thema').innerHTML=Object.entries(groups).map(([g,l])=>`<optgroup label="${esc(g)}">${l.map(x=>`<option value="${x.id}">${esc(x.naam)}</option>`).join('')}</optgroup>`).join('');
+  const h=location.hash.match(/^#(\d+)$/);maak(h?+h[1]:0);
+});
+$('thema').addEventListener('change',e=>maak(+e.target.value));
+$('print').addEventListener('click',()=>window.print());
+function deadline(s){const m=(s||'').match(/verwacht (\d\d)-(\d\d)-(\d{4})/);return m?`${m[3]}-${m[2]}-${m[1]}`:'';}
+function maak(id){
+  const d=DATA.dossiers[id];$('thema').value=id;history.replaceState(null,'','#'+id);$('naar').href='dossier.html#'+id;
+  document.title='Briefing '+d.naam+' · Raadzoeker';
+  const m=d.moties,t=d.toez,ts=d.tsum,mx=Math.max(...d.trend,1),vandaag=new Date(DATA.stand+'T12:00');
+  const datum=vandaag.getDate()+' '+['januari','februari','maart','april','mei','juni','juli','augustus','september','oktober','november','december'][vandaag.getMonth()]+' '+vandaag.getFullYear();
+  const tabel=(l,toez)=>l.length?`<table><thead><tr><th>Datum</th><th>Onderwerp</th><th>${toez?'Wethouder':'Indiener'}</th><th>Afdoening</th></tr></thead><tbody>${l.slice(0,7).map(r=>{const dl=deadline(r[3]),laat=dl&&dl<DATA.stand;
+      return `<tr><td class="dt">${fd(r[0])}</td><td><a href="${esc(r[4])}">${esc(r[1])}</a></td><td>${esc(r[2].split(' (')[0].split(' · ')[0])}</td><td class="dt"><span class="stip ${laat?'laat':'open'}"></span>${dl?fd(dl):'onbekend'}</td></tr>`;}).join('')}</tbody></table>${l.length>7?`<p style="margin:4px 0 0;font-size:9pt">En meer; zie het dossier.</p>`:''}`:'<p>Niets open.</p>';
+  $('a4').innerHTML=`
+  <header><div><div class="label" style="font-size:9.5pt">Briefing · ${esc(d.groep)}</div><h1>${esc(d.naam)}</h1></div>
+    <div class="meta">Stand ${datum}<br>Raadzoeker · onofficieel<br>bron: openbare raadsinformatie</div></header>
+  <div class="kpi">
+    <div><b class="num">${nf(m.aangenomen)}</b><span>aangenomen moties sinds 2018, ${nf(m.afgedaan)} afgedaan</span></div>
+    <div><b class="num">${nf(m.open)}</b><span><span class="stip open"></span>moties nog niet afgedaan</span></div>
+    <div><b class="num">${nf(t.open)}</b><span><span class="stip open"></span>toezeggingen open${t.te_laat?`, <b style="display:inline;font-size:inherit">${t.te_laat}</b> over de termijn`:''}</span></div>
+    <div><span>Aandacht in de raad 2018–2026</span><div class="trend" aria-hidden="true">${d.trend.map(v=>`<i style="height:${Math.max(4,v/mx*100)}%"></i>`).join('')}</div></div>
+  </div>
+  ${ts?`<h2>Kern <span class="ai">AI-samenvatting, controleer in de bron</span></h2><p style="margin:0">${esc(ts.kern)}</p>`:''}
+  ${ts&&ts.standpunten&&ts.standpunten.length?`<h2>Standpunten in de raad</h2><div class="stand"><ul>${ts.standpunten.slice(0,6).map(s=>`<li><b>${esc(s.wie)}:</b> ${esc(s.punt)}${s.citaat?`<span class="cit"> ‘${esc(s.citaat)}’</span>`:''}</li>`).join('')}</ul></div>`:''}
+  <h2>Openstaande moties</h2>${tabel(m.lijst,false)}
+  <h2>Openstaande toezeggingen</h2>${tabel(t.lijst,true)}
+  <h2>Recente debatten</h2><table><tbody>${d.debatten.slice(0,5).map(x=>`<tr><td class="dt">${fd(x[0])}</td><td>${esc(x[2]||'Raadsvergadering')}</td><td class="dt num">${nf(x[3])}×</td></tr>`).join('')}</tbody></table>
+  ${d.rekenkamer.lijst.length?`<h2>Rekenkamer</h2><table><tbody>${d.rekenkamer.lijst.slice(0,3).map(r=>`<tr><td class="dt">${fd(r[0])}</td><td><a href="${esc(r[4])}">${esc(r[1])}</a></td></tr>`).join('')}</tbody></table>`:''}
+  <p class="bron">Samengesteld uit de notulen en ondertiteling van de gemeenteraad van Rotterdam en de registratie in iBabs (moties, toezeggingen) en de Rekenkamer Rotterdam. Een onderwerp is een vaste set zoekwoorden (${esc(d.termen)}); aantallen zijn een indicatie. Teksten met het label AI zijn automatisch gemaakt. Onofficieel hulpmiddel, geen product van de gemeente of de griffie.</p>`;
+}
+</script>
+</body></html>
