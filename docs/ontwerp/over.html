@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
+<title>Over · raadzoeker</title>
+<link rel="stylesheet" href="stijl.css">
+<style>
+.tekst{max-width:68ch}
+.tekst p{margin:0 0 16px}
+.tekst h2{margin:40px 0 12px}
+.maker{display:grid;grid-template-columns:auto minmax(0,1fr);gap:24px;align-items:start;margin-top:24px}
+.initialen{width:88px;height:88px;border-radius:50%;background:var(--groen);color:var(--wit);display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:700}
+.faq details{border-top:1px solid var(--grijs2);padding:16px 0}
+.faq details:last-child{border-bottom:1px solid var(--grijs2)}
+.faq summary{cursor:pointer;font-weight:700;font-size:18px}
+.faq details p{margin:12px 0 0}
+.bronnen{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:16px}
+.bronnen div{background:var(--grijs);border-radius:6px;padding:16px}
+@media (max-width:700px){.maker{grid-template-columns:minmax(0,1fr)}.bronnen{grid-template-columns:minmax(0,1fr)}}
+</style></head>
+<body>
+<header class="balk"></header>
+<main class="pagina">
+  <div class="vlak tekst" style="max-width:none">
+    <div class="tekst">
+      <h1>Over de raadzoeker</h1>
+      <p style="font-size:20px;margin-top:16px">De gemeenteraad praat elke week over de stad. Wat er gezegd, beloofd en besloten wordt, staat verspreid over duizenden notulen, video's, moties en brieven. De raadzoeker brengt dat samen, zodat je in een paar minuten weet wat de raad van jouw onderwerp vindt.</p>
+      <p>Voor beleidsmakers en adviseurs, maar ook voor iedereen die wil weten wat er speelt in de stad of in een wijk. Je ziet welke moties zijn aangenomen en of ze zijn uitgevoerd, wat het college heeft toegezegd, wie er in de raad over spreekt en hoe de aandacht verschuift door de jaren.</p>
+
+      <h2>Wie maakt dit?</h2>
+      <div class="maker">
+        <div class="initialen" aria-hidden="true">RR</div>
+        <div>
+          <p><b>Robert Riteco</b> is productmanager Data bij het cluster Stadsbeheer van de gemeente Rotterdam, in het team Parkeren. Hij houdt zich bezig met data en kunstmatige intelligentie, en met de vraag hoe je die inzet zodat collega's er in hun dagelijkse werk echt iets aan hebben.</p>
+          <p>De raadzoeker is zijn experiment: wat kun je zien als je alles wat de raad sinds 2018 zei en besloot naast elkaar legt? Het antwoord bleek meer dan een zoekmachine. Het is een manier om dossiers sneller te begrijpen, beloftes te volgen en verbanden in de stad te zien.</p>
+          <p>Vragen, ideeën of iets gezien dat niet klopt? Robert hoort het graag. Zoek hem op via de interne telefoongids of het intranet.</p>
+        </div>
+      </div>
+
+      <h2>Waar komt de informatie vandaan?</h2>
+      <div class="bronnen">
+        <div><b>Raadsvergaderingen</b><br>Woordelijke notulen sinds 2018 en de automatische ondertiteling van de uitzendingen, via gemeenteraad.rotterdam.nl.</div>
+        <div><b>Officiële stukken</b><br>De registratie van de griffie in iBabs: moties met afdoening, toezeggingen, amendementen, raadsvoorstellen, collegebrieven en schriftelijke vragen.</div>
+        <div><b>Wijkraden en Rekenkamer</b><br>Wijkakkoorden, wijkverslagen en adviezen van wijkraad.rotterdam.nl, en de rapporten van de Rekenkamer Rotterdam en de Ombudsman Rotterdam-Rijnmond.</div>
+        <div><b>Kaart</b><br>Wijkgrenzen en water uit open data van CBS en Kadaster, via PDOK.</div>
+      </div>
+
+      <h2>Veelgestelde vragen</h2>
+      <div class="faq">
+        <details><summary>Is dit een officieel product van de gemeente?</summary><p>Nee. De raadzoeker is een onofficieel hulpmiddel en geen product van de gemeente of de griffie. Alle informatie is openbaar; de tool zet die alleen bij elkaar. Voor het officiële verslag kijk je altijd in de bron, die bij elk onderdeel gelinkt is.</p></details>
+        <details><summary>Hoe weet de raadzoeker wat bij een onderwerp hoort?</summary><p>Elk onderwerp is een vaste lijst zoekwoorden, bijvoorbeeld ‘parkeer’ en ‘parkeren’ bij Parkeren. Een motie of toezegging hoort bij een onderwerp als zo'n woord in de titel staat of minstens drie keer in de tekst. Dat is een goede indicatie, maar geen exacte telling: er kan iets tussen zitten dat zijdelings over het onderwerp gaat.</p></details>
+        <details><summary>Wat betekent ‘aandacht per 100.000 woorden’?</summary><p>Hoe vaak een onderwerp of gebied genoemd wordt, gedeeld door hoeveel er in totaal gesproken is. Zo kun je drukke en rustige jaren eerlijk vergelijken, ook een jaar dat nog loopt.</p></details>
+        <details><summary>Wat doet AI in deze tool?</summary><p>Alleen de korte samenvattingen per onderwerp zijn met AI gemaakt, en die hebben altijd het label ‘AI’. Bij standpunten staat een letterlijk citaat uit de raad; een samenvatting zonder echt citaat wordt automatisch geschrapt. De aanleiding en het verzoek bij moties zijn niet met AI gemaakt, maar letterlijk uit de motietekst gehaald.</p></details>
+        <details><summary>Hoe actueel is het?</summary><p>De huidige stand is 2 oktober 2026. Het plan is om de gegevens wekelijks automatisch bij te werken.</p></details>
+        <details><summary>Wat is ‘over de termijn’?</summary><p>Bij moties en toezeggingen registreert de griffie een verwachte afdoeningsdatum. Is die datum voorbij en staat het stuk nog niet als afgedaan geregistreerd, dan tonen we het als ‘over de termijn’. Soms is iets wel gedaan maar nog niet als afgedaan geregistreerd.</p></details>
+        <details><summary>Kan ik iets delen met collega's?</summary><p>Ja. Elk onderwerp, elke wijk en elke briefing heeft een eigen link. Bij de briefing staan knoppen om te delen via e-mail, Teams en WhatsApp, en je kunt hem als pdf opslaan.</p></details>
+      </div>
+    </div>
+  </div>
+</main>
+<script src="ontwerp.js"></script>
+<script>kop('over');</script>
+</body></html>
