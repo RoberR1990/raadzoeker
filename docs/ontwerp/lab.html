@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
+<title>Lab · raadzoeker</title>
+<link rel="stylesheet" href="stijl.css">
+<style>
+.intro{max-width:68ch;margin-top:16px}
+.blok{margin-top:64px}
+.blok>h2{margin-bottom:8px}
+.blok>p.sub{max-width:72ch;margin-bottom:16px}
+.scroll{overflow-x:auto}
+.jr{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.jr button{font:15px var(--font);border:1px solid var(--lijn);background:var(--wit);border-radius:999px;padding:8px 12px;cursor:pointer;min-height:40px}
+.jr button.on{background:var(--zwart);color:var(--wit);border-color:var(--zwart)}
+.wr{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.wk{border-radius:var(--r);padding:24px;color:var(--wit);min-height:190px;display:flex;flex-direction:column;gap:8px}
+.wk .w{font-size:32px;font-weight:700;line-height:1.1}
+table.hm{border-collapse:separate;border-spacing:2px;font-size:13px}
+table.hm th{font-weight:400;text-align:left;padding:2px 8px 2px 0;white-space:nowrap}
+table.hm th.k{text-align:center;padding:0 0 4px}
+table.hm td{width:44px;height:26px;border-radius:3px;text-align:center;font-variant-numeric:tabular-nums}
+table.hm td.d{color:#fff}
+table.hm tr.g th{padding-top:12px;color:var(--sub)}
+table.hm a{text-decoration:none}table.hm a:hover{text-decoration:underline}
+.matrix td{width:34px;height:30px}
+.matrix th.k{writing-mode:vertical-rl;transform:rotate(180deg);height:150px;text-align:left;vertical-align:bottom}
+.staaf{display:grid;gap:8px}
+.staaf div{display:grid;grid-template-columns:minmax(0,11em) minmax(0,1fr) 4em;gap:12px;align-items:center;font-size:14px}
+.staaf .bar{height:14px;background:var(--grijs2);border-radius:2px;position:relative}
+.staaf .bar i{position:absolute;inset:0 auto 0 0;background:var(--groen);border-radius:2px}
+.dots{display:grid;gap:6px}
+.dots div{display:grid;grid-template-columns:minmax(0,12em) minmax(0,1fr) 9em;gap:12px;align-items:center;font-size:14px}
+.dots .lijn{height:18px;position:relative;border-left:1px solid var(--lijn)}
+.dots .lijn::after{content:"";position:absolute;left:0;right:0;top:9px;border-top:1px dashed var(--grijs2)}
+.dots .lijn i{position:absolute;top:3px;width:12px;height:12px;border-radius:50%;background:var(--blauw);margin-left:-6px;z-index:1}
+.as{display:grid;grid-template-columns:minmax(0,12em) minmax(0,1fr) 9em;gap:12px;font-size:12px;color:var(--sub)}
+.as span{display:flex;justify-content:space-between}
+@media (max-width:900px){.wr{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style></head>
+<body>
+<header class="balk"></header>
+<main class="pagina">
+  <h1>Lab</h1>
+  <p class="intro">Een zandbak met experimentele visualisaties. Wat zie je als je acht jaar raadsinformatie op een andere manier bekijkt? Niet alles is af, en elk beeld is een signaal om verder te kijken, geen eindconclusie.</p>
+
+  <section class="blok" id="wrapped" aria-labelledby="h-wr"><h2 id="h-wr">Raad Wrapped</h2>
+    <p class="sub">Elk jaar in vier kaarten. Kies een jaar.</p>
+    <div class="jr" id="wjr"></div><div class="wr" id="wkaarten"></div></section>
+
+  <section class="blok" aria-labelledby="h-hm"><h2 id="h-hm">Onderwerpen door de jaren</h2>
+    <p class="sub">Per onderwerp: in welk jaar sprak de raad er relatief het meest over? Donkerder is meer, gemeten per 100.000 woorden en per onderwerp geschaald. Klik op een onderwerp om het te openen.</p>
+    <div class="vlak scroll" id="heat"></div></section>
+
+  <section class="blok" aria-labelledby="h-sa"><h2 id="h-sa">Wie dient samen moties in?</h2>
+    <p class="sub">Raadsperiode 2022–2026. Elk vakje is het aantal moties dat twee fracties samen indienden. Zo zie je wie elkaar opzoekt, ook over de grens van coalitie en oppositie.</p>
+    <div class="vlak scroll" id="matrix"></div></section>
+
+  <section class="blok" aria-labelledby="h-sl"><h2 id="h-sl">Hoe vaak wordt een motie aangenomen?</h2>
+    <p class="sub">Raadsperiode 2022–2026: het deel van de moties dat een fractie (mede) indiende en dat werd aangenomen. Coalitiepartijen scoren hoog, omdat de coalitie haar moties vooraf afstemt.</p>
+    <div class="vlak"><div class="staaf" id="slaag"></div></div></section>
+
+  <section class="blok" aria-labelledby="h-dl"><h2 id="h-dl">Hoe snel worden toezeggingen afgehandeld?</h2>
+    <p class="sub">Raadsperiode 2022–2026: de mediane tijd tussen toezegging en afdoening, per collegelid met minstens 25 afgehandelde toezeggingen, en het deel dat later klaar was dan de verwachte datum. Een snelle afdoening zegt niet alles: sommige toezeggingen zijn groot werk.</p>
+    <div class="vlak"><div class="as" id="as"></div><div class="dots" id="door"></div></div></section>
+
+  <section class="blok" aria-labelledby="h-st"><h2 id="h-st">Stokpaardjes per fractie</h2>
+    <p class="sub">Waar spreekt een fractie relatief vaker over dan de andere fracties? Per onderwerp geschaald: het donkerste vakje is de fractie die er het meest over spreekt. Alleen raadsleden, niet wethouders.</p>
+    <div class="vlak scroll" id="stok"></div></section>
+  <p class="voet">Gegevens: notulen en ondertiteling van de gemeenteraad en iBabs, stand 2 oktober 2026. <a href="over.html">Over deze tool</a>.</p>
+</main>
+<script src="ontwerp.js"></script>
+<script>
+kop('lab');
+const GROEN=['#F3F8F3','#E1EFE2','#D1E6CE','#99CCA0','#4EB051','#00811F','#006E32','#004C31'];
+const tint=f=>GROEN[Math.max(0,Math.min(GROEN.length-1,Math.round(f*(GROEN.length-1))))];
+Promise.all(['lab.json','dossiers.json'].map(f=>fetch(f).then(r=>r.json()))).then(([L,D])=>{
+  // Wrapped
+  let wy='2025';
+  const wt=()=>{const w=L.wrapped[wy];$('wjr').innerHTML=L.jaren.map(y=>`<button type="button" class="${y===wy?'on':''}" data-y="${y}">${y}${y==='2026'?' (tot nu)':''}</button>`).join('');
+    $('wkaarten').innerHTML=`
+    <a class="wk" style="background:#00811F;text-decoration:none" href="wijk.html#${slug(w.gebied[0])}"><span>Meest besproken gebied</span><span class="w">${esc(w.gebied[0])}</span><span>Daarna ${esc(w.gebied[1])} en ${esc(w.gebied[2])}.</span></a>
+    <div class="wk" style="background:#00548F"><span>Moties</span><span class="w num">${nf(w.moties)}</span><span>${nf(w.aangenomen)} aangenomen (${Math.round(100*w.aangenomen/Math.max(1,w.moties))}%).</span></div>
+    <div class="wk" style="background:#004C31"><span>Meeste moties ingediend</span><span class="w">${esc(w.toppartij[0][0])}</span><span>${nf(w.toppartij[0][1])} moties, daarna ${esc(w.toppartij[1][0])} en ${esc(w.toppartij[2][0])}.</span></div>
+    ${w.stijger?`<a class="wk" style="background:#006E32;text-decoration:none" href="dossier.html#${slug(w.stijger[0])}"><span>Grootste stijger</span><span class="w">${esc(w.stijger[0])}</span><span>${String(w.stijger[1]).replace('.',',')} keer zo vaak genoemd als het jaar ervoor.</span></a>`:`<div class="wk" style="background:#006E32"><span>Grootste stijger</span><span class="w">–</span><span>Het eerste jaar; geen vergelijking.</span></div>`}`;};
+  $('wjr').addEventListener('click',e=>{const b=e.target.closest('[data-y]');if(b){wy=b.dataset.y;wt();}});wt();
+  // heatmap onderwerpen x jaren
+  const groepen={};L.thema.forEach(([n,g],k)=>{if(n!=='Toezeggingen')(groepen[g]=groepen[g]||[]).push(k);});
+  let h=`<table class="hm"><thead><tr><th></th>${L.jaren.map(y=>`<th class="k">'${y.slice(2)}</th>`).join('')}</tr></thead><tbody>`;
+  for(const [g,ks] of Object.entries(groepen)){h+=`<tr class="g"><th colspan="${L.jaren.length+1}">${esc(g)}</th></tr>`;
+    for(const k of ks){const row=L.ty[k],mx=Math.max(...row,0.1);h+=`<tr><th><a href="${g==='Wijken en gebieden'&&L.thema[k][0]!=='Nationaal Programma Rotterdam Zuid'?'wijk':'dossier'}.html#${slug(L.thema[k][0])}">${esc(L.thema[k][0])}</a></th>${row.map((v,i)=>{const f=v/mx;return `<td style="background:${tint(f)}" class="${f>.6?'d':''}" title="${esc(L.thema[k][0])}, ${L.jaren[i]}: ${String(v).replace('.',',')} per 100.000 woorden"></td>`;}).join('')}</tr>`;}}
+  $('heat').innerHTML=h+'</tbody></table>';
+  // matrix samenwerking
+  const P=L.partijen,M={};L.pair.forEach(([a,b,n])=>{M[a+'|'+b]=n;M[b+'|'+a]=n;});const mx=Math.max(...L.pair.map(x=>x[2]));
+  $('matrix').innerHTML=`<table class="hm matrix"><thead><tr><th></th>${P.map(p=>`<th class="k">${esc(p)}</th>`).join('')}</tr></thead><tbody>${P.map(a=>`<tr><th>${esc(a)}</th>${P.map(b=>{if(a===b)return '<td style="background:var(--grijs)"></td>';const n=M[a+'|'+b]||0,f=Math.sqrt(n/mx);return `<td style="background:${n?tint(f):'#fff'}" class="${f>.6?'d':''}" title="${esc(a)} en ${esc(b)}: ${n} moties samen">${n||''}</td>`;}).join('')}</tr>`).join('')}</tbody></table>`;
+  // slagingskans
+  const sl=P.map(p=>[p,L.aang[p]/L.ind[p],L.ind[p]]).sort((a,b)=>b[1]-a[1]);
+  $('slaag').innerHTML=sl.map(([p,f,n])=>`<div><span>${esc(p)}</span><span class="bar" title="${Math.round(f*100)}% van ${n} moties"><i style="width:${f*100}%"></i></span><span class="num">${Math.round(f*100)}%</span></div>`).join('')+'<p class="sub" style="margin-top:8px">Percentage aangenomen van alle moties die de fractie indiende of mede indiende.</p>';
+  // doorlooptijd
+  const dmx=Math.ceil(Math.max(...L.door.map(x=>x[1]))/50)*50;
+  $('as').innerHTML=`<span></span><span><span>0 dagen</span><span>${dmx/2}</span><span>${dmx} dagen</span></span><span>later dan verwacht</span>`;
+  $('door').innerHTML=L.door.map(([w,d,n,o])=>`<div><span>${esc(w)}</span><span class="lijn" title="mediaan ${d} dagen, ${n} toezeggingen"><i style="left:${d/dmx*100}%"></i></span><span class="num">${d} dagen · ${o}%</span></div>`).join('');
+  // stokpaardjes: partijen x onderwerpen, per onderwerp geschaald
+  const ON=L.thema.map((t,k)=>[t,k]).filter(([t])=>t[1]!=='Wijken en gebieden'&&t[0]!=='Toezeggingen');
+  $('stok').innerHTML=`<table class="hm matrix"><thead><tr><th></th>${L.tpart.map(p=>`<th class="k">${esc(p)}</th>`).join('')}</tr></thead><tbody>${ON.map(([t,k])=>{const row=L.tp[k],mx=Math.max(...row,0.1);return `<tr><th><a href="dossier.html#${slug(t[0])}">${esc(t[0])}</a></th>${row.map((v,i)=>{const f=v/mx;return `<td style="background:${tint(f)}" title="${esc(L.tpart[i])} over ${esc(t[0])}: ${String(v).replace('.',',')} per 100.000 woorden"></td>`;}).join('')}</tr>`;}).join('')}</tbody></table>`;
+});
+</script>
+</body></html>

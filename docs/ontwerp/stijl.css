@@ -1,40 +1,93 @@
 /* Ontwerpschermen Raadzoeker, naar de huisstijl van gemeente Rotterdam (onzestijl.rotterdam.nl):
-   groen en wit voeren de boventoon, tekst altijd zwart, contrastgrijs als ondergrond, geen kapitalen,
-   links onderstreept, citaten met enkele aanhalingstekens. Lettertype Bolder als dat op de pc staat, anders Arial. */
+   groen en wit voeren de boventoon, tekst altijd zwart, contrastgrijs als ondergrond met witte vlakken,
+   geen kapitalen, links onderstreept, citaten met enkele aanhalingstekens. Bolder als dat op de pc staat, anders Arial.
+   Typografie (UX-review): alleen gewicht 400 en 700; hiërarchie via grootte en ruimte. 8px-raster. */
 :root{
-  --groen:#00811F;--groen-d:#004C31;--groen-zacht:#E1EFE2;--grijs:#EFF4F6;--grijs2:#DBE7EA;--lijn:#CAD6DA;
-  --wit:#FFFFFF;--zwart:#000000;--sub:#3E4B50;
-  --open:#EDB500;--laat:#E30613;--blauw:#00548F;
+  --groen:#00811F;--groen-d:#004C31;--groen-zacht:#E1EFE2;--groen-mid:#4EB051;
+  --grijs:#EFF4F6;--grijs2:#DBE7EA;--lijn:#CAD6DA;--wit:#FFFFFF;--zwart:#000000;--sub:#3E4B50;
+  --open:#EDB500;--laat:#E56E02;--blauw:#00548F;--water:#CFE3EF;
   --font:"Bolder",Arial,Helvetica,sans-serif;--r:8px;
 }
 *{box-sizing:border-box}
 html{background:var(--grijs)}
-body{margin:0;background:var(--grijs);color:var(--zwart);font:16px/1.5 var(--font)}
-a{color:var(--zwart);text-decoration:underline;text-underline-offset:2px}
-a:hover{color:var(--groen)}
-h1,h2,h3,h4{font-family:var(--font);font-weight:800;line-height:1.15;margin:0;text-wrap:balance}
-:focus-visible{outline:3px solid var(--groen);outline-offset:2px}
+body{margin:0;background:var(--grijs);color:var(--zwart);font:400 16px/1.5 var(--font)}
+a{color:var(--zwart);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
+a:hover{text-decoration-thickness:2px}
+h1,h2,h3,h4{font-family:var(--font);font-weight:700;line-height:1.15;margin:0;text-wrap:balance}
+h1{font-size:40px;line-height:1.1}h2{font-size:24px}h3{font-size:18px}
+p{margin:0}
+:focus-visible{outline:3px solid var(--zwart);box-shadow:0 0 0 6px var(--wit);outline-offset:2px}
 .num{font-variant-numeric:tabular-nums}
+.sub{color:var(--sub);font-size:14px}
 
-/* balk */
+/* kop: logo = home, hoofdmenu links, Lab en Over rechts */
 .balk{background:var(--groen);color:var(--wit)}
-.balk .in{max-width:1180px;margin:0 auto;padding:12px 20px;display:flex;align-items:center;gap:18px;flex-wrap:wrap}
-.merk{font-weight:800;font-size:21px;color:var(--wit);text-decoration:none}
-.balk nav{display:flex;gap:2px;flex-wrap:wrap}
-.balk nav a{color:var(--wit);text-decoration:none;padding:7px 12px;border-radius:999px;font-size:15px}
-.balk nav a.on,.balk nav a:hover{background:var(--wit);color:var(--zwart)}
-.onoff{margin-left:auto;font-size:13px;color:var(--wit);opacity:.9}
-.pagina{max-width:1180px;margin:0 auto;padding:24px 20px 56px}
+.balk .in{max-width:1180px;margin:0 auto;padding:10px 24px;display:flex;align-items:center;gap:24px;flex-wrap:wrap}
+.merk{display:flex;align-items:center;gap:10px;color:var(--wit);text-decoration:none}
+.merk:hover{text-decoration:none;opacity:.92}
+.merk svg{width:34px;height:20px;flex:none}
+.merk b{font-weight:700;font-size:20px;letter-spacing:-.01em}
+.merk small{font-size:14px;border-left:1px solid rgba(255,255,255,.6);padding-left:10px}
+.balk nav{display:flex;gap:4px;flex-wrap:wrap;align-items:center}
+.balk nav a{color:var(--wit);text-decoration:none;padding:10px 12px;border-radius:999px;font-size:16px;min-height:44px;display:inline-flex;align-items:center}
+.balk nav a:hover{text-decoration:underline}
+.balk nav a.on{background:var(--wit);color:var(--zwart)}
+.balk nav.rechts{margin-left:auto}
+.balk nav.rechts a{font-size:15px}
+.tag{display:inline-block;font-size:12px;border:1px solid currentColor;border-radius:4px;padding:1px 5px;margin-left:6px}
+.pagina{max-width:1180px;margin:0 auto;padding:40px 24px 64px}
+.sectie{margin-top:64px}
+.sectie>h2,.koptekst{margin-bottom:16px}
 
-/* blokken: wit vlak op grijs */
-.vlak{background:var(--wit);border-radius:var(--r);padding:20px}
-.vlak h2{font-size:21px;margin-bottom:12px}
-.label{font-size:14px;color:var(--sub)}
-.knop{display:inline-flex;align-items:center;gap:8px;background:var(--groen);color:var(--wit);border:0;border-radius:999px;padding:11px 18px;font:700 15px/1 var(--font);text-decoration:none;cursor:pointer}
-.knop:hover{background:var(--groen-d);color:var(--wit)}
+/* vlakken: wit op grijs */
+.vlak{background:var(--wit);border-radius:var(--r);padding:24px}
+.vlak>h2{margin-bottom:16px}
+.accent{border-top:4px solid var(--groen)}
+.knop{display:inline-flex;align-items:center;gap:8px;background:var(--groen);color:var(--wit);border:0;border-radius:999px;padding:12px 20px;min-height:44px;font:700 16px/1 var(--font);text-decoration:none;cursor:pointer}
+.knop:hover{background:var(--groen-d);text-decoration:none}
 .knop.wit{background:var(--wit);color:var(--zwart);border:2px solid var(--zwart)}
-.ai{display:inline-block;font-size:12.5px;background:var(--grijs);border-radius:4px;padding:2px 7px;color:var(--zwart)}
-.stip{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:middle}
-.stip.open{background:var(--open)}.stip.laat{background:var(--laat)}.stip.af{background:var(--groen)}
-.cit{display:block;font-size:14px;color:var(--sub);margin-top:2px}
+.knop.wit:hover{background:var(--grijs)}
+.ai{display:inline-block;font-size:13px;font-weight:400;background:var(--grijs);border-radius:4px;padding:2px 8px;vertical-align:middle}
+.stip{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:baseline;flex:none}
+.stip.open{background:var(--open);box-shadow:0 0 0 1px #6b5200}
+.stip.laat{background:var(--laat)}
+.stip.af{background:var(--groen)}
+.stip.neutraal{background:var(--lijn)}
+.cit{display:block;font-size:14px;color:var(--sub);margin-top:4px}
+mark{background:var(--groen-zacht);color:inherit;padding:0 2px;border-radius:2px}
+.groot{font-size:40px;font-weight:400;line-height:1}
+.leeg{color:var(--sub)}
+.voet{margin-top:64px;font-size:14px;color:var(--sub);max-width:80ch}
+
+/* zoekveld met keuzelijst (combobox) */
+.zoekveld{position:relative}
+.zoekveld label{display:block;margin-bottom:8px}
+.zoekveld input{width:100%;font:18px var(--font);padding:14px 16px;border:2px solid var(--zwart);border-radius:var(--r);background:var(--wit);min-height:52px}
+.keuze{position:absolute;z-index:10;left:0;right:0;top:100%;background:var(--wit);border:2px solid var(--zwart);border-top:0;border-radius:0 0 var(--r) var(--r);max-height:340px;overflow:auto;display:none;margin:0;padding:0;list-style:none}
+.keuze.on{display:block}
+.keuze li{padding:10px 16px;cursor:pointer}
+.keuze li[aria-selected="true"],.keuze li:hover{background:var(--groen-zacht)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.chips a,.chips button{border:1px solid var(--lijn);border-radius:999px;padding:8px 14px;font:15px var(--font);text-decoration:none;background:var(--wit);cursor:pointer;color:var(--zwart);min-height:40px;display:inline-flex;align-items:center}
+.chips a:hover,.chips button:hover{border-color:var(--zwart)}
+.chips .on{background:var(--zwart);color:var(--wit);border-color:var(--zwart)}
+
+/* rijen met uitklapbare context */
+.lijst{display:grid}
+.item{border-top:1px solid var(--grijs2);padding:12px 0}
+.item:first-child{border-top:0;padding-top:0}
+.item summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:7em minmax(0,1fr) auto;gap:16px;align-items:baseline}
+.item summary::-webkit-details-marker{display:none}
+.item summary .d{color:var(--sub);font-size:14px}
+.item summary .pijl{font-size:14px;color:var(--sub)}
+.item[open] summary .pijl{transform:rotate(90deg)}
+.item .meta{grid-column:2;font-size:14px;color:var(--sub);display:flex;flex-wrap:wrap;gap:4px 12px;align-items:center}
+.item .ctx{margin:10px 0 0 calc(7em + 16px);background:var(--grijs);border-radius:6px;padding:12px 16px;font-size:15px;display:grid;gap:8px;max-width:75ch}
+.item .ctx b{font-weight:700}
+@media (max-width:700px){
+  h1{font-size:30px}.pagina{padding:24px 16px 40px}.sectie{margin-top:40px}
+  .balk .in{padding:8px 16px;gap:8px}.merk small{display:none}.balk nav.rechts{margin-left:0}
+  .item summary{grid-template-columns:minmax(0,1fr) auto}.item summary .d{grid-column:1/-1}.item .meta{grid-column:1/-1}.item .ctx{margin-left:0}
+}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@media print{.balk{display:none}}

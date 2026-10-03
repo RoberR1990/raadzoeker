@@ -1,166 +1,120 @@
 <!doctype html>
 <html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
-<title>Mijn dossier · Raadzoeker</title>
+<title>Onderwerpen · raadzoeker</title>
 <link rel="stylesheet" href="stijl.css">
 <style>
-.kies{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:end}
-.kies label{display:block;font-weight:700;margin-bottom:6px}
-.kies input{width:100%;font:17px var(--font);padding:12px 14px;border:2px solid var(--zwart);border-radius:var(--r);background:var(--wit)}
-.sugg{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
-.sugg button{font:14px var(--font);border:1px solid var(--lijn);background:var(--wit);border-radius:999px;padding:6px 11px;cursor:pointer}
-.sugg button:hover{border-color:var(--groen)}
-.lijst{position:relative}
-.drop{position:absolute;z-index:5;left:0;right:0;top:100%;background:var(--wit);border:2px solid var(--zwart);border-top:0;border-radius:0 0 var(--r) var(--r);max-height:340px;overflow:auto;display:none}
-.drop.on{display:block}
-.drop button{display:block;width:100%;text-align:left;font:15px var(--font);padding:9px 14px;border:0;background:none;cursor:pointer}
-.drop button:hover,.drop button.act{background:var(--groen-zacht)}
-.drop small{color:var(--sub)}
-
-.kop{display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap;margin:26px 0 14px}
-.kop h1{font-size:clamp(30px,5vw,48px)}
-.kop .label{margin-bottom:4px}
-.kop .knop{margin-left:auto}
-.cijfers{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
-.cijfer{background:var(--wit);border-radius:var(--r);padding:16px}
-.cijfer b{display:block;font-size:34px;font-weight:800;line-height:1}
-.cijfer span{display:block;font-size:14px;margin-top:6px}
-.cijfer .sub{color:var(--sub);font-size:13px}
-.raster{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:16px;margin-top:16px;align-items:start}
-.kol{display:grid;gap:16px;min-width:0}
-.tabs{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
-.tabs button{font:600 15px var(--font);border:2px solid var(--zwart);background:var(--wit);border-radius:999px;padding:7px 14px;cursor:pointer}
-.tabs button.on{background:var(--zwart);color:var(--wit)}
-.rij{display:grid;grid-template-columns:6.5em minmax(0,1fr);gap:12px;padding:11px 0;border-top:1px solid var(--grijs2)}
-.rij:first-child{border-top:0}
-.rij .d{font-size:14px;color:var(--sub)}
-.rij .t{font-weight:700}
-.rij .m{font-size:14px;color:var(--sub)}
-.samen p{margin:6px 0 0;max-width:68ch}
-.samen details{margin-top:12px}
-.samen summary{cursor:pointer;font-weight:700;text-decoration:underline}
-.samen ul{padding-left:18px;margin:8px 0}
-.samen li{margin:6px 0}
+.kop{display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap;margin:40px 0 24px}
+.kop .acties{margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.cijfers{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.cijfer{background:var(--wit);border-radius:var(--r);padding:20px 24px}
+.cijfer .groot{display:block;margin-bottom:8px}
+.raster{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(0,1fr);gap:24px;margin-top:24px;align-items:start}
+.kol{display:grid;gap:24px;min-width:0}
+.schakel{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.schakel button{font:700 16px var(--font);border:2px solid var(--zwart);background:var(--wit);border-radius:999px;padding:8px 16px;cursor:pointer;min-height:44px}
+.schakel button[aria-selected="true"]{background:var(--zwart);color:var(--wit)}
+.filters{margin:0 0 16px}.filters .chips{margin-top:8px}
+.samen details{margin-top:16px}.samen summary{cursor:pointer;text-decoration:underline}
+.samen ul{padding-left:20px;margin:12px 0}.samen li{margin:8px 0}
 .grafiek svg{width:100%;height:auto;display:block}
-.balken{display:grid;gap:7px}
-.balk2{display:grid;grid-template-columns:minmax(0,10em) 1fr 2.6em;gap:8px;align-items:center;font-size:14px}
-.balk2 i{display:block;height:12px;border-radius:3px;background:var(--groen-d)}
+.balken{display:grid;gap:8px}
+.balk2{display:grid;grid-template-columns:minmax(0,10em) 1fr 2.8em;gap:8px;align-items:center;font-size:14px}
+.balk2 i{display:block;height:10px;border-radius:2px;background:var(--groen-d)}
 .balk2 .v{text-align:right}
-.leeg{color:var(--sub);font-size:15px}
-.voet{margin-top:28px;font-size:13px;color:var(--sub);max-width:90ch}
-@media (max-width:900px){.raster{grid-template-columns:minmax(0,1fr)}.cijfers{grid-template-columns:repeat(2,minmax(0,1fr))}.kop .knop{margin-left:0}}
+@media (max-width:900px){.raster{grid-template-columns:minmax(0,1fr)}.cijfers{grid-template-columns:repeat(2,minmax(0,1fr))}.kop .acties{margin-left:0;align-items:flex-start}}
 </style></head>
 <body>
-<header class="balk"><div class="in">
-  <a class="merk" href="startpagina.html">Raadzoeker</a>
-  <nav aria-label="Modules"><a class="on" href="dossier.html">Mijn dossier</a><a href="briefing.html">Briefing</a><a href="startpagina.html">Stadsbeeld</a><a href="../raadzoeker.html">Archief</a></nav>
-  <span class="onoff">Ontwerp · onofficieel hulpmiddel</span>
-</div></header>
-
+<header class="balk"></header>
 <main class="pagina">
   <div class="vlak">
-    <div class="kies">
-      <div class="lijst">
-        <label for="zoek">Over welk onderwerp werk je?</label>
-        <input id="zoek" type="text" placeholder="Bijvoorbeeld wonen, parkeren, armoede, Hoogvliet…" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="drop">
-        <div class="drop" id="drop" role="listbox"></div>
-      </div>
+    <div class="zoekveld">
+      <label for="zoek">Over welk onderwerp werk je?</label>
+      <input id="zoek" type="text" placeholder="Bijvoorbeeld wonen, parkeren, armoede, schuldhulp…" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="keuze" aria-autocomplete="list">
+      <ul class="keuze" id="keuze" role="listbox" aria-label="Onderwerpen"></ul>
     </div>
-    <div class="sugg" id="sugg" aria-label="Veelgekozen"></div>
+    <div class="chips" id="vast"></div>
   </div>
-
-  <div id="dossier"><p class="leeg" style="margin-top:20px">Dossier laden…</p></div>
-  <p class="voet">Ontwerp met echte gegevens: notulen en ondertiteling van de gemeenteraad en de officiële registratie in iBabs (moties, toezeggingen, schriftelijke vragen), plus de Rekenkamer Rotterdam. Een onderwerp is een vaste set zoekwoorden; aantallen zijn daardoor een goede indicatie, geen exacte telling. Samenvattingen met het label AI zijn automatisch gemaakt. Geen product van de gemeente of de griffie.</p>
+  <div id="dossier"><p class="leeg" style="margin-top:24px">Laden…</p></div>
+  <p class="voet">Gegevens: notulen en ondertiteling van de gemeenteraad, de registratie in iBabs (moties, toezeggingen, schriftelijke vragen) en de Rekenkamer Rotterdam, stand 2 oktober 2026. Een onderwerp is een vaste set zoekwoorden; aantallen zijn een goede indicatie, geen exacte telling. Aanleiding en verzoek bij moties zijn letterlijk uit de motietekst gehaald. Teksten met het label AI zijn automatisch gemaakt. <a href="over.html">Meer over deze tool</a>.</p>
 </main>
-
+<script src="ontwerp.js"></script>
 <script>
-const $=id=>document.getElementById(id);
-const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const nf=n=>Number(n).toLocaleString('nl-NL');
-const MND=['jan','feb','mrt','apr','mei','jun','jul','aug','sep','okt','nov','dec'];
-const fd=d=>{const [y,m,dd]=d.split('-');return +dd+' '+MND[+m-1]+' '+y;};
-let DATA=null,CUR=null,TAB='mot';
+kop('dossier');
+let DATA=null,CUR=null,SOORT='mot',FILTER='open';
 const VAST=['Wonen','Parkeren','Asiel & migratie','Werk & inkomen','Energie & klimaat','Veiligheid & handhaving','Onderwijs','Zorg, welzijn & jeugd'];
 fetch('dossiers.json').then(r=>r.json()).then(d=>{DATA=d;
-  $('sugg').innerHTML='<span class="label" style="align-self:center;margin-right:4px">Veelgekozen:</span>'+VAST.map(n=>{const x=DATA.dossiers.find(o=>o.naam===n);return x?`<button type="button" data-id="${x.id}">${esc(n)}</button>`:'';}).join('');
-  const h=location.hash.match(/^#(\d+)$/);let id=h?+h[1]:null;
-  if(id===null){try{id=+localStorage.getItem('rz-dossier');}catch(e){}}
-  toon(Number.isInteger(id)&&DATA.dossiers[id]?id:2);
+  const onderw=DATA.dossiers.filter(x=>x.groep!=='Wijken en gebieden');
+  $('vast').innerHTML='<span class="sub" style="align-self:center">Veel gekozen:</span>'+VAST.map(n=>{const x=DATA.dossiers.find(o=>o.naam===n);return x?`<a href="#${slug(x.naam)}">${esc(n)}</a>`:'';}).join('');
+  zoeklijst($('zoek'),$('keuze'),()=>DATA.dossiers,x=>{location.hash=slug(x.naam);});
+  let d0=uitHash(DATA.dossiers);if(!d0){try{d0=DATA.dossiers.find(x=>slug(x.naam)===localStorage.getItem('rz-dossier'));}catch(e){}}
+  toon(d0||DATA.dossiers[2]);
 });
-$('sugg').addEventListener('click',e=>{const b=e.target.closest('[data-id]');if(b)toon(+b.dataset.id);});
-// zoeken in onderwerpen (naam, subthema's en zoekwoorden)
-const zoek=$('zoek'),drop=$('drop');let act=-1,hits=[];
-function filter(){const q=zoek.value.trim().toLowerCase();if(!q){drop.classList.remove('on');zoek.setAttribute('aria-expanded','false');return;}
-  hits=DATA.dossiers.map(d=>{const n=d.naam.toLowerCase();let s=n.startsWith(q)?3:n.includes(q)?2:d.sub.some(x=>x.toLowerCase().includes(q))?1.5:d.termen.toLowerCase().includes(q)?1:0;return [s,d];}).filter(x=>x[0]).sort((a,b)=>b[0]-a[0]).slice(0,10).map(x=>x[1]);
-  act=0;drop.innerHTML=hits.length?hits.map((d,i)=>`<button type="button" role="option" data-id="${d.id}" class="${i===act?'act':''}">${esc(d.naam)} <small>· ${esc(d.groep)}</small></button>`).join(''):'<div style="padding:10px 14px" class="leeg">Geen onderwerp gevonden. Probeer een ander woord.</div>';
-  drop.classList.add('on');zoek.setAttribute('aria-expanded','true');}
-zoek.addEventListener('input',filter);
-zoek.addEventListener('keydown',e=>{if(!drop.classList.contains('on'))return;
-  if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();act=(act+(e.key==='ArrowDown'?1:-1)+hits.length)%hits.length;[...drop.children].forEach((b,i)=>b.classList.toggle('act',i===act));}
-  if(e.key==='Enter'&&hits[act]){toon(hits[act].id);}
-  if(e.key==='Escape'){drop.classList.remove('on');}});
-drop.addEventListener('click',e=>{const b=e.target.closest('[data-id]');if(b)toon(+b.dataset.id);});
-document.addEventListener('click',e=>{if(!e.target.closest('.lijst'))drop.classList.remove('on');});
-
+window.addEventListener('hashchange',()=>{const d=uitHash(DATA.dossiers);if(d)toon(d);});
 function trendSvg(d){
-  const W=520,H=190,L=34,B=26,T=12,ys=d.jaren,v=d.trend,mx=Math.max(...v)*1.15||1,bw=(W-L-10)/ys.length;
-  const y=x=>H-B-(x/mx)*(H-B-T);let g='';
-  const step=mx>40?20:mx>15?5:mx>6?2:1;
-  for(let t=0;t<=mx;t+=step)g+=`<line x1="${L}" x2="${W-6}" y1="${y(t)}" y2="${y(t)}" stroke="#DBE7EA"/><text x="${L-6}" y="${y(t)+4}" text-anchor="end" font-size="11" fill="#3E4B50">${t}</text>`;
-  ys.forEach((yr,i)=>{const x=L+i*bw+bw*.18,w=bw*.64,h=H-B-y(v[i]);g+=`<rect x="${x}" y="${y(v[i])}" width="${w}" height="${h}" rx="2" fill="${i===ys.length-1?'#99CCA0':'#00811F'}"><title>${yr}: ${v[i]} per 100.000 woorden (${d.trendn[i]} keer)</title></rect><text x="${x+w/2}" y="${H-8}" text-anchor="middle" font-size="11" fill="#000">${yr.slice(2)}</text>`;});
-  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Aandacht per jaar">${g}</svg>`;
+  const W=520,H=200,L=34,B=28,T=14,ys=d.jaren,v=d.trend,mx=Math.max(...v)*1.15||1,bw=(W-L-8)/ys.length,y=x=>H-B-(x/mx)*(H-B-T);
+  const step=[1,2,5,10,20,50,100].find(s=>mx/s<=5)||200;let g='';
+  for(let t=0;t<=mx;t+=step)g+=`<line x1="${L}" x2="${W-6}" y1="${y(t)}" y2="${y(t)}" stroke="#DBE7EA"/><text x="${L-6}" y="${y(t)+4}" text-anchor="end" font-size="12" fill="#3E4B50">${t}</text>`;
+  ys.forEach((yr,i)=>{const x=L+i*bw+bw*.2,w=bw*.6,last=i===ys.length-1;g+=`<rect x="${x}" y="${y(v[i])}" width="${w}" height="${H-B-y(v[i])}" rx="2" fill="${last?'#99CCA0':'#00811F'}"><title>${yr}: ${String(v[i]).replace('.',',')} per 100.000 woorden (${d.trendn[i]} keer)</title></rect><text x="${x+w/2}" y="${H-9}" text-anchor="middle" font-size="12" fill="#000">'${yr.slice(2)}</text>`;});
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Aandacht per jaar: ${ys.map((y,i)=>y+' '+v[i]).join(', ')}">${g}</svg>`;
 }
-function rijen(l,soort){if(!l.length)return `<p class="leeg">Niets open. Mooi.</p>`;
-  return l.map(r=>{const mm=r[3].match(/verwacht (\d\d)-(\d\d)-(\d{4})/),laat=!!mm&&`${mm[3]}-${mm[2]}-${mm[1]}`<DATA.stand;
-    const dl=(r[3].match(/verwacht ([\d-]+)/)||[])[1];
-    return `<div class="rij"><span class="d">${fd(r[0])}</span><div><a class="t" href="${esc(r[4])}" target="_blank" rel="noopener">${esc(r[1])}</a><div class="m"><span class="stip ${laat?'laat':'open'}"></span>${laat?'Termijn verstreken':'Nog niet afgedaan'}${dl?' · afdoening verwacht '+esc(dl):''} · ${esc(r[2].split(' (')[0].split(' · ')[0])}</div></div></div>`;}).join('');}
-function toon(id){
-  const d=DATA.dossiers[id];CUR=d;drop.classList.remove('on');zoek.value='';
-  history.replaceState(null,'','#'+id);try{localStorage.setItem('rz-dossier',id);}catch(e){}
-  document.title=d.naam+' · Mijn dossier · Raadzoeker';
-  const m=d.moties,t=d.toez,ts=d.tsum,ly=d.trend.length-2,ch=d.trend[ly-1]?Math.round((d.trend[ly]-d.trend[ly-1])/d.trend[ly-1]*100):0;
-  const pmx=Math.max(...d.partijen.map(p=>p[1]),1),cmx=Math.max(...d.college.map(p=>p[1]),1);
-  const archief='../raadzoeker.html#q='+encodeURIComponent(d.termen);
+function lijst(){
+  const d=CUR,bron=SOORT==='mot'?d.moties:d.toez,s=SOORT==='mot'?'motie':'toez';
+  let l=FILTER==='af'?bron.af:bron.lijst;
+  if(FILTER==='laat')l=l.filter(r=>{const dl=iso((r[3].match(/verwacht ([\d-]+)/)||[])[1]);return dl&&dl<DATA.stand;});
+  const leeg={open:'Niets open.',laat:'Niets over de termijn.',af:'Nog niets afgedaan.'}[FILTER];
+  $('lijst').innerHTML=l.length?l.map(r=>rij(r,s,DATA.stand)).join(''):`<p class="leeg">${leeg}</p>`;
+  const n={open:bron.open,laat:bron.te_laat,af:bron.afgedaan};
+  $('filt').innerHTML=[['open','Open'],['laat','Over de termijn'],['af','Afgedaan']].map(([k,t])=>`<button type="button" class="${k===FILTER?'on':''}" data-f="${k}" aria-pressed="${k===FILTER}">${t} (${nf(n[k])})</button>`).join('');
+  document.querySelectorAll('[data-soort]').forEach(b=>b.setAttribute('aria-selected',b.dataset.soort===SOORT));
+  $('meer').innerHTML=(FILTER==='af'?bron.af.length:bron.lijst.length)>=12?`Dit zijn de 12 meest recente. <a href="../raadzoeker.html#v=o&amp;q=${encodeURIComponent(d.termen)}">Alle officiële stukken over ${esc(d.naam.toLowerCase())}</a>`:`<a href="../raadzoeker.html#v=o&amp;q=${encodeURIComponent(d.termen)}">Alle officiële stukken over ${esc(d.naam.toLowerCase())}</a>`;
+}
+function toon(d){
+  CUR=d;try{localStorage.setItem('rz-dossier',slug(d.naam));}catch(e){}
+  if(location.hash.slice(1)!==slug(d.naam))history.replaceState(null,'','#'+slug(d.naam));
+  document.title=d.naam+' · Onderwerpen · raadzoeker';
+  const m=d.moties,t=d.toez,ts=d.tsum,j=d.jaren.length-1,ch=d.trend[j-1]?Math.round((d.trend[j]-d.trend[j-1])/d.trend[j-1]*100):0;
+  const pmx=Math.max(...d.partijen.map(p=>p[1]),1),cl=d.college.filter(p=>p[1]>0),cmx=Math.max(...cl.map(p=>p[1]),1);
+  const wijk=d.groep==='Wijken en gebieden';
   $('dossier').innerHTML=`
-  <div class="kop"><div><div class="label">${esc(d.groep)}</div><h1>${esc(d.naam)}</h1></div>
-    <a class="knop" href="briefing.html#${d.id}">Maak een briefing (A4) →</a></div>
+  <div class="kop"><div><div class="sub">${esc(d.groep)}</div><h1>${esc(d.naam)}</h1></div>
+    <div class="acties"><a class="knop" href="briefing.html#${slug(d.naam)}">Maak een briefing (A4)</a>${wijk?`<a href="wijk.html#${slug(d.naam)}">Bekijk als wijk</a>`:''}</div></div>
   <div class="cijfers">
-    <div class="cijfer"><b class="num">${nf(m.aangenomen)}</b><span>aangenomen moties sinds 2018</span><span class="sub">${nf(m.afgedaan)} afgedaan · ${nf(m.verworpen)} verworpen</span></div>
-    <div class="cijfer"><b class="num">${nf(m.open)}</b><span><span class="stip open"></span>moties nog niet afgedaan</span><span class="sub">uitvoering loopt nog</span></div>
-    <div class="cijfer"><b class="num">${nf(t.open)}</b><span><span class="stip open"></span>toezeggingen open</span><span class="sub">${t.te_laat?`<span class="stip laat"></span>${t.te_laat} over de termijn`:'geen over de termijn'}</span></div>
-    <div class="cijfer"><b class="num">${ch>0?'+':''}${ch}%</b><span>aandacht in 2025 t.o.v. 2024</span><span class="sub">in de raadsdebatten</span></div>
+    <div class="cijfer"><span class="groot num">${nf(m.aangenomen)}</span>aangenomen moties sinds 2018<div class="sub">${nf(m.afgedaan)} afgedaan, ${nf(m.verworpen)} verworpen</div></div>
+    <div class="cijfer"><span class="groot num">${nf(m.open)}</span><span class="stip open"></span>moties nog in uitvoering<div class="sub">${m.te_laat?`<span class="stip laat"></span>${m.te_laat} over de termijn`:'geen over de termijn'}</div></div>
+    <div class="cijfer"><span class="groot num">${nf(t.open)}</span><span class="stip open"></span>toezeggingen open<div class="sub">${t.te_laat?`<span class="stip laat"></span>${t.te_laat} over de termijn`:'geen over de termijn'}</div></div>
+    <div class="cijfer"><span class="groot num">${ch>0?'+':''}${ch}%</span>aandacht in 2026 tot nu, ten opzichte van 2025<div class="sub">gemeten per 100.000 woorden, dus eerlijk vergelijkbaar</div></div>
   </div>
   <div class="raster">
     <div class="kol">
-      ${ts?`<section class="vlak samen"><h2>In het kort <span class="ai">AI-samenvatting · kan fouten bevatten</span></h2><p>${esc(ts.kern)}</p>
-        <details><summary>Standpunten en ontwikkeling</summary>
-        ${ts.standpunten&&ts.standpunten.length?'<h3 style="font-size:17px;margin-top:12px">Standpunten</h3><ul>'+ts.standpunten.map(s=>`<li><b>${esc(s.wie)}:</b> ${esc(s.punt)}${s.citaat?`<span class="cit">‘${esc(s.citaat)}’</span>`:''}</li>`).join('')+'</ul>':''}
-        ${ts.ontwikkeling&&ts.ontwikkeling.length?'<h3 style="font-size:17px;margin-top:12px">Ontwikkeling</h3><ul>'+ts.ontwikkeling.map(s=>`<li><b>${esc(s.periode)}:</b> ${esc(s.wat)}</li>`).join('')+'</ul>':''}
-        ${ts.recent?`<p><b>Recent:</b> ${esc(ts.recent)}</p>`:''}</details></section>`:''}
-      <section class="vlak"><h2>Wat staat er open?</h2>
-        <div class="tabs" role="tablist"><button type="button" data-tab="mot" class="${TAB==='mot'?'on':''}">Moties (${nf(m.open)})</button><button type="button" data-tab="toez" class="${TAB==='toez'?'on':''}">Toezeggingen (${nf(t.open)})</button></div>
-        <div id="openlijst">${TAB==='mot'?rijen(m.lijst,'mot'):rijen(t.lijst,'toez')}</div>
-        <p style="margin:12px 0 0"><a href="../raadzoeker.html#v=o&amp;q=${encodeURIComponent(d.termen)}">Alle officiële stukken over ${esc(d.naam.toLowerCase())}</a></p></section>
-      <section class="vlak"><h2>Waar het in de raad over ging</h2>
-        ${d.debatten.map(x=>`<div class="rij"><span class="d">${fd(x[0])}</span><div><a class="t" href="https://gemeenteraad.rotterdam.nl/Agenda/Index/${esc(x[1])}" target="_blank" rel="noopener">${esc(x[2]||'Raadsvergadering')}</a><div class="m">${nf(x[3])} keer genoemd</div></div></div>`).join('')}
-        <p style="margin:12px 0 0"><a href="${archief}">Lees wat er letterlijk is gezegd</a></p></section>
+      <section class="vlak accent" aria-labelledby="mtk"><h2 id="mtk">Moties en toezeggingen</h2>
+        <div class="schakel" role="tablist"><button type="button" role="tab" data-soort="mot">Moties</button><button type="button" role="tab" data-soort="toez">Toezeggingen</button></div>
+        <div class="filters chips" id="filt"></div>
+        <div class="lijst" id="lijst"></div>
+        <p class="sub" style="margin-top:16px" id="meer"></p></section>
+      ${ts?`<section class="vlak samen" aria-labelledby="ik"><h2 id="ik">In het kort <span class="ai">AI-samenvatting, kan fouten bevatten</span></h2><p style="max-width:68ch">${esc(ts.kern)}</p>
+        <details><summary>Standpunten per fractie en ontwikkeling</summary>
+        ${ts.standpunten&&ts.standpunten.length?'<ul>'+ts.standpunten.map(s=>`<li>${esc(s.wie)}: ${esc(s.punt)}${s.citaat?`<span class="cit">‘${esc(s.citaat)}’</span>`:''}</li>`).join('')+'</ul>':''}
+        ${ts.ontwikkeling&&ts.ontwikkeling.length?'<ul>'+ts.ontwikkeling.map(s=>`<li>${esc(s.periode)}: ${esc(s.wat)}</li>`).join('')+'</ul>':''}
+        ${ts.recent?`<p>Recent: ${esc(ts.recent)}</p>`:''}</details></section>`:''}
+      <section class="vlak" aria-labelledby="db"><h2 id="db">Waar het in de raad over ging</h2>
+        <div class="lijst">${d.debatten.map(x=>debatRij(x,d.termen)).join('')}</div>
+        <p class="sub" style="margin-top:16px"><a href="../raadzoeker.html#q=${encodeURIComponent(d.termen)}">Alles wat er letterlijk over is gezegd</a></p></section>
     </div>
     <div class="kol">
-      <section class="vlak grafiek"><h2>Aandacht per jaar</h2>${trendSvg(d)}<p class="label" style="margin:6px 0 0">Keren genoemd per 100.000 gesproken woorden in de raad. 2026 loopt nog.</p></section>
-      <section class="vlak"><h2>Wie praat erover?</h2>
+      <section class="vlak grafiek" aria-labelledby="ap"><h2 id="ap">Aandacht per jaar</h2>${trendSvg(d)}<p class="sub" style="margin-top:8px">Keren genoemd per 100.000 gesproken woorden in de raad. 2026 loopt tot oktober.</p></section>
+      <section class="vlak" aria-labelledby="wp"><h2 id="wp">Wie praat erover?</h2>
         <div class="balken">${d.partijen.slice(0,7).map(p=>`<div class="balk2"><span>${esc(p[0])}</span><i style="width:${p[1]/pmx*100}%"></i><span class="v num">${String(p[1]).replace('.',',')}</span></div>`).join('')}</div>
-        <h3 style="font-size:16px;margin:14px 0 8px">Uit het college</h3>
-        <div class="balken">${d.college.filter(p=>p[1]>0).map(p=>`<div class="balk2"><span>${esc(p[0])}</span><i style="width:${p[1]/cmx*100}%;background:var(--blauw)"></i><span class="v num">${String(p[1]).replace('.',',')}</span></div>`).join('')}</div>
-        <p class="label" style="margin:10px 0 0">Per 100.000 woorden van die fractie of dat collegelid.</p></section>
-      <section class="vlak"><h2>Rekenkamer en vragen</h2>
-        ${d.rekenkamer.lijst.length?d.rekenkamer.lijst.map(r=>`<div class="rij"><span class="d">${fd(r[0])}</span><div><a class="t" href="${esc(r[4])}" target="_blank" rel="noopener">${esc(r[1])}</a><div class="m">Rekenkamerrapport</div></div></div>`).join(''):'<p class="leeg">Geen rekenkamerrapport over dit onderwerp gevonden.</p>'}
-        <h3 style="font-size:16px;margin:14px 0 4px">Schriftelijke vragen (${nf(d.sv.n)})</h3>
-        ${d.sv.lijst.slice(0,4).map(r=>`<div class="rij"><span class="d">${fd(r[0])}</span><div><a class="t" href="${esc(r[4])}" target="_blank" rel="noopener">${esc(r[1])}</a><div class="m">${esc(r[2])} · ${esc(r[3])}</div></div></div>`).join('')}</section>
+        ${cl.length?`<h3 style="margin:24px 0 8px">Uit het college</h3><div class="balken">${cl.map(p=>`<div class="balk2"><span>${esc(p[0])}</span><i style="width:${p[1]/cmx*100}%;background:var(--blauw)"></i><span class="v num">${String(p[1]).replace('.',',')}</span></div>`).join('')}</div>`:''}
+        <p class="sub" style="margin-top:12px">Per 100.000 woorden van die fractie of dat collegelid.</p></section>
+      <section class="vlak" aria-labelledby="rv"><h2 id="rv">Rekenkamer en vragen</h2>
+        <div class="lijst">${d.rekenkamer.lijst.length?d.rekenkamer.lijst.map(r=>rij(r,'stuk',DATA.stand)).join(''):'<p class="leeg">Geen rekenkamerrapport over dit onderwerp gevonden.</p>'}</div>
+        <h3 style="margin:24px 0 8px">Schriftelijke vragen (${nf(d.sv.n)})</h3>
+        <div class="lijst">${d.sv.lijst.slice(0,4).map(r=>rij(r,'stuk',DATA.stand)).join('')}</div></section>
     </div>
   </div>`;
-  window.scrollTo({top:0,behavior:'instant'});
+  lijst();window.scrollTo({top:0});
 }
-document.addEventListener('click',e=>{const b=e.target.closest('[data-tab]');if(!b||!CUR)return;TAB=b.dataset.tab;
-  b.parentNode.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));
-  $('openlijst').innerHTML=TAB==='mot'?rijen(CUR.moties.lijst,'mot'):rijen(CUR.toez.lijst,'toez');});
+document.addEventListener('click',e=>{const s=e.target.closest('[data-soort]'),f=e.target.closest('[data-f]');
+  if(s){SOORT=s.dataset.soort;FILTER='open';lijst();}if(f){FILTER=f.dataset.f;lijst();}});
 </script>
 </body></html>

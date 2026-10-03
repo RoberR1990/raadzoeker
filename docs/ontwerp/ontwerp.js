@@ -1,0 +1,70 @@
+/* Gedeeld door de ontwerpschermen: kop, hulpfuncties, zoeklijst (combobox), uitklapbare rijen, deellinks. */
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const nf=n=>Number(n).toLocaleString('nl-NL');
+const MND=['jan','feb','mrt','apr','mei','jun','jul','aug','sep','okt','nov','dec'];
+const MNDL=['januari','februari','maart','april','mei','juni','juli','augustus','september','oktober','november','december'];
+const fd=d=>{if(!d)return '';const [y,m,dd]=d.split('-');return +dd+' '+MND[+m-1]+' '+y;};
+const fdl=d=>{const [y,m,dd]=d.split('-');return +dd+' '+MNDL[+m-1]+' '+y;};
+const slug=s=>s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/&/g,' ').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+const iso=s=>{const m=(s||'').match(/(\d\d)-(\d\d)-(\d{4})/);return m?`${m[3]}-${m[2]}-${m[1]}`:'';};
+const dagen=(a,b)=>Math.round((new Date(b)-new Date(a))/864e5);
+
+/* logo: halfrond van negen zetels (de raadzaal), één groen gemarkeerd; woordmerk in kleine letters */
+const LOGO=(kleur='#fff',accent='#fff')=>{let s='';const n=9;for(let i=0;i<n;i++){const a=Math.PI*(1-i/(n-1)),x=17+13*Math.cos(a),y=18-13*Math.sin(a);s+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="2.6" fill="${i===6?accent:kleur}" ${i===6?'':'opacity=".75"'}/>`;}
+  return `<svg viewBox="0 0 34 20" aria-hidden="true">${s}<circle cx="17" cy="17" r="3.2" fill="${kleur}"/></svg>`;};
+function kop(actief){
+  const m=[['dossier','Onderwerpen','dossier.html'],['wijk','Wijken','wijk.html'],['briefing','Briefing','briefing.html'],['archief','Archief','../raadzoeker.html']];
+  const r=[['lab','Lab','lab.html'],['over','Over','over.html']];
+  const a=x=>`<a href="${x[2]}" class="${x[0]===actief?'on':''}"${x[0]===actief?' aria-current="page"':''}>${x[1]}${x[0]==='lab'?'<span class="tag">experimenteel</span>':''}</a>`;
+  document.querySelector('header.balk').innerHTML=`<div class="in"><a class="merk" href="startpagina.html" aria-label="raadzoeker, naar de startpagina">${LOGO()}<b>raadzoeker</b><small>onofficieel</small></a>
+    <nav aria-label="Hoofdmenu">${m.map(a).join('')}</nav><nav class="rechts" aria-label="Over en experimenten">${r.map(a).join('')}</nav></div>`;
+  const ic=document.createElement('link');ic.rel='icon';ic.href='data:image/svg+xml,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 34 34"><rect width="34" height="34" rx="7" fill="#00811F"/><g transform="translate(0,7)">${LOGO().replace(/<\/?svg[^>]*>/g,'')}</g></svg>`);document.head.appendChild(ic);
+}
+/* zoeken in onderwerpen of gebieden; kiezen roept kies(d) aan */
+function zoeklijst(input,lijst,bron,kies){
+  let hits=[],act=0;
+  const toon=()=>{lijst.innerHTML=hits.length?hits.map((d,i)=>`<li role="option" id="opt${i}" aria-selected="${i===act}" data-i="${i}">${esc(d.naam)} <span class="sub">· ${esc(d.groep)}</span></li>`).join(''):'<li class="leeg" role="option" aria-disabled="true">Niets gevonden. Probeer een ander woord.</li>';
+    lijst.classList.add('on');input.setAttribute('aria-expanded','true');input.setAttribute('aria-activedescendant',hits.length?'opt'+act:'');};
+  const sluit=()=>{lijst.classList.remove('on');input.setAttribute('aria-expanded','false');};
+  input.addEventListener('input',()=>{const q=input.value.trim().toLowerCase();if(!q){sluit();return;}
+    hits=bron().map(d=>{const n=d.naam.toLowerCase();return [n.startsWith(q)?3:n.includes(q)?2:d.sub.some(x=>x.toLowerCase().includes(q))?1.5:d.termen.toLowerCase().includes(q)?1:0,d];}).filter(x=>x[0]).sort((a,b)=>b[0]-a[0]).slice(0,10).map(x=>x[1]);act=0;toon();});
+  input.addEventListener('keydown',e=>{if(!lijst.classList.contains('on'))return;
+    if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();if(hits.length){act=(act+(e.key==='ArrowDown'?1:-1)+hits.length)%hits.length;toon();}}
+    else if(e.key==='Enter'&&hits[act]){e.preventDefault();sluit();input.value='';kies(hits[act]);}
+    else if(e.key==='Escape')sluit();});
+  lijst.addEventListener('click',e=>{const li=e.target.closest('[data-i]');if(li){sluit();input.value='';kies(hits[+li.dataset.i]);}});
+  document.addEventListener('click',e=>{if(!e.target.closest('.zoekveld'))sluit();});
+}
+/* onderwerp/gebied zoeken op #slug of #nummer */
+function uitHash(lijst){const h=decodeURIComponent(location.hash.slice(1));if(!h)return null;return lijst.find(d=>slug(d.naam)===h)||(/^\d+$/.test(h)?lijst.find(d=>d.id===+h):null);}
+
+/* uitklapbare rij voor een motie, toezegging of ander stuk
+   r=[datum,titel,indiener,statustekst,url,bb,context] ; soort='motie'|'toez'|'stuk' ; stand=peildatum */
+function rij(r,soort,stand){
+  const dl=iso((r[3].match(/verwacht ([\d-]+)/)||[])[1]),af=iso((r[3].match(/afgedaan ([\d-]+)/)||[])[1]);
+  const laat=dl&&!af&&dl<stand,isAf=/afgedaan(?! )|afgedaan \d/.test(r[3])&&!/nog niet afgedaan/.test(r[3]);
+  const status=isAf?`<span><span class="stip af"></span>Afgedaan${af?' op '+fd(af):''}</span>`:laat?`<span><span class="stip laat"></span>${dagen(dl,stand)} dagen over de termijn</span>`:dl?`<span><span class="stip open"></span>Afdoening verwacht ${fd(dl)}</span>`:r[3]?`<span>${esc(r[3])}</span>`:'';
+  const c=r[6]||{};let ctx='';
+  if(c.c)ctx+=`<div><b>Aanleiding</b> ‘${esc(c.c)}’</div>`;
+  if(c.v)ctx+=`<div><b>Verzoek aan het college</b> ‘${esc(c.v)}’</div>`;
+  if(c.o)ctx+=`<div><b>Toegezegd</b> ‘${esc(c.o)}’</div>`;
+  ctx+=`<div><a href="${esc(r[4])}" target="_blank" rel="noopener">Open in iBabs${r[5]?' ('+esc(r[5])+')':''}</a></div>`;
+  return `<details class="item"><summary><span class="d">${fd(r[0])}</span><span>${esc(r[1])}</span><span class="pijl" aria-hidden="true">›</span>
+    <span class="meta">${status}${r[2]?`<span>${esc(r[2])}</span>`:''}</span></summary><div class="ctx">${ctx}</div></details>`;
+}
+/* debat met letterlijk fragment: x=[datum,agendaId,titel,treffers,fragment,start,lengte,sprekers,soort] */
+function debatRij(x,termen){
+  const f=x[4]||'',a=x[5],l=x[6];const fr=a>=0?esc(f.slice(0,a))+'<mark>'+esc(f.slice(a,a+l))+'</mark>'+esc(f.slice(a+l)):esc(f);
+  const archief=`../raadzoeker.html#q=${encodeURIComponent(termen)}&fd1=${x[0]}&fd2=${x[0]}`;
+  return `<details class="item"><summary><span class="d">${fd(x[0])}</span><span>${esc(x[2]||'Raadsvergadering')}</span><span class="pijl" aria-hidden="true">›</span>
+    <span class="meta"><span>${nf(x[3])} keer genoemd</span>${x[7]&&x[7].length?`<span>${esc(x[7].join(', '))}</span>`:''}</span></summary>
+    <div class="ctx"><div>‘${fr}’${x[8]===4?' <span class="sub">(automatische ondertiteling)</span>':''}</div>
+    <div><a href="${archief}">Lees het debat</a> · <a href="https://gemeenteraad.rotterdam.nl/Agenda/Index/${esc(x[1])}" target="_blank" rel="noopener">Vergadering en video in iBabs</a></div></div></details>`;
+}
+/* deellinks: e-mail, Teams, WhatsApp en kopiëren */
+function deel(el,titel,url){
+  const u=encodeURIComponent(url),t=encodeURIComponent(titel);
+  el.innerHTML=`<span class="sub">Delen:</span> <a href="mailto:?subject=${t}&body=${t}%0A${u}">E-mail</a> · <a href="https://teams.microsoft.com/share?href=${u}&msgText=${t}" target="_blank" rel="noopener">Teams</a> · <a href="https://wa.me/?text=${t}%20${u}" target="_blank" rel="noopener">WhatsApp</a> · <button type="button" class="kopie" style="font:inherit;background:none;border:0;padding:0;text-decoration:underline;cursor:pointer">Kopieer link</button>`;
+  el.querySelector('.kopie').addEventListener('click',e=>{navigator.clipboard.writeText(url).then(()=>{e.target.textContent='Link gekopieerd';},()=>{prompt('Kopieer deze link',url);});});
+}

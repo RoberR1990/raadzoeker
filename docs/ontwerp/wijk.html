@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
+<title>Wijken · raadzoeker</title>
+<link rel="stylesheet" href="stijl.css">
+<style>
+.boven{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:24px;align-items:center}
+.minikaart svg{width:100%;height:auto;display:block}
+.minikaart path.g{fill:var(--groen-zacht);stroke:#fff;stroke-width:1;cursor:pointer}
+.minikaart path.g:hover{fill:var(--groen-mid)}
+.minikaart path.g.sel{fill:var(--groen)}
+.minikaart path.h{fill:var(--grijs2)}.minikaart path.w{fill:var(--water)}
+.kop{display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap;margin:40px 0 24px}
+.kop .acties{margin-left:auto;display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.cijfers{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.cijfer{background:var(--wit);border-radius:var(--r);padding:20px 24px}
+.cijfer .groot{display:block;margin-bottom:8px}
+.raster{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(0,1fr);gap:24px;margin-top:24px;align-items:start}
+.kol{display:grid;gap:24px;min-width:0}
+.schakel{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.schakel button{font:700 16px var(--font);border:2px solid var(--zwart);background:var(--wit);border-radius:999px;padding:8px 16px;cursor:pointer;min-height:44px}
+.schakel button[aria-selected="true"]{background:var(--zwart);color:var(--wit)}
+.ond{display:grid;gap:8px}
+.ond a{display:grid;grid-template-columns:minmax(0,1fr) 3em;gap:8px;align-items:center;text-decoration:none;padding:6px 0;border-bottom:1px solid var(--grijs2)}
+.ond a:hover span:first-child{text-decoration:underline}
+.ond i{display:block;height:6px;border-radius:2px;background:var(--groen);margin-top:4px}
+.jr{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.jr button{font:14px var(--font);border:1px solid var(--lijn);background:var(--wit);border-radius:999px;padding:6px 10px;cursor:pointer;min-height:36px}
+.jr button.on{background:var(--zwart);color:var(--wit);border-color:var(--zwart)}
+@media (max-width:900px){.boven,.raster{grid-template-columns:minmax(0,1fr)}.cijfers{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style></head>
+<body>
+<header class="balk"></header>
+<main class="pagina">
+  <div class="vlak boven">
+    <div class="zoekveld">
+      <label for="zoek">Over welke wijk wil je meer weten?</label>
+      <input id="zoek" type="text" placeholder="Bijvoorbeeld Charlois, Nesselande, Kralingen…" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="keuze" aria-autocomplete="list">
+      <ul class="keuze" id="keuze" role="listbox" aria-label="Gebieden"></ul>
+      <p class="sub" style="margin-top:12px">Of klik op de kaart. De 14 gebieden van Rotterdam; wijknamen als Nesselande of Bospolder vind je onder hun gebied.</p>
+    </div>
+    <div class="minikaart" id="kaart" aria-label="Kaart: kies een gebied"></div>
+  </div>
+  <div id="wijk"><p class="leeg" style="margin-top:24px">Laden…</p></div>
+  <p class="voet">Gegevens: notulen en ondertiteling van de gemeenteraad, iBabs (moties, toezeggingen, wijkraden) en CBS (inwoners 2024). Een stuk hoort bij een gebied als een gebieds- of wijknaam in de titel staat of minstens drie keer in de tekst. <a href="over.html">Meer over deze tool</a>.</p>
+</main>
+<script src="ontwerp.js"></script>
+<script>
+kop('wijk');
+let DATA=null,K=null,CUR=null,SOORT='mot',FILTER='open',JAAR='alle';
+Promise.all(['dossiers.json','kaart.json'].map(f=>fetch(f).then(r=>r.json()))).then(([d,k])=>{DATA=d;K=k;
+  const G=()=>DATA.dossiers.filter(x=>x.groep==='Wijken en gebieden'&&x.inw!==undefined);
+  $('kaart').innerHTML=`<svg viewBox="0 0 ${K.w} ${K.h}"><path class="h" d="${K.havens}"/>${K.gebieden.map(g=>`<path class="g" data-n="${esc(g.naam)}" d="${g.d}" tabindex="0" role="button" aria-label="${esc(g.naam)}"><title>${esc(g.naam)}</title></path>`).join('')}<path class="w" d="${K.water}"/></svg>`;
+  $('kaart').addEventListener('click',e=>{const p=e.target.closest('path.g');if(p)location.hash=slug(p.dataset.n);});
+  $('kaart').addEventListener('keydown',e=>{const p=e.target.closest('path.g');if(p&&(e.key==='Enter'||e.key===' ')){e.preventDefault();location.hash=slug(p.dataset.n);}});
+  zoeklijst($('zoek'),$('keuze'),G,x=>{location.hash=slug(x.naam);});
+  toon(uitHash(G())||G().find(x=>x.naam==='Charlois'));
+  window.addEventListener('hashchange',()=>{const x=uitHash(G());if(x)toon(x);});
+});
+function lijst(){
+  const d=CUR,bron=SOORT==='mot'?d.moties:d.toez;let l=FILTER==='af'?bron.af:bron.lijst;
+  if(FILTER==='laat')l=l.filter(r=>{const dl=iso((r[3].match(/verwacht ([\d-]+)/)||[])[1]);return dl&&dl<DATA.stand;});
+  $('lijst').innerHTML=l.length?l.map(r=>rij(r,SOORT==='mot'?'motie':'toez',DATA.stand)).join(''):'<p class="leeg">Niets in deze selectie.</p>';
+  const n={open:bron.open,laat:bron.te_laat,af:bron.afgedaan};
+  $('filt').innerHTML=[['open','Open'],['laat','Over de termijn'],['af','Afgedaan']].map(([k,t])=>`<button type="button" class="${k===FILTER?'on':''}" data-f="${k}" aria-pressed="${k===FILTER}">${t} (${nf(n[k])})</button>`).join('');
+  document.querySelectorAll('[data-soort]').forEach(b=>b.setAttribute('aria-selected',b.dataset.soort===SOORT));
+}
+function onderwerpen(){
+  const l=CUR.onderwerpen[JAAR]||[],mx=Math.max(1,...l.map(x=>x[1]));
+  $('jr').innerHTML=['alle',...CUR.jaren].map(y=>`<button type="button" class="${y===JAAR?'on':''}" data-j="${y}">${y==='alle'?'Alle jaren':y}</button>`).join('');
+  $('ond').innerHTML=l.length?l.map(([n,c])=>`<a href="dossier.html#${slug(n)}"><span>${esc(n)}<i style="width:${c/mx*100}%"></i></span><span class="num sub" style="text-align:right">${c}</span></a>`).join(''):'<p class="leeg">Te weinig gegevens voor dit jaar.</p>';
+}
+function toon(d){
+  CUR=d;FILTER='open';document.title=d.naam+' · Wijken · raadzoeker';
+  if(location.hash.slice(1)!==slug(d.naam))history.replaceState(null,'','#'+slug(d.naam));
+  document.querySelectorAll('#kaart path.g').forEach(p=>p.classList.toggle('sel',p.dataset.n===d.naam));
+  const m=d.moties,t=d.toez,ts=d.tsum,j=d.jaren.length-1,ch=d.trend[j-1]?Math.round((d.trend[j]-d.trend[j-1])/d.trend[j-1]*100):0;
+  $('wijk').innerHTML=`
+  <div class="kop"><div><div class="sub">Gebied</div><h1>${esc(d.naam)}</h1>${d.sub.length?`<div class="sub" style="margin-top:8px">Met o.a. ${esc(d.termen.split('|').map(s=>s.trim().replace(/"/g,'')).filter(s=>s.toLowerCase()!==d.naam.toLowerCase()).slice(0,6).join(', '))}</div>`:''}</div>
+    <div class="acties"><a class="knop" href="briefing.html#${slug(d.naam)}">Maak een briefing (A4)</a></div></div>
+  <div class="cijfers">
+    <div class="cijfer"><span class="groot num">${nf(d.inw)}</span>inwoners<div class="sub">CBS, 2024</div></div>
+    <div class="cijfer"><span class="groot num">${nf(m.aangenomen)}</span>aangenomen moties over dit gebied<div class="sub">${nf(m.open)} nog in uitvoering</div></div>
+    <div class="cijfer"><span class="groot num">${nf(t.open)}</span><span class="stip open"></span>toezeggingen open<div class="sub">${t.te_laat?`<span class="stip laat"></span>${t.te_laat} over de termijn`:'geen over de termijn'}</div></div>
+    <div class="cijfer"><span class="groot num">${ch>0?'+':''}${ch}%</span>aandacht in 2026 tot nu, ten opzichte van 2025<div class="sub">per 100.000 gesproken woorden</div></div>
+  </div>
+  <div class="raster">
+    <div class="kol">
+      <section class="vlak accent" aria-labelledby="ow"><h2 id="ow">Waar praat de raad over als het over ${esc(d.naam)} gaat?</h2>
+        <p class="sub" style="margin-bottom:12px">Onderwerpen die in dezelfde spreekbeurten vallen als dit gebied. Klik door naar het onderwerp.</p>
+        <div class="jr" id="jr"></div><div class="ond" id="ond"></div></section>
+      <section class="vlak" aria-labelledby="mt"><h2 id="mt">Moties en toezeggingen</h2>
+        <div class="schakel" role="tablist"><button type="button" role="tab" data-soort="mot">Moties</button><button type="button" role="tab" data-soort="toez">Toezeggingen</button></div>
+        <div class="chips" id="filt" style="margin:0 0 16px"></div><div class="lijst" id="lijst"></div></section>
+      <section class="vlak" aria-labelledby="db"><h2 id="db">Waar het in de raad over ging</h2><div class="lijst">${d.debatten.map(x=>debatRij(x,d.termen)).join('')}</div></section>
+    </div>
+    <div class="kol">
+      <section class="vlak" aria-labelledby="wr"><h2 id="wr">Wijkraden</h2>
+        <div class="lijst">${d.wijkraad&&d.wijkraad.length?d.wijkraad.map(r=>rij(r,'stuk',DATA.stand)).join(''):'<p class="leeg">Geen wijkraadstukken gevonden.</p>'}</div>
+        <p class="sub" style="margin-top:12px">Wijkakkoorden, wijkverslagen en (ongevraagde) adviezen van de wijkraden, via <a href="https://wijkraad.rotterdam.nl" target="_blank" rel="noopener">wijkraad.rotterdam.nl</a>.</p></section>
+      ${ts?`<section class="vlak" aria-labelledby="ik"><h2 id="ik">In het kort <span class="ai">AI-samenvatting</span></h2><p>${esc(ts.kern)}</p>${ts.recent?`<p style="margin-top:12px">Recent: ${esc(ts.recent)}</p>`:''}</section>`:''}
+      <section class="vlak" aria-labelledby="sv"><h2 id="sv">Schriftelijke vragen (${nf(d.sv.n)})</h2><div class="lijst">${d.sv.lijst.slice(0,5).map(r=>rij(r,'stuk',DATA.stand)).join('')}</div></section>
+    </div>
+  </div>`;
+  onderwerpen();lijst();window.scrollTo({top:0});
+}
+document.addEventListener('click',e=>{const s=e.target.closest('[data-soort]'),f=e.target.closest('[data-f]'),j=e.target.closest('[data-j]');
+  if(s){SOORT=s.dataset.soort;FILTER='open';lijst();}if(f){FILTER=f.dataset.f;lijst();}if(j){JAAR=j.dataset.j;onderwerpen();}});
+</script>
+</body></html>
