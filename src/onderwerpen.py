@@ -49,6 +49,23 @@ O=[
  ('Wijkraden en participatie',[r'participatie',r'wijkraden',r'bewonersinitiatie']),
 ]
 def rx(pp): return re.compile(r'\b(?:'+'|'.join(pp)+r')')
+# Thema (themes.py) waaronder elk onderwerp valt; niet genoemde onderwerpen zijn geschrapt (te weinig bronnen of te breed).
+THEMA={'Deelscooters en deelfietsen':'Mobiliteit & verkeer','Parkeeroverlast en parkeerdruk':'Parkeren','Betaald parkeren en parkeervergunningen':'Parkeren',
+ 'Fietsparkeren en weesfietsen':'Mobiliteit & verkeer','Verkeersveiligheid en 30 km/u':'Mobiliteit & verkeer','Zero-emissiezone en luchtkwaliteit':'Mobiliteit & verkeer',
+ 'Openbaar vervoer en RET':'Mobiliteit & verkeer','Afval, zwerfvuil en grofvuil':'Buitenruimte & afval','Ratten en ongedierte':'Buitenruimte & afval',
+ 'Vuurwerk en jaarwisseling':'Veiligheid & handhaving','Explosies bij woningen en bedrijven':'Veiligheid & handhaving','Ondermijning en drugscriminaliteit':'Veiligheid & handhaving',
+ 'Cameratoezicht':'Veiligheid & handhaving','Jongerenoverlast en jeugdcriminaliteit':'Veiligheid & handhaving','Lachgas':'Veiligheid & handhaving',
+ 'Horeca, terrassen en nachtleven':'Economie & haven','Evenementen en overlast':'Cultuur, sport & evenementen','Arbeidsmigranten':'Werk & inkomen',
+ 'Kamerverhuur en woningdelen':'Wonen','Goed verhuurderschap en huisjesmelkers':'Wonen','Sociale huur en sloop/nieuwbouw':'Wonen','Middenhuur en betaalbaar wonen':'Wonen',
+ 'Dakloosheid en daklozenopvang':'Zorg, welzijn & jeugd','Asielopvang en statushouders':'Asiel & migratie','Schulden en armoede':'Werk & inkomen',
+ 'Energiearmoede en isolatie':'Energie & klimaat','Warmtenet en aardgasvrij':'Energie & klimaat','Hittestress en vergroening':'Buitenruimte & afval','Bomenkap en bomen':'Buitenruimte & afval',
+ 'Feyenoord City en stadion':'Bouwen & ruimte','Museum Boijmans Van Beuningen':'Cultuur, sport & evenementen','Rotterdam The Hague Airport':'Economie & haven',
+ 'Jeugdhulp':'Zorg, welzijn & jeugd','Wmo en hulp bij het huishouden':'Zorg, welzijn & jeugd','Doelgroepenvervoer':'Zorg, welzijn & jeugd',
+ 'Kansengelijkheid en onderwijs':'Onderwijs','Discriminatie en racisme':'Discriminatie & inclusie','Walstroom en haven-uitstoot':'Economie & haven'}
+def actief(): return [(n,pp) for n,pp in O if n in THEMA]
+def termen(pp):
+    """Leesbare zoektermen (voor links en markering) uit de patronen: alleen de eenvoudige."""
+    return '|'.join(p.replace('\\b','') for p in pp if re.fullmatch(r'(\\b)?[a-z0-9 ]+',p))
 def main():
     R=[(n,rx(pp)) for n,pp in O]
     tel={n:collections.Counter() for n,_ in O}
