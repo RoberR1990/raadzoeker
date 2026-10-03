@@ -1,6 +1,6 @@
 {
   "version": "0.0.1",
   "configurations": [
-    {"name": "site", "runtimeExecutable": "python", "runtimeArgs": ["-m", "http.server", "8765", "-d", "docs"], "port": 8765}
+    {"name": "site", "runtimeExecutable": "python", "runtimeArgs": ["-m", "http.server", "8765", "-d", "D:/Raadzoeker/docs"], "port": 8765}
   ]
 }

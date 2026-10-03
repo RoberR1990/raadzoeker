@@ -3,7 +3,7 @@
 # (wijknamen herkend in spreekbeurten), onderwerpen in dezelfde spreekbeurten, moties/toezeggingen/vragen die de wijk noemen.
 # Bronnen in WERK: wijk/wijken.json (namen), wijk/wijkprofiel.json, kaart/buurten_JAAR.json (PDOK CBS).
 import json,os,re,collections,unicodedata,glob,math,zstandard
-from paden import WERK,DOCS
+from paden import WERK,DOCS,STAND
 import themes
 def fold(s): return ''.join(c for c in unicodedata.normalize('NFD',s.lower()) if unicodedata.category(c)!='Mn').replace('’',"'")
 def n(s): return re.sub(r'[^a-z0-9]+',' ',fold(s)).strip()
@@ -23,6 +23,27 @@ BUURT={'oudmathenessewitte-dorp':['Oud Mathenesse','Witte Dorp'],'blijdorpblijdo
  'dorprijnpoort':['Dorp','Rijnpoort'],'groot-ijsselmonde-noord':['Groot IJsselmonde'],'groot-ijsselmonde-zuid':['Groot IJsselmonde'],'kop-van-zuid-entrepot':['Kop van Zuid - Entrepot'],
  'delfshaven-wijk':['Delfshaven'],'feijenoord-wijk':['Feijenoord'],'overschie-wijk':['Overschie'],'pernis-wijk':['Pernis'],'rozenburg-wijk':['Rozenburg'],'cs-kwartier':['Cs Kwartier']}
 SOORTNAAM={'Beschikkingen | aanvraag':'aanvraag vergunning','Beschikkingen | afhandeling':'besluit op aanvraag','verkeersbesluit of -mededeling':'verkeersbesluit','ander besluit van algemene strekking':'ander besluit','Overige besluiten van algemene strekking':'ander besluit','Overige overheidsinformatie':'overige informatie','overige overheidsinformatie':'overige informatie'}
+# wijkraden (vanaf 2022) en de wijken die ze bestrijken; gebiedscommissies (tot 2022) en de verkiezing tellen niet mee
+RAAD={'Dorpsraad Hoek van Holland':['dorprijnpoort','strand-en-duin'],'Wijkraad Hoek van Holland':['dorprijnpoort','strand-en-duin'],
+ 'Dorpsraad Rozenburg':['rozenburg-wijk'],'Wijkraad Rozenburg':['rozenburg-wijk'],'Wijkcomite Charlois-Pendrecht':['pendrecht'],'Wijkcomite Middelland':['middelland'],
+ 'Wijkcomite Nesselande':['nesselande'],'Wijkcomite Zevenkamp':['zevenkamp'],'wijkcomité Oud Mathenesse-Witte Dorp':['oudmathenessewitte-dorp'],
+ 'Wijkraad Afrikaanderwijk':['afrikaanderwijk'],'Wijkraad Agniesebuurt':['agniesebuurt'],'Wijkraad Agniesebuurt-Provenierswijk':['agniesebuurt','provenierswijk'],
+ 'Wijkraad Provenierswijk':['provenierswijk'],'Wijkraad Bergpolder':['bergpolder'],'Wijkraad Blijdorp':['blijdorpblijdorpsepolder'],'Wijkraad Liskwartier':['liskwartier'],
+ 'Wijkraad Bergpolder-Blijdorp-Liskwartier':['bergpolder','blijdorpblijdorpsepolder','liskwartier'],'Wijkraad Blijdorp-Bergpolder-Liskwartier':['bergpolder','blijdorpblijdorpsepolder','liskwartier'],
+ 'Wijkraad Beverwaard':['beverwaard'],'Wijkraad Bloemhof':['bloemhof'],'Wijkraad Bospolder-Spangen-Tussendijken':['bospolder','spangen','tussendijken'],
+ 'Wijkraad Carnisse-Zuiderpark':['carnisse','zuiderpark-en-zuidrand'],'Wijkraad Carnisse-Zuidplein-Zuiderpark':['carnisse','zuidplein','zuiderpark-en-zuidrand'],
+ 'Wijkraad Cool-Scheepvaartkwartier-Stadsdriehoek':['cool','stadsdriehoek'],'Wijkraad Crooswijk':['nieuw-crooswijk','oud-crooswijk','rubroek'],
+ 'Wijkraad Delfshaven-Schiemond':['delfshaven-wijk','schiemond'],'Wijkraad Dijkzigt-Oude Westen':['nieuwe-werkdijkzigt','oude-westen'],
+ 'Wijkraad Entrepot-Noordereiland':['kop-van-zuid-entrepot','noordereiland'],'Wijkraad Kop van Zuid-Entrepot':['kop-van-zuid-entrepot'],'Wijkraad Noordereiland':['noordereiland'],
+ 'Wijkraad Feijenoord':['feijenoord-wijk'],'Wijkraad Groot-IJsselmonde en Oud-IJsselmonde':['groot-ijsselmonde-noord','groot-ijsselmonde-zuid','oud-ijsselmonde'],
+ 'Wijkraad Heijplaat':['heijplaat'],'Wijkraad Het Lage Land, Prinsenland en ’s Gravenland':['het-lage-land','prinsenland','s-gravenland'],
+ 'Wijkraad Lage Land, Prinsenland en ’s Gravenland':['het-lage-land','prinsenland','s-gravenland'],'Wijkraad Hillegersberg':['hillegersberg-noord','hillegersberg-zuid','molenlaankwartier','terbregge'],
+ 'Wijkraad Hillesluis':['hillesluis'],'Wijkraad Hoogvliet':['hoogvliet-noord','hoogvliet-zuid'],'Wijkraad Katendrecht-Wilhelminapier':['katendrecht','kop-van-zuid'],
+ 'Wijkraad Kralingen':['kralingen-west','kralingen-oostkralingse-bos','de-esch','struisenburg'],'Wijkraad Kralingseveer':['kralingseveer'],'Wijkraad Lombardijen':['lombardijen'],
+ 'Wijkraad Mathenesse':['oudmathenessewitte-dorp'],'Wijkraad Middelland-Nieuwe Westen':['middelland','nieuwe-westen'],'Wijkraad Nesselande':['nesselande'],'Wijkraad Ommoord':['ommoord'],
+ 'Wijkraad Oosterflank':['oosterflank'],'Wijkraad Oud Charlois-Wielewaal':['oud-charlois','wielewaal'],'Wijkraad Oude Noorden':['oude-noorden'],
+ 'Wijkraad Overschie':['overschie-wijk','kleinpolder','noordkethel-schieveen-zestienhoven'],'Wijkraad Pendrecht-Zuidwijk':['pendrecht','zuidwijk'],'Wijkraad Pernis':['pernis-wijk'],
+ 'Wijkraad Schiebroek':['schiebroek'],'Wijkraad Tarwewijk':['tarwewijk'],'Wijkraad Vreewijk':['vreewijk'],'Wijkraad Zevenkamp':['zevenkamp']}
 CBSV={'inw':'aantalInwoners','woz':'gemiddeldeWoningwaarde','huur':'percentageHuurwoningen','corp':'percHuurwoningenInBezitWoningcorporaties','ink':'gemiddeldInkomenPerInwoner',
       'laag':'percentageHuishoudensMetLaagInkomen','bijst':'aantalPersonenMetEenAlgBijstandsuitkeringTot','jong':'percentagePersonen0Tot15Jaar','oud':'percentagePersonen65JaarEnOuder',
       'eenp':'percentageEenpersoonshuishoudens','jz':'percentageJongerenMetJeugdzorgInNatura','wmo':'aantalWmoClientenPer1000Inwoners','auto':'personenautosPerHuishouden'}
@@ -43,6 +64,8 @@ def lmain():
     # kaartgeometrie: zelfde projectie als kaart.py
     import kaart as K
     for w in wijken:
+        NB={n(k):k for k in geo}   # buurtnamen zonder verschil in streepjes en hoofdletters
+        w['buurten']=[NB[n(b)] for b in w['buurten'] if n(b) in NB] or w['buurten']
         fs=[geo[b] for b in w['buurten'] if b in geo]
         if not fs: print('geen buurt voor',w['naam'],w['buurten'])
         d='';ringen=[]
@@ -151,14 +174,13 @@ def lmain():
     # bron 6: vergaderingen van de wijkraden; alleen agendapunt-titels, geen inspreekteksten (namen van bewoners)
     wv={w['slug']:{'n':0,'recent':[],'raad':set()} for w in wijken}
     p=os.path.join(WERK,'wijk','wijkraadvergaderingen.jsonl')
-    STANDAARD=re.compile(r'opening|vaststel|mededeling|rondvraag|sluiting|inspre|ingekomen|actielijst|besluitenlijst|notulen|verslag van|agenda|welkom|afsluiting|pauze|wat verder ter tafel',re.I)
+    STANDAARD=re.compile(r'opening|vaststel|mededeling|rondvraag|sluiting|inspre|ingekomen|actielijst|besluitenlijst|notulen|verslag van|agenda|welkom|afsluiting|pauze|wat verder ter tafel|^ter (besluitvorming|bespreking|informatie|kennisname)|:$|\b(dhr|mevr|mw)\b|\b(de heer|mevrouw)\b',re.I)   # ook geen persoonsnamen
     if os.path.exists(p):
         V=[json.loads(l) for l in open(p,encoding='utf8') if l.strip()]
         for w in wijken:
-            sl=[fold(z) for z in (w['zoek'] or []) if not z.startswith('re:')]+[fold(w['naam']),fold(re.split(r'[/(]',w['naam'])[0].strip()),fold(w['gebied']) if w['slug'].endswith('-wijk') else '@@']
             for v in sorted(V,key=lambda v:v['datum'],reverse=True):
-                rn=fold(v['raad'])
-                if not any(s and s in rn for s in sl): continue
+                if v['datum']>STAND: continue   # geplande vergaderingen nog niet
+                if w['slug'] not in RAAD.get(re.sub(r'\s*\((in)?formeel\)','',v['raad']).strip(),[]): continue
                 wv[w['slug']]['n']+=1; wv[w['slug']]['raad'].add(re.sub(r'\s*\((in)?formeel\)','',v['raad']))
                 pt=[i['titel'][:120] for i in v['items'] if i['titel'] and not STANDAARD.search(i['titel'])]
                 if pt and len(wv[w['slug']]['recent'])<8: wv[w['slug']]['recent'].append([v['datum'],re.sub(r'\s*\((in)?formeel\)','',v['raad']),pt[:6],'https://wijkraad.rotterdam.nl/Agenda/Index/'+v['id']])
