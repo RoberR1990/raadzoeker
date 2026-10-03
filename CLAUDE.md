@@ -90,4 +90,17 @@ Alle zes achter elkaar: (1) Wijkprofiel Rotterdam (sociale/fysieke/veiligheidsin
 10. Tweede Kamer open data: landelijk debat over hetzelfde dossier.
 11. MRDH en Provinciale Staten Zuid-Holland: regionale besluiten OV en wonen.
 
+## Teksten (besloten 3-10-2026: focus op tekstbronnen, cijfers secundair)
+
+Ophalen, hervatbaar in blokken (`--minuten 9`), gedeelde iBabs-limiet:
+- `rekenkamer_pdf.py` → `extern/rekenkamer_tekst.json` (67 onderzoeken, 62 met pdf-tekst). Klaar.
+- `bijlagen.py rv` → `ibabs/rv_tekst.jsonl` (hoofddocument van 802 raadsvoorstellen). Klaar.
+- `bijlagen.py wrb` → `wijk/wijkraad_bijlagen.jsonl` (12.674 bijlagen bij wijkraadvergaderingen). Bezig.
+- `sv_qa.py` → `ibabs/sv_qa.jsonl` (schriftelijke vragen + antwoord van het college via 'Relatie met' → Brieven B&W, nieuwste eerst). Bezig.
+- `ibabs_items.py brieven` → `ibabs/items_brieven.jsonl` (10.522 collegebrieven met tekst). Nog niet gestart.
+
+`teksten.py` bundelt alles (plus de stukken met tekst uit `stukken.zst`) tot `docs/data/tekst/`: `meta.zst`, zoekindex `i/NNN.zst` (512 shards op FNV-hash van de woordstam), teksten `b/NNN.zst` (blokken van 64). Document-id's staan vast in `WERK/teksten/ids.json`, zodat ongewijzigde blokken gelijk blijven. Stam- en hashregels staan dubbel (Python en `zoek.html`) en moeten gelijk blijven. Pagina `docs/ontwerp/zoek.html` (menu 'Stukken'): alle woorden moeten voorkomen, "exacte zin" wordt op de tekst gecontroleerd (eerste 300 kandidaten), filters op soort en periode, bij schriftelijke vragen vraag en antwoord apart. Opnieuw draaien na elk ophaalblok.
+
+Backlog: transcriptie van 61 commissievergaderingen 2022–2026 met video maar zonder ondertitels. Company Webcast levert alleen een versleutelde 1080p-stream (AES-128, ondertekende links; de WMV-download geeft 404), dus niet zelf ontsleutelen. Route: griffie om audio of vtt vragen (concept `ontwerp/mail-griffie.md`, lijst `ontwerp/griffie-vergaderingen-zonder-ondertitels.csv`). faster-whisper 1.2.1 staat klaar, CUDA werkt. Per vergadering staat een sprekerslijst in `/players/{id}/ondemand/.../resources`.
+
 Niet doen: lokale media (Rijnmond, AD) overnemen, auteursrecht; hooguit linken. Afgesproken 2-10-2026.
