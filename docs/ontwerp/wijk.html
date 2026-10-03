@@ -1,14 +1,34 @@
 <!doctype html>
 <html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
 <title>Wijken · raadzoeker</title>
-<link rel="stylesheet" href="stijl.css?v=3">
+<link rel="stylesheet" href="stijl.css?v=4">
 <style>
 .boven{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:24px;align-items:center}
 .minikaart svg{width:100%;height:auto;display:block}
 .minikaart path.g{fill:var(--groen-zacht);stroke:#fff;stroke-width:1;cursor:pointer}
 .minikaart path.g:hover{fill:var(--groen-mid)}
 .minikaart path.g.sel{fill:var(--groen)}
-.minikaart path.h{fill:var(--grijs2)}.minikaart path.w{fill:var(--water)}
+.minikaart path.h{fill:var(--grijs2)}.minikaart path.w{fill:var(--water);pointer-events:none}
+.minikaart path.wk{fill:var(--groen-zacht);stroke:#fff;stroke-width:.8;cursor:pointer}
+.minikaart path.wk:hover{fill:var(--groen-mid)}.minikaart path.wk.sel{fill:var(--groen)}.minikaart path.wk.ing{fill:#99CCA0}
+.minikaart path.gr{fill:none;stroke:#000;stroke-width:1.2;pointer-events:none;opacity:.55}
+.blok3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.kc{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px}
+.kc div{background:var(--grijs);border-radius:6px;padding:10px 12px;font-size:14px}
+.kc b{display:block;font-size:22px;font-weight:400}
+.kc .ref{color:var(--sub);font-size:13px}
+.kc svg{width:100%;height:22px;display:block;margin-top:4px}
+.idx{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:12px}
+.idx table{width:100%;border-collapse:collapse;font-size:13px}
+.idx td,.idx th{padding:3px 4px;border-bottom:1px solid var(--grijs2);text-align:right}
+.idx th:first-child,.idx td:first-child{text-align:left}
+.pol table{width:100%;border-collapse:collapse;font-size:14px}
+.pol td,.pol th{padding:5px 6px;border-bottom:1px solid var(--grijs2);text-align:right}
+.pol th:first-child,.pol td:first-child{text-align:left}
+.pol svg{width:90px;height:20px}
+.bm .soort{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 12px}
+.bm .soort span{background:var(--grijs);border-radius:999px;padding:4px 10px;font-size:13px}
+.let{background:var(--grijs);border-radius:6px;padding:12px 16px;font-size:14px;margin-top:16px;max-width:90ch}
 .kop{display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap;margin:40px 0 24px}
 .kop .acties{margin-left:auto;display:flex;gap:16px;align-items:center;flex-wrap:wrap}
 .cijfers{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
@@ -27,36 +47,107 @@
 .jr{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
 .jr button{font:14px var(--font);border:1px solid var(--lijn);background:var(--wit);border-radius:999px;padding:6px 10px;cursor:pointer;min-height:36px}
 .jr button.on{background:var(--zwart);color:var(--wit);border-color:var(--zwart)}
-@media (max-width:900px){.boven,.raster{grid-template-columns:minmax(0,1fr)}.cijfers{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:900px){.boven,.raster,.blok3,.idx{grid-template-columns:minmax(0,1fr)}.cijfers{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style></head>
 <body>
 <header class="balk"></header>
 <main class="pagina">
   <div class="vlak boven">
     <div class="zoekveld">
-      <label for="zoek">Over welke wijk wil je meer weten?</label>
-      <input id="zoek" type="text" placeholder="Bijvoorbeeld Charlois, Nesselande, Kralingen…" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="keuze" aria-autocomplete="list">
-      <ul class="keuze" id="keuze" role="listbox" aria-label="Gebieden"></ul>
-      <p class="sub" style="margin-top:12px">Of klik op de kaart. De 14 gebieden van Rotterdam; wijknamen als Nesselande of Bospolder vind je onder hun gebied.</p>
+      <label for="zoek">Over welke wijk of welk gebied wil je meer weten?</label>
+      <input id="zoek" type="text" placeholder="Bijvoorbeeld Tarwewijk, Nesselande, Charlois…" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="keuze" aria-autocomplete="list">
+      <ul class="keuze" id="keuze" role="listbox" aria-label="Wijken en gebieden"></ul>
+      <p class="sub" style="margin-top:12px">Of klik op de kaart: 71 wijken in 14 gebieden (indeling Wijkprofiel Rotterdam). Kies daarna eventueel het hele gebied.</p>
     </div>
     <div class="minikaart" id="kaart" aria-label="Kaart: kies een gebied"></div>
   </div>
   <div id="wijk"><p class="leeg" style="margin-top:24px">Laden…</p></div>
-  <p class="voet">Gegevens: notulen en ondertiteling van de gemeenteraad, iBabs (moties, toezeggingen, wijkraden) en CBS (inwoners 2024). Een stuk hoort bij een gebied als een gebieds- of wijknaam in de titel staat of minstens drie keer in de tekst. <a href="over.html">Meer over deze tool</a>.</p>
+  <p class="voet">Gegevens: notulen en ondertiteling van de gemeenteraad; iBabs (moties, toezeggingen, wijkraden); wijkraad.rotterdam.nl; CBS Kerncijfers wijken en buurten 2022–2025; Wijkprofiel Rotterdam (cijfers: gemeente Rotterdam, OBI, Wijkprofiel 2014–2026); politie, geregistreerde misdrijven per buurt (via CBS); officiële bekendmakingen (Gemeenteblad). Cijfers uit verschillende bronnen staan ter informatie naast elkaar; ze zeggen niets over oorzaak of verband. <a href="over.html">Meer over deze tool</a>.</p>
 </main>
-<script src="ontwerp.js?v=3"></script>
+<script src="ontwerp.js?v=4"></script>
 <script>
 kop('wijk');
-let DATA=null,K=null,CUR=null,SOORT='mot',FILTER='open',JAAR='alle';
-Promise.all(['dossiers.json','kaart.json'].map(f=>fetch(f).then(r=>r.json()))).then(([d,k])=>{DATA=d;K=k;
+let DATA=null,K=null,WK=null,CUR=null,SOORT='mot',FILTER='open',JAAR='alle';
+Promise.all(['dossiers.json','kaart.json','wijken.json'].map(f=>fetch(f).then(r=>r.json()))).then(([d,k,w])=>{DATA=d;K=k;WK=w;
   const G=()=>DATA.dossiers.filter(x=>x.groep==='Wijken en gebieden'&&x.inw!==undefined);
-  $('kaart').innerHTML=`<svg viewBox="0 0 ${K.w} ${K.h}"><path class="h" d="${K.havens}"/>${K.gebieden.map(g=>`<path class="g" data-n="${esc(g.naam)}" d="${g.d}" tabindex="0" role="button" aria-label="${esc(g.naam)}"><title>${esc(g.naam)}</title></path>`).join('')}<path class="w" d="${K.water}"/></svg>`;
-  $('kaart').addEventListener('click',e=>{const p=e.target.closest('path.g');if(p)location.hash=slug(p.dataset.n);});
-  $('kaart').addEventListener('keydown',e=>{const p=e.target.closest('path.g');if(p&&(e.key==='Enter'||e.key===' ')){e.preventDefault();location.hash=slug(p.dataset.n);}});
-  zoeklijst($('zoek'),$('keuze'),G,x=>{location.hash=slug(x.naam);});
-  toon(uitHash(G())||G().find(x=>x.naam==='Charlois'));
-  window.addEventListener('hashchange',()=>{const x=uitHash(G());if(x)toon(x);});
+  const W=WK.wijken.map(x=>({...x,groep:'wijk in '+x.gebied,sub:[],termen:(x.zoek||[]).join(' ')+' '+x.gebied}));
+  $('kaart').innerHTML=`<svg viewBox="0 0 ${K.w} ${K.h}"><path class="h" d="${K.havens}"/>${W.map(x=>`<path class="wk" data-s="${x.slug}" d="${x.d}" tabindex="0" role="button" aria-label="${esc(x.naam)}, ${esc(x.gebied)}"><title>${esc(x.naam)} (${esc(x.gebied)})</title></path>`).join('')}${K.gebieden.map(g=>`<path class="gr" d="${g.d}"/>`).join('')}<path class="w" d="${K.water}"/></svg>`;
+  const kies=s=>{location.hash='w-'+s;};
+  $('kaart').addEventListener('click',e=>{const p=e.target.closest('path.wk');if(p)kies(p.dataset.s);});
+  $('kaart').addEventListener('keydown',e=>{const p=e.target.closest('path.wk');if(p&&(e.key==='Enter'||e.key===' ')){e.preventDefault();kies(p.dataset.s);}});
+  zoeklijst($('zoek'),$('keuze'),()=>[...G(),...W],x=>{location.hash=x.slug&&x.d?'w-'+x.slug:slug(x.naam);});
+  const route=()=>{const h=decodeURIComponent(location.hash.slice(1));
+    if(h.startsWith('w-')){const x=W.find(o=>o.slug===h.slice(2));if(x)return toonWijk(x);}
+    toon(uitHash(G())||G().find(x=>x.naam==='Charlois'));};
+  route();window.addEventListener('hashchange',route);
 });
+/* ---------- één wijk ---------- */
+const CBSL={inw:['inwoners','',0],woz:['gem. WOZ-waarde','€ ',0],huur:['huurwoningen','%',1],corp:['huur van corporaties','%',1],ink:['inkomen per inwoner','€ ',0],laag:['huishoudens laag inkomen','%',1],bijst:['personen in de bijstand','',0],jong:['inwoners 0–15 jaar','%',1],oud:['inwoners 65+','%',1],eenp:['eenpersoonshuishoudens','%',1],jz:['jongeren met jeugdzorg','%',1],wmo:['Wmo-cliënten per 1.000','',1]};
+function fmt(k,v){if(v==null)return '–';const [n,e,d]=CBSL[k];const s=Number(v).toLocaleString('nl-NL',{maximumFractionDigits:d,minimumFractionDigits:0});return e==='%'?s+'%':e==='€ '?'€ '+nf(Math.round(v*(k==='ink'?10:1))*(k==='ink'?100:1000)):s;}   // CBS: bedragen in duizenden euro's
+function stadGem(k,j){let s=0,n=0;WK.wijken.forEach(w=>{const c=w.cbs[j]||{},i=c.inw||0;if(c[k]!=null&&i){if(k==='inw'||k==='bijst'){s+=c[k];n=1;}else{s+=c[k]*i;n+=i;}}});return n?(k==='inw'||k==='bijst'?s:s/n):null;}
+function spark(vals,w=90,h=20){const v=vals.filter(x=>x!=null);if(v.length<2)return '';const mn=Math.min(...v),mx=Math.max(...v),r=mx-mn||1;
+  const p=vals.map((x,i)=>x==null?null:[(i/(vals.length-1)*(w-6)+3).toFixed(1),(h-3-(x-mn)/r*(h-6)).toFixed(1)]).filter(Boolean);
+  return `<svg viewBox="0 0 ${w} ${h}" aria-hidden="true"><polyline points="${p.map(q=>q.join(',')).join(' ')}" fill="none" stroke="#65757C" stroke-width="1.5"/><circle cx="${p[p.length-1][0]}" cy="${p[p.length-1][1]}" r="2.5" fill="#00811F"/></svg>`;}
+function wpSvg(wp){
+  const J=['2014','2016','2018','2020','2022','2024','2026'],W=520,H=190,L=34,B=24,T=10,x=i=>L+i*(W-L-10)/(J.length-1);
+  const vals=J.flatMap(j=>['sociaal','fysiek','veiligheid'].map(k=>(wp[j]||{})[k])).filter(v=>v!=null);if(!vals.length)return '<p class="leeg">Geen Wijkprofiel-cijfers voor deze wijk.</p>';
+  const mn=Math.min(60,...vals),mx=Math.max(140,...vals),y=v=>H-B-(v-mn)/(mx-mn)*(H-B-T);let g='';
+  [mn,100,mx].forEach(v=>{g+=`<line x1="${L}" x2="${W-6}" y1="${y(v)}" y2="${y(v)}" stroke="${v===100?'#9DAFB6':'#EFF4F6'}" ${v===100?'stroke-dasharray="4 3"':''}/><text x="${L-6}" y="${y(v)+4}" text-anchor="end" font-size="11" fill="#3E4B50">${Math.round(v)}</text>`;});
+  J.forEach((j,i)=>{g+=`<text x="${x(i)}" y="${H-6}" text-anchor="middle" font-size="11">${j}</text>`;});
+  const KL={sociaal:'#00548F',fysiek:'#00811F',veiligheid:'#E0A200'};
+  for(const [k,c] of Object.entries(KL)){const p=J.map((j,i)=>(wp[j]||{})[k]!=null?[x(i),y(wp[j][k]),wp[j][k],j]:null).filter(Boolean);
+    g+=`<polyline points="${p.map(q=>q[0]+','+q[1]).join(' ')}" fill="none" stroke="${c}" stroke-width="2.5"/>`+p.map(q=>`<circle cx="${q[0]}" cy="${q[1]}" r="3.5" fill="${c}"><title>${k} ${q[3]}: ${q[2]}</title></circle>`).join('');}
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Wijkprofiel-indexen per editie">${g}</svg>
+   <p class="sub" style="display:flex;gap:16px;flex-wrap:wrap;margin-top:4px"><span><span class="stip" style="background:#00548F"></span>sociaal</span><span><span class="stip" style="background:#00811F"></span>fysiek</span><span><span class="stip" style="background:#E0A200"></span>veiligheid</span><span>stippellijn = 100, het Rotterdams gemiddelde van 2014</span></p>`;}
+function wpTabel(d){if(!d)return '';
+  return '<div class="idx">'+['sociaal','fysiek','veiligheid'].map(k=>{const x=d[k];if(!x)return '';const ks=Object.keys(x.subjectief||{});
+    return `<div><b>${k[0].toUpperCase()+k.slice(1)}: ${x.index}</b>${x.algemeen?`<div class="sub">${esc(x.algemeen[0])}: ${x.algemeen[1]}</div>`:''}<table><thead><tr><th></th><th>beleving</th><th>feitelijk</th></tr></thead><tbody>${ks.map(s=>`<tr><td>${esc(s)}</td><td>${x.subjectief[s]??'–'}</td><td>${(x.objectief||{})[s]??'–'}</td></tr>`).join('')}</tbody></table></div>`;}).join('')+'</div>';}
+function toonWijk(w){
+  CUR=null;document.title=w.naam+' · Wijken · raadzoeker';
+  document.querySelectorAll('#kaart path.wk').forEach(p=>{p.classList.toggle('sel',p.dataset.s===w.slug);p.classList.toggle('ing',p.dataset.s!==w.slug&&WK.wijken.find(o=>o.slug===p.dataset.s).gebied===w.gebied);});
+  const jC=['2022','2023','2024','2025'],laatste=[...jC].reverse().find(j=>w.cbs[j]&&w.cbs[j].inw)||'2024',c=w.cbs[laatste]||{};
+  const jr=WK.jaren,n=jr.map(j=>w.n[j]||0),nmx=Math.max(1,...n);
+  const pol=w.politie||{},pj=['2018','2019','2020','2021','2022','2023','2024','2025'];
+  $('wijk').innerHTML=`
+  <div class="kop"><div><div class="sub">Wijk in <a href="#${slug(w.gebied)}">${esc(w.gebied)}</a></div><h1>${esc(w.naam)}</h1></div>
+    <div class="acties"><a href="#${slug(w.gebied)}">Bekijk het hele gebied ${esc(w.gebied)}</a></div></div>
+  <section class="vlak accent" aria-labelledby="kc"><h2 id="kc">Kerncijfers</h2>
+    <div class="kc">${Object.keys(CBSL).map(k=>{const j=[...jC].reverse().find(j=>(w.cbs[j]||{})[k]!=null);if(!j)return '';const r=k==='inw'||k==='bijst'?null:stadGem(k,j);
+      return `<div>${esc(CBSL[k][0])}<b class="num">${fmt(k,w.cbs[j][k])}</b><span class="ref">${j}${r!=null?' · Rotterdam '+fmt(k,r):''}</span>${spark(jC.map(x=>(w.cbs[x]||{})[k]??null))}</div>`;}).join('')}</div>
+    <p class="sub" style="margin-top:12px">CBS Kerncijfers wijken en buurten; per cijfer het meest recente jaar dat CBS heeft gepubliceerd, lijntje = 2022–${jC[jC.length-1]}. Sommige cijfers zijn door CBS afgerond of geheimgehouden. ‘Rotterdam’ is het gemiddelde over de wijken, gewogen naar inwoners.</p></section>
+  <section class="vlak sectie" style="margin-top:24px" aria-labelledby="wpk"><h2 id="wpk">Wijkprofiel</h2>
+    <p style="max-width:75ch;margin-bottom:12px">Het Wijkprofiel van de gemeente meet elke twee jaar hoe een wijk ervoor staat op drie indexen, met feitelijke cijfers en een bewonersenquête. 100 is het gemiddelde van Rotterdam in 2014.</p>
+    ${wpSvg(w.wp)}${wpTabel(w.wpd)}
+    <p class="sub" style="margin-top:12px">Cijfers: gemeente Rotterdam; OBI, Wijkprofiel 2014–2026. <a href="https://wijkprofiel.rotterdam.nl/" target="_blank" rel="noopener">Bekijk op wijkprofiel.rotterdam.nl</a>.</p></section>
+  <div class="raster">
+    <div class="kol">
+      <section class="vlak" aria-labelledby="ir"><h2 id="ir">In de raad</h2>
+        <p class="sub" style="margin-bottom:8px">Hoe vaak ${esc(w.naam)} werd genoemd in raadsvergaderingen${w.zoek&&w.zoek.length?' (zoekwoorden: '+esc(w.zoek.join(', '))+')':''}.</p>
+        ${w.zoek?`<svg viewBox="0 0 520 120" role="img" aria-label="Vermeldingen per jaar">${jr.map((j,i)=>{const x=20+i*55,h=n[i]/nmx*80;return `<rect x="${x}" y="${100-h}" width="34" height="${h}" rx="2" fill="#00811F"><title>${j}: ${n[i]} keer</title></rect><text x="${x+17}" y="${115}" text-anchor="middle" font-size="11">'${j.slice(2)}</text>${n[i]?`<text x="${x+17}" y="${96-h}" text-anchor="middle" font-size="11" fill="#3E4B50">${n[i]}</text>`:''}`;}).join('')}</svg>`:'<p class="leeg">Deze wijk heeft dezelfde naam als het gebied; zie het gebied.</p>'}
+        ${w.onderwerpen.length?`<h3 style="margin:16px 0 8px">Onderwerpen in dezelfde spreekbeurten</h3><div class="chips" style="margin-top:0">${w.onderwerpen.map(([o,k])=>`<a href="dossier.html#${slug(o)}">${esc(o)} <span class="sub num" style="margin-left:6px">${k}</span></a>`).join('')}</div>`:''}
+        ${(()=>{const y=Object.keys(w.frag||{}).sort().pop();if(!y)return '';const f=w.frag[y],tx=f[3],a=f[4],l=f[5];
+          return `<h3 style="margin:16px 0 8px">Recent fragment</h3><p class="sub">${fd(f[0])} · ${esc(f[2]||'raadsvergadering')}</p><p style="margin-top:4px">‘${esc(tx.slice(0,a))}<mark>${esc(tx.slice(a,a+l))}</mark>${esc(tx.slice(a+l))}’</p><p class="sub" style="margin-top:4px"><a href="https://gemeenteraad.rotterdam.nl/Agenda/Index/${esc(f[1])}" target="_blank" rel="noopener">Vergadering in iBabs</a></p>`;})()}</section>
+      <section class="vlak" aria-labelledby="ms"><h2 id="ms">Moties, toezeggingen en vragen</h2>
+        <p class="sub" style="margin-bottom:8px">${['Motie','Toezegging','Schriftelijke vragen'].map(s=>`${nf((w.stukken||{})[s]||0)} ${s==='Motie'?'moties':s==='Toezegging'?'toezeggingen':'schriftelijke vragen'}`).join(' · ')} die deze wijk noemen.</p>
+        <div class="lijst">${[...w.moties.map(r=>rij(r,'motie',DATA.stand)),...w.toez.map(r=>rij(r,'toez',DATA.stand)),...w.sv.slice(0,4).map(r=>rij(r,'stuk',DATA.stand))].join('')||'<p class="leeg">Geen stukken gevonden die deze wijk bij naam noemen.</p>'}</div></section>
+    </div>
+    <div class="kol">
+      <section class="vlak" aria-labelledby="wr"><h2 id="wr">Wijkraad</h2>
+        ${w.wrv&&w.wrv.n?`<p>${esc(w.wrv.raad.join(', '))}: ${nf(w.wrv.n)} vergaderingen sinds 2022.</p><h3 style="margin:16px 0 8px">Recent op de agenda</h3>${w.wrv.recent.map(v=>`<div class="item" style="padding:8px 0"><div class="sub">${fd(v[0])} · <a href="${esc(v[3])}" target="_blank" rel="noopener">agenda</a></div><div>${v[2].map(esc).join(' · ')}</div></div>`).join('')}`:'<p class="leeg">Geen vergaderingen van een wijkraad voor deze wijk gevonden.</p>'}
+        ${w.wijkraad.length?`<h3 style="margin:16px 0 8px">Adviezen en verslagen</h3><div class="lijst">${w.wijkraad.map(r=>rij(r,'stuk',DATA.stand)).join('')}</div>`:''}</section>
+      <section class="vlak bm" aria-labelledby="bmk"><h2 id="bmk">Bekendmakingen</h2>
+        ${w.bekend&&Object.keys(w.bekend.n).length?`<p>${nf(Object.values(w.bekend.n).reduce((a,b)=>a+b,0))} bekendmakingen met een locatie in deze wijk sinds 2018, zoals vergunningen en verkeersbesluiten.</p><div class="soort">${w.bekend.soort.slice(0,6).map(([s,k])=>`<span>${esc(s)} ${nf(k)}</span>`).join('')}</div>
+          ${w.bekend.recent.slice(0,6).map(r=>`<div class="item" style="padding:8px 0"><div class="sub">${fd(r[0])} · ${esc(r[2])}</div><a href="${esc(r[3])}" target="_blank" rel="noopener">${esc(r[1])}</a></div>`).join('')}`:'<p class="leeg">Nog geen bekendmakingen gekoppeld.</p>'}
+        <p class="sub" style="margin-top:8px">Bron: officiële bekendmakingen van de gemeente (Gemeenteblad), gekoppeld via het locatiepunt.</p></section>
+      <section class="vlak pol" aria-labelledby="pk"><h2 id="pk">Geregistreerde misdrijven</h2>
+        ${Object.keys(pol).length?`<table><thead><tr><th>Soort</th><th>${pj[pj.length-1]}</th><th>2018–${pj[pj.length-1]}</th></tr></thead><tbody>${Object.entries(pol).map(([s,o])=>`<tr><td>${esc(s)}</td><td class="num">${nf(o[pj[pj.length-1]]??0)}</td><td>${spark(pj.map(j=>o[j]??null))}</td></tr>`).join('')}</tbody></table>
+          ${pol['Totaal misdrijven']&&c.inw?`<p class="sub" style="margin-top:8px">Totaal per 1.000 inwoners in ${pj[pj.length-1]}: ${(1000*(pol['Totaal misdrijven'][pj[pj.length-1]]||0)/c.inw).toLocaleString('nl-NL',{maximumFractionDigits:0})}. In wijken met veel winkels, uitgaan of verkeer ligt dit hoger, ook door bezoekers.</p>`:''}`:'<p class="leeg">Geen cijfers.</p>'}
+        <p class="sub" style="margin-top:8px">Bron: politie, geregistreerde misdrijven per buurt (via CBS). Het gaat om aangiftes en registraties, niet om alle voorvallen.</p></section>
+    </div>
+  </div>
+  <p class="let">Deze pagina zet cijfers uit verschillende bronnen naast elkaar, ter informatie. Ze zijn verschillend gemeten en niet bedoeld om conclusies te trekken over oorzaak, verband of hoeveel aandacht een wijk zou moeten krijgen.</p>`;
+  window.scrollTo({top:0});
+}
 function lijst(){
   const d=CUR,bron=SOORT==='mot'?d.moties:d.toez;let l=FILTER==='af'?bron.af:bron.lijst;
   if(FILTER==='laat')l=l.filter(r=>{const dl=iso((r[3].match(/verwacht ([\d-]+)/)||[])[1]);return dl&&dl<DATA.stand;});
@@ -71,6 +162,7 @@ function onderwerpen(){
   $('ond').innerHTML=l.length?l.map(([n,c])=>`<a href="dossier.html#${slug(n)}"><span>${esc(n)}<i style="width:${c/mx*100}%"></i></span><span class="num sub" style="text-align:right">${c}</span></a>`).join(''):'<p class="leeg">Te weinig gegevens voor dit jaar.</p>';
 }
 function toon(d){
+  document.querySelectorAll('#kaart path.wk').forEach(p=>{const g=WK.wijken.find(o=>o.slug===p.dataset.s).gebied;p.classList.remove('sel');p.classList.toggle('ing',g===d.naam);});
   CUR=d;FILTER='open';document.title=d.naam+' · Wijken · raadzoeker';
   if(location.hash.slice(1)!==slug(d.naam))history.replaceState(null,'','#'+slug(d.naam));
   document.querySelectorAll('#kaart path.g').forEach(p=>p.classList.toggle('sel',p.dataset.n===d.naam));
@@ -95,6 +187,9 @@ function toon(d){
       <section class="vlak" aria-labelledby="db"><h2 id="db">Waar het in de raad over ging</h2><div class="lijst">${d.debatten.map(x=>debatRij(x,d.termen)).join('')}</div></section>
     </div>
     <div class="kol">
+      <section class="vlak pol" aria-labelledby="wig"><h2 id="wig">Wijken in ${esc(d.naam)}</h2>
+        <table><thead><tr><th>Wijk</th><th>Inwoners</th><th title="Wijkprofiel 2026: sociaal / fysiek / veiligheid">Wijkprofiel s / f / v</th></tr></thead><tbody>${WK.wijken.filter(o=>o.gebied===d.naam).map(o=>{const c=o.cbs['2025']||o.cbs['2024']||{},p=o.wp['2026']||o.wp['2024']||{};return `<tr><td><a href="#w-${o.slug}">${esc(o.naam)}</a></td><td class="num">${c.inw?nf(c.inw):'–'}</td><td class="num">${[p.sociaal,p.fysiek,p.veiligheid].map(v=>v??'–').join(' / ')}</td></tr>`;}).join('')}</tbody></table>
+        <p class="sub" style="margin-top:8px">Inwoners: CBS 2025. Wijkprofiel 2026 (100 = gemiddelde Rotterdam 2014).</p></section>
       <section class="vlak" aria-labelledby="wr"><h2 id="wr">Wijkraden</h2>
         <div class="lijst">${d.wijkraad&&d.wijkraad.length?d.wijkraad.map(r=>rij(r,'stuk',DATA.stand)).join(''):'<p class="leeg">Geen wijkraadstukken gevonden.</p>'}</div>
         <p class="sub" style="margin-top:12px">Wijkakkoorden, wijkverslagen en (ongevraagde) adviezen van de wijkraden, via <a href="https://wijkraad.rotterdam.nl" target="_blank" rel="noopener">wijkraad.rotterdam.nl</a>.</p></section>
