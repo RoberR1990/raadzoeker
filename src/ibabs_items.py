@@ -8,7 +8,7 @@ from paden import WERK
 VANAF=2018
 STOP=None   # --minuten N: netjes stoppen na N minuten (hervatbaar)
 class TijdOp(Exception): pass
-PDF={'moties','amendementen','initiatiefvoorstellen','wijkraadadviezen'}
+PDF={'moties','amendementen','initiatiefvoorstellen','wijkraadadviezen','brieven'}
 def tekst(s): return re.sub(r'[ \t]+',' ',html.unescape(re.sub(r'<[^>]+>',' ',s))).strip()
 def parse(h):
     b=h[h.find('id="maincontent"'):h.find('<footer')]
