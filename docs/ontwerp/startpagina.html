@@ -3,7 +3,7 @@
 <title>raadzoeker</title>
 <meta property="og:title" content="raadzoeker: wat vindt de Rotterdamse raad van jouw onderwerp?">
 <meta property="og:description" content="Moties, toezeggingen, debatten en standpunten over jouw dossier op één plek. Onofficieel, uit openbare raadsinformatie.">
-<link rel="stylesheet" href="stijl.css">
+<link rel="stylesheet" href="stijl.css?v=3">
 <style>
 /* hero: groen vlak met zoekvraag en een levende wolk van onderwerpen */
 .hero{position:relative;overflow:hidden;background:var(--groen);color:var(--wit);border-radius:12px;padding:56px 48px 40px;isolation:isolate}
@@ -27,6 +27,20 @@
 .wolk.zoekt .ow{opacity:.28}
 .wolk.zoekt .ow.raak{opacity:1;background:var(--wit);color:var(--zwart);border-color:var(--wit);transform:scale(1.06)}
 @keyframes op{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.meerwolk{display:none;margin:16px auto 0;background:none;border:1.5px solid var(--wit);color:var(--wit);border-radius:999px;padding:10px 18px;font:15px var(--font);cursor:pointer;min-height:44px}
+@media (max-width:700px){
+  /* mobiel: veegstrook met drie rijen in plaats van een hoge wolk */
+  .wolk{display:grid;grid-auto-flow:column;grid-template-rows:repeat(3,auto);gap:8px;justify-content:start;margin:20px -16px 0;padding:2px 16px 10px;overflow-x:auto;scroll-snap-type:x proximity;scrollbar-width:none;max-width:none}
+  .wolk::-webkit-scrollbar{display:none}
+  .ow{font-size:15px!important;padding:7px 12px;border-width:1px;white-space:nowrap;scroll-snap-align:start;justify-self:start}
+  .ow .stijg{font-size:11px}
+  .veeg{display:block!important;font-size:13px;margin-top:6px;opacity:.9}
+  .hero{padding:28px 16px 24px;text-align:left}.hero h1{margin:0 0 20px;font-size:30px}
+  .hero .zoekveld input{font-size:16px;min-height:52px;padding:14px 16px 14px 48px}.hero .zoekveld .loep{left:16px;top:14px}
+  .hero .legenda2{justify-content:flex-start;text-align:left;margin-top:16px}
+  .wolk.zoekt .ow:not(.raak){display:none}
+  .hero .legenda2{font-size:13px;gap:6px 16px}
+}
 .hero .legenda2{display:flex;flex-wrap:wrap;gap:8px 24px;margin-top:32px;font-size:14px;opacity:.95;justify-content:center}
 .hero .legenda2 a{color:var(--wit)}
 
@@ -85,6 +99,7 @@
       <ul class="keuze" id="keuze" role="listbox" aria-label="Onderwerpen"></ul>
     </div>
     <div class="wolk" id="wolk" aria-label="Alle onderwerpen, groter is meer aandacht in 2026"></div>
+    <p class="veeg" style="display:none">Veeg opzij voor alle 40 onderwerpen →</p>
     <div class="legenda2"><span>Hoe groter, hoe meer de raad er in 2026 over sprak</span><span><span class="stijg" style="font-size:12px;background:#D7F0A8;color:#000;border-radius:999px;padding:1px 7px">↑ 45%</span> stijger ten opzichte van 2025</span><span>Gestippeld = gebied, <a href="wijk.html">kies een wijk</a></span></div>
   </section>
 
@@ -131,7 +146,7 @@
   </section>
   <p class="voet">Gegevens: notulen en ondertiteling van de gemeenteraad, iBabs en de Rekenkamer Rotterdam, stand 2 oktober 2026. Kaart: CBS en Kadaster via PDOK. Aandacht is hoe vaak een onderwerp of gebied valt per 100.000 gesproken woorden; een signaal, geen meting. <a href="over.html">Over deze tool</a>.</p>
 </main>
-<script src="ontwerp.js"></script>
+<script src="ontwerp.js?v=3"></script>
 <script>
 kop('');
 // raadzaal-halfrond als achtergrond van de hero (45 zetels)
@@ -143,9 +158,12 @@ Promise.all(['start.json','kaart.json'].map(f=>fetch(f).then(r=>r.json()))).then
   const mx=Math.max(...OND.map(o=>o.nu)),mn=Math.min(...OND.map(o=>o.nu));
   const vs=OND.map(o=>({...o,f:Math.sqrt((o.nu-mn)/(mx-mn||1)),stijg:o.vorig>0?Math.round((o.nu-o.vorig)/o.vorig*100):0}));
   const top=new Set(vs.filter(o=>o.n>=40&&o.stijg>=25).sort((a,b)=>b.stijg-a.stijg).slice(0,6).map(o=>o.naam));
+  // op mobiel alleen de 12 grootste onderwerpen (geen gebieden) en de stijgers; de rest achter een knop
+  const kern=new Set([...vs].filter(o=>o.groep!=='Wijken en gebieden').sort((a,b)=>b.nu-a.nu).slice(0,12).map(o=>o.naam).concat([...top].filter(n=>vs.find(o=>o.naam===n).groep!=='Wijken en gebieden')));
   // grootste in het midden, kleinere eromheen: afwisselend achteraan en vooraan toevoegen
   const volg=[];[...vs].sort((a,b)=>b.nu-a.nu).forEach((o,i)=>i%2?volg.unshift(o):volg.push(o));
-  $('wolk').innerHTML=volg.map((o,i)=>`<a class="ow${o.groep==='Wijken en gebieden'?' geb':''}" href="${doel(o)}" style="--i:${i};font-size:${(15+o.f*19).toFixed(1)}px;font-weight:${o.f>.55?700:400}" data-n="${esc(o.naam.toLowerCase())}" data-z="${esc(o.sub.join(' ').toLowerCase())}" title="${esc(o.naam)}: ${String(o.nu).replace('.',',')} keer per 100.000 woorden in 2026${o.vorig?`, ${o.stijg>0?'+':''}${o.stijg}% t.o.v. 2025`:''}">${esc(o.naam)}${top.has(o.naam)?`<span class="stijg">↑ ${o.stijg}%</span>`:''}</a>`).join('');
+  const smal=matchMedia('(max-width:700px)').matches;
+  $('wolk').innerHTML=(smal?[...vs].sort((a,b)=>b.nu-a.nu):volg).map((o,i)=>`<a class="ow${o.groep==='Wijken en gebieden'?' geb':''}${kern.has(o.naam)?'':' extra'}" href="${doel(o)}" style="--i:${i};--fs:${(15+o.f*19).toFixed(1)}px;font-size:var(--fs);font-weight:${o.f>.55?700:400}" data-n="${esc(o.naam.toLowerCase())}" data-z="${esc(o.sub.join(' ').toLowerCase())}" title="${esc(o.naam)}: ${String(o.nu).replace('.',',')} keer per 100.000 woorden in 2026${o.vorig?`, ${o.stijg>0?'+':''}${o.stijg}% t.o.v. 2025`:''}">${esc(o.naam)}${top.has(o.naam)?`<span class="stijg">↑ ${o.stijg}%</span>`:''}</a>`).join('');
   const zoek=$('zoek'),wolk=$('wolk');
   zoek.addEventListener('input',()=>{const q=zoek.value.trim().toLowerCase();wolk.classList.toggle('zoekt',!!q);
     wolk.querySelectorAll('.ow').forEach(a=>a.classList.toggle('raak',!!q&&(a.dataset.n.includes(q)||a.dataset.z.includes(q))));});
