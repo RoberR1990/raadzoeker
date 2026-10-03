@@ -28,6 +28,7 @@
 .pol svg{width:90px;height:20px}
 .bm .soort{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 12px}
 .bm .soort span{background:var(--grijs);border-radius:999px;padding:4px 10px;font-size:13px}
+.cijferblok>summary{cursor:pointer;padding:16px 24px;background:var(--wit);border-radius:var(--r);list-style:none}.cijferblok>summary::-webkit-details-marker{display:none}.cijferblok>summary::before{content:'› ';display:inline-block;transition:transform .2s}.cijferblok[open]>summary::before{transform:rotate(90deg)}
 .let{background:var(--grijs);border-radius:6px;padding:12px 16px;font-size:14px;margin-top:16px;max-width:90ch}
 .kop{display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap;margin:40px 0 24px}
 .kop .acties{margin-left:auto;display:flex;gap:16px;align-items:center;flex-wrap:wrap}
@@ -111,14 +112,6 @@ function toonWijk(w){
   $('wijk').innerHTML=`
   <div class="kop"><div><div class="sub">Wijk in <a href="#${slug(w.gebied)}">${esc(w.gebied)}</a></div><h1>${esc(w.naam)}</h1></div>
     <div class="acties"><a href="#${slug(w.gebied)}">Bekijk het hele gebied ${esc(w.gebied)}</a></div></div>
-  <section class="vlak accent" aria-labelledby="kc"><h2 id="kc">Kerncijfers</h2>
-    <div class="kc">${Object.keys(CBSL).map(k=>{const j=[...jC].reverse().find(j=>(w.cbs[j]||{})[k]!=null);if(!j)return '';const r=k==='inw'||k==='bijst'?null:stadGem(k,j);
-      return `<div>${esc(CBSL[k][0])}<b class="num">${fmt(k,w.cbs[j][k])}</b><span class="ref">${j}${r!=null?' · Rotterdam '+fmt(k,r):''}</span>${spark(jC.map(x=>(w.cbs[x]||{})[k]??null))}</div>`;}).join('')}</div>
-    <p class="sub" style="margin-top:12px">CBS Kerncijfers wijken en buurten; per cijfer het meest recente jaar dat CBS heeft gepubliceerd, lijntje = 2022–${jC[jC.length-1]}. Sommige cijfers zijn door CBS afgerond of geheimgehouden. ‘Rotterdam’ is het gemiddelde over de wijken, gewogen naar inwoners.</p></section>
-  <section class="vlak sectie" style="margin-top:24px" aria-labelledby="wpk"><h2 id="wpk">Wijkprofiel</h2>
-    <p style="max-width:75ch;margin-bottom:12px">Het Wijkprofiel van de gemeente meet elke twee jaar hoe een wijk ervoor staat op drie indexen, met feitelijke cijfers en een bewonersenquête. 100 is het gemiddelde van Rotterdam in 2014.</p>
-    ${wpSvg(w.wp)}${wpTabel(w.wpd)}
-    <p class="sub" style="margin-top:12px">Cijfers: gemeente Rotterdam; OBI, Wijkprofiel 2014–2026. <a href="https://wijkprofiel.rotterdam.nl/" target="_blank" rel="noopener">Bekijk op wijkprofiel.rotterdam.nl</a>.</p></section>
   <div class="raster">
     <div class="kol">
       <section class="vlak" aria-labelledby="ir"><h2 id="ir">In de raad</h2>
@@ -139,12 +132,23 @@ function toonWijk(w){
         ${w.bekend&&Object.keys(w.bekend.n).length?`<p>${nf(Object.values(w.bekend.n).reduce((a,b)=>a+b,0))} bekendmakingen met een locatie in deze wijk sinds 2018, zoals vergunningen en verkeersbesluiten.</p><div class="soort">${w.bekend.soort.slice(0,6).map(([s,k])=>`<span>${esc(s)} ${nf(k)}</span>`).join('')}</div>
           ${w.bekend.recent.slice(0,6).map(r=>`<div class="item" style="padding:8px 0"><div class="sub">${fd(r[0])} · ${esc(r[2])}</div><a href="${esc(r[3])}" target="_blank" rel="noopener">${esc(r[1])}</a></div>`).join('')}`:'<p class="leeg">Nog geen bekendmakingen gekoppeld.</p>'}
         <p class="sub" style="margin-top:8px">Bron: officiële bekendmakingen van de gemeente (Gemeenteblad), gekoppeld via het locatiepunt.</p></section>
-      <section class="vlak pol" aria-labelledby="pk"><h2 id="pk">Geregistreerde misdrijven</h2>
+
+    </div>
+  </div>
+  <details class="cijferblok" style="margin-top:24px"><summary><b>Cijfers over ${esc(w.naam)}</b> <span class="sub">CBS, Wijkprofiel en politie; uitgebreider op <a href="https://wijkprofiel.rotterdam.nl/" target="_blank" rel="noopener">wijkprofiel.rotterdam.nl</a> en <a href="https://www.cbs.nl/nl-nl/visualisaties/kerncijfers-wijken-en-buurten" target="_blank" rel="noopener">cbs.nl</a></span></summary>
+  <section class="vlak" aria-labelledby="kc"><h2 id="kc">Kerncijfers</h2>
+    <div class="kc">${Object.keys(CBSL).map(k=>{const j=[...jC].reverse().find(j=>(w.cbs[j]||{})[k]!=null);if(!j)return '';const r=k==='inw'||k==='bijst'?null:stadGem(k,j);
+      return `<div>${esc(CBSL[k][0])}<b class="num">${fmt(k,w.cbs[j][k])}</b><span class="ref">${j}${r!=null?' · Rotterdam '+fmt(k,r):''}</span>${spark(jC.map(x=>(w.cbs[x]||{})[k]??null))}</div>`;}).join('')}</div>
+    <p class="sub" style="margin-top:12px">CBS Kerncijfers wijken en buurten; per cijfer het meest recente jaar dat CBS heeft gepubliceerd, lijntje = 2022–${jC[jC.length-1]}. Sommige cijfers zijn door CBS afgerond of geheimgehouden. ‘Rotterdam’ is het gemiddelde over de wijken, gewogen naar inwoners.</p></section>
+  <section class="vlak" style="margin-top:16px" aria-labelledby="wpk"><h2 id="wpk">Wijkprofiel</h2>
+    <p style="max-width:75ch;margin-bottom:12px">Het Wijkprofiel van de gemeente meet elke twee jaar hoe een wijk ervoor staat op drie indexen, met feitelijke cijfers en een bewonersenquête. 100 is het gemiddelde van Rotterdam in 2014.</p>
+    ${wpSvg(w.wp)}${wpTabel(w.wpd)}
+    <p class="sub" style="margin-top:12px">Cijfers: gemeente Rotterdam; OBI, Wijkprofiel 2014–2026. <a href="https://wijkprofiel.rotterdam.nl/" target="_blank" rel="noopener">Bekijk op wijkprofiel.rotterdam.nl</a>.</p></section>
+  <section class="vlak pol" style="margin-top:16px" aria-labelledby="pk"><h2 id="pk">Geregistreerde misdrijven</h2>
         ${Object.keys(pol).length?`<table><thead><tr><th>Soort</th><th>${pj[pj.length-1]}</th><th>2018–${pj[pj.length-1]}</th></tr></thead><tbody>${Object.entries(pol).map(([s,o])=>`<tr><td>${esc(s)}</td><td class="num">${nf(o[pj[pj.length-1]]??0)}</td><td>${spark(pj.map(j=>o[j]??null))}</td></tr>`).join('')}</tbody></table>
           ${pol['Totaal misdrijven']&&c.inw?`<p class="sub" style="margin-top:8px">Totaal per 1.000 inwoners in ${pj[pj.length-1]}: ${(1000*(pol['Totaal misdrijven'][pj[pj.length-1]]||0)/c.inw).toLocaleString('nl-NL',{maximumFractionDigits:0})}. In wijken met veel winkels, uitgaan of verkeer ligt dit hoger, ook door bezoekers.</p>`:''}`:'<p class="leeg">Geen cijfers.</p>'}
         <p class="sub" style="margin-top:8px">Bron: politie, geregistreerde misdrijven per buurt (via CBS). Het gaat om aangiftes en registraties, niet om alle voorvallen.</p></section>
-    </div>
-  </div>
+  </details>
   <p class="let">Deze pagina zet cijfers uit verschillende bronnen naast elkaar, ter informatie. Ze zijn verschillend gemeten en niet bedoeld om conclusies te trekken over oorzaak, verband of hoeveel aandacht een wijk zou moeten krijgen.</p>`;
   window.scrollTo({top:0});
 }
