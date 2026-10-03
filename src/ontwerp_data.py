@@ -54,6 +54,7 @@ def main():
     # debatten (raad): treffers per vergadering/agendapunt per thema, beste fragment; onderwerpen per gebied per jaar
     deb=collections.defaultdict(collections.Counter); best={}; spk=collections.defaultdict(collections.Counter)
     wt=collections.defaultdict(lambda:collections.defaultdict(collections.Counter))
+    co=collections.defaultdict(collections.Counter); segn=collections.Counter(); NSEG=[0]   # samen genoemd in een spreekbeurt
     for p in sorted(glob.glob(f'{DOCS}/data/raad/*.zst')):
         Y=zload(p); s=Y['s']; y=os.path.basename(p)[:4]
         for i,t in enumerate(s['t']):
@@ -70,6 +71,11 @@ def main():
                 if c>best.get((k,key),(0,))[0]:
                     m=R[k].search(f); a=max(0,m.start()-140); b=min(len(t),m.end()+200)
                     best[(k,key)]=(c,('…' if a else '')+re.sub(r'\s+',' ',t[a:b]).strip()+('…' if b<len(t) else ''),m.start()-a+(1 if a else 0),m.end()-m.start(),s['k'][i])
+            NSEG[0]+=1
+            for k in raak:
+                segn[k]+=1
+                for j in raak:
+                    if j!=k: co[k][j]+=1
             for g in GEB:
                 if g in raak:
                     for k in raak:
@@ -84,6 +90,35 @@ def main():
         else: x.append({})
         return x
     jaren=I['years']; out=[]
+    def afdatum(r): return iso((re.search(r'afgedaan ([\d-]+)',r[5]) or [None,''])[1])
+    def dagen(a,b): return (datetime.date.fromisoformat(b)-datetime.date.fromisoformat(a)).days
+    alle_af=[dagen(r[1],afdatum(r)) for r in ST['s'] if S[r[0]]=='Motie' and r[4]==5 and afdatum(r)]
+    STAD_MED=round(statistics.median(alle_af)) if alle_af else None
+    def verdieping(k,mot,toez,rs):
+        # 1 tijdlijn
+        pd=collections.Counter()
+        for (dt,a,ti),c in deb[k].items(): pd[dt]+=c
+        tl={'deb':sorted([d_,c] for d_,c in pd.items() if c>=2),
+            'mot':[[r[1],{1:'a',4:'a',5:'a',2:'v',3:'i'}.get(r[4],'o')] for r in mot],
+            'toez':[r[1] for r in toez],'rk':[[r[1],r[2]] for r in rs if S[r[0]]=='Rekenkamerrapport']}
+        # 2 afdoening per jaar en doorlooptijd
+        aan=[r for r in mot if r[4] in(1,4,5)]
+        pj={y:[sum(1 for r in aan if r[1][:4]==y),sum(1 for r in aan if r[1][:4]==y and r[4]==5)] for y in jaren}
+        dl=[dagen(r[1],afdatum(r)) for r in aan if r[4]==5 and afdatum(r)]
+        # 3 wie zit er aan tafel
+        ind=collections.Counter(r[3].split(' (')[0].strip() for r in mot if r[3]); ok=collections.Counter(r[3].split(' (')[0].strip() for r in aan if r[3])
+        tz=collections.Counter(re.sub(r'\s*\(.*','',r[3].split(' · ')[0]).strip() for r in toez if r[3]); tzo=collections.Counter(re.sub(r'\s*\(.*','',r[3].split(' · ')[0]).strip() for r in toez if r[3] and r[4]==4)
+        # 4 botsingen: nipte stemmingen
+        nip=[r for r in mot if r[8] in STEM and STEM[r[8]][1]>=0]
+        nip.sort(key=lambda r:(abs(STEM[r[8]][1]-STEM[r[8]][2]),-int(r[1][:4]+r[1][5:7]+r[1][8:])))
+        # 5 verwante onderwerpen (lift: hoeveel vaker samen dan toeval), 6 wijken
+        n=max(1,segn[k]); N=max(1,NSEG[0])
+        ver=[[TH[j][1][0],round(100*c/n),round((c/n)/(segn[j]/N),1)] for j,c in co[k].items() if j in ONDERW and c>=15]
+        ver=sorted(ver,key=lambda x:-x[2])[:6]
+        wijk={TH[g][1][0]:round(100*co[k][g]/n,1) for g in GEB if g!=k}
+        return {'tl':tl,'pj':pj,'dl':round(statistics.median(dl)) if dl else None,'dln':len(dl),'stad_dl':STAD_MED,
+                'ind':[[p,c,ok[p]] for p,c in ind.most_common(8)],'tz':[[w,c,tzo[w]] for w,c in tz.most_common(5)],
+                'nip':[rij(r) for r in nip[:6]],'ver':ver,'wijk':wijk}
     for k,(groep,t) in enumerate(TH):
         rs=per[k]
         mot=[r for r in rs if S[r[0]]=='Motie']; aan=[r for r in mot if r[4] in(1,4,5)]
@@ -105,6 +140,7 @@ def main():
            'rekenkamer':{'n':sum(1 for r in rs if S[r[0]]=='Rekenkamerrapport'),'lijst':[rij(r) for r in rs if S[r[0]]=='Rekenkamerrapport'][:5]},
            'debatten':[[dt,a,ti[:160],c,best[(k,(dt,a,ti))][1],best[(k,(dt,a,ti))][2],best[(k,(dt,a,ti))][3],
                         [n for n,_ in spk[(k,(dt,a,ti))].most_common(3)],best[(k,(dt,a,ti))][4]] for (dt,a,ti),c in top]}
+        d['verdieping']=verdieping(k,mot,toez,rs)
         if k in GEB:
             d['inw']=INW.get(t[0],0)
             d['onderwerpen']={y:[[TH[j][1][0],c] for j,c in wt[k][y].most_common(6)] for y in jaren}
@@ -117,8 +153,8 @@ def main():
     json.dump({'stand':STAND,'dossiers':out,'stad':stad},open(f'{DOCS}/ontwerp/dossiers.json','w',encoding='utf8'),ensure_ascii=False,separators=(',',':'))
     print('dossiers',len(out),os.path.getsize(f'{DOCS}/ontwerp/dossiers.json')//1000,'kB')
     lab(ST,S,I,TH,ONDERW,GEB)
-    start(ST,S,I,meta)
-def start(ST,S,I,meta):
+    start(ST,S,I,meta,out,stad)
+def start(ST,S,I,meta,dossiers,stad):
     mot=[r for r in ST['s'] if S[r[0]]=='Motie']
     laatst=max(r[1] for r in mot if r[4] in(1,4,5))
     recent=[[r[1],r[2],r[3].split(' (')[0],r[5],'https://gemeenteraad.rotterdam.nl/Reports/Item/'+r[7],motiekern(r[6])] for r in mot if r[1]==laatst and r[4] in(1,4,5)]
@@ -126,7 +162,10 @@ def start(ST,S,I,meta):
     toez=[r for r in ST['s'] if S[r[0]]=='Toezegging' and r[4]==4]; mo=[r for r in mot if r[4]==4]
     out={'stand':STAND,'laatst':laatst,'recent':recent,'aantal_aangenomen':len(recent),
          'toez_open':len(toez),'toez_laat':sum(1 for r in toez if laat(r)),'mot_open':len(mo),'mot_laat':sum(1 for r in mo if laat(r)),
-         'soorten':S,'rise':[[w[0],w[1],w[2],w[3]] for w in I['rise'][:8]],'jaren':I['years']}
+         'soorten':S,'rise':[[w[0],w[1],w[2],w[3]] for w in I['rise'][:8]],'jaren':I['years'],'stad':stad,
+         # klein genoeg voor de startpagina: zoeklijst + wolk (aandacht dit en vorig jaar) en de gebieden voor de kaart
+         'ond':[[d['naam'],d['groep'],d['sub'],d['termen'],d['trend'][-1],d['trend'][-2],d['trendn'][-1]] for d in dossiers if d['naam']!='Toezeggingen'],
+         'geb':{d['naam']:{'trend':d['trend'],'trendn':d['trendn'],'onderwerpen':d['onderwerpen']} for d in dossiers if 'inw' in d}}
     json.dump(out,open(f'{DOCS}/ontwerp/start.json','w',encoding='utf8'),ensure_ascii=False,separators=(',',':'))
     print('start',len(recent),'besluiten op',laatst,out['toez_open'],out['toez_laat'],out['mot_open'],out['mot_laat'])
 def lab(ST,S,I,TH,ONDERW,GEB):
