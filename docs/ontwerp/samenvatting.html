@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
+<title>Onderwerp in het kort · raadzoeker</title>
+<link rel="stylesheet" href="stijl.css?v=4">
+<style>
+.kolom{max-width:900px;margin:0 auto;display:grid;gap:24px}
+.kies{display:flex;flex-wrap:wrap;gap:8px}
+.kern p{font-size:19px;line-height:1.6;margin:0;max-width:70ch}
+.kern .z{cursor:help}
+.bron{font-size:13px;color:var(--sub)}
+.bron a{color:var(--sub)}
+.pt{border-top:1px solid var(--grijs2);padding:14px 0}
+.pt:first-of-type{border-top:0}
+.pt .wat{font-size:16px}
+.pt .cit{font-style:normal}
+.pt b{font-weight:700}
+.tl{display:grid;grid-template-columns:7.5em minmax(0,1fr);gap:0 16px}
+.tl .d{color:var(--sub);font-size:14px;padding-top:15px}
+.st{display:inline-block;font-size:13px;background:var(--grijs);border-radius:4px;padding:1px 8px;margin-left:6px}
+.uitleg{font-size:14px;color:var(--sub);max-width:70ch}
+details.bronnen summary{cursor:pointer}
+@media (max-width:700px){.kern p{font-size:17px}.tl{grid-template-columns:minmax(0,1fr)}.tl .d{padding-top:12px}}
+</style></head>
+<body>
+<header class="balk"></header>
+<main class="pagina">
+ <div class="kolom">
+  <div class="vlak">
+    <h1 id="titel">Onderwerp in het kort</h1>
+    <p class="uitleg">Proef: samenvatting van alles wat raad, college en wijkraden sinds 2022 over dit onderwerp zeiden en besloten. Gemaakt met AI (Claude Opus). Elk punt heeft een letterlijk citaat met link; een controlescript heeft alles geschrapt waarvan het citaat niet woordelijk in de bron staat. De samenvatting kan nog steeds te ruim of onvolledig zijn: lees bij twijfel de bron.</p>
+    <div class="kies" id="kies" role="group" aria-label="Kies een onderwerp"></div>
+  </div>
+  <div id="uit"></div>
+ </div>
+</main>
+<script src="ontwerp.js?v=5"></script>
+<script>
+kop('dossier');
+let IDX=[];
+const bron=x=>`<span class="bron">${x.auto?'automatische ondertiteling · ':''}<a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.bron_label||x.bron)}</a>, ${fd(x.bron_datum)}</span>`;
+const cit=x=>`<span class="cit">‘${esc(x.citaat)}’ ${bron(x)}</span>`;
+const blok=(id,titel,inh,leeg)=>`<section class="vlak" aria-labelledby="${id}"><h2 id="${id}">${titel}</h2>${inh||`<p class="leeg">${leeg}</p>`}</section>`;
+async function toon(slug){
+  const d=await (await fetch('samenvattingen/'+slug+'.json?v='+Date.now())).json();
+  document.title=d.onderwerp+' · raadzoeker';$('titel').innerHTML=esc(d.onderwerp)+' <span class="ai">AI-samenvatting, proef</span>';
+  $('kies').querySelectorAll('button').forEach(b=>{b.classList.toggle('on',b.dataset.s===slug);b.setAttribute('aria-pressed',b.dataset.s===slug);});
+  let h='';
+  h+=blok('k','De kern',d.kern.length?`<div class="kern"><p>${d.kern.map(x=>`<span class="z" title="‘${esc(x.citaat)}’">${esc(x.zin)}</span>`).join(' ')}</p></div>
+     <details class="bronnen" style="margin-top:16px"><summary>Citaten bij de kern</summary>${d.kern.map(x=>`<div class="pt"><div class="wat">${esc(x.zin)}</div>${cit(x)}</div>`).join('')}</details>`:'','Geen kernpunten die de controle doorstonden.');
+  const tl=[...d.tijdlijn].sort((a,b)=>a.bron_datum.localeCompare(b.bron_datum));
+  h+=blok('t','Tijdlijn',tl.length?`<div class="tl">${tl.map(x=>`<div class="d">${fd(x.bron_datum)}</div><div class="pt"><div class="wat">${esc(x.wat)}</div>${cit(x)}</div>`).join('')}</div>`:'','Geen momenten die de controle doorstonden.');
+  h+=blok('f','Wat de fracties vinden',d.fracties.map(x=>`<div class="pt"><div class="wat"><b>${esc(x.fractie)}</b> ${esc(x.standpunt)}</div>${cit(x)}</div>`).join(''),'Geen standpunten die de controle doorstonden.');
+  h+=blok('c','Wat het college beloofde en deed',d.college.map(x=>`<div class="pt"><div class="wat">${esc(x.belofte)}${x.stand?`<span class="st">${esc(x.stand)}</span>`:''}</div>${cit(x)}</div>`).join(''),'Geen punten die de controle doorstonden.');
+  h+=blok('w','Signalen uit de wijken',d.wijken.map(x=>`<div class="pt"><div class="wat"><b>${esc(x.wijk)}</b> ${esc(x.signaal)}</div>${cit(x)}</div>`).join(''),'Geen wijksignalen die de controle doorstonden.');
+  h+=blok('o','Open eindjes',d.open.map(x=>`<div class="pt"><div class="wat">${esc(x.wat)}</div>${cit(x)}</div>`).join(''),'Geen open eindjes die de controle doorstonden.');
+  h+=`<p class="uitleg">Doorstaan controle: ${Object.entries(d.telling||{}).map(([k,v])=>esc(k)+' '+esc(v)).join(' · ')}. <a href="zoek.html#q=${encodeURIComponent(d.zoek||'')}">Zelf zoeken in de stukken</a>.</p>`;
+  $('uit').innerHTML=h;history.replaceState(null,'','#'+slug);
+}
+(async()=>{
+  IDX=await (await fetch('samenvattingen/index.json?v='+Date.now())).json();
+  $('kies').className='chips';$('kies').innerHTML=IDX.map(x=>`<button type="button" data-s="${x.slug}">${esc(x.naam)}</button>`).join('');
+  $('kies').addEventListener('click',e=>{const b=e.target.closest('button');if(b)toon(b.dataset.s);});
+  const s=location.hash.slice(1);toon(IDX.some(x=>x.slug===s)?s:IDX[0].slug);
+})();
+</script>
+</body></html>

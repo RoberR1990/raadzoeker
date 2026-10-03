@@ -7,6 +7,7 @@ import ibabs
 from paden import WERK
 VANAF=2018
 STOP=None   # --minuten N: netjes stoppen na N minuten (hervatbaar)
+ALLEEN=None   # --alleen REGEX: alleen stukken waarvan de titel matcht (gericht ophalen)
 class TijdOp(Exception): pass
 PDF={'moties','amendementen','initiatiefvoorstellen','wijkraadadviezen','brieven'}
 def tekst(s): return re.sub(r'[ \t]+',' ',html.unescape(re.sub(r'<[^>]+>',' ',s))).strip()
@@ -43,7 +44,7 @@ def soort(naam,rows):
             try: klaar.add(json.loads(l)['id']); goed.append(l)
             except Exception: pass   # half geschreven regel na een onderbreking
         open(out,'w',encoding='utf8').writelines(goed)
-    todo=[r for r in rows if (jaar(r) or 0)>=VANAF and r['DT_RowId'] not in klaar]
+    todo=[r for r in rows if (jaar(r) or 0)>=VANAF and r['DT_RowId'] not in klaar and (not ALLEEN or re.search(ALLEEN,(r.get('title') or '').lower()))]
     print(naam,'te doen',len(todo),'al klaar',len(klaar),flush=True)
     t0=time.time()
     with open(out,'a',encoding='utf8') as f:
@@ -63,6 +64,8 @@ if __name__=='__main__':
     args=sys.argv[1:]
     if '--minuten' in args:
         i=args.index('--minuten'); STOP=time.time()+60*float(args[i+1]); del args[i:i+2]
+    if '--alleen' in args:
+        i=args.index('--alleen'); ALLEEN=args[i+1]; del args[i:i+2]
     try:
         for naam in args: soort(naam,L[naam])
     except TijdOp:
