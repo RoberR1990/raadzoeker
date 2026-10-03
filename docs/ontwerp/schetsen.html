@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
+<title>Schetsen onderwerppagina · raadzoeker</title>
+<link rel="stylesheet" href="stijl.css?v=4">
+<style>
+.wrap{max-width:1240px;margin:0 auto;padding:0 16px}
+.kiesbalk{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0 8px}
+.kiesbalk button{font:15px var(--font);padding:10px 16px;border:1px solid var(--lijn);border-radius:999px;background:var(--wit);cursor:pointer;min-height:44px}
+.kiesbalk button.on{background:var(--zwart);color:var(--wit);border-color:var(--zwart)}
+.uitleg{background:var(--wit);border-radius:var(--r);padding:16px 20px;margin-bottom:16px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;font-size:14px}
+.uitleg b{display:block;font-size:16px;margin-bottom:4px}
+.uitleg .plus{color:var(--groen-d)}.uitleg .min{color:#8a3b00}
+.schets{display:none}.schets.on{display:block}
+.label{font-size:12px;color:var(--sub);text-transform:none;letter-spacing:.02em;margin-bottom:4px}
+.kaart{background:var(--wit);border-radius:var(--r);padding:20px}
+.kaart h2{font-size:20px;margin:0 0 8px}
+.kaart h3{font-size:16px;margin:0 0 6px}
+.kaart p{margin:0 0 8px;line-height:1.55}
+.crumb{font-size:14px;color:var(--sub);margin:4px 0 8px}
+.titel{font-size:34px;margin:0 0 8px}
+.stand{border-left:4px solid var(--groen);background:var(--groen-zacht);padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0}
+.stand .label{color:var(--groen-d)}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.kpi{background:var(--grijs);border-radius:6px;padding:10px 12px}
+.kpi b{display:block;font-size:24px}
+.kpi span{font-size:13px;color:var(--sub)}
+.rij{display:grid;grid-template-columns:6.5em minmax(0,1fr);gap:4px 12px;padding:8px 0;border-bottom:1px solid var(--grijs2);font-size:15px}
+.rij:last-child{border-bottom:0}
+.rij .d{color:var(--sub);font-size:13px}
+.chip{display:inline-block;font-size:12px;background:var(--grijs);border-radius:4px;padding:1px 6px;margin-left:4px}
+.ph{background:repeating-linear-gradient(45deg,var(--grijs),var(--grijs) 8px,var(--wit) 8px,var(--wit) 16px);border:1px dashed var(--lijn);border-radius:6px;padding:16px;color:var(--sub);font-size:14px;text-align:center}
+.knop2{display:block;width:100%;text-align:center;padding:10px;border:1px solid var(--lijn);border-radius:6px;background:var(--grijs);font-size:14px;margin-top:8px}
+.fr{padding:8px 0;border-bottom:1px solid var(--grijs2);font-size:15px}.fr:last-child{border-bottom:0}
+/* A: rapport met inhoudsopgave */
+.A{display:grid;grid-template-columns:220px minmax(0,1fr);gap:24px;align-items:start}
+.A nav{position:sticky;top:16px;background:var(--wit);border-radius:var(--r);padding:16px;font-size:15px}
+.A nav a{display:block;padding:6px 0;text-decoration:none;color:var(--zwart)}
+.A nav a.on{font-weight:700;color:var(--groen)}
+.A nav .sub{margin-top:12px}
+.A main{display:grid;gap:16px}
+/* B: kop met tabs */
+.tabs{display:flex;gap:4px;border-bottom:2px solid var(--grijs2);overflow-x:auto;margin:16px 0 0}
+.tabs button{font:15px var(--font);padding:12px 16px;border:0;background:none;cursor:pointer;white-space:nowrap;border-bottom:3px solid transparent;margin-bottom:-2px}
+.tabs button.on{border-bottom-color:var(--groen);font-weight:700}
+.B2{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:16px;margin-top:16px}
+/* C: verhaal + feitenpaneel */
+.C{display:grid;grid-template-columns:minmax(0,2fr) minmax(300px,1fr);gap:24px;align-items:start}
+.C aside{position:sticky;top:16px;display:grid;gap:12px}
+.C main{display:grid;gap:16px}
+.C .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media (max-width:900px){.uitleg{grid-template-columns:minmax(0,1fr)}.A,.C,.B2{grid-template-columns:minmax(0,1fr)}.A nav{position:static;display:flex;gap:12px;overflow-x:auto;white-space:nowrap}.A nav .sub{display:none}.C aside{position:static}.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.titel{font-size:26px}}
+</style></head>
+<body>
+<header class="balk"></header>
+<div class="wrap">
+  <h1 style="margin-top:24px">Drie schetsen voor de onderwerppagina</h1>
+  <p class="sub" style="font-size:15px;max-width:80ch">Elk met echte inhoud (deelscooters). Inhoud is in alle drie gelijk: AI-samenvatting met stand van zaken, plus de bestaande data (moties, toezeggingen, debatten, cijfers). Het verschil zit in de indeling. Bovenaan elke schets: hoe je er komt (thema → onderwerp).</p>
+  <div class="uitleg">
+    <div><b>A · Rapport met inhoudsopgave</b>Eén lange pagina, links een vaste inhoudsopgave.<br><span class="plus">+ alles scanbaar, printbaar, goed voor een briefing</span><br><span class="min">− lang; op mobiel veel scrollen</span></div>
+    <div><b>B · Kop met tabbladen</b>Bovenaan kern, stand en kerncijfers; daaronder tabbladen per onderdeel.<br><span class="plus">+ rustig, snel naar één onderdeel, goed op mobiel</span><br><span class="min">− je ziet niet alles tegelijk; minder 'verhaal'</span></div>
+    <div><b>C · Verhaal + feitenpaneel</b>Links het verhaal, rechts een vast paneel met stand, cijfers en open eindjes.<br><span class="plus">+ benut desktopbreedte, feiten altijd in zicht</span><br><span class="min">− drukker; paneel schuift op mobiel onder het verhaal</span></div>
+  </div>
+  <div class="kiesbalk" id="kies"><button data-s="A" class="on">Schets A</button><button data-s="B">Schets B</button><button data-s="C">Schets C</button></div>
+  <div id="A" class="schets on"></div>
+  <div id="B" class="schets"></div>
+  <div id="C" class="schets"></div>
+  <p class="sub" style="margin:32px 0">Schetsen, geen eindontwerp: grijze gearceerde blokken zijn bestaande onderdelen (grafiek, lijst) die hier niet zijn uitgewerkt.</p>
+</div>
+<script src="ontwerp.js?v=5"></script>
+<script>
+kop('dossier');
+const K={moties:6,aan:4,toez:9,toezOpen:1,debat:140,laatste:'2026-09-09',vragen:5,wijk:60};
+const zin=zs=>zs.map(x=>esc(x.zin)).join(' ');
+const laatste=zs=>zs.length?esc(zs[zs.length-1].zin):'';
+const crumb=`<div class="crumb">Onderwerpen › Mobiliteit &amp; verkeer › <b>Deelscooters en deelfietsen</b> · ook: <a href="#">Parkeeroverlast</a>, <a href="#">Verkeersveiligheid</a>, <a href="#">OV en RET</a></div>`;
+const kpis=`<div class="kpis"><div class="kpi"><b>${K.aan} van ${K.moties}</b><span>moties aangenomen sinds 2022</span></div><div class="kpi"><b>${K.toezOpen} open</b><span>van ${K.toez} toezeggingen</span></div><div class="kpi"><b>${K.debat}</b><span>keer besproken sinds 2022</span></div><div class="kpi"><b>${fd(K.laatste)}</b><span>laatst besproken</span></div></div>`;
+const tl=(d,n)=>d.tijdlijn.punten.slice(0,n).map(x=>`<div class="rij"><span class="d">${fd(x.bron_datum)}</span><span>${esc(x.wat)}${x.stand?`<span class="chip">${esc(x.stand)}</span>`:''}</span></div>`).join('');
+const fr=(d,n)=>d.fracties.punten.slice(0,n).map(f=>`<div class="fr"><b>${esc(f.fractie)}</b> ${f.standpunten.map(x=>esc(x.wat.replace(/\.$/,''))).join('; ')}</div>`).join('');
+const lijst=(xs,n,veld)=>xs.slice(0,n).map(x=>`<div class="fr">${veld?`<b>${esc(x[veld])}</b> `:''}${esc(x.wat)}${x.stand?`<span class="chip">${esc(x.stand)}</span>`:''}</div>`).join('');
+const blok=(t,inh,id)=>`<section class="kaart"${id?` id="${id}"`:''}><h2>${t}</h2>${inh}</section>`;
+const data=`<div class="ph">Moties en toezeggingen · filters open / over de termijn / afgedaan (bestaand)</div><div class="ph" style="margin-top:8px">Debatten met fragment en sprekers (bestaand)</div><div class="ph" style="margin-top:8px">Aandacht per jaar · wie praat erover · hangt samen met (bestaand)</div>`;
+(async()=>{
+  const d=await (await fetch('samenvattingen/deelscooters-en-deelfietsen.json')).json();
+  const kop2=`${crumb}<h1 class="titel">Deelscooters en deelfietsen <span class="ai">AI-samenvatting</span></h1>`;
+  const stand=`<div class="stand"><div class="label">Stand van zaken</div>${laatste(d.kern)}</div>`;
+  // A
+  $('A').innerHTML=`<div class="A"><nav aria-label="Inhoud"><a class="on" href="#a1">In het kort</a><a href="#a2">Meer diepgang</a><a href="#a3">Tijdlijn</a><a href="#a4">Fracties</a><a href="#a5">College</a><a href="#a6">Wijken</a><a href="#a7">Open eindjes</a><div class="sub">Data</div><a href="#a8">Moties en toezeggingen</a><a href="#a8">Debatten</a><a href="#a8">Cijfers</a><div class="sub"><a href="#">Briefing (A4)</a><a href="#">Delen</a></div></nav>
+   <main><section class="kaart" id="a1">${kop2}<p style="font-size:18px">${zin(d.kern.slice(0,-1))}</p>${stand}${kpis}</section>
+    ${blok('Meer diepgang',`<p>${zin(d.verdieping[0])}</p><span class="knop2">Lees verder</span>`,'a2')}
+    ${blok('Tijdlijn',`<p>${zin(d.tijdlijn.intro)}</p>${tl(d,4)}<span class="knop2">Toon ${d.tijdlijn.punten.length} momenten</span>`,'a3')}
+    ${blok('Wat de fracties vinden',`<p>${zin(d.fracties.intro)}</p>${fr(d,3)}<span class="knop2">Toon alle fracties</span>`,'a4')}
+    ${blok('Wat het college beloofde en deed',`<p>${zin(d.college.intro)}</p>`,'a5')}
+    ${blok('Signalen uit de wijken',`<p>${zin(d.wijken.intro)}</p>`,'a6')}
+    ${blok('Open eindjes',lijst(d.open.punten,4),'a7')}
+    ${blok('Moties, toezeggingen en debatten',data,'a8')}</main></div>`;
+  // B
+  const tabs=['Overzicht','Tijdlijn','Fracties','College','Wijken','Moties en toezeggingen','Debatten'];
+  const tabInh={
+    Overzicht:`<div class="B2"><section class="kaart"><h2>Meer diepgang</h2><p>${zin(d.verdieping[0])}</p><p>${zin(d.verdieping[1]||[])}</p><span class="knop2">Lees verder</span></section><div style="display:grid;gap:16px;align-content:start"><section class="kaart"><h2>Open eindjes</h2>${lijst(d.open.punten,4)}</section><section class="kaart"><h2>Fracties in één oogopslag</h2>${fr(d,4)}</section></div></div>`,
+    Tijdlijn:`<section class="kaart" style="margin-top:16px"><p>${zin(d.tijdlijn.intro)}</p>${tl(d,12)}</section>`,
+    Fracties:`<section class="kaart" style="margin-top:16px"><p>${zin(d.fracties.intro)}</p>${fr(d,20)}</section>`,
+    College:`<section class="kaart" style="margin-top:16px"><p>${zin(d.college.intro)}</p>${lijst(d.college.punten,10)}</section>`,
+    Wijken:`<section class="kaart" style="margin-top:16px"><p>${zin(d.wijken.intro)}</p>${lijst(d.wijken.punten,10,'wijk')}</section>`,
+    'Moties en toezeggingen':`<section class="kaart" style="margin-top:16px"><div class="ph">Bestaande lijst met filters</div></section>`,
+    Debatten:`<section class="kaart" style="margin-top:16px"><div class="ph">Bestaande debatten met fragment</div></section>`};
+  $('B').innerHTML=`<section class="kaart">${kop2}<div class="B2" style="margin-top:0"><div><p style="font-size:18px">${zin(d.kern.slice(0,-1))}</p>${stand}</div><div>${kpis.replace('class="kpis"','class="kpis" style="grid-template-columns:repeat(2,minmax(0,1fr))"')}</div></div>
+    <div class="tabs" role="tablist">${tabs.map((t,i)=>`<button role="tab" class="${i?'':'on'}" data-t="${t}">${t}</button>`).join('')}</div></section><div id="Bt">${tabInh.Overzicht}</div>`;
+  $('B').querySelector('.tabs').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;$('B').querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('on',x===b));$('Bt').innerHTML=tabInh[b.dataset.t];});
+  // C
+  $('C').innerHTML=`${crumb}<div class="C"><main><section class="kaart"><h1 class="titel">Deelscooters en deelfietsen <span class="ai">AI-samenvatting</span></h1><p style="font-size:18px">${zin(d.kern)}</p></section>
+     ${blok('Meer diepgang',`<p>${zin(d.verdieping[0])}</p><span class="knop2">Lees verder</span>`)}
+     ${blok('Tijdlijn',`<p>${zin(d.tijdlijn.intro)}</p>${tl(d,5)}<span class="knop2">Toon ${d.tijdlijn.punten.length} momenten</span>`)}
+     ${blok('Wat de fracties vinden',`<p>${zin(d.fracties.intro)}</p>${fr(d,4)}<span class="knop2">Toon alle fracties</span>`)}
+     ${blok('Wat het college beloofde en deed',`<p>${zin(d.college.intro)}</p>${lijst(d.college.punten,4)}`)}
+     ${blok('Moties, toezeggingen en debatten',data)}</main>
+    <aside><section class="kaart"><div class="label">Stand van zaken</div><p style="margin:0">${laatste(d.kern)}</p></section><section class="kaart">${kpis}</section>
+      <section class="kaart"><h3>Open eindjes</h3>${lijst(d.open.punten,4)}</section><section class="kaart"><h3>Signalen uit de wijken</h3>${lijst(d.wijken.punten,5,'wijk')}</section>
+      <section class="kaart"><a href="#">Briefing (A4)</a> · <a href="#">Delen</a></section></aside></div>`;
+  $('kies').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;$('kies').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));['A','B','C'].forEach(s=>$(s).classList.toggle('on',s===b.dataset.s));});
+})();
+</script>
+</body></html>
