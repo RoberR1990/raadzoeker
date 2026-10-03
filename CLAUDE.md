@@ -4,7 +4,7 @@ Zoektool voor wat er in de Rotterdamse gemeenteraad en raadscommissies is gezegd
 
 ## Mappen
 
-- `docs/` — de site. Hosting: Cloudflare Pages, gekoppeld aan deze repo (branch `main`, uitvoermap `docs`, geen build-commando), afgeschermd met Cloudflare Access (alleen toegelaten e-mailadressen). Elke push naar `main` zet de site vanzelf opnieuw online. Limiet: 25 MB per bestand (grootste jaarbestand nu 7,7 MB). `_headers` vraagt zoekmachines niet te indexeren. `index.html` is de startpagina; `raadzoeker.html` en `commissiezoeker.html` (2022–2026) zijn kleine pagina's (0,13 MB) die de jaardata uit `docs/data/raad/` en `docs/data/commissies/` ophalen (`JAAR.zst` = JSON, zstd niveau 22, plus `meta.json`; alle downloads starten tegelijk, verwerken nieuwste jaar eerst). `commissiezoeker-2022-2023/2024-2025/2026.html` zijn alleen nog doorverwijzingen.
+- `docs/` — de site, https://raadzoeker.pages.dev (achter Cloudflare Access). Hosting: Cloudflare Pages, gekoppeld aan deze repo (branch `main`, uitvoermap `docs`, geen build-commando), afgeschermd met Cloudflare Access (alleen toegelaten e-mailadressen). Elke push naar `main` zet de site vanzelf opnieuw online. Limiet: 25 MB per bestand (grootste jaarbestand nu 7,7 MB). `_headers` vraagt zoekmachines niet te indexeren. `index.html` is de startpagina; `raadzoeker.html` en `commissiezoeker.html` (2022–2026) zijn kleine pagina's (0,13 MB) die de jaardata uit `docs/data/raad/` en `docs/data/commissies/` ophalen (`JAAR.zst` = JSON, zstd niveau 22, plus `meta.json`; alle downloads starten tegelijk, verwerken nieuwste jaar eerst). `commissiezoeker-2022-2023/2024-2025/2026.html` zijn alleen nog doorverwijzingen.
 - `src/` — pijplijn en app. Alle paden staan in `src/paden.py` (overschrijfbaar met env `RZ_BRON`, `RZ_WERK`, `RZ_STAND`). `src/oud/` = losse patches die al in `template.html` zitten (niet opnieuw toepassen).
 - `data/sum/` — AI-samenvattingen per debat, 2026 (Sonnet-subagents). `index.json` koppelt id aan (datum, agendapunt); afgeleid uit de gebouwde data omdat de oorspronkelijke invoerbestanden weg zijn (122 van 137 gekoppeld, net als voorheen).
 - `data/tsum/` — AI-samenvattingen per thema (id = index in de platte themalijst uit `themes.py`). In de Raadzoeker zichtbaar boven de resultaten als je een thema kiest, gelabeld als AI. 0–23 en 27–29 eerder gemaakt (zonder citaten). 24, 26 en 30–40 op 3-10-2026 met Haiku, elk één thema per agent, mét een letterlijk citaat per ontwikkeling/standpunt; `src/tsum_check.py --schrijf` schrapt alles waarvan het citaat niet woordelijk (en bij standpunten: in een fragment van die fractie) in de bron staat, en de app toont het citaat. Thema 25 (Toezeggingen) bewust zonder samenvatting: Haiku schreef uitspraken van wethouders toe aan fracties, en de officiële toezeggingenlijst (stap 4) is beter. Invoer maken: `python src/tsum_in.py 24 t24`.
@@ -56,12 +56,24 @@ Hulpmodules: `subs.py` (ondertitels uitlijnen), `motions.py` (stemuitslag), `toe
 - Stemgedrag: betrouwbaar voor patronen per fractie, niet per raadslid.
 - Sprong naar het juiste videomoment bij Connect Live is niet geverifieerd.
 
+## Redesign (besloten 3-10-2026, nog niet gebouwd)
+
+Doel: van citatenzoeker naar een site die laat zien wat er in de stad speelt, voor iedereen, modulair; eerst gericht op gemeenteambtenaren via intranet, met een hoog wow-gehalte zodat hij zich verspreidt. Site blijft voorlopig achter Cloudflare Access; de regel gaat naar alle @rotterdam.nl-adressen (akkoord Robert, instellen in Cloudflare). Geen functies die een AI-sleutel nodig hebben. Automatisch (wekelijks) bijwerken mag via de NAS.
+
+Gekozen modules voor het eerste prototype:
+1. **Raad Wrapped**: jaar/raadsperiode in deelbare kaarten (woord van het jaar, meest besproken wijk, opkomende onderwerpen, enz.); lanceercampagne.
+2. **Mijn dossier**: kies onderwerp/afdeling → wat de raad zei, open moties en toezeggingen met deadlines, welke fracties ermee bezig zijn.
+3. **Briefing-generator**: A4/pdf per onderwerp met eerdere moties, toezeggingen, standpunten (met citaten) en rekenkamerbevindingen.
+5. **Levende stadskaart** als binnenkomer: wijken kleuren naar aandacht, tijdschuif 2018–2026.
+
+Ook hoog en haalbaar (eerder genoemd): Mijn wijk, Dossiers, Beloftemonitor, Wie is wie, Stadspols. Later: organisatiepagina's, volgen/alerts, tijdmachine, partijvergelijker, verbanden. Ontwerpregels: binnen 1 s iets zien (kleine voorberekende bestanden per pagina, geen 20 MB), antwoord eerst en bron één klik dieper, deelbare links met voorvertoning, goed op mobiel, onofficieel maar verzorgd. Plaatsing op intranet via Communicatie als pilot; privacycheck.
+
 ## Volgende stappen (afgesproken volgorde)
 
 1. ~~Paden in `src/` aanpassen aan deze mappenindeling; build herhaalbaar maken.~~ Klaar 2-10-2026.
 2. ~~Data per jaar als los bestand laten laden (nu 20 MB vooraf); commissies weer één tool.~~ Klaar 2-10-2026.
 3. ~~Ontbrekende 14 themasamenvattingen maken en tonen (gelabeld als AI).~~ Klaar 2-10-2026.
-4. Raadsstukken en de griffielijst van toezeggingen/moties uit iBabs.
+4. ~~Raadsstukken en de griffielijst van toezeggingen/moties uit iBabs.~~ Klaar 3-10-2026 (alle details opgehaald; stand 02-10-2026).
 5. ~~Rekenkamer Rotterdam en ombudsman.~~ Klaar 3-10-2026.
 6. ~~Wijkraden: adviezen, reacties college, wijkakkoorden.~~ Klaar 3-10-2026 (zonder vergaderverslagen van de wijkraden zelf).
 7. Officiële bekendmakingen (Gemeenteblad, verordeningen; open API): wat er na het debat is vastgesteld.
