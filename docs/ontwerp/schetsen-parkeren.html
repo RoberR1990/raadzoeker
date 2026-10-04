@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
+<title>Schetsen Parkeren · raadzoeker</title>
+<link rel="stylesheet" href="stijl.css?v=6">
+<style>
+.keuze{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0 24px}
+.keuze button{font:inherit;padding:10px 16px;border:1px solid var(--lijn);background:var(--wit);border-radius:999px;cursor:pointer;min-height:44px}
+.keuze button.on{background:var(--groen);color:var(--wit);border-color:var(--groen)}
+.schets{display:none}.schets.on{display:block}
+.uitleg{background:var(--wit);border-left:4px solid var(--groen);padding:16px 20px;margin-bottom:20px;max-width:900px}
+.uitleg ul{margin:8px 0 0;padding-left:20px}
+.mock{background:var(--wit);border:1px solid var(--lijn);border-radius:var(--r);padding:20px;font-size:13px}
+.b{border:1px dashed #9DAFB6;border-radius:6px;background:var(--grijs);padding:10px 12px;margin-bottom:8px}
+.b b{display:block;font-size:14px;margin-bottom:2px}
+.b.g{background:var(--groen-zacht);border-color:var(--groen)}
+.b.k{background:#FFF4CC;border-color:#EDB500}
+.rij{display:grid;gap:8px;margin-bottom:8px}
+.r2{grid-template-columns:2fr 1fr}.r3{grid-template-columns:repeat(3,1fr)}.r4{grid-template-columns:repeat(4,1fr)}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 10px}.chips span{border:1px solid var(--lijn);border-radius:999px;padding:2px 9px;background:var(--wit)}
+.chips span.on{background:var(--zwart);color:#fff}
+.nav{display:flex;gap:14px;border-bottom:2px solid var(--zwart);padding:6px 0;margin:8px 0 12px;font-weight:700;flex-wrap:wrap}
+.nav span.on{text-decoration:underline;text-underline-offset:6px;text-decoration-thickness:3px;text-decoration-color:var(--groen)}
+.pijl{align-self:center;text-align:center;font-size:20px;color:var(--groen)}
+.keten{display:grid;grid-template-columns:1fr auto 1fr auto 1fr auto 1fr;gap:6px;margin-bottom:8px}
+h1.m{font-size:26px;margin:0 0 4px}
+.kr{font-size:12px;color:var(--sub)}
+@media (max-width:800px){.r2,.r3,.r4,.keten{grid-template-columns:1fr}.pijl{transform:rotate(90deg)}}
+</style></head><body>
+<header class="balk"></header>
+<main class="pagina">
+<h1>Parkeren als voorbeeldpagina: drie indelingen</h1>
+<p class="sub" style="margin-top:8px">Schetsen, nog niet gebouwd. Inhoud in alle drie gelijk: AI-samenvatting, beloftespoor, vastgesteld, komt eraan, wijkkaart, stemgedrag, debatten met video, subthema's.</p>
+<div class="uitleg"><b>Wat de drie gemeen hebben</b><ul>
+<li><b>Eén filter op subthema bovenaan</b> (vergunningen, tarieven, handhaving, garages, fietsparkeren, laden, parkeerdruk, parkeernorm) dat <i>alles</i> op de pagina filtert: lijsten, kaart, debatten. Dat maakt het één geheel in plaats van losse blokken.</li>
+<li>Elke regel heeft dezelfde vorm (2 regels, datum + status klein, titel groot) en dezelfde uitklap: daar zit het beloftespoor, de stemming of de video.</li>
+<li>De keten <b>gezegd → besloten → beloofd → gedaan</b> is de ruggengraat; de AI-tekst vertelt het verhaal, de lijsten zijn het bewijs.</li></ul></div>
+<div class="keuze"><button data-s="1" class="on">1 · Eén verhaal langs de keten</button><button data-s="2">2 · Tabbladen</button><button data-s="3">3 · Dashboard boven, verhaal onder</button></div>
+
+<section class="schets on" id="s-1">
+<div class="uitleg"><b>1 · Eén verhaal langs de keten.</b> Eén lange pagina die je van boven naar beneden leest, met een vaste inhoudsbalk die meeloopt (springen naar een onderdeel).
+<ul><li>Voor: voelt als één verhaal; alles in één scroll; goed te printen en te delen per onderdeel (#beloofd).</li><li>Tegen: lang; op mobiel veel scrollen (de inhoudsbalk vangt dat deels op).</li></ul></div>
+<div class="mock"><div class="kr">Domeinen › Mobiliteit › Parkeren</div><h1 class="m">Parkeren</h1>
+<div class="chips"><span class="on">Alles</span><span>Parkeerdruk & overlast</span><span>Betaald parkeren & tarieven</span><span>Vergunningen</span><span>Garages & P+R</span><span>…</span></div>
+<div class="nav"><span class="on">Kort</span><span>Komt eraan</span><span>Gezegd</span><span>Besloten</span><span>Beloofd</span><span>Gedaan</span><span>In de stad</span><span>Achtergrond</span></div>
+<div class="rij r2"><div class="b g"><b>In het kort (AI) + stand van zaken</b>5 zinnen, met citaat bij elke zin</div><div class="b k"><b>Komt eraan</b>referendumverzoek · 3 afdoeningen 7 okt · …</div></div>
+<div class="keten"><div class="b"><b>Gezegd</b>debatten met videomoment, wie sprak</div><div class="pijl">→</div><div class="b"><b>Besloten</b>moties + stemming per fractie · vastgestelde regels</div><div class="pijl">→</div><div class="b"><b>Beloofd</b>toezeggingen met beloftespoor</div><div class="pijl">→</div><div class="b"><b>Gedaan</b>afgedaan, collegebrieven, rekenkamer</div></div>
+<div class="rij r2"><div class="b"><b>In de stad</b>kaart per wijk: wijkraden, verkeersbesluiten, raadsstukken; autobezit ter vergelijking</div><div class="b"><b>Signalen uit wijken</b>(AI) per wijk</div></div>
+<div class="b"><b>Achtergrond</b>meer diepgang (AI), tijdlijn, wat fracties vinden, cijfers — ingeklapt</div></div>
+</section>
+
+<section class="schets" id="s-2">
+<div class="uitleg"><b>2 · Tabbladen.</b> Bovenaan kort + komt eraan; daaronder tabbladen: Overzicht · De keten · In de stad · Debatten · Achtergrond.
+<ul><li>Voor: rustig, weinig scrollen; elk tabblad heeft een eigen link.</li><li>Tegen: inhoud zit 'verstopt' achter tabs; de samenhang tussen gezegd en gedaan zie je minder; tabs op mobiel zijn krap.</li></ul></div>
+<div class="mock"><div class="kr">Domeinen › Mobiliteit › Parkeren</div><h1 class="m">Parkeren</h1>
+<div class="chips"><span class="on">Alles</span><span>Parkeerdruk & overlast</span><span>Betaald parkeren & tarieven</span><span>…</span></div>
+<div class="rij r2"><div class="b g"><b>In het kort (AI) + stand</b></div><div class="b k"><b>Komt eraan</b></div></div>
+<div class="nav"><span class="on">Overzicht</span><span>De keten</span><span>In de stad</span><span>Debatten</span><span>Achtergrond</span></div>
+<div class="rij r3"><div class="b"><b>Open beloftes</b>27 open, waarvan … over de termijn</div><div class="b"><b>Laatst besloten</b>moties en regels</div><div class="b"><b>Laatste debat</b>met video</div></div>
+<div class="b" style="opacity:.6"><b>(andere tabbladen: de keten als lijst, kaart, debatten, achtergrond)</b></div></div>
+</section>
+
+<section class="schets" id="s-3">
+<div class="uitleg"><b>3 · Dashboard boven, verhaal onder.</b> Bovenaan een raster van kaarten met de stand van nu (komt eraan, open beloftes, kaart, stemming, laatste debat); daaronder het AI-verhaal en de volledige lijsten.
+<ul><li>Voor: in één oogopslag de stand; veel 'wow' bovenaan.</li><li>Tegen: twee manieren van lezen op één pagina; dashboardkaarten herhalen wat verderop staat; minder één geheel.</li></ul></div>
+<div class="mock"><div class="kr">Domeinen › Mobiliteit › Parkeren</div><h1 class="m">Parkeren</h1>
+<div class="chips"><span class="on">Alles</span><span>…</span></div>
+<div class="rij r4"><div class="b k"><b>Komt eraan</b></div><div class="b"><b>Open beloftes</b></div><div class="b"><b>Kaart</b></div><div class="b"><b>Stemming</b></div></div>
+<div class="rij r2"><div class="b"><b>Laatste debat (video)</b></div><div class="b"><b>Vastgesteld</b></div></div>
+<div class="b g"><b>Het verhaal (AI)</b>kort, diepgang, tijdlijn, fracties, college</div>
+<div class="b"><b>Alle moties, toezeggingen, debatten</b></div></div>
+</section>
+<p class="voet">Advies: 1, met de inhoudsbalk die meeloopt. Het is de enige indeling waarin de keten gezegd → besloten → beloofd → gedaan echt de vorm van de pagina is.</p>
+</main>
+<script src="ontwerp.js?v=7"></script>
+<script>kop('domeinen');document.querySelectorAll('.keuze button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.keuze button').forEach(x=>x.classList.toggle('on',x===b));document.querySelectorAll('.schets').forEach(s=>s.classList.toggle('on',s.id==='s-'+b.dataset.s));});</script>
+</body></html>

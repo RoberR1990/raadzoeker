@@ -157,7 +157,8 @@ def main():
     dos=json.load(open(os.path.join(DOCS,'ontwerp','dossiers.json'),encoding='utf8'))['dossiers']
     pk=next(x for x in dos if x['naam']=='Parkeren')
     pk=dict(pk,soort='onderwerp',groep=DN['mobiliteit'],pad=[['Domeinen','domeinen.html'],[DN['mobiliteit'],'#'+slug(DN['mobiliteit'])]],stand=STAND)
-    schrijf('parkeren.json',pk); index.append({'slug':'parkeren','naam':'Parkeren','groep':DN['mobiliteit'],'soort':'onderwerp','domein':slug(DN['mobiliteit']),'sub':pk['sub'],'termen':pk['termen']})
+    pk['ai']=os.path.exists(os.path.join(DOCS,'ontwerp','samenvattingen','parkeren.json'))
+    schrijf('parkeren.json',pk); index.append({'slug':'parkeren','naam':'Parkeren','groep':DN['mobiliteit'],'soort':'onderwerp','domein':slug(DN['mobiliteit']),'sub':pk['sub'],'termen':pk['termen'],'ai':pk['ai']})
     for o in ond:
         ds=TH.get(o['groep']);
         if not ds: print('geen domein voor',o['naam'],o['groep']); continue
