@@ -69,7 +69,7 @@ table.tafel .bar i{display:block;height:8px;background:var(--groen);border-radiu
 <script>
 kop('domeinen');
 let DATA={stand:STAND},ALLE=[],KAART=null,CUR=null,SOORT='mot',FILTER='open';
-const VAST=['parkeren','wonen-en-bouwen','veiligheid','zorg-welzijn-en-jeugd','werk-inkomen-en-armoede'];
+const VAST=['parkeren','handhaving-en-toezicht','wonen-en-bouwen','veiligheid','zorg-welzijn-en-jeugd','werk-inkomen-en-armoede'];
 Promise.all(['d/index.json','kaart.json'].map(f=>fetch(f).then(r=>r.json()))).then(([ix,k])=>{KAART=k;
   ALLE=ix.d.map(x=>Object.assign({sub:[],termen:''},x));DATA.stand=ix.stand;
   const ai=ALLE.filter(x=>x.ai),nm=s=>(ALLE.find(x=>x.slug===s)||{}).naam||s;

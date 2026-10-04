@@ -163,8 +163,8 @@ def main():
         ds=TH.get(o['groep']);
         if not ds: print('geen domein voor',o['naam'],o['groep']); continue
         pad=[['Domeinen','domeinen.html'],[DN[ds],'#'+slug(DN[ds])]]+([['Parkeren','#parkeren']] if o['groep']=='Parkeren' else [])
-        x=dict(o,groep='Parkeren' if o['groep']=='Parkeren' else DN[ds],pad=pad,stand=STAND); sl=slug(o['naam'])
-        schrijf(sl+'.json',x); index.append({'slug':sl,'naam':o['naam'],'groep':x['groep'],'soort':'onderwerp','domein':slug(DN[ds]),'ai':o.get('ai',False),'sub':[],'termen':o['termen']})
+        sl=slug(o['naam']); x=dict(o,groep='Parkeren' if o['groep']=='Parkeren' else DN[ds],pad=pad,stand=STAND,ai=os.path.exists(os.path.join(DOCS,'ontwerp','samenvattingen',sl+'.json')))
+        schrijf(sl+'.json',x); index.append({'slug':sl,'naam':o['naam'],'groep':x['groep'],'soort':'onderwerp','domein':slug(DN[ds]),'ai':x['ai'],'sub':[],'termen':o['termen']})
     schrijf('index.json',{'stand':STAND,'d':index}); schrijf('overzicht.json',overzicht)
     # filters voor Zoeken: per document in de tekstindex het domein en de gebieden (bitmasker)
     import zstandard

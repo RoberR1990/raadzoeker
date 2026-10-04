@@ -14,7 +14,8 @@ async function toonKeten(d,X,A){
   $('dossier').innerHTML=`<div class="crumb">${crumb}</div>
   <div class="kop"><h1>${esc(d.naam)}</h1>
     <div class="kopacties"><a class="knop" href="briefing.html#${d.slug}">Maak een briefing (A4, pdf of Word)</a><span class="sub" id="deelrij"></span>
-      ${kinderen.length?`<span class="sub">Verdieping: ${kinderen.map(x=>`<a href="#${x.slug}">${esc(x.naam)}</a>`).join(' · ')}</span>`:''}</div></div>
+      ${kinderen.length?`<span class="sub">Verdieping: ${kinderen.map(x=>`<a href="#${x.slug}">${esc(x.naam)}</a>`).join(' · ')}</span>`:''}
+      ${(X.verwant||[]).length?`<span class="sub">Verwant: ${X.verwant.map(s=>ALLE.find(x=>x.slug===s)).filter(Boolean).map(x=>`<a href="#${x.slug}">${esc(x.naam)}</a>`).join(' · ')}</span>`:''}</div></div>
   <nav class="kbalk" aria-label="Onderdelen van dit dossier"><div class="kin">
     <div class="ksub" role="group" aria-label="Filter op subthema"><span class="sub">Filter:</span><button type="button" data-sub="">Alles</button>${X.sub.map(s=>`<button type="button" data-sub="${esc(s)}">${esc(s)}</button>`).join('')}</div>
     <div class="knav">${[['kort','Kort'],['komt','Komt eraan'],['gezegd','Gezegd'],['besloten','Besloten'],['beloofd','Beloofd'],['gedaan','Gedaan'],['stad','In de stad'],['achtergrond','Achtergrond']].map(([i,t])=>`<a href="#${d.slug}" data-naar="${i}">${t}</a>`).join('')}</div></div></nav>
@@ -130,7 +131,7 @@ function kWijk(s){
   const t={raad:'raadsstukken die de wijk noemen',wijkraad:'stukken van de wijkraad',verkeersbesluit:'verkeersbesluiten',besluit:'andere besluiten'};
   $('kwijk').innerHTML=`<h3>${esc(x.naam)} <span class="sub">· ${esc(x.gebied)}</span></h3>
     <ul class="kn">${Object.entries(t).map(([k,l])=>`<li><b class="num">${nf((x.n||{})[k]||0)}</b> ${l}</li>`).join('')}</ul>
-    ${x.recent.length?`<p class="sub" style="margin:8px 0 4px">Laatste besluiten over parkeren:</p>${x.recent.map(r=>`<div class="pt" style="font-size:14px;padding:6px 0"><span class="sub">${fd(r[0])}</span><br><a href="${esc(r[2])}" target="_blank" rel="noopener">${esc(r[1])}</a></div>`).join('')}`:''}
+    ${x.recent.length?`<p class="sub" style="margin:8px 0 4px">Laatste besluiten over ${esc(KD.naam.toLowerCase())}:</p>${x.recent.map(r=>`<div class="pt" style="font-size:14px;padding:6px 0"><span class="sub">${fd(r[0])}</span><br><a href="${esc(r[2])}" target="_blank" rel="noopener">${esc(r[1])}</a></div>`).join('')}`:''}
     <p style="margin-top:8px"><a href="wijk.html#w-${x.slug}">Naar de wijk ${esc(x.naam)}</a> · <a href="zoek.html#q=${encodeURIComponent(KD.naam.toLowerCase()+' '+x.naam)}">Zoek in de stukken</a></p>`;
 }
 /* inhoudsbalk: markeer het onderdeel dat in beeld is */

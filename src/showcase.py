@@ -1,5 +1,5 @@
 # Extra's voor een voorbeelddossier (eerst Parkeren): de keten gezegd -> besloten -> beloofd -> gedaan, de stad in beeld, bron één klik.
-#   python src/showcase.py   -> docs/ontwerp/d/parkeren-extra.json
+#   python src/showcase.py [slug ...]   -> docs/ontwerp/d/<slug>-extra.json (zonder argument: alle voorbeelddossiers in CONFIG)
 # Onderdelen
 #   sub        subthema's (themes.py) met per subthema de regex; elk item krijgt de subthema's waar het over gaat
 #   spoor      beloftespoor per motie/toezegging sinds 2022: ingediend/toegezegd -> tussenberichten -> afdoeningsvoorstel -> afgedaan (iBabs 'Stand van zaken')
@@ -13,8 +13,22 @@ from paden import WERK,DOCS,STAND
 from ontwerp_data import zload,iso,kort,motiekern,rx,fold
 import themes, teksten as T
 
-NAAM='Parkeren'; SLUG='parkeren'
-RX=re.compile(r'parkeer|parkeren|parkeert|geparkeerd|naheffing|scanauto|bewonersvergunning|bezoekersregeling')
+# Per voorbeelddossier: naam, slug van het dossier, zoekpatroon (op gevouwen tekst), subthema's (naam, termen) en verwante dossiers.
+CONFIG={
+ 'parkeren':dict(naam='Parkeren',rx=r'parkeer|parkeren|parkeert|geparkeerd|naheffing|scanauto|bewonersvergunning|bezoekersregeling',sub='themes:Parkeren',verwant=[]),
+ 'handhaving-en-toezicht':dict(naam='Handhaving en toezicht',
+   rx=r"handhav|boa|boa's|toezichthouder|stadswacht|bestuurlijke boete|bestuurlijke strafbeschikking|last onder dwangsom|bodycam",
+   sub=[("Handhavers en boa's","handhavers | boa | stadswacht | toezichthouder | stadsmarinier"),
+        ('Overlast en openbare orde','overlast | openbare orde | gebiedsverbod | noodverordening | samenscholing | hangjongeren'),
+        ('Afval en vervuiling','afval | zwerfvuil | bijplaatsing | grofvuil | dumping'),
+        ('Parkeren en verkeer','parkeer | naheffing | scanauto | verkeershandhaving'),
+        ('Wonen en verhuur','huisjesmelk | verhuurder | woonfraude | onrechtmatige bewoning | kamerverhuur | illegale verhuur | vakantieverhuur'),
+        ('Horeca en evenementen','horeca | terras | sluitingstijd | evenement'),
+        ('Drugs en sluitingen','damocles | drugs | sluiting | ondermijning | lachgas'),
+        ('Middelen en bevoegdheden','camera | bodycam | fouilleren | bestuurlijke strafbeschikking | bestuurlijke boete | last onder dwangsom | geweld tegen | wapenstok | bevoegdhe')],
+   verwant=['cameratoezicht','jongerenoverlast-en-jeugdcriminaliteit','lachgas','afval-zwerfvuil-en-grofvuil','goed-verhuurderschap-en-huisjesmelkers','horeca-terrassen-en-nachtleven','parkeren','ondermijning-en-drugscriminaliteit']),
+}
+NAAM=SLUG=None; RX=None; CFG=None
 DATUM=r'(\d{1,2})-(\d{1,2})-(\d{4})'
 def d_iso(s):
     m=re.search(DATUM,s or ''); return f'{m.group(3)}-{int(m.group(2)):02d}-{int(m.group(1)):02d}' if m else ''
@@ -23,9 +37,12 @@ def jl(p):
         try: yield json.loads(l)
         except ValueError: pass
 
-def main():
-    th=next(t for g in themes.T for t in g[1] if t[0]==NAAM)
-    SUB=[(n,rx(t)) for n,t in th[2]]
+def main(slug='parkeren'):
+    global NAAM,SLUG,RX,CFG
+    CFG=CONFIG[slug]; NAAM=CFG['naam']; SLUG=slug; RX=re.compile(CFG['rx'])
+    if isinstance(CFG['sub'],str):
+        th=next(t for g in themes.T for t in g[1] if t[0]==CFG['sub'].split(':')[1]); SUB=[(n,rx(t)) for n,t in th[2]]
+    else: SUB=[(n,rx(t)) for n,t in CFG['sub']]
     def subs(t): f=fold(t); return [n for n,r in SUB if r.search(f)]
     W=os.path.join(WERK,'ibabs')
     # brieven op bb-nummer (voor de schakels in het spoor)
@@ -77,7 +94,7 @@ def main():
     bm=[b for b in jl(os.path.join(WERK,'wijk','bekendmakingen.jsonl'))]
     regels={}
     for i,b in enumerate(bm):
-        if not RX.search(fold(b['titel'])) or b['type'].startswith('verkeersbesluit') or b['type']=='omgevingsvergunning': continue
+        if not RX.search(fold(b['titel'])) or not re.search(r'verordening|beleidsregel|algemene strekking',b['type'],re.I): continue   # regels, geen losse beschikkingen
         sleutel=re.sub(r'\b(20\d\d|wijziging|tweede|derde|eerste)\b','',b['titel'].lower()); sleutel=re.sub(r'\W+',' ',sleutel).strip()
         if sleutel not in regels or b['d']>regels[sleutel]['datum']:
             regels[sleutel]={'datum':b['d'],'titel':b['titel'],'soort':b['type'],'url':b['url'],'n':regels.get(sleutel,{}).get('n',0)+1,'sub':subs(b['titel'])}
@@ -159,8 +176,10 @@ def main():
     debatten=[{'datum':e['datum'],'verg':e['verg'],'punt':e['punt'],'agenda':e['agenda'],'n':e['n'],'fragment':e['best'][1],'wie':e['best'][2],'partij':e['best'][3],
                'video':e['best'][4] if e['best'][5] is not None and e['best'][5]>=0 else '','sec':e['best'][5],'auto':e['best'][6],
                'sprekers':[n for n,_ in e['sprekers'].most_common(4)],'sub':[n for n,_ in e['sub'].most_common(2)]} for e in sorted(top,key=lambda e:e['datum'],reverse=True)]
-    uit={'naam':NAAM,'stand':STAND,'sub':[n for n,_ in SUB],'spoor':spoor,'vastgesteld':vast,'komt':komt,'voorstellen':rv,'wijken':wijken,'stemmen':stemmen,'debatten':debatten}
+    uit={'naam':NAAM,'stand':STAND,'verwant':CFG['verwant'],'sub':[n for n,_ in SUB],'spoor':spoor,'vastgesteld':vast,'komt':komt,'voorstellen':rv,'wijken':wijken,'stemmen':stemmen,'debatten':debatten}
     p=os.path.join(DOCS,'ontwerp','d',SLUG+'-extra.json'); json.dump(uit,open(p,'w',encoding='utf8'),ensure_ascii=False,separators=(',',':'))
     print('spoor',len(spoor),'open',sum(x['open'] for x in spoor),'vastgesteld',len(vast),'komt',len(komt),'voorstellen',len(rv),'stemmingen',nst,'debatten',len(debatten),os.path.getsize(p)//1000,'kB')
 
-if __name__=='__main__': main()
+if __name__=='__main__':
+    import sys
+    for a in (sys.argv[1:] or list(CONFIG)): main(a)
