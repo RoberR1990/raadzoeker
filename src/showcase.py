@@ -5,7 +5,7 @@
 #   spoor      beloftespoor per motie/toezegging sinds 2022: ingediend/toegezegd -> tussenberichten -> afdoeningsvoorstel -> afgedaan (iBabs 'Stand van zaken')
 #   vastgesteld  verordeningen, tarieven en beleidsregels uit het Gemeenteblad (geen losse verkeersbesluiten)
 #   komt       wat eraan komt: open toezeggingen/moties met een verwachte datum na de stand, raadsvoorstellen die nog behandeld worden
-#   wijken     per wijk: wijkraadstukken, verkeersbesluiten en raadsstukken over parkeren, plus autobezit (CBS) ter vergelijking
+#   wijken     per wijk: wijkraadstukken, verkeersbesluiten en raadsstukken over parkeren, (geen autobezit: besluit Robert, te veel nadruk op één indicator)
 #   stemmen    stemgedrag per fractie op parkeermoties sinds 2022 (hoofdelijke stemmingen uit de notulen)
 #   debatten   debatfragmenten (raad en commissies, 2022+) met het videomoment
 import json,os,re,glob,collections
@@ -113,8 +113,7 @@ def main():
                 if w in tel: tel[w][soort]+=1
     wijken=[]
     for w in WK:
-        c=w['cbs'].get('2024') or w['cbs'].get('2023') or {}
-        wijken.append({'slug':w['slug'],'naam':w['naam'],'gebied':w['gebied'],'n':dict(tel[w['slug']]),'auto':c.get('auto'),'inw':c.get('inw'),
+        wijken.append({'slug':w['slug'],'naam':w['naam'],'gebied':w['gebied'],'n':dict(tel[w['slug']]),
                        'recent':sorted(vb[w['slug']],reverse=True)[:3]})
     # stemgedrag per fractie (moties sinds 2022 met hoofdelijke stemming)
     meta=json.load(open(os.path.join(DOCS,'data','raad','meta.json'),encoding='utf8')); PAR=meta['par']
