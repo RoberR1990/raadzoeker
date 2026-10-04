@@ -74,6 +74,18 @@ Wringt: onderwijs verhuist in 2022 van ZOCS naar WIOSSAN; buitenruimte verhuist 
 ## Besluiten Robert (4-10-2026)
 
 - **Domein = portefeuille** (iBabs-logica), optie A.
-- **Drempel thema's: 50 stukken** (2018–2026): 37 thema's blijven. Vallen af: Organisatieontwikkeling (29, eerst anders afbakenen), Eenzaamheid (41), Laaggeletterdheid (16). Over 2022–2026 gerekend vallen ook Kansengelijkheid (39) en Polarisatie (40) af.
+- **Drempel thema's: 15 stukken** (2018–2026): alle 40 kandidaat-thema's blijven (laagste: Laaggeletterdheid, 16).
 - Stemmen (fase 5): via Cloudflare (Pages Functions + D1, achter Access).
-- Open: oordelen steekproef en Parkeren.
+- Steekproef: voorlopig goedgekeurd zonder eigen beoordeling; echte beoordeling door Robert bij de MVP. In plaats daarvan een toets door Opus (304 regels: de 200 van de steekproef + de 104 parkeerstukken die niet op Mobiliteit staan), met de portefeuille-logica als maatstaf.
+
+| Laag | Goed | Fout | Onduidelijk | Precisie | Populatie |
+|---|---|---|---|---|---|
+| bron (iBabs) | 52 | 6 | 2 | 90% | 30.367 |
+| gekoppeld | 25 | 0 | 0 | 100% | 1.364 |
+| woordmodel stukken | 43 | 6 | 1 | 88% | 9.234 |
+| woordmodel debatten | 31 | 9 | 0 | 78% | 3.689 |
+| geen (procedureel) | 24 | 0 | 1 | 100% | 10.042 |
+| **gewogen totaal** | | | | **90,7%** | 54.696 |
+
+- Parkeren: 21 van de 665 fout (97% goed). Meest voorkomende fout: parkeren in een wijk dat iBabs bij Bouwen en Wonen zet; volgens Opus hoort dat bij Mobiliteit.
+- Zwakst: debatten via het woordmodel (78%). Bij de MVP te verbeteren.
