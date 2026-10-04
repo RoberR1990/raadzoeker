@@ -3,135 +3,206 @@
 <title>Lab · raadzoeker</title>
 <link rel="stylesheet" href="stijl.css?v=6">
 <style>
-.intro{max-width:68ch;margin-top:16px}
-.toc{position:sticky;top:0;z-index:5;background:var(--grijs);padding:12px 0;margin-top:24px;border-bottom:1px solid var(--lijn)}
-.toc ol{list-style:none;margin:0;padding:0;display:flex;gap:8px;flex-wrap:wrap}
-.toc a{display:inline-flex;min-height:40px;align-items:center;padding:6px 12px;border:1px solid var(--lijn);border-radius:999px;background:var(--wit);text-decoration:none;font-size:15px}
-.toc a:hover,.toc a.on{border-color:var(--zwart)}
-.toc a.on{background:var(--zwart);color:var(--wit)}
-.blok{scroll-margin-top:80px}
-.sv{display:grid;gap:6px}
-.sv div{display:grid;grid-template-columns:minmax(0,11em) minmax(0,1fr) 3.5em;gap:12px;align-items:end;font-size:14px}
-.sv .kol{display:flex;gap:3px;align-items:flex-end;height:36px}
-.sv .kol i{flex:1;background:var(--blauw);border-radius:2px 2px 0 0;min-height:1px}
-.blok{margin-top:64px}
-.blok>h2{margin-bottom:8px}
-.blok>p.sub{max-width:72ch;margin-bottom:16px}
-.scroll{overflow-x:auto}
+.fbalk{position:sticky;top:0;z-index:20;background:var(--grijs);margin:0 -24px 24px;padding:10px 24px;border-bottom:1px solid var(--lijn);display:flex;gap:8px 16px;flex-wrap:wrap;align-items:end;font-size:14px}
+.fbalk label{display:grid;gap:2px}
+.fbalk select{font:15px var(--font);padding:6px 8px;border:1px solid var(--lijn);border-radius:6px;background:var(--wit);min-height:38px;max-width:220px}
+.fbalk .wis{font:14px var(--font);background:none;border:0;text-decoration:underline;cursor:pointer;padding:8px 0}
+.toc{display:flex;gap:6px 14px;flex-wrap:wrap;font-size:15px;margin:8px 0 24px}
+.graf{margin-bottom:24px;scroll-margin-top:90px}
+.graf h2{margin:0 0 4px}
+.graf .geldt{font-size:13px;color:var(--sub);margin:0 0 12px}
+.graf .geldt b{font-weight:700;color:var(--zwart)}
+.graf .uitleg{margin:0 0 12px;max-width:75ch}
+.graf .svg{overflow-x:auto}
+.graf .svg svg{display:block;max-width:100%;height:auto}
+.graf .acties{display:flex;gap:8px 16px;flex-wrap:wrap;align-items:center;margin-top:12px;font-size:14px}
+.graf .acties button{font:14px var(--font);border:1px solid var(--lijn);background:var(--wit);border-radius:6px;padding:6px 12px;cursor:pointer;min-height:36px}
+.graf .acties button:hover{border-color:var(--zwart)}
+.graf .melding{color:var(--groen-d)}
 .jr{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
 .jr button{font:15px var(--font);border:1px solid var(--lijn);background:var(--wit);border-radius:999px;padding:8px 12px;cursor:pointer;min-height:40px}
 .jr button.on{background:var(--zwart);color:var(--wit);border-color:var(--zwart)}
 .wr{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
-.wk{border-radius:var(--r);padding:24px;color:var(--wit);min-height:190px;display:flex;flex-direction:column;gap:8px}
-.wk .w{font-size:32px;font-weight:700;line-height:1.1}
-table.hm{border-collapse:separate;border-spacing:2px;font-size:13px}
-table.hm th{font-weight:400;text-align:left;padding:2px 8px 2px 0;white-space:nowrap}
-table.hm th.k{text-align:center;padding:0 0 4px}
-table.hm td{width:44px;height:26px;border-radius:3px;text-align:center;font-variant-numeric:tabular-nums}
-table.hm td.d{color:#fff}
-table.hm tr.g th{padding-top:12px;color:var(--sub)}
-table.hm a{text-decoration:none}table.hm a:hover{text-decoration:underline}
-.matrix td{width:34px;height:30px}
-.matrix th.k{writing-mode:vertical-rl;transform:rotate(180deg);height:150px;text-align:left;vertical-align:bottom}
-.staaf{display:grid;gap:8px}
-.staaf div{display:grid;grid-template-columns:minmax(0,11em) minmax(0,1fr) 4em;gap:12px;align-items:center;font-size:14px}
-.staaf .bar{height:14px;background:var(--grijs2);border-radius:2px;position:relative}
-.staaf .bar i{position:absolute;inset:0 auto 0 0;background:var(--groen);border-radius:2px}
-.dots{display:grid;gap:6px}
-.dots div{display:grid;grid-template-columns:minmax(0,12em) minmax(0,1fr) 9em;gap:12px;align-items:center;font-size:14px}
-.dots .lijn{height:18px;position:relative;border-left:1px solid var(--lijn)}
-.dots .lijn::after{content:"";position:absolute;left:0;right:0;top:9px;border-top:1px dashed var(--grijs2)}
-.dots .lijn i{position:absolute;top:3px;width:12px;height:12px;border-radius:50%;background:var(--blauw);margin-left:-6px;z-index:1}
-.as{display:grid;grid-template-columns:minmax(0,12em) minmax(0,1fr) 9em;gap:12px;font-size:12px;color:var(--sub)}
-.as span{display:flex;justify-content:space-between}
-@media (max-width:900px){.wr{grid-template-columns:repeat(2,minmax(0,1fr))}}
-</style></head>
-<body>
+.wk{color:#fff;border-radius:var(--r);padding:20px;display:grid;gap:6px;align-content:start;min-height:180px}
+.wk span:first-child{font-size:14px;opacity:.9}.wk .w{font-size:28px;font-weight:700;line-height:1.1}
+@media (max-width:900px){.wr{grid-template-columns:repeat(2,minmax(0,1fr))}.fbalk{margin:0 -16px 16px;padding:8px 16px}.fbalk select{max-width:44vw}}
+</style></head><body>
 <header class="balk"></header>
 <main class="pagina">
   <h1>Lab</h1>
-  <p class="intro">Een zandbak met experimentele visualisaties. Wat zie je als je acht jaar raadsinformatie op een andere manier bekijkt? Niet alles is af, en elk beeld is een signaal om verder te kijken, geen eindconclusie.</p>
-
-  <nav class="toc" aria-label="Inhoud van het Lab"><ol>
-    <li><a href="#wrapped">Raad Wrapped</a></li><li><a href="#onderwerpen">Onderwerpen door de jaren</a></li><li><a href="#samen">Samen indienen</a></li>
-    <li><a href="#slaag">Slagingskans moties</a></li><li><a href="#beloftes">Open beloftes</a></li><li><a href="#snelheid">Snelheid toezeggingen</a></li>
-    <li><a href="#vragen">Schriftelijke vragen</a></li><li><a href="#stokpaardjes">Stokpaardjes</a></li></ol></nav>
-  <section class="blok" id="wrapped" aria-labelledby="h-wr"><h2 id="h-wr">Raad Wrapped</h2>
-    <p class="sub">Elk jaar in vier kaarten. Kies een jaar.</p>
-    <div class="jr" id="wjr"></div><div class="wr" id="wkaarten"></div></section>
-
-  <section class="blok" id="onderwerpen" aria-labelledby="h-hm"><h2 id="h-hm">Onderwerpen door de jaren</h2>
-    <p class="sub">Per onderwerp: in welk jaar sprak de raad er relatief het meest over? Donkerder is meer, gemeten per 100.000 woorden en per onderwerp geschaald. Klik op een onderwerp om het te openen.</p>
-    <div class="vlak scroll" id="heat"></div></section>
-
-  <section class="blok" id="samen" aria-labelledby="h-sa"><h2 id="h-sa">Wie dient samen moties in?</h2>
-    <p class="sub">Raadsperiode 2022–2026. Elk vakje is het aantal moties dat twee fracties samen indienden. Zo zie je wie elkaar opzoekt, ook over de grens van coalitie en oppositie.</p>
-    <div class="vlak scroll" id="matrix"></div></section>
-
-  <section class="blok" id="slaag" aria-labelledby="h-sl"><h2 id="h-sl">Hoe vaak wordt een motie aangenomen?</h2>
-    <p class="sub">Raadsperiode 2022–2026: het deel van de moties dat een fractie (mede) indiende en dat werd aangenomen. Coalitiepartijen scoren hoog, omdat de coalitie haar moties vooraf afstemt.</p>
-    <div class="vlak"><div class="staaf" id="slaag"></div></div></section>
-
-  <section class="blok" id="beloftes" aria-labelledby="h-ob"><h2 id="h-ob">Open beloftes per collegelid</h2>
-    <p class="sub">Hoeveel toezeggingen van elk collegelid nu nog openstaan, en hoeveel daarvan over de verwachte datum zijn. Alle jaren; alleen collegeleden met minstens vijf open toezeggingen.</p>
-    <div class="vlak"><div class="staaf" id="openper"></div></div></section>
-
-  <section class="blok" id="snelheid" aria-labelledby="h-dl"><h2 id="h-dl">Hoe snel worden toezeggingen afgehandeld?</h2>
-    <p class="sub">Raadsperiode 2022–2026: de mediane tijd tussen toezegging en afdoening, per collegelid met minstens 25 afgehandelde toezeggingen, en het deel dat later klaar was dan de verwachte datum. Een snelle afdoening zegt niet alles: sommige toezeggingen zijn groot werk.</p>
-    <div class="vlak"><div class="as" id="as"></div><div class="dots" id="door"></div></div></section>
-
-  <section class="blok" id="vragen" aria-labelledby="h-sv"><h2 id="h-sv">Schriftelijke vragen door de jaren</h2>
-    <p class="sub">Hoeveel schriftelijke vragen elke fractie per jaar stelde, 2018–2026. Een piek zegt vaak iets over een actueel dossier of een nieuwe fractie.</p>
-    <div class="vlak"><div class="sv" id="sv"></div></div></section>
-
-  <section class="blok" id="stokpaardjes" aria-labelledby="h-st"><h2 id="h-st">Stokpaardjes per fractie</h2>
-    <p class="sub">Waar spreekt een fractie relatief vaker over dan de andere fracties? Per onderwerp geschaald: het donkerste vakje is de fractie die er het meest over spreekt. Alleen raadsleden, niet wethouders.</p>
-    <div class="vlak scroll" id="stok"></div></section>
-  <p class="voet">Gegevens: notulen en ondertiteling van de gemeenteraad en iBabs, stand 2 oktober 2026. <a href="over.html">Over deze tool</a>.</p>
+  <p style="margin:12px 0 0;max-width:72ch">Grafieken over wat de raad doet: welke onderwerpen spelen, wie samen moties indient, wat het college belooft en hoe snel dat gebeurt. Kies bovenaan een domein, gebied, fractie of periode: elke grafiek past zich aan, en de link onthoudt je keuze. Tellen, geen oordelen: fracties en collegeleden staan op alfabet.</p>
+  <nav class="toc" aria-label="Grafieken" id="toc"></nav>
+  <div class="fbalk" role="group" aria-label="Filters">
+    <label>Domein <select id="fd"><option value="">alle domeinen</option></select></label>
+    <label>Gebied <select id="fg"><option value="">heel Rotterdam</option></select></label>
+    <label>Fractie <select id="ff"><option value="">alle fracties</option></select></label>
+    <label>Van <select id="fv"></select></label><label>Tot en met <select id="ft"></select></label>
+    <button type="button" class="wis" id="wis">Alles wissen</button>
+  </div>
+  <div id="grafieken"><p class="leeg">Laden…</p></div>
+  <section class="vlak graf" id="g-wrapped" aria-labelledby="h-wr"><h2 id="h-wr">Raad Wrapped</h2>
+    <p class="uitleg">Het jaar van de raad in vier kaarten. Kies een jaar.</p><div class="jr" id="wjr"></div><div class="wr" id="wkaarten"></div></section>
+  <p class="voet">Gegevens: iBabs (moties, toezeggingen, schriftelijke vragen), notulen en ondertiteling van de gemeenteraad, stand <span id="stand"></span>. Domeinen volgen het beleidsveld in iBabs; gebieden zijn herkend op wijk- en straatnamen (ongeveer 9 van de 10 goed). <a href="over.html">Meer over deze tool</a>.</p>
 </main>
-<script src="ontwerp.js?v=5"></script>
+<script src="ontwerp.js?v=7"></script>
 <script>
 kop('lab');
-const GROEN=['#F3F8F3','#E1EFE2','#D1E6CE','#99CCA0','#4EB051','#00811F','#006E32','#004C31'];
-const tint=f=>GROEN[Math.max(0,Math.min(GROEN.length-1,Math.round(f*(GROEN.length-1))))];
-Promise.all(['lab.json','dossiers.json'].map(f=>fetch(f).then(r=>r.json()))).then(([L,D])=>{
-  // Wrapped
+let L=null,F={d:'',g:'',f:'',van:'2022',tot:'2026'};
+const K=['#F3F8F3','#E1EFE2','#D1E6CE','#99CCA0','#4EB051','#00811F','#006E32','#004C31'];
+const tint=f=>K[Math.max(0,Math.min(K.length-1,Math.round(f*(K.length-1))))];
+const tekstKl=f=>f>.6?'#fff':'#000';
+const A=s=>esc(s);   // in svg-attributen en tekst
+/* ---------- filters ---------- */
+function rijen(o={}){   // rijen die door de filters gaan; o.zonder=['f'] negeert een filter
+  const z=o.zonder||[],d=F.d===''?-1:+F.d,g=F.g===''?-1:+F.g,f=F.f===''?-1:+F.f;
+  return L.r.filter(r=>(z.includes('d')||d<0||r[2]===d)&&(z.includes('g')||g<0||(r[3]&(1<<g)))&&(z.includes('p')||(r[1].slice(0,4)>=F.van&&r[1].slice(0,4)<=F.tot))&&(z.includes('f')||f<0||r[4]===f||r[5].includes(f)));
+}
+function filterTekst(geldt){
+  const t=[];if(geldt.includes('d')&&F.d!=='')t.push(L.dom[+F.d][1]);if(geldt.includes('g')&&F.g!=='')t.push(L.geb[+F.g]);if(geldt.includes('f')&&F.f!=='')t.push(L.fr[+F.f]);
+  if(geldt.includes('p'))t.push(F.van===F.tot?F.van:F.van+'–'+F.tot);return t.join(' · ')||'alles';
+}
+function zetHash(k){const p=new URLSearchParams();for(const x of ['d','g','f'])if(F[x]!=='')p.set(x,x==='d'?L.dom[+F[x]][0]:x==='g'?L.geb[+F[x]]:L.fr[+F[x]]);
+  if(F.van!=='2022')p.set('van',F.van);if(F.tot!=='2026')p.set('tot',F.tot);if(k)p.set('k',k);history.replaceState(null,'','#'+p.toString());}
+function leesHash(){const p=new URLSearchParams(location.hash.slice(1));
+  if(p.get('d')){const i=L.dom.findIndex(x=>x[0]===p.get('d'));if(i>=0)F.d=String(i);}
+  if(p.get('g')){const i=L.geb.indexOf(p.get('g'));if(i>=0)F.g=String(i);}
+  if(p.get('f')){const i=L.fr.indexOf(p.get('f'));if(i>=0)F.f=String(i);}
+  if(p.get('van'))F.van=p.get('van');if(p.get('tot'))F.tot=p.get('tot');return p.get('k');}
+/* ---------- svg-bouwstenen (alles inline, zodat 'kopieer als afbeelding' er hetzelfde uitziet) ---------- */
+const T=(x,y,s,o={})=>`<text x="${x}" y="${y}" font-family="Arial, sans-serif" font-size="${o.fs||13}" fill="${o.kl||'#000'}"${o.anchor?` text-anchor="${o.anchor}"`:''}${o.bold?' font-weight="700"':''}${o.rot?` transform="rotate(${o.rot} ${x} ${y})"`:''}>${A(s)}</text>`;
+const svg=(w,h,inh,label)=>`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" role="img" aria-label="${A(label)}"><rect width="${w}" height="${h}" fill="#fff"/>${inh}</svg>`;
+const MIN=n=>F.d!==''||F.g!==''?Math.max(2,Math.round(n/4)):n;   // bij een smal filter ook kleine aantallen tonen
+const leeg=t=>svg(600,60,T(0,30,t,{kl:'#3E4B50'}),t);
+/* 1 onderwerpen door de jaren: domein x jaar */
+function g1(){
+  const r=rijen({zonder:['d','p']}),J=L.jaren,dom=L.dom.map((x,i)=>i);
+  const c={};r.forEach(x=>{if(x[2]<0)return;const k=x[2]+'|'+x[1].slice(0,4);c[k]=(c[k]||0)+1;});
+  const lw=190,cw=56,rh=26,w=lw+cw*J.length,h=30+rh*dom.length;let s='';
+  J.forEach((j,i)=>{s+=T(lw+cw*i+cw/2,18,j,{anchor:'middle',bold:j>=F.van&&j<=F.tot});});
+  dom.forEach((di,k)=>{const vals=J.map(j=>c[di+'|'+j]||0),m=Math.max(1,...vals),y=28+rh*k,sel=F.d===String(di);
+    s+=T(0,y+17,L.dom[di][1],{bold:sel});
+    vals.forEach((v,i)=>{const f=v/m;s+=`<rect x="${lw+cw*i+1}" y="${y+1}" width="${cw-2}" height="${rh-2}" fill="${tint(f)}"${sel?' stroke="#000" stroke-width="1.5"':''}><title>${A(L.dom[di][1])} ${J[i]}: ${v}</title></rect>`+T(lw+cw*i+cw/2,y+17,String(v),{anchor:'middle',fs:12,kl:tekstKl(f)});});});
+  return svg(w,h,s,'Moties, toezeggingen en vragen per domein en jaar');
+}
+/* 2 waar praat elke fractie over: aandeel woorden per domein */
+function g2(){
+  const W={},tot={};L.w.forEach(([y,d,f,n])=>{if(y<F.van||y>F.tot||d<0)return;W[f+'|'+d]=(W[f+'|'+d]||0)+n;tot[f]=(tot[f]||0)+n;});
+  let fr=Object.keys(tot).map(Number).filter(f=>tot[f]>20000).sort((a,b)=>L.fr[a].localeCompare(L.fr[b]));
+  if(F.f!==''&&!fr.includes(+F.f))fr.push(+F.f);if(!fr.length)return leeg('Geen gegevens in deze periode.');
+  const lw=170,cw=62,rh=24,dom=L.dom.map((x,i)=>i),w=lw+cw*dom.length,h=110+rh*fr.length;let s='';
+  dom.forEach((d,i)=>{s+=T(lw+cw*i+cw/2,100,L.dom[d][1].split(/,| en /)[0],{anchor:'start',fs:12,rot:-40,bold:F.d===String(d)});});
+  fr.forEach((f,k)=>{const y=108+rh*k,sel=F.f===String(f);s+=T(0,y+16,L.fr[f],{bold:sel});
+    dom.forEach((d,i)=>{const p=tot[f]?100*(W[f+'|'+d]||0)/tot[f]:0,fv=Math.min(1,p/30);
+      s+=`<rect x="${lw+cw*i+1}" y="${y+1}" width="${cw-2}" height="${rh-2}" fill="${tint(fv)}"${sel||F.d===String(d)?' stroke="#000" stroke-width="1"':''}><title>${A(L.fr[f])}, ${A(L.dom[d][1])}: ${p.toFixed(1)}%</title></rect>`+T(lw+cw*i+cw/2,y+16,Math.round(p)+'%',{anchor:'middle',fs:11,kl:tekstKl(fv)});});});
+  return svg(w,h,s,'Aandeel van de spreektijd per domein, per fractie');
+}
+/* 3 samen moties indienen */
+function g3(){
+  const r=rijen({zonder:['f']}).filter(x=>x[0]===0&&x[4]>=0),n={},pair={};
+  r.forEach(x=>{const ps=[...new Set([x[4],...x[5]])];ps.forEach(p=>n[p]=(n[p]||0)+1);for(let i=0;i<ps.length;i++)for(let j=0;j<ps.length;j++)if(i!==j){const k=ps[i]+'|'+ps[j];pair[k]=(pair[k]||0)+1;}});
+  const fr=Object.keys(n).map(Number).filter(p=>n[p]>=MIN(10)).sort((a,b)=>L.fr[a].localeCompare(L.fr[b]));
+  if(fr.length<2)return leeg('Te weinig moties met deze filters.');
+  const lw=170,cw=34,top=140,w=lw+cw*fr.length,h=top+cw*fr.length;let s='';
+  fr.forEach((p,i)=>{s+=T(lw+cw*i+cw/2+4,top-6,L.fr[p],{fs:12,rot:-60,bold:F.f===String(p)});});
+  fr.forEach((a,k)=>{const y=top+cw*k;s+=T(0,y+cw/2+4,L.fr[a],{fs:12,bold:F.f===String(a)});
+    fr.forEach((b,i)=>{if(a===b){s+=`<rect x="${lw+cw*i+1}" y="${y+1}" width="${cw-2}" height="${cw-2}" fill="#DBE7EA"/>`;return;}
+      const v=pair[a+'|'+b]||0,f=v/Math.max(1,Math.min(n[a],n[b])),hl=F.f!==''&&(F.f===String(a)||F.f===String(b));
+      s+=`<rect x="${lw+cw*i+1}" y="${y+1}" width="${cw-2}" height="${cw-2}" fill="${tint(Math.min(1,f*1.6))}"${hl?' stroke="#000" stroke-width="1"':''}><title>${A(L.fr[a])} en ${A(L.fr[b])}: ${v} moties samen</title></rect>`+(v?T(lw+cw*i+cw/2,y+cw/2+4,String(v),{anchor:'middle',fs:10,kl:tekstKl(Math.min(1,f*1.6))}):'');});});
+  return svg(w,h,s,'Aantal moties dat fracties samen indienden');
+}
+/* 4 hoe vaak wordt een motie aangenomen */
+function g4(){
+  const r=rijen({zonder:['f']}).filter(x=>x[0]===0),n={},a={};
+  r.forEach(x=>{[...new Set([x[4],...x[5]])].filter(p=>p>=0).forEach(p=>{n[p]=(n[p]||0)+1;if([1,4,5].includes(x[6]))a[p]=(a[p]||0)+1;});});
+  const fr=Object.keys(n).map(Number).filter(p=>n[p]>=MIN(10)).sort((x,y)=>L.fr[x].localeCompare(L.fr[y]));
+  if(!fr.length)return leeg('Te weinig moties met deze filters.');
+  const lw=180,bw=420,rh=26,w=lw+bw+150,h=10+rh*fr.length;let s='';
+  fr.forEach((p,k)=>{const y=8+rh*k,pc=(a[p]||0)/n[p],sel=F.f===String(p);
+    s+=T(0,y+15,L.fr[p],{bold:sel})+`<rect x="${lw}" y="${y+4}" width="${bw}" height="14" fill="#DBE7EA"/><rect x="${lw}" y="${y+4}" width="${(bw*pc).toFixed(1)}" height="14" fill="${sel?'#004C31':'#00811F'}"/>`+T(lw+bw+8,y+15,`${Math.round(100*pc)}% van ${n[p]}`,{fs:12,kl:'#3E4B50'});});
+  return svg(w,h,s,'Aandeel aangenomen moties per indienende fractie');
+}
+/* 5 open beloftes per collegelid, 6 doorlooptijd */
+function g5(){
+  const r=rijen({zonder:['f','p']}).filter(x=>x[0]===1&&x[6]===4&&x[7]>=0),o={},l={};r.forEach(x=>{o[x[7]]=(o[x[7]]||0)+1;if(x[9])l[x[7]]=(l[x[7]]||0)+1;});
+  const c=Object.keys(o).map(Number).filter(k=>o[k]>=2).sort((a,b)=>L.cl[a].localeCompare(L.cl[b]));if(!c.length)return leeg('Geen open toezeggingen met deze filters.');
+  const lw=200,bw=380,rh=26,m=Math.max(...c.map(k=>o[k])),w=lw+bw+170,h=10+rh*c.length;let s='';
+  c.forEach((k,i)=>{const y=8+rh*i,b=bw*o[k]/m,bl=bw*(l[k]||0)/m;s+=T(0,y+15,L.cl[k])+`<rect x="${lw}" y="${y+4}" width="${b.toFixed(1)}" height="14" fill="#EDB500"/><rect x="${lw}" y="${y+4}" width="${bl.toFixed(1)}" height="14" fill="#E56E02"/>`+T(lw+b+8,y+15,`${o[k]} open, ${l[k]||0} over de termijn`,{fs:12,kl:'#3E4B50'});});
+  return svg(w,h,s,'Open toezeggingen per collegelid');
+}
+function g6(){
+  const r=rijen({zonder:['f']}).filter(x=>x[0]===1&&x[8]>=0&&x[7]>=0),v={},lt={};r.forEach(x=>{(v[x[7]]=v[x[7]]||[]).push(x[8]);if(x[9])lt[x[7]]=(lt[x[7]]||0)+1;});
+  const c=Object.keys(v).map(Number).filter(k=>v[k].length>=MIN(8)).sort((a,b)=>L.cl[a].localeCompare(L.cl[b]));if(!c.length)return leeg('Te weinig afgehandelde toezeggingen met deze filters.');
+  const med=a=>{const s=[...a].sort((x,y)=>x-y);return s[Math.floor(s.length/2)];};
+  const lw=200,bw=380,rh=26,m=Math.max(...c.map(k=>med(v[k]))),w=lw+bw+200,h=30+rh*c.length;let s=T(lw,14,'mediaan aantal dagen van toezegging tot afhandeling',{fs:12,kl:'#3E4B50'});
+  c.forEach((k,i)=>{const y=24+rh*i,d=med(v[k]),b=bw*d/m;s+=T(0,y+15,L.cl[k])+`<rect x="${lw}" y="${y+4}" width="${b.toFixed(1)}" height="14" fill="#00548F"/>`+T(lw+b+8,y+15,`${d} dagen · ${v[k].length} afgehandeld, ${Math.round(100*(lt[k]||0)/v[k].length)}% te laat`,{fs:12,kl:'#3E4B50'});});
+  return svg(w,h,s,'Doorlooptijd van toezeggingen per collegelid');
+}
+/* 7 schriftelijke vragen per jaar */
+function g7(){
+  const r=rijen({zonder:['p']}).filter(x=>x[0]===2),J=L.jaren,c={};r.forEach(x=>{const y=x[1].slice(0,4);c[y]=(c[y]||0)+1;});
+  const m=Math.max(1,...J.map(j=>c[j]||0)),w=700,h=220,bw=(w-40)/J.length;let s='';
+  J.forEach((j,i)=>{const v=c[j]||0,bh=150*v/m,x=30+bw*i,inP=j>=F.van&&j<=F.tot;s+=`<rect x="${(x+bw*.15).toFixed(1)}" y="${(180-bh).toFixed(1)}" width="${(bw*.7).toFixed(1)}" height="${bh.toFixed(1)}" fill="${inP?'#00811F':'#99CCA0'}"><title>${j}: ${v}</title></rect>`+T(x+bw/2,175-bh,String(v),{anchor:'middle',fs:12})+T(x+bw/2,200,j+(j==='2026'?'*':''),{anchor:'middle',fs:12});});
+  return svg(w,h,s+T(30,216,'* 2026 loopt tot oktober',{fs:11,kl:'#3E4B50'}),'Schriftelijke vragen per jaar');
+}
+const G=[
+  ['onderwerpen','Waar gaat het over, door de jaren?','Aantal moties, toezeggingen en schriftelijke vragen per domein en jaar. Kleur per rij: donkerder is drukker dan in andere jaren van dat domein.','gf',g1],
+  ['spreektijd','Waar praat elke fractie over?','Welk deel van de spreektijd (woorden in de raad) een fractie aan elk domein besteedt.','p',g2],
+  ['samen','Wie dient samen moties in?','Aantal moties dat twee fracties samen indienden. Kleur: hoe vaak, vergeleken met de kleinste van de twee.','dgp',g3],
+  ['aangenomen','Hoe vaak wordt een motie aangenomen?','Aandeel aangenomen moties per fractie die de motie indiende of mede indiende.','dgp',g4],
+  ['beloftes','Open beloftes per collegelid','Toezeggingen die nu openstaan, en hoeveel daarvan over de verwachte datum zijn.','dg',g5],
+  ['snelheid','Hoe snel worden toezeggingen afgehandeld?','Mediaan aantal dagen tussen toezegging en afhandeling, per collegelid.','dgp',g6],
+  ['vragen','Schriftelijke vragen door de jaren','Aantal schriftelijke vragen van raadsleden per jaar.','dgf',g7]];
+const NAAM={d:'domein',g:'gebied',f:'fractie',p:'periode'};
+function teken(){
+  $('grafieken').innerHTML=G.map(([id,t,u,geldt,fn])=>`<section class="vlak graf" id="g-${id}" aria-labelledby="h-${id}"><h2 id="h-${id}">${t}</h2>
+    <p class="geldt">Filter: <b>${esc(filterTekst(geldt))}</b>${geldt.length<4?` <span>· geldt niet voor: ${['d','g','f','p'].filter(x=>!geldt.includes(x)).map(x=>NAAM[x]).join(', ')}</span>`:''}</p>
+    <p class="uitleg">${u}</p><div class="svg">${fn()}</div>
+    <div class="acties"><button type="button" data-kopieer="${id}">Kopieer als afbeelding</button><button type="button" data-link="${id}">Kopieer link naar deze grafiek</button><span class="melding" aria-live="polite"></span></div></section>`).join('');
+}
+/* ---------- kopieer als afbeelding: titel, filter, grafiek, bron en link in één png ---------- */
+async function kopieer(id){
+  const g=G.find(x=>x[0]===id),sec=$('g-'+id),inner=sec.querySelector('.svg svg'),vb=inner.getAttribute('viewBox').split(' ').map(Number);
+  const W=Math.max(760,vb[2]+48),H=vb[3]+150;zetHash(id);const link=location.href;
+  const kop=T(24,40,g[1],{fs:24,bold:true})+T(24,66,'Filter: '+filterTekst(g[3]),{fs:14,kl:'#3E4B50'});
+  const voet=`<rect x="0" y="${H-50}" width="${W}" height="50" fill="#00811F"/>`+T(24,H-28,'raadzoeker · onofficieel · gegevens t/m '+fd(STAND)+' · bron: iBabs en notulen gemeenteraad Rotterdam',{fs:12,kl:'#fff'})+T(24,H-12,link,{fs:11,kl:'#fff'});
+  const body=inner.outerHTML.replace('<svg ',`<svg x="24" y="84" `);
+  const s=`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}"><rect width="${W}" height="${H}" fill="#fff"/>${kop}${body}${voet}</svg>`;
+  const img=new Image(),url=URL.createObjectURL(new Blob([s],{type:'image/svg+xml'}));
+  await new Promise((ok,nok)=>{img.onload=ok;img.onerror=nok;img.src=url;});
+  const c=document.createElement('canvas'),sc=2;c.width=W*sc;c.height=H*sc;const x=c.getContext('2d');x.scale(sc,sc);x.drawImage(img,0,0);URL.revokeObjectURL(url);
+  const blob=await new Promise(r=>c.toBlob(r,'image/png'));const m=sec.querySelector('.melding');
+  try{await navigator.clipboard.write([new ClipboardItem({'image/png':blob})]);m.textContent='Afbeelding gekopieerd. Plak hem in een mail, Teams of een presentatie.';}
+  catch(e){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='raadzoeker-'+id+'.png';a.click();m.textContent='Kopiëren lukte niet in deze browser; de afbeelding is gedownload.';}
+}
+document.addEventListener('click',async e=>{
+  const k=e.target.closest('[data-kopieer]');if(k){k.disabled=true;try{await kopieer(k.dataset.kopieer);}finally{k.disabled=false;}return;}
+  const l=e.target.closest('[data-link]');if(l){zetHash(l.dataset.link);const m=l.parentNode.querySelector('.melding');
+    navigator.clipboard.writeText(location.href).then(()=>{m.textContent='Link gekopieerd.';},()=>{prompt('Kopieer deze link',location.href);});}
+});
+/* ---------- laden ---------- */
+Promise.all(['lab2.json','lab.json'].map(f=>fetch(f).then(r=>r.json()))).then(([l,oud])=>{
+  L=l;L.jaren=['2018','2019','2020','2021','2022','2023','2024','2025','2026'];$('stand').textContent=fd(L.stand);
+  $('fd').insertAdjacentHTML('beforeend',L.dom.map((x,i)=>`<option value="${i}">${esc(x[1])}</option>`).join(''));
+  $('fg').insertAdjacentHTML('beforeend',L.geb.map((x,i)=>`<option value="${i}">${esc(x)}</option>`).join(''));
+  const n={};L.r.forEach(r=>{if(r[4]>=0)n[r[4]]=(n[r[4]]||0)+1;});
+  $('ff').insertAdjacentHTML('beforeend',L.fr.map((x,i)=>[x,i]).filter(([x,i])=>n[i]>=20).sort((a,b)=>a[0].localeCompare(b[0])).map(([x,i])=>`<option value="${i}">${esc(x)}</option>`).join(''));
+  ['fv','ft'].forEach(id=>$(id).innerHTML=L.jaren.map(j=>`<option>${j}</option>`).join(''));
+  const k=leesHash();
+  const zet=()=>{$('fd').value=F.d;$('fg').value=F.g;$('ff').value=F.f;$('fv').value=F.van;$('ft').value=F.tot;};zet();
+  $('toc').innerHTML=G.map(g=>`<a href="#k=${g[0]}" data-naar="${g[0]}">${g[1]}</a>`).join('')+'<a href="#k=wrapped" data-naar="wrapped">Raad Wrapped</a>';
+  $('toc').addEventListener('click',e=>{const a=e.target.closest('[data-naar]');if(!a)return;e.preventDefault();$('g-'+a.dataset.naar).scrollIntoView({behavior:'smooth'});});
+  ['fd','fg','ff','fv','ft'].forEach(id=>$(id).addEventListener('change',()=>{F.d=$('fd').value;F.g=$('fg').value;F.f=$('ff').value;F.van=$('fv').value;F.tot=$('ft').value;
+    if(F.van>F.tot){[F.van,F.tot]=[F.tot,F.van];zet();}zetHash();teken();}));
+  $('wis').addEventListener('click',()=>{F={d:'',g:'',f:'',van:'2022',tot:'2026'};zet();zetHash();teken();});
+  teken();if(k&&$('g-'+k))setTimeout(()=>$('g-'+k).scrollIntoView(),50);
+  // Wrapped (ongewijzigd, per jaar)
   let wy='2025';
-  const wt=()=>{const w=L.wrapped[wy];$('wjr').innerHTML=L.jaren.map(y=>`<button type="button" class="${y===wy?'on':''}" data-y="${y}">${y}${y==='2026'?' (tot nu)':''}</button>`).join('');
+  const wt=()=>{const w=oud.wrapped[wy];$('wjr').innerHTML=oud.jaren.map(y=>`<button type="button" class="${y===wy?'on':''}" data-y="${y}">${y}${y==='2026'?' (tot nu)':''}</button>`).join('');
     $('wkaarten').innerHTML=`
     <a class="wk" style="background:#00811F;text-decoration:none" href="wijk.html#${slug(w.gebied[0])}"><span>Meest besproken gebied</span><span class="w">${esc(w.gebied[0])}</span><span>Daarna ${esc(w.gebied[1])} en ${esc(w.gebied[2])}.</span></a>
     <div class="wk" style="background:#00548F"><span>Moties</span><span class="w num">${nf(w.moties)}</span><span>${nf(w.aangenomen)} aangenomen (${Math.round(100*w.aangenomen/Math.max(1,w.moties))}%).</span></div>
     <div class="wk" style="background:#004C31"><span>Meeste moties ingediend</span><span class="w">${esc(w.toppartij[0][0])}</span><span>${nf(w.toppartij[0][1])} moties, daarna ${esc(w.toppartij[1][0])} en ${esc(w.toppartij[2][0])}.</span></div>
-    ${w.stijger?`<a class="wk" style="background:#006E32;text-decoration:none" href="dossier.html#${slug(w.stijger[0])}"><span>Grootste stijger</span><span class="w">${esc(w.stijger[0])}</span><span>${String(w.stijger[1]).replace('.',',')} keer zo vaak genoemd als het jaar ervoor.</span></a>`:`<div class="wk" style="background:#006E32"><span>Grootste stijger</span><span class="w">–</span><span>Het eerste jaar; geen vergelijking.</span></div>`}`;};
+    ${w.stijger?`<div class="wk" style="background:#006E32"><span>Grootste stijger</span><span class="w">${esc(w.stijger[0])}</span><span>${String(w.stijger[1]).replace('.',',')} keer zo vaak genoemd als het jaar ervoor.</span></div>`:`<div class="wk" style="background:#006E32"><span>Grootste stijger</span><span class="w">–</span><span>Het eerste jaar; geen vergelijking.</span></div>`}`;};
   $('wjr').addEventListener('click',e=>{const b=e.target.closest('[data-y]');if(b){wy=b.dataset.y;wt();}});wt();
-  // heatmap onderwerpen x jaren
-  const groepen={};L.thema.forEach(([n,g],k)=>{if(n!=='Toezeggingen')(groepen[g]=groepen[g]||[]).push(k);});
-  let h=`<table class="hm"><thead><tr><th></th>${L.jaren.map(y=>`<th class="k">'${y.slice(2)}</th>`).join('')}</tr></thead><tbody>`;
-  for(const [g,ks] of Object.entries(groepen)){h+=`<tr class="g"><th colspan="${L.jaren.length+1}">${esc(g)}</th></tr>`;
-    for(const k of ks){const row=L.ty[k],mx=Math.max(...row,0.1);h+=`<tr><th><a href="${g==='Wijken en gebieden'&&L.thema[k][0]!=='Nationaal Programma Rotterdam Zuid'?'wijk':'dossier'}.html#${slug(L.thema[k][0])}">${esc(L.thema[k][0])}</a></th>${row.map((v,i)=>{const f=v/mx;return `<td style="background:${tint(f)}" class="${f>.6?'d':''}" title="${esc(L.thema[k][0])}, ${L.jaren[i]}: ${String(v).replace('.',',')} per 100.000 woorden"></td>`;}).join('')}</tr>`;}}
-  $('heat').innerHTML=h+'</tbody></table>';
-  // matrix samenwerking
-  const P=L.partijen,M={};L.pair.forEach(([a,b,n])=>{M[a+'|'+b]=n;M[b+'|'+a]=n;});const mx=Math.max(...L.pair.map(x=>x[2]));
-  $('matrix').innerHTML=`<table class="hm matrix"><thead><tr><th></th>${P.map(p=>`<th class="k">${esc(p)}</th>`).join('')}</tr></thead><tbody>${P.map(a=>`<tr><th>${esc(a)}</th>${P.map(b=>{if(a===b)return '<td style="background:var(--grijs)"></td>';const n=M[a+'|'+b]||0,f=Math.sqrt(n/mx);return `<td style="background:${n?tint(f):'#fff'}" class="${f>.6?'d':''}" title="${esc(a)} en ${esc(b)}: ${n} moties samen">${n||''}</td>`;}).join('')}</tr>`).join('')}</tbody></table>`;
-  // slagingskans
-  const sl=P.map(p=>[p,L.aang[p]/L.ind[p],L.ind[p]]).sort((a,b)=>b[1]-a[1]);
-  $('slaag').innerHTML=sl.map(([p,f,n])=>`<div><span>${esc(p)}</span><span class="bar" title="${Math.round(f*100)}% van ${n} moties"><i style="width:${f*100}%"></i></span><span class="num">${Math.round(f*100)}%</span></div>`).join('')+'<p class="sub" style="margin-top:8px">Percentage aangenomen van alle moties die de fractie indiende of mede indiende.</p>';
-  // doorlooptijd
-  const dmx=Math.ceil(Math.max(...L.door.map(x=>x[1]))/50)*50;
-  $('as').innerHTML=`<span></span><span><span>0 dagen</span><span>${dmx/2}</span><span>${dmx} dagen</span></span><span>later dan verwacht</span>`;
-  $('door').innerHTML=L.door.map(([w,d,n,o])=>`<div><span>${esc(w)}</span><span class="lijn" title="mediaan ${d} dagen, ${n} toezeggingen"><i style="left:${d/dmx*100}%"></i></span><span class="num">${d} dagen · ${o}%</span></div>`).join('');
-  // open beloftes per collegelid
-  const omx=Math.max(...L.openper.map(x=>x[1]));
-  $('openper').innerHTML=L.openper.map(([w,n,l])=>`<div><span>${esc(w)}</span><span class="bar" title="${n} open, ${l} over de termijn" style="width:${n/omx*100}%"><i style="width:${l/n*100}%;background:var(--laat)"></i></span><span class="num">${n}</span></div>`).join('')+'<p class="sub" style="margin-top:8px"><span class="stip laat"></span>deel over de termijn · grijs: nog binnen de termijn</p>';
-  // schriftelijke vragen per fractie per jaar
-  const svmx=Math.max(...Object.values(L.sv).flatMap(o=>Object.values(o)));
-  $('sv').innerHTML=Object.entries(L.sv).map(([p,o])=>{const tot=Object.values(o).reduce((a,b)=>a+b,0);return `<div><span>${esc(p)}</span><span class="kol" title="${L.jaren.map(y=>y+': '+(o[y]||0)).join(', ')}">${L.jaren.map(y=>`<i style="height:${(o[y]||0)/svmx*100}%"></i>`).join('')}</span><span class="num">${tot}</span></div>`;}).join('')+`<p class="sub" style="margin-top:8px">Elk staafje is een jaar, van ${L.jaren[0]} tot ${L.jaren[L.jaren.length-1]}; rechts het totaal.</p>`;
-  // inhoudsopgave volgt het scrollen
-  const links=[...document.querySelectorAll('.toc a')];const obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting)links.forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+e.target.id));});},{rootMargin:'-30% 0px -60% 0px'});
-  document.querySelectorAll('section.blok').forEach(s=>obs.observe(s));
-  // stokpaardjes: partijen x onderwerpen, per onderwerp geschaald
-  const ON=L.thema.map((t,k)=>[t,k]).filter(([t])=>t[1]!=='Wijken en gebieden'&&t[0]!=='Toezeggingen');
-  $('stok').innerHTML=`<table class="hm matrix"><thead><tr><th></th>${L.tpart.map(p=>`<th class="k">${esc(p)}</th>`).join('')}</tr></thead><tbody>${ON.map(([t,k])=>{const row=L.tp[k],mx=Math.max(...row,0.1);return `<tr><th><a href="dossier.html#${slug(t[0])}">${esc(t[0])}</a></th>${row.map((v,i)=>{const f=v/mx;return `<td style="background:${tint(f)}" title="${esc(L.tpart[i])} over ${esc(t[0])}: ${String(v).replace('.',',')} per 100.000 woorden"></td>`;}).join('')}</tr>`;}).join('')}</tbody></table>`;
 });
-</script>
-</body></html>
+</script></body></html>
