@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Steekproef domeinen</title>
+<style>
+body{font:15px/1.45 Arial,sans-serif;margin:0;background:#fff;color:#000}
+header{position:sticky;top:0;background:#EFF4F6;padding:10px 16px;border-bottom:1px solid #ccd;z-index:2}
+h1{font-size:18px;margin:0 0 6px}
+nav button,.knop{font:inherit;padding:5px 10px;border:1px solid #888;background:#fff;border-radius:4px;cursor:pointer}
+nav button.aan{background:#00811F;color:#fff;border-color:#00811F}
+main{padding:8px 16px 60px;max-width:1100px}
+.uitleg{margin:8px 0 12px;color:#333}
+table{border-collapse:collapse;width:100%}
+td{border-bottom:1px solid #e3e6e8;padding:6px 6px;vertical-align:top}
+tr.goed td{background:#eaf6ec} tr.fout td{background:#fdecea}
+.meta{color:#555;font-size:13px;white-space:nowrap}
+.titel a{color:#000}
+.meth{font-size:12px;color:#666}
+select{font:inherit;max-width:230px}
+.ok{font:inherit;padding:3px 9px;border:1px solid #00811F;color:#00811F;background:#fff;border-radius:4px;cursor:pointer}
+tr.goed .ok{background:#00811F;color:#fff}
+#stand{font-weight:700;margin-left:10px}
+</style></head><body>
+<header><h1>Steekproef domeinlabels</h1>
+<nav><button data-t="steekproef" class="aan">Steekproef (200)</button> <button data-t="parkeren">Parkeren</button>
+<span id="stand"></span> <button class="knop" id="rest">Rest op deze tab: goed</button> <button class="knop" id="dl">Download oordelen</button></nav></header>
+<main><p class="uitleg">Per regel: klik <b>goed</b> als het domein klopt, of kies het juiste domein in de lijst (dan telt het als fout). Het voorstel is het domein dat er nu staat. Je oordelen worden in deze browser bewaard; klik aan het eind op <b>Download oordelen</b> en zet het bestand in <code>D:\Downloads Chrome\raadzoeker-werk\labels\</code>.<br>
+Methode: <i>bron</i> = beleidsveld uit iBabs; <i>gekoppeld</i> = via stukken bij hetzelfde agendapunt; <i>woordmodel</i> = automatisch op woorden; <i>regel</i> = procedureel, geen domein.</p>
+<table id="tab"></table></main>
+<script>
+const D=/*DATA*/null;
+const KEY='steekproef-domein-v1';
+let O={}; try{O=JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){}
+function bewaar(){try{localStorage.setItem(KEY,JSON.stringify(O))}catch(e){}}
+let tab='steekproef';
+const opt=D.domeinen.map(([s,n])=>`<option value="${s}">${n}</option>`).join('');
+const naam=Object.fromEntries(D.domeinen);
+function esc(s){return (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+function teken(){
+  const R=D[tab];
+  document.getElementById('tab').innerHTML=R.map(([k,s,d,t,w,u,dom,meth,z])=>{
+    const o=O[k]; const cls=o?(o===dom?'goed':'fout'):'';
+    const tt=u?`<a href="${esc(u)}" target="_blank" rel="noopener">${esc(t)||'(geen titel)'}</a>`:esc(t)||'(geen titel)';
+    return `<tr class="${cls}" data-k="${k}" data-d="${dom}"><td class="meta">${esc(s)}<br>${d}</td><td class="titel">${tt}<div class="meth">${esc(w)}</div></td>
+    <td><button class="ok">goed</button></td><td><select>${opt}</select><div class="meth">${meth}${meth==='woordmodel'||meth==='gekoppeld'?' · '+Math.round(z*100)+'%':''}</div></td></tr>`}).join('');
+  document.querySelectorAll('#tab tr').forEach(tr=>{tr.querySelector('select').value=O[tr.dataset.k]||tr.dataset.d});
+  stand();
+}
+function stand(){const R=D[tab];const n=R.filter(r=>O[r[0]]).length;const f=R.filter(r=>O[r[0]]&&O[r[0]]!==r[6]).length;
+  document.getElementById('stand').textContent=`${n} van ${R.length} beoordeeld, ${f} fout`}
+document.getElementById('tab').addEventListener('click',e=>{if(!e.target.classList.contains('ok'))return;const tr=e.target.closest('tr');
+  O[tr.dataset.k]=tr.dataset.d;tr.querySelector('select').value=tr.dataset.d;tr.className='goed';bewaar();stand()});
+document.getElementById('tab').addEventListener('change',e=>{const tr=e.target.closest('tr');O[tr.dataset.k]=e.target.value;
+  tr.className=e.target.value===tr.dataset.d?'goed':'fout';bewaar();stand()});
+document.querySelectorAll('nav button[data-t]').forEach(b=>b.onclick=()=>{tab=b.dataset.t;document.querySelectorAll('nav button[data-t]').forEach(x=>x.classList.toggle('aan',x===b));teken()});
+document.getElementById('rest').onclick=()=>{if(!confirm('Alle nog niet beoordeelde regels op deze tab als goed markeren?'))return;D[tab].forEach(r=>{if(!O[r[0]])O[r[0]]=r[6]});bewaar();teken()};
+document.getElementById('dl').onclick=()=>{const b=new Blob([JSON.stringify({oordelen:O,datum:new Date().toISOString()})],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='oordelen-domein.json';a.click()};
+teken();
+</script></body></html>
