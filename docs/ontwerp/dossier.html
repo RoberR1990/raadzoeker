@@ -1,12 +1,13 @@
 <!doctype html>
 <html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
 <title>Dossier · raadzoeker</title>
-<link rel="stylesheet" href="stijl.css?v=5">
+<link rel="stylesheet" href="stijl.css?v=6">
 <style>
 .pagina.breed{max-width:1240px}
 .crumb{font-size:14px;color:var(--sub);margin:32px 0 4px}
 .crumb a{color:var(--sub)}
 .kop h1{margin:0 0 8px}
+.kopacties{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;margin:4px 0 16px;font-size:14px}
 .verwant{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:14px}
 .verwant a{display:inline-flex;gap:8px;align-items:baseline;border:1px solid var(--lijn);border-radius:999px;padding:6px 12px;text-decoration:none;background:var(--wit)}
 .verwant a:hover{border-color:var(--zwart)}
@@ -88,7 +89,7 @@ table.tafel .bar i{display:block;height:8px;background:var(--groen);border-radiu
   <div id="dossier"><p class="leeg" style="margin-top:24px">Laden…</p></div>
   <p class="voet">Gegevens: notulen en ondertiteling van de gemeenteraad, de registratie in iBabs (moties, toezeggingen, schriftelijke vragen, brieven), de Rekenkamer Rotterdam en de wijkraden, stand 2 oktober 2026. Domeinen volgen de indeling van de griffie (beleidsveld in iBabs), aangevuld met een woordmodel; een onderwerp is een vaste set zoekwoorden. Aantallen zijn een goede indicatie, geen exacte telling. Teksten met het label AI zijn automatisch gemaakt; elk punt heeft een letterlijk citaat dat een script woord voor woord met de bron heeft vergeleken. <a href="over.html">Meer over deze tool</a>.</p>
 </main>
-<script src="ontwerp.js?v=6"></script>
+<script src="ontwerp.js?v=7"></script>
 <script>
 kop('domeinen');
 let DATA={stand:STAND},ALLE=[],KAART=null,CUR=null,SOORT='mot',FILTER='open';
@@ -190,7 +191,8 @@ function zetVast(){const a=document.querySelector('.C>aside');if(!a)return;a.cla
 window.addEventListener('resize',zetVast);
 
 async function toon(d){
-  CUR=d;SOORT='mot';FILTER='open';try{localStorage.setItem('rz-dossier',d.slug);}catch(e){}
+  CUR=d;SOORT='mot';FILTER='open';
+  document.querySelector('main.pagina>.vlak').hidden=d.soort!=='domein';   // zoeken naar een ander dossier alleen op domeinniveautry{localStorage.setItem('rz-dossier',d.slug);}catch(e){}
   if(location.hash.slice(1)!==d.slug)history.replaceState(null,'','#'+d.slug);
   document.title=d.naam+' · raadzoeker';
   let A=null;if(d.ai){try{A=await (await fetch('samenvattingen/'+d.slug+'.json')).json();}catch(e){}}
@@ -265,11 +267,11 @@ async function toon(d){
   if(A&&n(W.punten))side+=`<section class="vlak"><h3 style="margin:0 0 8px">Signalen uit de wijken <span class="ai">AI</span></h3><p style="margin:0;font-size:15px">${alinea(W.intro||[])}</p>
       <button type="button" class="meerknop" aria-expanded="false" aria-controls="wi"><span class="tx">Toon ${n(W.punten)} signalen</span><span class="pijl" aria-hidden="true">▾</span></button><div class="inh" id="wi" hidden>${W.punten.map(x=>`<div class="pt" style="font-size:14px"><b>${esc(x.wijk)}</b> ${rijAI(x)}</div>`).join('')}</div></section>`;
   side+=wst;
-  if(!isKr)side+=`<section class="vlak"><h3 style="margin:0 0 8px">In welke gebieden?</h3><div class="mini" id="mini"></div><p class="sub" id="minitxt" style="margin-top:8px"></p></section>`;
+  if(!isKr&&d.soort!=='gebied')side+=`<section class="vlak"><h3 style="margin:0 0 8px">In welke gebieden?</h3><div class="mini" id="mini"></div><p class="sub" id="minitxt" style="margin-top:8px"></p></section>`;
   const ver=d.verdieping.ver.filter(v=>ALLE.some(x=>x.slug===slug(v[0])));
   if(ver.length)side+=`<section class="vlak"><h3 style="margin:0 0 8px">Hangt samen met</h3><div class="verwant">${ver.map(([nm,p,l])=>`<a href="#${slug(nm)}" title="In ${p}% van de spreekbeurten hierover gaat het ook over ${esc(nm.toLowerCase())}">${esc(nm)} <span class="sub num">${String(l).replace('.',',')}×</span></a>`).join('')}</div></section>`;
-  side+=`<section class="vlak acties"><a class="knop" href="briefing.html#${d.slug}">Exporteer als briefing (A4, pdf)</a><span class="sub" id="deelrij"></span>${isKr?`<a href="wijk.html#${slug(d.gebied)}">Naar het gebied ${esc(d.gebied)}</a>`:''}</section>`;
-  $('dossier').innerHTML=`<div class="crumb">${crumb}</div><div class="kop"><h1>${esc(d.naam)}</h1>${verwant}</div><div class="C"><main>${main}</main><aside>${side}</aside></div>`;
+  const acties=`<div class="kopacties"><a class="knop" href="briefing.html#${d.slug}">Maak een briefing (A4, pdf of Word)</a><span class="sub" id="deelrij"></span>${isKr||d.soort==='gebied'?`<a class="sub" href="wijk.html#${slug(d.gebied)}">Naar de gebiedspagina met kaart en cijfers</a>`:''}</div>`;
+  $('dossier').innerHTML=`<div class="crumb">${crumb}</div><div class="kop"><h1>${esc(d.naam)}</h1>${acties}${verwant}</div><div class="C"><main>${main}</main><aside>${side}</aside></div>`;
   // mini-kaart
   const Wk=d.verdieping.wijk,wm=Math.max(.1,...Object.values(Wk));if($('mini')){
   $('mini').innerHTML=`<svg viewBox="0 0 ${KAART.w} ${KAART.h}"><path class="h" d="${KAART.havens}"/>${KAART.gebieden.map(g=>{const v=Wk[g.naam]||0,f=v/wm;return `<a href="${isDom&&ALLE.some(x=>x.slug===d.slug+'--'+slug(g.naam))?'#'+d.slug+'--'+slug(g.naam):'wijk.html#'+slug(g.naam)}"><path class="g" d="${g.d}" fill="${f>.75?'#004C31':f>.5?'#00811F':f>.25?'#4EB051':f>.1?'#99CCA0':'#E1EFE2'}"><title>${esc(g.naam)}: in ${String(v).replace('.',',')}% van de spreekbeurten</title></path></a>`;}).join('')}<path class="w" d="${KAART.water}"/></svg>`;

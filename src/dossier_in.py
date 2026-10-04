@@ -22,7 +22,10 @@ def vensters(t,r,n=4,breed=700,kop=400):
     uit.sort()
     return ' […] '.join(('…' if a else '')+ws(t[a:b])+('…' if b<len(t) else '') for a,b in uit)
 def main(nr):
-    naam,pp=O[nr-1]; r=rx(pp); s=slug(naam)
+    naam,pp=O[nr-1]; pakket(naam,rx(pp))
+def pakket(naam,r,kopnaam='het onderwerp'):
+    """Bronnenpakket voor een onderwerp of gebied: r = regex op gevouwen tekst."""
+    s=slug(naam)
     B={}; L=[]
     # debatten raad + commissies
     deb=[]
@@ -85,7 +88,7 @@ def main(nr):
     # leesbare invoer voor het model
     kop={'D':'DEBATTEN (raad en commissies; "auto" = automatische ondertiteling, kan fouten bevatten)','M':'MOTIES EN AMENDEMENTEN','T':'TOEZEGGINGEN VAN HET COLLEGE',
          'V':'SCHRIFTELIJKE VRAGEN VAN RAADSLEDEN MET ANTWOORD VAN HET COLLEGE','S':'RAADSVOORSTELLEN, COLLEGEBRIEVEN, REKENKAMER EN OVERIGE STUKKEN','W':'WIJKRADEN'}
-    out=[f'# Bronnen voor het onderwerp: {naam}','']
+    out=[f'# Bronnen voor {kopnaam}: {naam}','']
     for g in 'DMTVSW':
         cs=[c for c in B if c[0]==g]
         if not cs: continue

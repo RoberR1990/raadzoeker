@@ -147,7 +147,8 @@ def main():
     for gn in GNAAM.values():
         rg=[r for r,d,gg in stuk if gn in gg]; ag=[a for a in aps_all if gn in a['geb']]; wg=[x for x in wst if gn in x[2]]
         o=bouw(gn,'Gebieden','gebied',[['Gebieden','wijk.html']],rg,ag,{gn:1},wg); o['gebied']=gn
-        schrijf(slug(gn)+'.json',o); index.append({'slug':slug(gn),'naam':gn,'groep':'Gebied','soort':'gebied','gebied':gn})
+        o['ai']=os.path.exists(os.path.join(DOCS,'ontwerp','samenvattingen',slug(gn)+'.json'))   # AI-samenvatting (gebied_in.py)
+        schrijf(slug(gn)+'.json',o); index.append({'slug':slug(gn),'naam':gn,'groep':'Gebied','soort':'gebied','gebied':gn,'ai':o['ai']})
     # onderwerpen (38) en het overkoepelende onderwerp Parkeren: bestaande dossiers, nu onder een domein
     TH={'Parkeren':'mobiliteit','Mobiliteit & verkeer':'mobiliteit','Buitenruimte & afval':'buitenruimte','Veiligheid & handhaving':'veiligheid','Economie & haven':'economie',
         'Cultuur, sport & evenementen':'cultuur','Werk & inkomen':'werk','Wonen':'wonen','Zorg, welzijn & jeugd':'zorg','Asiel & migratie':'samenleven','Energie & klimaat':'klimaat',

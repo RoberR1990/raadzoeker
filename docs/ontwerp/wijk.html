@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
 <title>Wijken · raadzoeker</title>
-<link rel="stylesheet" href="stijl.css?v=5">
+<link rel="stylesheet" href="stijl.css?v=6">
 <style>
 .boven{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:24px;align-items:center}
 .minikaart svg{width:100%;height:auto;display:block}
@@ -65,7 +65,7 @@
   <div id="wijk"><p class="leeg" style="margin-top:24px">Laden…</p></div>
   <p class="voet">Gegevens: notulen en ondertiteling van de gemeenteraad; iBabs (moties, toezeggingen, wijkraden); wijkraad.rotterdam.nl; CBS Kerncijfers wijken en buurten 2022–2025; Wijkprofiel Rotterdam (cijfers: gemeente Rotterdam, OBI, Wijkprofiel 2014–2026); politie, geregistreerde misdrijven per buurt (via CBS); officiële bekendmakingen (Gemeenteblad). Cijfers uit verschillende bronnen staan ter informatie naast elkaar; ze zeggen niets over oorzaak of verband. <a href="over.html">Meer over deze tool</a>.</p>
 </main>
-<script src="ontwerp.js?v=6"></script>
+<script src="ontwerp.js?v=7"></script>
 <script>
 kop('gebieden');
 let DATA=null,K=null,WK=null,CUR=null,SOORT='mot',FILTER='open',JAAR='alle',OV=null,IX=[];
@@ -82,6 +82,17 @@ Promise.all(['dossiers.json','kaart.json','wijken.json','d/overzicht.json','d/in
     toon(uitHash(G())||G().find(x=>x.naam==='Charlois'));};
   route();window.addEventListener('hashchange',route);
 });
+/* ---------- AI-samenvatting van het gebied (kern); de volledige versie staat in het gebiedsdossier ---------- */
+async function aiBlok(g){
+  let A=null;try{const r=await fetch('samenvattingen/'+slug(g)+'.json');if(r.ok)A=await r.json();}catch(e){}
+  const kol=document.querySelector('#wijk .kol');if(!A||!kol||!A.kern||!A.kern.length)return;
+  const k=A.kern,laatste=k[k.length-1];
+  kol.insertAdjacentHTML('afterbegin',`<section class="vlak" aria-labelledby="ak"><h2 id="ak">In het kort <span class="ai">AI-samenvatting</span></h2>
+    <p style="margin-top:8px;line-height:1.6;max-width:72ch">${k.slice(0,-1).map(z=>esc(z.zin)).join(' ')}</p>
+    <div class="stand" style="margin-top:12px;border-left:4px solid var(--groen);background:var(--groen-zacht);padding:12px 16px;border-radius:0 8px 8px 0"><b style="font-size:13px;color:var(--groen-d)">Stand van zaken · AI</b><p style="margin:4px 0 0">${esc(laatste.zin)}</p></div>
+    <p style="margin-top:12px"><a class="knop" href="dossier.html#${slug(g)}">Lees de volledige samenvatting (± 1 A4, met citaten en bronnen)</a></p></section>`);
+  const oud=document.getElementById('ik');if(oud)oud.closest('section').remove();   // oudere, korte themasamenvatting vervangen
+}
 /* ---------- per domein in dit gebied: links naar de dossiers domein x gebied ---------- */
 function domeinBlok(g,wijk){
   const kol=document.querySelector('#wijk .kol');if(!kol||!OV)return;
@@ -210,7 +221,7 @@ function toon(d){
     </div>
   </div>`;
   deel($('deelrij'),d.naam+' in de Rotterdamse raad',new URL('deel/'+slug(d.naam)+'.html',location.href).href);
-  onderwerpen();lijst();domeinBlok(d.naam);window.scrollTo({top:0});
+  onderwerpen();lijst();domeinBlok(d.naam);aiBlok(d.naam);window.scrollTo({top:0});
 }
 document.addEventListener('click',e=>{const s=e.target.closest('[data-soort]'),f=e.target.closest('[data-f]'),j=e.target.closest('[data-j]');
   if(s){SOORT=s.dataset.soort;FILTER='open';lijst();}if(f){FILTER=f.dataset.f;lijst();}if(j){JAAR=j.dataset.j;onderwerpen();}});
