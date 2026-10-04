@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
 <title>Wijken · raadzoeker</title>
-<link rel="stylesheet" href="stijl.css?v=4">
+<link rel="stylesheet" href="stijl.css?v=5">
 <style>
 .boven{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:24px;align-items:center}
 .minikaart svg{width:100%;height:auto;display:block}
@@ -65,11 +65,11 @@
   <div id="wijk"><p class="leeg" style="margin-top:24px">Laden…</p></div>
   <p class="voet">Gegevens: notulen en ondertiteling van de gemeenteraad; iBabs (moties, toezeggingen, wijkraden); wijkraad.rotterdam.nl; CBS Kerncijfers wijken en buurten 2022–2025; Wijkprofiel Rotterdam (cijfers: gemeente Rotterdam, OBI, Wijkprofiel 2014–2026); politie, geregistreerde misdrijven per buurt (via CBS); officiële bekendmakingen (Gemeenteblad). Cijfers uit verschillende bronnen staan ter informatie naast elkaar; ze zeggen niets over oorzaak of verband. <a href="over.html">Meer over deze tool</a>.</p>
 </main>
-<script src="ontwerp.js?v=5"></script>
+<script src="ontwerp.js?v=6"></script>
 <script>
-kop('wijk');
-let DATA=null,K=null,WK=null,CUR=null,SOORT='mot',FILTER='open',JAAR='alle';
-Promise.all(['dossiers.json','kaart.json','wijken.json'].map(f=>fetch(f).then(r=>r.json()))).then(([d,k,w])=>{DATA=d;K=k;WK=w;
+kop('gebieden');
+let DATA=null,K=null,WK=null,CUR=null,SOORT='mot',FILTER='open',JAAR='alle',OV=null,IX=[];
+Promise.all(['dossiers.json','kaart.json','wijken.json','d/overzicht.json','d/index.json'].map(f=>fetch(f).then(r=>r.json()))).then(([d,k,w,ov,ix])=>{DATA=d;K=k;WK=w;OV=ov;IX=ix.d;
   const G=()=>DATA.dossiers.filter(x=>x.groep==='Wijken en gebieden'&&x.inw!==undefined);
   const W=WK.wijken.map(x=>({...x,groep:'wijk in '+x.gebied,sub:[],termen:(x.zoek||[]).join(' ')+' '+x.gebied}));
   $('kaart').innerHTML=`<svg viewBox="0 0 ${K.w} ${K.h}"><path class="h" d="${K.havens}"/>${W.map(x=>`<path class="wk" data-s="${x.slug}" d="${x.d}" tabindex="0" role="button" aria-label="${esc(x.naam)}, ${esc(x.gebied)}"><title>${esc(x.naam)} (${esc(x.gebied)})</title></path>`).join('')}${K.gebieden.map(g=>`<path class="gr" d="${g.d}"/>`).join('')}<path class="w" d="${K.water}"/></svg>`;
@@ -82,6 +82,14 @@ Promise.all(['dossiers.json','kaart.json','wijken.json'].map(f=>fetch(f).then(r=
     toon(uitHash(G())||G().find(x=>x.naam==='Charlois'));};
   route();window.addEventListener('hashchange',route);
 });
+/* ---------- per domein in dit gebied: links naar de dossiers domein x gebied ---------- */
+function domeinBlok(g,wijk){
+  const kol=document.querySelector('#wijk .kol');if(!kol||!OV)return;
+  const r=OV.domeinen.map(d=>({d,n:d.kruising[g]||0,s:d.slug+'--'+slug(g)})).sort((a,b)=>b.n-a.n),mx=Math.max(1,...r.map(x=>x.n));
+  kol.insertAdjacentHTML('afterbegin',`<section class="vlak" aria-labelledby="pd"><h2 id="pd">Per domein</h2>
+    <p class="sub" style="margin:4px 0 12px">Stukken en debatten die ${esc(g)} noemen of uit het gebied komen${wijk?' (gebied '+esc(g)+'; per wijk is er te weinig voor een dossier)':''}. Klik voor het dossier.</p>
+    <div class="balken">${r.map(x=>{const ok=IX.some(i=>i.slug===x.s);return `<div class="balk2"><span>${ok?`<a href="dossier.html#${x.s}">${esc(x.d.naam)}</a>`:esc(x.d.naam)}</span><i style="width:${x.n/mx*100}%"></i><span class="v num">${nf(x.n)}</span></div>`;}).join('')}</div></section>`);
+}
 /* ---------- één wijk ---------- */
 const CBSL={inw:['inwoners','',0],woz:['gem. WOZ-waarde','€ ',0],huur:['huurwoningen','%',1],corp:['huur van corporaties','%',1],ink:['inkomen per inwoner','€ ',0],laag:['huishoudens laag inkomen','%',1],bijst:['personen in de bijstand','',0],jong:['inwoners 0–15 jaar','%',1],oud:['inwoners 65+','%',1],eenp:['eenpersoonshuishoudens','%',1],jz:['jongeren met jeugdzorg','%',1],wmo:['Wmo-cliënten per 1.000','',1]};
 function fmt(k,v){if(v==null)return '–';const [n,e,d]=CBSL[k];const s=Number(v).toLocaleString('nl-NL',{maximumFractionDigits:d,minimumFractionDigits:0});return e==='%'?s+'%':e==='€ '?'€ '+nf(Math.round(v*(k==='ink'?10:1))*(k==='ink'?100:1000)):s;}   // CBS: bedragen in duizenden euro's
@@ -150,7 +158,7 @@ function toonWijk(w){
         <p class="sub" style="margin-top:8px">Bron: politie, geregistreerde misdrijven per buurt (via CBS). Het gaat om aangiftes en registraties, niet om alle voorvallen.</p></section>
   </details>
   <p class="let">Deze pagina zet cijfers uit verschillende bronnen naast elkaar, ter informatie. Ze zijn verschillend gemeten en niet bedoeld om conclusies te trekken over oorzaak, verband of hoeveel aandacht een wijk zou moeten krijgen.</p>`;
-  window.scrollTo({top:0});
+  domeinBlok(w.gebied,w.naam);window.scrollTo({top:0});
 }
 function lijst(){
   const d=CUR,bron=SOORT==='mot'?d.moties:d.toez;let l=FILTER==='af'?bron.af:bron.lijst;
@@ -202,7 +210,7 @@ function toon(d){
     </div>
   </div>`;
   deel($('deelrij'),d.naam+' in de Rotterdamse raad',new URL('deel/'+slug(d.naam)+'.html',location.href).href);
-  onderwerpen();lijst();window.scrollTo({top:0});
+  onderwerpen();lijst();domeinBlok(d.naam);window.scrollTo({top:0});
 }
 document.addEventListener('click',e=>{const s=e.target.closest('[data-soort]'),f=e.target.closest('[data-f]'),j=e.target.closest('[data-j]');
   if(s){SOORT=s.dataset.soort;FILTER='open';lijst();}if(f){FILTER=f.dataset.f;lijst();}if(j){JAAR=j.dataset.j;onderwerpen();}});

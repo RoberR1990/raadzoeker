@@ -112,3 +112,10 @@ Ophalen, hervatbaar in blokken (`--minuten 9`), gedeelde iBabs-limiet:
 Backlog: transcriptie van 61 commissievergaderingen 2022–2026 met video maar zonder ondertitels. Company Webcast levert alleen een versleutelde 1080p-stream (AES-128, ondertekende links; de WMV-download geeft 404), dus niet zelf ontsleutelen. Route: griffie om audio of vtt vragen (concept `ontwerp/mail-griffie.md`, lijst `ontwerp/griffie-vergaderingen-zonder-ondertitels.csv`). faster-whisper 1.2.1 staat klaar, CUDA werkt. Per vergadering staat een sprekerslijst in `/players/{id}/ondemand/.../resources`.
 
 Niet doen: lokale media (Rijnmond, AD) overnemen, auteursrecht; hooguit linken. Afgesproken 2-10-2026.
+
+## Plan van aanpak (4-10-2026): fasen
+
+Rapporten in `ontwerp/fase0-inventarisatie.md`, `fase1-domeinen.md`, `fase2-gebieden.md`. Per fase stoppen voor review.
+- Fase 1 (klaar): 13 domeinen = iBabs-beleidsveld (portefeuille-logica, besluit Robert). `src/domeinen.py` → `WERK/labels/domein.json` (bron / gekoppeld / woordmodel / regel). Woordmodel (naive Bayes op bronlabels) i.p.v. Haiku (86% vs 64%). Opus-toets 90,7% gewogen. Drempel thema's 15 → alle 40 kandidaten (`src/themas_drempel.py`).
+- Fase 2 (klaar): `src/gebieden.py` (hiërarchie stad→14 gebieden→71 wijken→92 CBS-buurten, vertaaltabel gebiedscommissies→wijkraden, koppelen via bron/locatie/tekst) en `src/bag_straten.py` (BAG-adressen per tegel → straat → buurt). Tekstkoppeling 90% precies; tonen als 'genoemd in', ≥5 gebieden = stadsbreed.
+- Fase 3 (gebouwd, review open): menu Zoeken · Domeinen · Gebieden · Lab · Over. `src/dossier_data.py` → `docs/ontwerp/d/<slug>.json` (domeinen, onderwerpen, kruisingen `<domein>--<gebied>`, gebieden) + `d/index.json` + `d/overzicht.json` + `docs/data/tekst/labels.zst` (zoekfilters) en zet STAND in `ontwerp.js`. Startpagina = matrix domein × gebied; `domeinen.html` = dossierkast; `dossier.html` laadt één bestand per dossier; briefing = export (pdf via print, Word via .doc). Root `index.html` verwijst naar de startpagina. Volgorde bouwen: `ontwerp_data.py` → `dossier_data.py`.

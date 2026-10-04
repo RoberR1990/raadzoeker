@@ -8,17 +8,18 @@ const fd=d=>{if(!d)return '';const [y,m,dd]=d.split('-');return +dd+' '+MND[+m-1
 const fdl=d=>{const [y,m,dd]=d.split('-');return +dd+' '+MNDL[+m-1]+' '+y;};
 const slug=s=>s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/&/g,' ').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 const iso=s=>{const m=(s||'').match(/(\d\d)-(\d\d)-(\d{4})/);return m?`${m[3]}-${m[2]}-${m[1]}`:'';};
+const STAND='2026-10-02';   /* stand van de gegevens; ook in src/paden.py */
 const dagen=(a,b)=>Math.round((new Date(b)-new Date(a))/864e5);
 
 /* logo: halfrond van negen zetels (de raadzaal), één groen gemarkeerd; woordmerk in kleine letters */
 const LOGO=(kleur='#fff',accent='#fff')=>{let s='';const n=9;for(let i=0;i<n;i++){const a=Math.PI*(1-i/(n-1)),x=17+13*Math.cos(a),y=18-13*Math.sin(a);s+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="2.6" fill="${i===6?accent:kleur}" ${i===6?'':'opacity=".75"'}/>`;}
   return `<svg viewBox="0 0 34 20" aria-hidden="true">${s}<circle cx="17" cy="17" r="3.2" fill="${kleur}"/></svg>`;};
 function kop(actief){
-  const m=[['dossier','Onderwerpen','dossier.html'],['wijk','Wijken','wijk.html'],['stukken','Stukken','zoek.html'],['briefing','Briefing','briefing.html'],['archief','Archief','../raadzoeker.html']];
+  const m=[['zoeken','Zoeken','zoek.html'],['domeinen','Domeinen','domeinen.html'],['gebieden','Gebieden','wijk.html']];
   const r=[['lab','Lab','lab.html'],['over','Over','over.html']];
   const a=x=>`<a href="${x[2]}" class="${x[0]===actief?'on':''}"${x[0]===actief?' aria-current="page"':''}>${x[1]}${x[0]==='lab'?'<span class="tag">experimenteel</span>':''}</a>`;
   document.querySelector('header.balk').innerHTML=`<div class="in"><a class="merk" href="startpagina.html" aria-label="raadzoeker, naar de startpagina">${LOGO()}<b>raadzoeker</b><small>onofficieel</small></a>
-    <nav aria-label="Hoofdmenu">${m.map(a).join('')}</nav><nav class="rechts" aria-label="Over en experimenten">${r.map(a).join('')}</nav></div>`;
+    <nav aria-label="Hoofdmenu">${m.map(a).join('')}</nav><nav class="rechts" aria-label="Over en experimenten">${r.map(a).join('')}<span class="bijgewerkt">bijgewerkt t/m ${fd(STAND)}</span></nav></div>`;
   const ic=document.createElement('link');ic.rel='icon';ic.href='data:image/svg+xml,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 34 34"><rect width="34" height="34" rx="7" fill="#00811F"/><g transform="translate(0,7)">${LOGO().replace(/<\/?svg[^>]*>/g,'')}</g></svg>`);document.head.appendChild(ic);
 }
 /* zoeken in onderwerpen of gebieden; kiezen roept kies(d) aan */

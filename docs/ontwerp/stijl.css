@@ -34,6 +34,7 @@ p{margin:0}
 .balk nav a.on{background:var(--wit);color:var(--zwart)}
 .balk nav.rechts{margin-left:auto}
 .balk nav.rechts a{font-size:15px}
+.balk .bijgewerkt{font-size:13px;opacity:.9;margin-left:8px;white-space:nowrap}
 .tag{display:inline-block;font-size:12px;border:1px solid currentColor;border-radius:4px;padding:1px 5px;margin-left:6px}
 .pagina{max-width:1180px;margin:0 auto;padding:40px 24px 64px}
 .sectie{margin-top:64px}
@@ -91,3 +92,9 @@ mark{background:var(--groen-zacht);color:inherit;padding:0 2px;border-radius:2px
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 @media print{.balk{display:none}}
+/* horizontale balken (dossier, gebied) */
+.balken{display:grid;gap:8px}
+.balk2{display:grid;grid-template-columns:minmax(0,12em) 1fr 3.2em;gap:8px;align-items:center;font-size:14px}
+.balk2 i{display:block;height:10px;border-radius:2px;background:var(--groen-d)}
+.balk2 .v{text-align:right}
+@media (max-width:700px){.balk .bijgewerkt{display:none}.balk nav.rechts{margin-left:0}}
