@@ -57,3 +57,7 @@ Getoetste valkuilen:
   - Gebied = som van de wijken.
 - **Buurtniveau niet als eigen laag tonen.** Het is ongeveer gelijk aan de wijk; alleen gebruiken voor kaart en CBS-cijfers.
 - **Vóór 2022:** alleen de gebiedsnaam (14 gebieden), niet per wijkraad.
+
+## Besluit Robert (4-10-2026)
+
+- Optie A: wijkniveau tonen; tekstkoppelingen als 'genoemd in', vanaf 5 gebieden 'stadsbreed'; vóór 2022 alleen gebied.
