@@ -25,6 +25,21 @@ def iso(d):
     m=re.match(r'\s*(\d\d)-(\d\d)-(\d{4})',d or '')
     return f'{m.group(3)}-{m.group(2)}-{m.group(1)}' if m else (d or '')[:10]
 def schoon(t): return re.sub(r'\n\s*\n+','\n',re.sub(r'[ \t\xa0]+',' ',(t or '').replace('\r',''))).strip()[:MAXT]
+# Privacy (besloten 3-10-2026): in wijkraadteksten namen van insprekers/bewoners weglakken. Binnen een venster na
+# 'inspreek…'/'spreekt in' en na aanspreekvormen worden reeksen met hoofdletters (met voorletters/tussenvoegsels) '[naam]'.
+# Straat- en plaatsnamen blijven staan. Vangt niet alles; liever iets te veel dan te weinig weg.
+TV=r'(?:van|de|der|den|het|ter|ten|te|op|in|\'t|la|le|el|al|bin|ben)'
+NAAM=re.compile(r'\b(?!(?:Bewoners?|Insprekers?|Inspreekrecht|Inspreektijd|Wijkraad|Wethouder|Voorzitter|Besluit|De|Het|Een|Er|Wel|Geen)\b)(?:(?:[A-Z]\.\s?){1,4}\s?|[A-Z][a-zà-ÿ]+(?:-[A-Z][a-zà-ÿ]+)?\s+)(?:'+TV+r'\s+){0,3}[A-Z][a-zà-ÿ]+(?:-[A-Z][a-zà-ÿ]+)?\b')
+GEEN=re.compile(r'(straat|weg|plein|laan|kade|park|singel|dreef|wijk|buurt|raad|gemeente|rotterdam|college|centrum|school|kerk|wethouder|voorzitter|agenda|besluit|commissie)\b',re.I)
+AANSPR=re.compile(r'(\b(?:[Dd]hr|[Mm]evr|[Mm]w|[Dd]e heer|[Mm]evrouw)\.?\s+)(?:(?:[A-Z]\.\s?){1,4}\s?)?(?:'+TV+r'\s+){0,3}[A-Z][a-zà-ÿ]+(?:[\s-]+[A-Z][a-zà-ÿ]+)?')
+def anoniem(t):
+    vervang=lambda s:NAAM.sub(lambda m:m.group(0) if GEEN.search(m.group(0)) else '[naam]',s)
+    uit=[];i=0
+    for m in re.finditer(r'[Ii]nspre[ek]k\w*|[Ii]nsprekers?|spreekt in|komt inspreken',t):
+        if m.start()<i: continue
+        e=min(len(t),m.end()+500); uit+=[t[i:m.start()],vervang(t[m.start():e])]; i=e
+    t=''.join(uit)+t[i:]
+    return AANSPR.sub(lambda m:m.group(1)+'[naam]',t)   # 'de heer X', 'mevr. Y' overal in wijkraadteksten
 def jl(p):
     if os.path.exists(p):
         for l in open(p,encoding='utf8'):
@@ -59,12 +74,12 @@ def bronnen():
     for v in V.values():
         if not v['datum'] or v['datum']>STAND: continue
         t='\n'.join((i['nr']+' '+i['titel']+'\n'+i['tekst']).strip() for i in v['items'])
-        if t: yield 'wv:'+v['id'],'Wijkraadvergadering',v['datum'],v['raad']+' '+v['datum'],v['raad'],W+'/Agenda/Index/'+v['id'],t
+        if t: yield 'wv:'+v['id'],'Wijkraadvergadering',v['datum'],v['raad']+' '+v['datum'],v['raad'],W+'/Agenda/Index/'+v['id'],anoniem(t)
     for d in jl(os.path.join(WERK,'wijk','wijkraad_bijlagen.jsonl')):
         v=V.get(d['verg'])
         if not v or not d['tekst'].strip(): continue
         naam=re.sub(r'\s+\d+([.,]\d+)?\s*[KM]B$','',d['naam']).strip()
-        yield 'wb:'+d['doc'],'Wijkraadstuk',v['datum'],naam,v['raad'],W+'/Document/View/'+d['doc'],d['tekst']
+        yield 'wb:'+d['doc'],'Wijkraadstuk',v['datum'],naam,v['raad'],W+'/Document/View/'+d['doc'],anoniem(d['tekst'])
     # overige stukken met tekst (moties, toezeggingen, amendementen, wijkraadadviezen, ...), zonder dubbele soorten
     ST=json.loads(zstandard.ZstdDecompressor().decompress(open(os.path.join(DOCS,'data','ibabs','stukken.zst'),'rb').read(),max_output_size=10**9))
     S=ST['soorten']; al={'Raadsvoorstel','Rekenkamerrapport','Schriftelijke vragen','Collegebrief'}
