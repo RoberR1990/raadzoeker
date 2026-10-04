@@ -2,6 +2,7 @@
 <html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
 <title>Dossier · raadzoeker</title>
 <link rel="stylesheet" href="stijl.css?v=6">
+<link rel="stylesheet" href="keten.css?v=1">
 <style>
 .pagina.breed{max-width:1240px}
 .crumb{font-size:14px;color:var(--sub);margin:32px 0 4px}
@@ -64,6 +65,7 @@ table.tafel .bar i{display:block;height:8px;background:var(--groen);border-radiu
 </main>
 <script src="ontwerp.js?v=7"></script>
 <script src="ai.js?v=1"></script>
+<script src="keten.js?v=1"></script>
 <script>
 kop('domeinen');
 let DATA={stand:STAND},ALLE=[],KAART=null,CUR=null,SOORT='mot',FILTER='open';
@@ -74,11 +76,18 @@ Promise.all(['d/index.json','kaart.json'].map(f=>fetch(f).then(r=>r.json()))).th
   $('vast').innerHTML='<span class="sub" style="align-self:center">Veel gekozen:</span>'+VAST.map(s=>`<a href="#${s}">${esc(nm(s))}</a>`).join('')+
     (ai.length?'<span class="sub" style="align-self:center;margin-left:8px">Met AI-samenvatting:</span>'+ai.map(x=>`<a href="#${x.slug}">${esc(x.naam)}</a>`).join(''):'');
   zoeklijst($('zoek'),$('keuze'),()=>ALLE,x=>{location.hash=x.slug;});
-  let h=decodeURIComponent(location.hash.slice(1));if(!ALLE.some(x=>x.slug===h)){h='';try{h=localStorage.getItem('rz-dossier')||'';}catch(e){}}
+  let h=decodeURIComponent(location.hash.slice(1)).split('/')[0];if(!ALLE.some(x=>x.slug===h)){h='';try{h=localStorage.getItem('rz-dossier')||'';}catch(e){}}
   laad(ALLE.some(x=>x.slug===h)?h:'parkeren');
 });
-window.addEventListener('hashchange',()=>{const h=decodeURIComponent(location.hash.slice(1));if(ALLE.some(x=>x.slug===h))laad(h);});
-async function laad(s){const d=await (await fetch('d/'+s+'.json')).json();d.slug=s;toon(d);}
+window.addEventListener('hashchange',()=>{const h=decodeURIComponent(location.hash.slice(1)).split('/')[0];if(ALLE.some(x=>x.slug===h)&&(!CUR||CUR.slug!==h))laad(h);});
+async function laad(s){const d=await (await fetch('d/'+s+'.json')).json();d.slug=s;
+  // voorbeelddossier langs de keten als er extra gegevens zijn
+  let X=null;try{const r=await fetch('d/'+s+'-extra.json');if(r.ok)X=await r.json();}catch(e){}
+  if(X){CUR=d;try{localStorage.setItem('rz-dossier',s);}catch(e){}document.querySelector('main.pagina>.vlak').hidden=true;
+    let A=null;if(d.ai){try{A=await (await fetch('samenvattingen/'+s+'.json')).json();}catch(e){}}
+    if(location.hash.slice(1).split('/')[0]!==s)history.replaceState(null,'','#'+s);
+    return toonKeten(d,X,A);}
+  KX=null;toon(d);}
 
 window.naUitklap=()=>zetVast();
 document.addEventListener('click',e=>{

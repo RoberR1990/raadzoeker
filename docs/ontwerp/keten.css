@@ -1,0 +1,72 @@
+/* Voorbeelddossier langs de keten (keten.js). Zelfde tokens als stijl.css. */
+.kbalk{position:sticky;top:0;z-index:30;background:var(--grijs);margin:0 -24px 16px;padding:8px 24px;border-bottom:1px solid var(--lijn)}
+.kin{display:grid;gap:6px}
+.ksub{display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:14px}
+.ksub button{font:14px var(--font);border:1px solid var(--lijn);background:var(--wit);border-radius:999px;padding:4px 12px;cursor:pointer;min-height:32px}
+.ksub button[aria-pressed="true"]{background:var(--zwart);color:var(--wit);border-color:var(--zwart)}
+.knav{display:flex;gap:4px 18px;flex-wrap:wrap;font-size:15px}
+.knav a{text-decoration:none;padding:4px 0;border-bottom:3px solid transparent}
+.knav a:hover{border-bottom-color:var(--lijn)}
+.knav a.on{border-bottom-color:var(--groen);font-weight:700}
+.ksec{margin-bottom:24px;scroll-margin-top:120px}
+.ksec>h2{margin:0 0 6px}
+.ksec>.intro{margin:0 0 12px;color:var(--sub)}
+.ksec h3{margin:0 0 8px;font-size:17px}
+.kstap{font-size:13px;color:var(--groen-d);font-weight:700;margin-bottom:2px}
+.kkort{display:grid;grid-template-columns:minmax(0,2fr) minmax(260px,1fr);gap:24px;align-items:start}
+.kkort .kern{font-size:18px;line-height:1.6;margin:8px 0 0;max-width:72ch}
+/* de keten als vier stappen */
+.keten{list-style:none;margin:24px 0 0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;counter-reset:k}
+.keten li{position:relative}
+.keten a{display:grid;gap:2px;text-decoration:none;padding:12px 28px 12px 16px;background:var(--groen-zacht);border:1px solid var(--groen);margin-right:-1px;height:100%}
+.keten li:first-child a{border-radius:8px 0 0 8px}.keten li:last-child a{border-radius:0 8px 8px 0;margin-right:0}
+.keten li:not(:last-child)::after{content:'→';position:absolute;right:6px;top:50%;transform:translateY(-50%);color:var(--groen);font-size:18px;pointer-events:none}
+.keten a b{font-size:17px}.keten a span{font-size:14px;color:var(--sub)}
+.keten a:hover{background:var(--wit)}
+.ktwee{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:24px}
+.kvast{font-size:14px;padding:8px 0}
+.kstem{display:grid;gap:6px;max-width:720px}
+.kstem>div{display:grid;grid-template-columns:minmax(0,13em) 1fr 9em;gap:10px;align-items:center;font-size:14px}
+.kstem .bar{display:block;height:10px;background:var(--grijs2);border-radius:2px}
+.kstem .bar i{display:block;height:10px;background:var(--groen);border-radius:2px}
+/* beloftespoor: verticale lijn met stippen */
+.spoor{list-style:none;margin:6px 0 0;padding:0 0 0 4px}
+.spoor li{position:relative;padding:0 0 8px 20px;display:grid;grid-template-columns:7.5em minmax(0,1fr);gap:8px;font-size:14px}
+.spoor li::before{content:'';position:absolute;left:0;top:5px;width:10px;height:10px;border-radius:50%;background:var(--wit);border:2px solid var(--sub)}
+.spoor li:not(:last-child)::after{content:'';position:absolute;left:5px;top:17px;bottom:-3px;width:2px;background:var(--grijs2)}
+.spoor li.z::before{border-color:var(--zwart);background:var(--zwart)}
+.spoor li.m::before{border-color:var(--blauw);background:var(--blauw)}
+.spoor li.k::before{border-color:var(--groen);background:var(--groen)}
+.spoor li.o::before{border-color:var(--open);border-style:dashed}
+.spoor li.l::before{border-color:var(--laat);background:var(--laat)}
+.spoor .dt{color:var(--sub)}
+/* in de stad */
+.kstad{display:grid;grid-template-columns:minmax(0,3fr) minmax(240px,2fr);gap:24px;align-items:start}
+.kkaart svg{width:100%;height:auto;display:block}
+.kkaart path.h{fill:var(--grijs2)}.kkaart path.w{fill:var(--water);pointer-events:none}
+.kkaart path.wk{stroke:#fff;stroke-width:.8;cursor:pointer}
+.kkaart path.wk:hover,.kkaart path.wk:focus-visible{stroke:#000;stroke-width:1.5;outline:none}
+.kkaart path.wk.sel{stroke:#000;stroke-width:2.2}
+.kn{list-style:none;padding:0;margin:8px 0 0;display:grid;gap:4px;font-size:15px}
+/* AI-blokken binnen een sectie */
+.deel.binnen{margin-top:20px;padding-top:16px;border-top:1px solid var(--grijs2)}
+.deel.binnen h2{font-size:18px}
+.knop.klein{padding:6px 12px;font-size:14px;min-height:36px}
+.filters button{font:14px var(--font);border:1px solid var(--lijn);background:var(--wit);border-radius:999px;padding:6px 14px;cursor:pointer;min-height:36px}
+.filters button.on{background:var(--zwart);color:var(--wit);border-color:var(--zwart)}
+/* videospeler */
+#kvid{position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.6);display:grid;place-items:center;padding:16px}
+#kvid[hidden]{display:none}
+.kvb{background:var(--wit);border-radius:8px;width:min(960px,100%);padding:12px;display:grid;gap:8px}
+.kvk{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.kvk b{flex:1}
+.kvbox{aspect-ratio:16/9;background:#000}
+@media (max-width:900px){
+  .kkort,.ktwee,.kstad{grid-template-columns:minmax(0,1fr)}
+  .keten{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .keten li:nth-child(2)::after{display:none}
+  .keten a{border-radius:0!important;margin:0 -1px -1px 0}
+  .kbalk{margin:0 -16px 12px;padding:6px 16px}
+  .ksub,.knav{flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;scrollbar-width:none}
+  .kstem>div{grid-template-columns:minmax(0,9em) 1fr;}.kstem>div .sub{grid-column:1/-1}
+  .spoor li{grid-template-columns:minmax(0,1fr)}
+}
