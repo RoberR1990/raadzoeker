@@ -1,0 +1,70 @@
+{
+ "ideeen": [
+  {
+   "id": 1,
+   "titel": "Meldingen bij nieuws in jouw dossier",
+   "toelichting": "Een mail of Teams-bericht als er een nieuwe motie, toezegging of brief binnenkomt over een onderwerp of wijk die je volgt.",
+   "status": "idee"
+  },
+  {
+   "id": 2,
+   "titel": "Elke dag bijgewerkt",
+   "toelichting": "Nu wordt de site met de hand bijgewerkt. Elke nacht automatisch ophalen, uitlezen en indexeren, zodat zoeken altijd actueel is.",
+   "status": "gepland"
+  },
+  {
+   "id": 3,
+   "titel": "Thema's als derde ingang",
+   "toelichting": "Naast domeinen en gebieden ook thema's die overal doorheen lopen, zoals AI en algoritmes, participatie of kansengelijkheid.",
+   "status": "idee"
+  },
+  {
+   "id": 4,
+   "titel": "Samenvattingen voor alle gebieden",
+   "toelichting": "Nu hebben 8 van de 14 gebieden een AI-samenvatting. De andere 6: Hillegersberg-Schiebroek, Hoek van Holland, Hoogvliet, Overschie, Pernis en Rozenburg.",
+   "status": "gepland"
+  },
+  {
+   "id": 5,
+   "titel": "Commissievergaderingen zonder ondertiteling",
+   "toelichting": "Van 61 commissievergaderingen is wel video maar geen ondertiteling. Met spraakherkenning zijn ook die doorzoekbaar.",
+   "status": "idee"
+  },
+  {
+   "id": 6,
+   "titel": "Meer bronnen: Tweede Kamer, provincie en MRDH",
+   "toelichting": "Zien wat er landelijk en regionaal over hetzelfde dossier is besloten, zoals over openbaar vervoer en wonen.",
+   "status": "idee"
+  },
+  {
+   "id": 7,
+   "titel": "Andere gemeenten",
+   "toelichting": "Dezelfde opzet voor Amsterdam, Den Haag en Utrecht via Open Raadsinformatie, zodat je kunt vergelijken.",
+   "status": "idee"
+  },
+  {
+   "id": 8,
+   "titel": "Interne bronnen",
+   "toelichting": "Koppelen met interne documenten van de gemeente. Dat verandert het karakter: dan is het geen open-dataproduct meer en moet het intern draaien.",
+   "status": "idee"
+  },
+  {
+   "id": 9,
+   "titel": "Elk onderwerp als voorbeeldpagina",
+   "toelichting": "De opbouw van Parkeren (komt eraan, gezegd, besloten, beloofd, gedaan, in de stad) voor alle onderwerpen.",
+   "status": "idee"
+  },
+  {
+   "id": 10,
+   "titel": "Persoonlijke volglijst",
+   "toelichting": "Onderwerpen, wijken en moties bewaren in een eigen lijst, met wat er sinds je laatste bezoek is veranderd.",
+   "status": "idee"
+  },
+  {
+   "id": 11,
+   "titel": "Briefing direct in Teams delen",
+   "toelichting": "De briefing als kaart in een Teams-kanaal plaatsen, met link naar de bron.",
+   "status": "idee"
+  }
+ ]
+}

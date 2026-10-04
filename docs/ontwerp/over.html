@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
 <title>Over · raadzoeker</title>
-<link rel="stylesheet" href="stijl.css?v=6">
+<link rel="stylesheet" href="stijl.css?v=7">
 <style>
 .kolom{max-width:760px;margin:0 auto}
 .kolom>.vlak{padding:40px}
@@ -23,6 +23,10 @@
 .faq details p{margin:12px 0 0}
 .samen{border-top:4px solid var(--groen);margin-top:16px}
 @media (max-width:700px){.kolom>.vlak{padding:24px}.maker{grid-template-columns:minmax(0,1fr)}.bronnen{grid-template-columns:minmax(0,1fr)}}
+.fases{list-style:none;padding:0;margin:12px 0 0;display:grid;gap:8px}
+.fases li{display:grid;gap:4px;border-left:4px solid var(--lijn);padding:8px 16px;background:var(--wit)}
+.fases li.nu{border-color:var(--groen);background:var(--groen-zacht)}
+.fases li span{color:var(--sub)}
 </style></head>
 <body>
 <header class="balk"></header>
@@ -39,10 +43,18 @@
       <div>
         <p><b>Robert Riteco</b> is productmanager Data bij het cluster Stadsbeheer van de gemeente Rotterdam, in het team Parkeren. Hij houdt zich bezig met data en kunstmatige intelligentie, en met de vraag hoe je die zo inzet dat collega's er in hun dagelijkse werk echt iets aan hebben.</p>
         <p>De raadzoeker is zijn experiment: wat kun je zien als je alles wat de raad sinds 2018 zei en besloot naast elkaar legt? Het antwoord bleek meer dan een zoekmachine. Het is een manier om dossiers sneller te begrijpen, beloftes te volgen en verbanden in de stad te zien.</p>
-        <div class="contact"><b>Vragen, ideeën of iets gezien dat niet klopt?</b> Robert hoort het graag.
+        <div class="contact" id="contact"><b>Vragen, ideeën of iets gezien dat niet klopt?</b> Robert hoort het graag.
           <ul><li>Zoek hem op in RIO of via Teams</li><li>Mail naar <a href="mailto:r.riteco@rotterdam.nl">r.riteco@rotterdam.nl</a></li></ul></div>
       </div>
     </div>
+
+    <h2 id="fases">In welke fase zit de raadzoeker?</h2>
+    <ol class="fases">
+      <li class="nu"><b>Proef (nu)</b><span>Gemaakt in eigen tijd, op open data, bijgewerkt met de hand. Geen garanties over volledigheid of beschikbaarheid. Bedoeld om te laten zien wat kan en om te leren wat collega's nodig hebben.</span></li>
+      <li><b>Eerste echte versie</b><span>Met een opdrachtgever binnen de gemeente, gehost door de gemeente, een officiële koppeling met de raadsinformatie, elke dag bijgewerkt. Met een gegevensbeschermingstoets (DPIA) en een vermelding in het Algoritmeregister.</span></li>
+      <li><b>Productie</b><span>Beheer belegd, getoetst op toegankelijkheid, de code open source, en bruikbaar voor andere gemeenten.</span></li>
+    </ol>
+    <p style="margin-top:12px">Het is een showcase, geen vervanging van bestaande systemen of licenties. Wat er hierna komt, bepaal je mee op de pagina <a href="ideeen.html">Ideeën</a>.</p>
 
     <div class="vlak samen" style="background:var(--groen-zacht);padding:24px;margin-top:40px">
       <h2 style="margin:0 0 12px">Samen naar een volgende stap</h2>
@@ -75,16 +87,18 @@
     <h2>Veelgestelde vragen</h2>
     <div class="faq">
       <details><summary>Is dit een officieel product van de gemeente?</summary><p>Nee. De raadzoeker is een onofficieel hulpmiddel en geen product van de gemeente of de griffie. Alle informatie is openbaar; de tool zet die alleen bij elkaar. Voor het officiële verslag kijk je altijd in de bron, die bij elk onderdeel gelinkt is.</p></details>
+      <details><summary>Hoe zijn de domeinen en gebieden bepaald?</summary><p>Een domein is het beleidsveld dat de griffie in iBabs aan een stuk geeft (de indeling naar portefeuille). Stukken en debatten zonder beleidsveld zijn automatisch ingedeeld met een woordmodel; een toets op een steekproef gaf ongeveer 9 van de 10 goed. Een gebied of wijk hoort bij een stuk als het een stuk van die wijkraad is, als een bekendmaking op die plek ligt, of als de tekst de wijk of een straat erin noemt ('genoemd in', ook ongeveer 9 van de 10 goed). Stukken die vijf of meer gebieden noemen tellen als stadsbreed.</p></details>
       <details><summary>Hoe weet de raadzoeker wat bij een onderwerp hoort?</summary><p>Elk onderwerp is een vaste lijst zoekwoorden, bijvoorbeeld ‘parkeer’ en ‘parkeren’ bij Parkeren. Een motie of toezegging hoort bij een onderwerp als zo'n woord in de titel staat of minstens drie keer in de tekst. Dat is een goede indicatie, maar geen exacte telling.</p></details>
       <details><summary>Kun je uit de wijkcijfers conclusies trekken?</summary><p>Nee, niet zomaar. Op de wijkpagina staan cijfers uit verschillende bronnen naast elkaar: CBS, het Wijkprofiel, de politie, de bekendmakingen en wat er in de raad gezegd is. Ze zijn op verschillende manieren gemeten en verschillen in jaar en indeling. Ze zijn bedoeld als vertrekpunt om verder te kijken, niet om iets te bewijzen over oorzaak, verband of hoeveel aandacht een wijk zou moeten krijgen.</p></details>
       <details><summary>Wat betekent ‘aandacht per 100.000 woorden’?</summary><p>Hoe vaak een onderwerp of gebied genoemd wordt, gedeeld door hoeveel er in totaal gesproken is. Zo kun je drukke en rustige jaren eerlijk vergelijken, ook een jaar dat nog loopt.</p></details>
-      <details><summary>Hoe actueel is het?</summary><p>De huidige stand is 2 oktober 2026. Het plan is om de gegevens wekelijks automatisch bij te werken.</p></details>
+      <details><summary>Hoe actueel is het?</summary><p>Bovenaan elke pagina staat tot welke datum de gegevens lopen. Het plan is om de gegevens elke nacht automatisch bij te werken.</p></details>
+      <details><summary>Wat wordt er bijgehouden als ik de site gebruik?</summary><p>Alleen wat je in Zoeken intypt en hoeveel resultaten dat gaf, zonder naam, e-mailadres of tijdstip (alleen de dag). Zo zien we welke vragen de site nog niet goed beantwoordt. Bij Ideeën wordt je stem bewaard met een versleutelde code in plaats van je e-mailadres.</p></details>
       <details><summary>Wat is ‘over de termijn’?</summary><p>Bij moties en toezeggingen registreert de griffie een verwachte afdoeningsdatum. Is die datum voorbij en staat het stuk nog niet als afgedaan geregistreerd, dan tonen we het als ‘over de termijn’. Soms is iets wel gedaan maar nog niet als afgedaan geregistreerd.</p></details>
       <details><summary>Kan ik iets delen met collega's?</summary><p>Ja. Elk onderwerp, elke wijk en elke briefing heeft een eigen link en een deelkaart. Bij de briefing staan knoppen om te delen via e-mail, Teams en WhatsApp, en je kunt hem als pdf opslaan.</p></details>
     </div>
   </div>
  </div>
 </main>
-<script src="ontwerp.js?v=5"></script>
+<script src="ontwerp.js?v=8"></script>
 <script>kop('over');</script>
 </body></html>
