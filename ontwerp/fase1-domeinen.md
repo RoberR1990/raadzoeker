@@ -70,3 +70,10 @@ Wringt: onderwijs verhuist in 2022 van ZOCS naar WIOSSAN; buitenruimte verhuist 
 - **Steekproef 200**, gelaagd per methode (bron 60, woordmodel-stuk 50, woordmodel-debat 40, gekoppeld 25, geen 25), zodat de precisie per methode zichtbaar wordt. Het totaalcijfer wordt daarna gewogen naar de populatie.
 - **Parkeren**: alle 665 stukken en agendapunten met 'parkeer' in de titel. De 104 die níet op Mobiliteit staan, staan bovenaan. Knop 'Rest op deze tab: goed' na het doorlopen.
 - Klaar → 'Download oordelen' → bestand in `raadzoeker-werk\labels\`.
+
+## Besluiten Robert (4-10-2026)
+
+- **Domein = portefeuille** (iBabs-logica), optie A.
+- **Drempel thema's: 50 stukken** (2018–2026): 37 thema's blijven. Vallen af: Organisatieontwikkeling (29, eerst anders afbakenen), Eenzaamheid (41), Laaggeletterdheid (16). Over 2022–2026 gerekend vallen ook Kansengelijkheid (39) en Polarisatie (40) af.
+- Stemmen (fase 5): via Cloudflare (Pages Functions + D1, achter Access).
+- Open: oordelen steekproef en Parkeren.
