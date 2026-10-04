@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
 <title>Zoeken · raadzoeker</title>
-<link rel="stylesheet" href="stijl.css?v=6">
+<link rel="stylesheet" href="stijl.css?v=7">
 <style>
 .kolom{max-width:980px;margin:0 auto}
 .lead{font-size:18px;line-height:1.5;margin:8px 0 24px;max-width:70ch}
@@ -50,7 +50,7 @@
  </div>
 </main>
 <script src="fzstd.js"></script>
-<script src="ontwerp.js?v=7"></script>
+<script src="ontwerp.js?v=8"></script>
 <script>
 kop('zoeken');
 const DIR='../data/tekst/';
@@ -68,7 +68,11 @@ const shard=k=>SH[k]||(SH[k]=lees(DIR+'i/'+String(k).padStart(3,'0')+'.zst'));
 const blok=k=>BL[k]||(BL[k]=lees(DIR+'b/'+String(k).padStart(3,'0')+'.zst'));
 async function tekst(id){return (await blok(Math.floor(id/M.blok)))[id%M.blok];}
 function leesQ(q){const zinnen=[...q.matchAll(/"([^"]+)"/g)].map(m=>fold(m[1]).replace(/\s+/g,' ').trim()).filter(Boolean);return {zinnen,termen:[...new Set(woorden(q))]};}
-let LB=null;
+let LB=null,LOGQ='';
+function logZoek(q,n){   // anoniem: alleen de zoekopdracht en het aantal resultaten (zie Over)
+  clearTimeout(logZoek.t);logZoek.t=setTimeout(()=>{if(!q||q===LOGQ)return;LOGQ=q;   // pas na 3 s stilstand, niet elke tussenstap tijdens het typen
+    try{navigator.sendBeacon('/api/log',new Blob([JSON.stringify({q,n,pagina:'zoek'})],{type:'application/json'}));}catch(e){}},3000);
+}
 function filt(id){const d=$('fdom').value,g=$('fgeb').value;
   if(d!==''&&LB.d[id]!==+d)return false;if(g!==''&&!(LB.g[id]&(1<<+g)))return false;return true;}
 async function zoek(){
@@ -105,6 +109,7 @@ async function toepassen(){
     lijst=ok;
   }
   toon=0;$('uit').innerHTML='';$('uit').hidden=!lijst.length;
+  logZoek($('q').value.trim(),lijst.length);
   $('telling').textContent=lijst.length?nf(lijst.length)+' stukken gevonden'+(window.ZOEK.los?' (niet alle woorden samen gevonden; dit zijn stukken met een deel ervan)':''):'Niets gevonden. Probeer minder of andere woorden, of een langere periode.';
   meer();
 }
