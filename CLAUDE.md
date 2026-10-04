@@ -95,9 +95,10 @@ Alle zes achter elkaar: (1) Wijkprofiel Rotterdam (sociale/fysieke/veiligheidsin
 Ophalen, hervatbaar in blokken (`--minuten 9`), gedeelde iBabs-limiet:
 - `rekenkamer_pdf.py` → `extern/rekenkamer_tekst.json` (67 onderzoeken, 62 met pdf-tekst). Klaar.
 - `bijlagen.py rv` → `ibabs/rv_tekst.jsonl` (hoofddocument van 802 raadsvoorstellen). Klaar.
-- `bijlagen.py wrb` → `wijk/wijkraad_bijlagen.jsonl` (12.674 bijlagen bij wijkraadvergaderingen). Bezig.
-- `sv_qa.py` → `ibabs/sv_qa.jsonl` (schriftelijke vragen + antwoord van het college via 'Relatie met' → Brieven B&W, nieuwste eerst). Bezig.
-- `ibabs_items.py brieven` → `ibabs/items_brieven.jsonl` (10.522 collegebrieven met tekst). Nog niet gestart.
+- `bijlagen.py wrb` → `wijk/wijkraad_bijlagen.jsonl` (12.673 bijlagen bij wijkraadvergaderingen). Klaar 4-10-2026.
+- `sv_qa.py` → `ibabs/sv_qa.jsonl` (schriftelijke vragen + antwoord van het college via 'Relatie met' → Brieven B&W, nieuwste eerst; 4.425 stuks). Klaar 4-10-2026. `--alleen REGEX` haalt gericht op titel op (ook bij `ibabs_items.py`).
+- `ibabs_items.py brieven` → `ibabs/items_brieven.jsonl` (10.522 collegebrieven met tekst). Klaar 4-10-2026.
+- Privacy: `teksten.py` lakt in wijkraadteksten namen van insprekers/bewoners weg (`anoniem()`: venster na 'inspreek…' en na dhr./mevr./de heer/mevrouw). Vangt niet alles, lakt soms iets te veel (bijv. naam van een speeltuin).
 
 `teksten.py` bundelt alles (plus de stukken met tekst uit `stukken.zst`) tot `docs/data/tekst/`: `meta.zst`, zoekindex `i/NNN.zst` (512 shards op FNV-hash van de woordstam), teksten `b/NNN.zst` (blokken van 64). Document-id's staan vast in `WERK/teksten/ids.json`, zodat ongewijzigde blokken gelijk blijven. Stam- en hashregels staan dubbel (Python en `zoek.html`) en moeten gelijk blijven. Pagina `docs/ontwerp/zoek.html` (menu 'Stukken'): alle woorden moeten voorkomen, "exacte zin" wordt op de tekst gecontroleerd (eerste 300 kandidaten), filters op soort en periode, bij schriftelijke vragen vraag en antwoord apart. Opnieuw draaien na elk ophaalblok.
 

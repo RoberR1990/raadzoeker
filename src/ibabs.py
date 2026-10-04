@@ -12,7 +12,7 @@ def _beurt_ibabs():
     """Max 1 verzoek per 1,05 s naar iBabs, ook als er meerdere processen lopen (lockbestand + tijdstempel)."""
     while True:
         try: fd=os.open(SLOT,os.O_CREAT|os.O_EXCL|os.O_WRONLY); break
-        except FileExistsError:
+        except (FileExistsError,PermissionError):   # Windows: slot wordt net verwijderd
             try:
                 if time.time()-os.path.getmtime(SLOT)>30: os.remove(SLOT)   # achtergebleven slot
             except OSError: pass
