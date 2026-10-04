@@ -11,5 +11,7 @@ def main(g):
     gid=next(r['id'] for r in H if r['niveau']=='gebied' and DI.slug(r['naam'])==g)
     naam=next(r['naam'] for r in H if r['id']==gid)
     pats=[rx.pattern for s,rx in GB.wijkregex(WW) if s==gid or s in WW[gid]]
+    if gid=='rotterdam-centrum':   # 'centrum' zelf is te algemeen; wel de binnenstad en bekende plekken
+        pats.append(r'(?<![a-z0-9])(binnenstad|rotterdam centrum|rotterdam-centrum|lijnbaan|markthal|binnenrotte|westersingel|schouwburgplein|centraal station|hofplein|weena)(?![a-z0-9])')
     DI.pakket(naam,re.compile('|'.join(f'(?:{p})' for p in pats)),'het gebied')
 if __name__=='__main__': main(sys.argv[1])
