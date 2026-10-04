@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
-<title>Onderwerpen · raadzoeker</title>
-<link rel="stylesheet" href="stijl.css?v=4">
+<title>Dossier · raadzoeker</title>
+<link rel="stylesheet" href="stijl.css?v=5">
 <style>
 .pagina.breed{max-width:1240px}
 .crumb{font-size:14px;color:var(--sub);margin:32px 0 4px}
@@ -79,30 +79,31 @@ table.tafel .bar i{display:block;height:8px;background:var(--groen);border-radiu
 <main class="pagina breed">
   <div class="vlak">
     <div class="zoekveld">
-      <label for="zoek">Over welk onderwerp werk je?</label>
+      <label for="zoek">Over welk domein of onderwerp werk je?</label>
       <input id="zoek" type="text" placeholder="Bijvoorbeeld deelscooters, parkeren, explosies, armoede…" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="keuze" aria-autocomplete="list">
       <ul class="keuze" id="keuze" role="listbox" aria-label="Onderwerpen"></ul>
     </div>
     <div class="chips" id="vast"></div>
   </div>
   <div id="dossier"><p class="leeg" style="margin-top:24px">Laden…</p></div>
-  <p class="voet">Gegevens: notulen en ondertiteling van de gemeenteraad, de registratie in iBabs (moties, toezeggingen, schriftelijke vragen, brieven), de Rekenkamer Rotterdam en de wijkraden, stand 2 oktober 2026. Een onderwerp is een vaste set zoekwoorden; aantallen zijn een goede indicatie, geen exacte telling. Teksten met het label AI zijn automatisch gemaakt; elk punt heeft een letterlijk citaat dat een script woord voor woord met de bron heeft vergeleken. <a href="over.html">Meer over deze tool</a>.</p>
+  <p class="voet">Gegevens: notulen en ondertiteling van de gemeenteraad, de registratie in iBabs (moties, toezeggingen, schriftelijke vragen, brieven), de Rekenkamer Rotterdam en de wijkraden, stand 2 oktober 2026. Domeinen volgen de indeling van de griffie (beleidsveld in iBabs), aangevuld met een woordmodel; een onderwerp is een vaste set zoekwoorden. Aantallen zijn een goede indicatie, geen exacte telling. Teksten met het label AI zijn automatisch gemaakt; elk punt heeft een letterlijk citaat dat een script woord voor woord met de bron heeft vergeleken. <a href="over.html">Meer over deze tool</a>.</p>
 </main>
-<script src="ontwerp.js?v=5"></script>
+<script src="ontwerp.js?v=6"></script>
 <script>
-kop('dossier');
-let DATA=null,ALLE=[],KAART=null,CUR=null,SOORT='mot',FILTER='open';
-const VAST=['Wonen','Parkeren','Werk & inkomen','Veiligheid & handhaving','Zorg, welzijn & jeugd'];
-Promise.all(['dossiers.json','onderwerpen.json','kaart.json'].map(f=>fetch(f).then(r=>r.json()))).then(([d,o,k])=>{DATA=d;KAART=k;
-  ALLE=d.dossiers.concat(o.onderwerpen);
-  const ai=o.onderwerpen.filter(x=>x.ai);
-  $('vast').innerHTML='<span class="sub" style="align-self:center">Veel gekozen:</span>'+VAST.map(n=>`<a href="#${slug(n)}">${esc(n)}</a>`).join('')+
-    (ai.length?'<span class="sub" style="align-self:center;margin-left:8px">Met AI-samenvatting:</span>'+ai.map(x=>`<a href="#${slug(x.naam)}">${esc(x.naam)}</a>`).join(''):'');
-  zoeklijst($('zoek'),$('keuze'),()=>ALLE,x=>{location.hash=slug(x.naam);});
-  let d0=uitHash(ALLE);if(!d0){try{d0=ALLE.find(x=>slug(x.naam)===localStorage.getItem('rz-dossier'));}catch(e){}}
-  toon(d0||DATA.dossiers[2]);
+kop('domeinen');
+let DATA={stand:STAND},ALLE=[],KAART=null,CUR=null,SOORT='mot',FILTER='open';
+const VAST=['parkeren','wonen-en-bouwen','veiligheid','zorg-welzijn-en-jeugd','werk-inkomen-en-armoede'];
+Promise.all(['d/index.json','kaart.json'].map(f=>fetch(f).then(r=>r.json()))).then(([ix,k])=>{KAART=k;
+  ALLE=ix.d.map(x=>Object.assign({sub:[],termen:''},x));DATA.stand=ix.stand;
+  const ai=ALLE.filter(x=>x.ai),nm=s=>(ALLE.find(x=>x.slug===s)||{}).naam||s;
+  $('vast').innerHTML='<span class="sub" style="align-self:center">Veel gekozen:</span>'+VAST.map(s=>`<a href="#${s}">${esc(nm(s))}</a>`).join('')+
+    (ai.length?'<span class="sub" style="align-self:center;margin-left:8px">Met AI-samenvatting:</span>'+ai.map(x=>`<a href="#${x.slug}">${esc(x.naam)}</a>`).join(''):'');
+  zoeklijst($('zoek'),$('keuze'),()=>ALLE,x=>{location.hash=x.slug;});
+  let h=decodeURIComponent(location.hash.slice(1));if(!ALLE.some(x=>x.slug===h)){h='';try{h=localStorage.getItem('rz-dossier')||'';}catch(e){}}
+  laad(ALLE.some(x=>x.slug===h)?h:'parkeren');
 });
-window.addEventListener('hashchange',()=>{const d=uitHash(ALLE);if(d)toon(d);});
+window.addEventListener('hashchange',()=>{const h=decodeURIComponent(location.hash.slice(1));if(ALLE.some(x=>x.slug===h))laad(h);});
+async function laad(s){const d=await (await fetch('d/'+s+'.json')).json();d.slug=s;toon(d);}
 
 /* ---------- AI-samenvatting: zinnen met citaat als ballon ---------- */
 let CIT=[];const reg=x=>CIT.push(x)-1;
@@ -181,26 +182,31 @@ function lijst(){
   $('filt').innerHTML=[['open','Open'],['laat','Over de termijn'],['af','Afgedaan']].map(([k,t])=>`<button type="button" class="${k===FILTER?'on':''}" data-f="${k}" aria-pressed="${k===FILTER}">${t} (${nf(n[k])})</button>`).join('');
   document.querySelectorAll('[data-soort]').forEach(b=>b.setAttribute('aria-selected',b.dataset.soort===SOORT));
   const q=encodeURIComponent(d.termen);
-  $('meer').innerHTML=`<a href="../raadzoeker.html#v=o&amp;q=${q}">Alle officiële stukken over ${esc(d.naam.toLowerCase())}</a> · <a href="zoek.html#q=${encodeURIComponent(d.termen.split('|')[0])}">Zoeken in de volledige teksten</a>`;
+  $('meer').innerHTML=d.termen?`<a href="../raadzoeker.html#v=o&amp;q=${q}">Alle officiële stukken over ${esc(d.naam.toLowerCase())}</a> · <a href="zoek.html#q=${encodeURIComponent(d.termen.split('|')[0])}">Zoeken in de volledige teksten</a>`
+    :`<a href="zoek.html#d=${esc(d.domein||d.slug)}${d.gebied?'&g='+encodeURIComponent(d.gebied):''}">Alle stukken in dit ${d.soort==='kruising'?'domein en gebied':'domein'} doorzoeken</a>`;
 }
 /* zijpaneel alleen vastzetten als het in beeld past */
 function zetVast(){const a=document.querySelector('.C>aside');if(!a)return;a.classList.remove('vast');if(window.innerWidth>900&&a.offsetHeight<window.innerHeight-32)a.classList.add('vast');}
 window.addEventListener('resize',zetVast);
 
 async function toon(d){
-  CUR=d;SOORT='mot';FILTER='open';try{localStorage.setItem('rz-dossier',slug(d.naam));}catch(e){}
-  if(location.hash.slice(1)!==slug(d.naam))history.replaceState(null,'','#'+slug(d.naam));
-  document.title=d.naam+' · Onderwerpen · raadzoeker';
-  let A=null;if(d.ai){try{A=await (await fetch('samenvattingen/'+slug(d.naam)+'.json')).json();}catch(e){}}
+  CUR=d;SOORT='mot';FILTER='open';try{localStorage.setItem('rz-dossier',d.slug);}catch(e){}
+  if(location.hash.slice(1)!==d.slug)history.replaceState(null,'','#'+d.slug);
+  document.title=d.naam+' · raadzoeker';
+  let A=null;if(d.ai){try{A=await (await fetch('samenvattingen/'+d.slug+'.json')).json();}catch(e){}}
   CIT=[];verberg();
   const m=d.moties,t=d.toez,ts=d.tsum,j=d.jaren.length-1,ch=d.trend[j-1]?Math.round((d.trend[j]-d.trend[j-1])/d.trend[j-1]*100):0;
   const pmx=Math.max(...d.partijen.map(p=>p[1]),1),cll=d.college.filter(p=>p[1]>0),cmx=Math.max(...cll.map(p=>p[1]),1);
-  const isOnd=d.soort==='onderwerp',wijk=d.groep==='Wijken en gebieden';
-  // kop: kruimelpad en verwante onderwerpen
-  const kinderen=ALLE.filter(x=>x.soort==='onderwerp'&&x.groep===d.naam),broers=isOnd?ALLE.filter(x=>x.soort==='onderwerp'&&x.groep===d.groep&&x!==d):[];
-  const chip=x=>`<a href="#${slug(x.naam)}" class="${x.ai?'ai':''}">${esc(x.naam)}</a>`;
-  const crumb=isOnd?`<a href="#">Onderwerpen</a> › <a href="#${slug(d.groep)}">${esc(d.groep)}</a> › ${esc(d.naam)}`:`<a href="#">Onderwerpen</a> › ${esc(d.groep)}`;
-  const verwant=kinderen.length?`<div class="verwant"><span class="sub">Onderwerpen binnen dit thema:</span>${kinderen.map(chip).join('')}</div>`:broers.length?`<div class="verwant"><span class="sub">Ook binnen ${esc(d.groep.toLowerCase())}:</span>${broers.map(chip).join('')}</div>`:'';
+  const isOnd=d.soort==='onderwerp',isDom=d.soort==='domein',isKr=d.soort==='kruising',pct=d.eenheid==='procent';
+  // kop: kruimelpad, onderwerpen binnen het domein, gebieden (kruisingen)
+  const kinderen=isDom?ALLE.filter(x=>x.soort==='onderwerp'&&x.groep===d.naam):d.slug==='parkeren'?ALLE.filter(x=>x.groep==='Parkeren'):[];
+  const broers=isOnd?ALLE.filter(x=>x.soort==='onderwerp'&&x.groep===d.groep&&x.slug!==d.slug):[];
+  const kr=isDom?ALLE.filter(x=>x.soort==='kruising'&&x.domein===d.slug):isKr?ALLE.filter(x=>x.soort==='kruising'&&x.domein===d.domein&&x.slug!==d.slug):[];
+  const chip=x=>`<a href="#${x.slug}" class="${x.ai?'ai':''}">${esc(x.soort==='kruising'?x.gebied:x.naam)}</a>`;
+  const crumb=(d.pad||[]).map(([t,u])=>`<a href="${u}">${esc(t)}</a>`).join(' › ')+' › '+esc(isKr?d.gebied:d.naam);
+  const verwant=(kinderen.length?`<div class="verwant"><span class="sub">Onderwerpen:</span>${kinderen.map(chip).join('')}</div>`:broers.length?`<div class="verwant"><span class="sub">Ook binnen ${esc(d.groep.toLowerCase())}:</span>${broers.map(chip).join('')}</div>`:'')
+    +(kr.length?`<div class="verwant" style="margin-top:8px"><span class="sub">${isKr?'Zelfde domein in':'Per gebied'}:</span>${kr.map(chip).join('')}</div>`:'')
+    +(isKr?`<p class="sub" style="margin-top:8px;max-width:72ch">Stukken en debatten in dit domein die ${esc(d.gebied)} noemen of uit dat gebied komen (wijkraden). 'Genoemd in' is automatisch herkend op wijk- en straatnamen en klopt in ongeveer 9 van de 10 gevallen.</p>`:'');
   // stand van zaken: laatste kernzin van de AI-samenvatting, anders 'recent' uit de themasamenvatting
   const standTxt=A&&A.kern.length?zin(A.kern[A.kern.length-1]):ts&&ts.recent?esc(ts.recent):'';
   const cijfers=`<div class="cijfers">
@@ -208,6 +214,7 @@ async function toon(d){
     <div class="cijfer"><span class="groot num">${nf(m.open)}</span>moties in uitvoering<div class="sub">${m.te_laat?`<span class="stip laat"></span>${m.te_laat} over de termijn`:'geen over de termijn'}</div></div>
     <div class="cijfer"><span class="groot num">${nf(t.open)}</span>toezeggingen open<div class="sub">${t.te_laat?`<span class="stip laat"></span>${t.te_laat} over de termijn`:'geen over de termijn'}</div></div>
     <div class="cijfer"><span class="groot num">${ch>0?'+':''}${ch}%</span>aandacht<div class="sub">2026 tot nu t.o.v. 2025</div></div></div>`;
+  const wst=(d.wijkstukken||[]).length?`<section class="vlak"><h3 style="margin:0 0 8px">Signalen uit de wijken</h3><div class="lijst">${d.wijkstukken.slice(0,6).map(w=>`<div class="pt" style="font-size:14px"><span class="sub">${fd(w[0])} · ${esc(w[2])}</span><br>${w[3]?`<a href="${esc(w[3])}" target="_blank" rel="noopener">${esc(w[1])}</a>`:esc(w[1])}</div>`).join('')}</div></section>`:'';
   const T=A&&A.tijdlijn||{},F=A&&A.fracties||{},C=A&&A.college||{},W=A&&A.wijken||{},O=A&&A.open||{};
   const n=xs=>(xs||[]).length;
   let main='';
@@ -232,16 +239,17 @@ async function toon(d){
   main+=`<section class="vlak accent" aria-labelledby="mtk"><h2 id="mtk">Moties en toezeggingen</h2>
       <div class="schakel" role="tablist"><button type="button" role="tab" data-soort="mot">Moties</button><button type="button" role="tab" data-soort="toez">Toezeggingen</button></div>
       <div class="filters chips" id="filt"></div><div class="lijst" id="lijst"></div><p class="sub" style="margin-top:16px" id="meer"></p></section>`;
+  if((d.brieven||[]).length)main+=blok('br','Brieven en voorstellen van het college',`<p class="intro">De nieuwste collegebrieven en raadsvoorstellen${isKr?' die '+esc(d.gebied)+' noemen':''}.</p>`,`<div class="lijst" style="margin-top:12px">${d.brieven.map(r=>rij(r,'stuk',DATA.stand)).join('')}</div>`,'Toon brieven en voorstellen');
   main+=blok('db','Waar het in de raad over ging',`<p class="intro">De ${d.debatten.length} debatten met de meeste aandacht voor ${esc(d.naam.toLowerCase())}, nieuwste eerst.</p>`,
     `<div class="lijst" style="margin-top:12px">${d.debatten.map(x=>debatRij(x,d.termen)).join('')}</div><p class="sub" style="margin-top:16px"><a href="../raadzoeker.html#q=${encodeURIComponent(d.termen)}">Alles wat er letterlijk over is gezegd</a></p>`,'Toon de debatten');
   // 7 cijfers en verbanden, ingeklapt
   const cijfersInh=`<div class="cijferblok" style="margin-top:16px">
       <section class="grafiek"><h3>Wat werkt de raad af?</h3>${afhSvg(d)}<p style="margin-top:8px;font-size:14px"><span class="stip af"></span>afgedaan <span class="stip open" style="margin-left:12px"></span>nog open</p>
         ${d.verdieping.dl!==null?`<p style="font-size:14px">Een aangenomen motie is gemiddeld na <b class="num">${d.verdieping.dl} dagen</b> afgedaan; in de hele stad ${d.verdieping.stad_dl} dagen.</p>`:''}</section>
-      <section class="grafiek"><h3>Aandacht per jaar</h3>${trendSvg(d)}<p class="sub" style="margin-top:8px">Keren genoemd per 100.000 gesproken woorden in de raad. 2026 loopt tot oktober.</p></section>
+      <section class="grafiek"><h3>Aandacht per jaar</h3>${trendSvg(d)}<p class="sub" style="margin-top:8px">${pct?'Aandeel van alle gesproken woorden in de raad, in procenten.':'Keren genoemd per 100.000 gesproken woorden in de raad.'} 2026 loopt tot oktober.</p></section>
       <section><h3>Wie praat erover?</h3><div class="balken">${d.partijen.slice(0,7).map(p=>`<div class="balk2"><span>${esc(p[0])}</span><i style="width:${p[1]/pmx*100}%"></i><span class="v num">${String(p[1]).replace('.',',')}</span></div>`).join('')}</div>
         ${cll.length?`<h3 style="margin:16px 0 8px">Uit het college</h3><div class="balken">${cll.map(p=>`<div class="balk2"><span>${esc(p[0])}</span><i style="width:${p[1]/cmx*100}%;background:var(--blauw)"></i><span class="v num">${String(p[1]).replace('.',',')}</span></div>`).join('')}</div>`:''}
-        <p class="sub" style="margin-top:8px">Per 100.000 woorden van die fractie of dat collegelid.</p></section>
+        <p class="sub" style="margin-top:8px">${pct?'Aandeel van de spreektijd (woorden) van die fractie, in procenten.':'Per 100.000 woorden van die fractie of dat collegelid.'}</p></section>
       <section>${d.verdieping.ind.length?`<h3>Wie dient moties in?</h3><table class="tafel"><thead><tr><th>Fractie</th><th class="num">Ingediend</th><th>Aangenomen</th></tr></thead><tbody>${d.verdieping.ind.map(([p,n,a])=>`<tr><td>${esc(p)}</td><td class="num">${n}</td><td><span style="display:flex;gap:8px;align-items:center"><span class="bar" style="flex:1"><i style="width:${a/n*100}%"></i></span><span class="num">${Math.round(a/n*100)}%</span></span></td></tr>`).join('')}</tbody></table>`:''}
         ${d.verdieping.tz.length?`<h3 style="margin:16px 0 8px">Wie zegt toe?</h3><table class="tafel"><thead><tr><th>Collegelid</th><th class="num">Toezeggingen</th><th class="num">Open</th></tr></thead><tbody>${d.verdieping.tz.map(([w,n,o])=>`<tr><td>${esc(w)}</td><td class="num">${n}</td><td class="num">${o}</td></tr>`).join('')}</tbody></table>`:''}</section>
     </div>
@@ -256,16 +264,18 @@ async function toon(d){
   if(A&&n(O.punten))side+=`<section class="vlak"><h3 style="margin:0 0 8px">Open eindjes <span class="ai">AI</span></h3><p style="margin:0 0 8px;font-size:15px">${alinea(O.intro||[])}</p>${O.punten.slice(0,4).map(x=>`<div class="pt" style="font-size:14px">${rijAI(x)}</div>`).join('')}</section>`;
   if(A&&n(W.punten))side+=`<section class="vlak"><h3 style="margin:0 0 8px">Signalen uit de wijken <span class="ai">AI</span></h3><p style="margin:0;font-size:15px">${alinea(W.intro||[])}</p>
       <button type="button" class="meerknop" aria-expanded="false" aria-controls="wi"><span class="tx">Toon ${n(W.punten)} signalen</span><span class="pijl" aria-hidden="true">▾</span></button><div class="inh" id="wi" hidden>${W.punten.map(x=>`<div class="pt" style="font-size:14px"><b>${esc(x.wijk)}</b> ${rijAI(x)}</div>`).join('')}</div></section>`;
-  side+=`<section class="vlak"><h3 style="margin:0 0 8px">In welke gebieden?</h3><div class="mini" id="mini"></div><p class="sub" id="minitxt" style="margin-top:8px"></p></section>`;
-  if(d.verdieping.ver.length)side+=`<section class="vlak"><h3 style="margin:0 0 8px">Hangt samen met</h3><div class="verwant">${d.verdieping.ver.map(([nm,p,l])=>`<a href="#${slug(nm)}" title="In ${p}% van de spreekbeurten hierover gaat het ook over ${esc(nm.toLowerCase())}">${esc(nm)} <span class="sub num">${String(l).replace('.',',')}×</span></a>`).join('')}</div></section>`;
-  side+=`<section class="vlak acties">${isOnd?'':`<a class="knop" href="briefing.html#${slug(d.naam)}">Maak een briefing (A4)</a>`}<span class="sub" id="deelrij"></span>${isOnd?'':`<a class="sub" href="deel/${slug(d.naam)}.png" target="_blank" rel="noopener">Deelkaart als afbeelding</a>`}${wijk?`<a href="wijk.html#${slug(d.naam)}">Bekijk als wijk</a>`:''}</section>`;
+  side+=wst;
+  if(!isKr)side+=`<section class="vlak"><h3 style="margin:0 0 8px">In welke gebieden?</h3><div class="mini" id="mini"></div><p class="sub" id="minitxt" style="margin-top:8px"></p></section>`;
+  const ver=d.verdieping.ver.filter(v=>ALLE.some(x=>x.slug===slug(v[0])));
+  if(ver.length)side+=`<section class="vlak"><h3 style="margin:0 0 8px">Hangt samen met</h3><div class="verwant">${ver.map(([nm,p,l])=>`<a href="#${slug(nm)}" title="In ${p}% van de spreekbeurten hierover gaat het ook over ${esc(nm.toLowerCase())}">${esc(nm)} <span class="sub num">${String(l).replace('.',',')}×</span></a>`).join('')}</div></section>`;
+  side+=`<section class="vlak acties"><a class="knop" href="briefing.html#${d.slug}">Exporteer als briefing (A4, pdf)</a><span class="sub" id="deelrij"></span>${isKr?`<a href="wijk.html#${slug(d.gebied)}">Naar het gebied ${esc(d.gebied)}</a>`:''}</section>`;
   $('dossier').innerHTML=`<div class="crumb">${crumb}</div><div class="kop"><h1>${esc(d.naam)}</h1>${verwant}</div><div class="C"><main>${main}</main><aside>${side}</aside></div>`;
   // mini-kaart
-  const Wk=d.verdieping.wijk,wm=Math.max(.1,...Object.values(Wk));
-  $('mini').innerHTML=`<svg viewBox="0 0 ${KAART.w} ${KAART.h}"><path class="h" d="${KAART.havens}"/>${KAART.gebieden.map(g=>{const v=Wk[g.naam]||0,f=v/wm;return `<a href="wijk.html#${slug(g.naam)}"><path class="g" d="${g.d}" fill="${f>.75?'#004C31':f>.5?'#00811F':f>.25?'#4EB051':f>.1?'#99CCA0':'#E1EFE2'}"><title>${esc(g.naam)}: in ${String(v).replace('.',',')}% van de spreekbeurten</title></path></a>`;}).join('')}<path class="w" d="${KAART.water}"/></svg>`;
+  const Wk=d.verdieping.wijk,wm=Math.max(.1,...Object.values(Wk));if($('mini')){
+  $('mini').innerHTML=`<svg viewBox="0 0 ${KAART.w} ${KAART.h}"><path class="h" d="${KAART.havens}"/>${KAART.gebieden.map(g=>{const v=Wk[g.naam]||0,f=v/wm;return `<a href="${isDom&&ALLE.some(x=>x.slug===d.slug+'--'+slug(g.naam))?'#'+d.slug+'--'+slug(g.naam):'wijk.html#'+slug(g.naam)}"><path class="g" d="${g.d}" fill="${f>.75?'#004C31':f>.5?'#00811F':f>.25?'#4EB051':f>.1?'#99CCA0':'#E1EFE2'}"><title>${esc(g.naam)}: in ${String(v).replace('.',',')}% van de spreekbeurten</title></path></a>`;}).join('')}<path class="w" d="${KAART.water}"/></svg>`;
   const t3=Object.entries(Wk).sort((a,b)=>b[1]-a[1]).slice(0,3);
-  $('minitxt').textContent=t3.length&&t3[0][1]>0?`Valt het vaakst samen met ${t3.map(x=>x[0]).join(', ')}. Donkerder is vaker; klik op een gebied.`:'Geen duidelijke koppeling met gebieden.';
-  deel($('deelrij'),d.naam+' in de Rotterdamse raad',new URL('dossier.html#'+slug(d.naam),location.href).href);
+  $('minitxt').textContent=t3.length&&t3[0][1]>0?`${pct?'Het vaakst genoemd':'Valt het vaakst samen met'}: ${t3.map(x=>x[0]).join(', ')}. Donkerder is vaker; klik op een gebied.`:'Geen duidelijke koppeling met gebieden.';}
+  deel($('deelrij'),d.naam+' in de Rotterdamse raad',new URL('dossier.html#'+d.slug,location.href).href);
   lijst();zetVast();window.scrollTo({top:0});
 }
 </script>

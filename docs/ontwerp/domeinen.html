@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
+<title>Domeinen · raadzoeker</title>
+<link rel="stylesheet" href="stijl.css?v=5">
+<style>
+.kast{width:100%;border-collapse:collapse;font-size:15px;background:var(--wit)}
+.kast th{text-align:left;font-weight:700;border-bottom:2px solid var(--zwart);padding:10px 8px;white-space:nowrap}
+.kast th button{font:inherit;font-weight:700;background:none;border:0;padding:0;cursor:pointer;text-decoration:underline dotted;text-underline-offset:3px}
+.kast th.n,.kast td.n{text-align:right;font-variant-numeric:tabular-nums}
+.kast td{border-bottom:1px solid var(--grijs2);padding:10px 8px;vertical-align:top}
+.kast td.naam a{font-weight:700}
+.kast td.ond{font-size:14px;color:var(--sub);max-width:420px}
+.kast td.ond a{color:var(--sub)}
+.bar{display:inline-block;height:8px;background:var(--groen-mid);border-radius:2px;vertical-align:middle;margin-right:8px}
+.laat{color:var(--laat)}
+.tabelvlak{overflow-x:auto;border:1px solid var(--lijn);border-radius:var(--r)}
+@media (max-width:800px){.kast .weg{display:none}}
+</style></head><body>
+<header class="balk"></header>
+<main class="pagina">
+  <h1>Domeinen</h1>
+  <p style="margin:12px 0 24px;max-width:72ch">Alles wat de raad bespreekt, ingedeeld in 13 domeinen zoals de griffie stukken indeelt (naar portefeuille). Klik op een domein voor het dossier: wat er speelt, wat er besloten en beloofd is, en waar in de stad.</p>
+  <div class="tabelvlak"><table class="kast"><thead><tr>
+    <th><button data-k="naam">Domein</button></th><th class="weg">Onderwerpen</th>
+    <th class="n"><button data-k="open_moties">Open moties</button></th><th class="n"><button data-k="open_toez">Open toezeggingen</button></th>
+    <th class="n"><button data-k="te_laat">Over de termijn</button></th><th class="n weg"><button data-k="nieuw">Nieuw sinds 1 juli</button></th>
+    <th class="n weg"><button data-k="totaal">Stukken en debatten sinds 2018</button></th></tr></thead><tbody id="rijen"><tr><td colspan="7">Laden…</td></tr></tbody></table></div>
+  <p class="voet">'Open' en 'over de termijn' komen uit de registratie van de griffie in iBabs (stand <span id="stand"></span>). Een domein is het beleidsveld dat iBabs aan een stuk geeft; debatten en stukken zonder beleidsveld zijn automatisch ingedeeld (ongeveer 9 van de 10 goed). <a href="over.html">Meer over deze tool</a>.</p>
+</main>
+<script src="ontwerp.js?v=6"></script>
+<script>
+kop('domeinen');
+let D=[],IX=[],SORT='open',OP=-1;
+Promise.all(['d/overzicht.json','d/index.json'].map(f=>fetch(f).then(r=>r.json()))).then(([o,ix])=>{
+  IX=ix.d;$('stand').textContent=fd(o.stand);
+  D=o.domeinen.map(d=>Object.assign(d,{totaal:d.stukken+d.debatten,open:d.open_moties+d.open_toez}));
+  teken();
+});
+function teken(){
+  const k=SORT,mx=Math.max(...D.map(d=>d.totaal));
+  const r=[...D].sort((a,b)=>(k==='naam'?a.naam.localeCompare(b.naam):a[k]-b[k])*OP);
+  $('rijen').innerHTML=r.map(d=>{const ond=IX.filter(x=>x.soort==='onderwerp'&&x.domein===d.slug&&x.groep!=='Parkeren');
+    return `<tr><td class="naam"><a href="dossier.html#${d.slug}">${esc(d.naam)}</a></td>
+    <td class="ond weg">${ond.map(x=>`<a href="dossier.html#${x.slug}">${esc(x.naam)}</a>`).join(', ')||'–'}</td>
+    <td class="n">${nf(d.open_moties)}</td><td class="n">${nf(d.open_toez)}</td><td class="n${d.te_laat?' laat':''}">${nf(d.te_laat)}</td><td class="n weg">${nf(d.nieuw)}</td>
+    <td class="n weg"><span class="bar" style="width:${Math.round(90*d.totaal/mx)}px"></span>${nf(d.totaal)}</td></tr>`;}).join('');
+}
+document.querySelectorAll('.kast th button').forEach(b=>b.onclick=()=>{const k=b.dataset.k;
+  if(SORT===k)OP=-OP;else{SORT=k;OP=k==='naam'?1:-1;}teken();});
+</script></body></html>

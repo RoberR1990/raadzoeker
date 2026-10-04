@@ -1,214 +1,86 @@
 <!doctype html>
 <html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
-<title>raadzoeker</title>
-<meta property="og:title" content="raadzoeker: wat vindt de Rotterdamse raad van jouw onderwerp?">
-<meta property="og:description" content="Moties, toezeggingen, debatten en standpunten over jouw dossier op één plek. Onofficieel, uit openbare raadsinformatie.">
-<link rel="stylesheet" href="stijl.css?v=4">
+<title>raadzoeker · wat zei en besloot de Rotterdamse raad?</title>
+<meta property="og:title" content="raadzoeker"><meta property="og:description" content="Wat de Rotterdamse gemeenteraad zei, besloot en beloofde, per domein en per gebied.">
+<link rel="stylesheet" href="stijl.css?v=5">
 <style>
-/* hero: groen vlak met zoekvraag en een levende wolk van onderwerpen */
-.hero{position:relative;overflow:hidden;background:var(--groen);color:var(--wit);border-radius:12px;padding:56px 48px 40px;isolation:isolate}
-.hero .zaal{position:absolute;right:-120px;bottom:-260px;width:760px;height:auto;z-index:-1;opacity:.13;pointer-events:none}
-.hero{text-align:center}
-.hero .boven{font-size:15px;opacity:.95;margin-bottom:12px}
-.hero .keuze{text-align:left}
-.hero h1{font-size:clamp(32px,5vw,56px);line-height:1.06;max-width:16ch;margin:0 auto 32px}
-.hero .zoekveld{max-width:720px;margin:0 auto;text-align:left}
-.hero .zoekveld label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
-.hero .zoekveld input{font-size:20px;padding:18px 20px 18px 56px;border:0;border-radius:999px;min-height:64px;box-shadow:0 8px 24px rgba(0,40,10,.25)}
-.hero .zoekveld input:focus-visible{outline:3px solid var(--zwart);box-shadow:0 0 0 6px var(--wit)}
-.hero .zoekveld .loep{position:absolute;left:20px;top:20px;width:24px;height:24px;pointer-events:none}
-.hero .keuze{border-radius:16px;border:0;top:calc(100% + 8px);color:var(--zwart);box-shadow:0 12px 32px rgba(0,0,0,.25)}
-.wolk{display:flex;flex-wrap:wrap;gap:12px 10px;align-items:center;justify-content:center;margin:40px auto 0;max-width:1060px}
-.ow{position:relative;display:inline-flex;align-items:center;gap:8px;color:var(--wit);text-decoration:none;border:1.5px solid rgba(255,255,255,.55);border-radius:999px;padding:.32em .8em;line-height:1.15;
-  transition:transform .25s,background .25s,color .25s,opacity .25s,border-color .25s;animation:op .5s both;animation-delay:calc(var(--i)*18ms)}
-.ow:hover,.ow:focus-visible{background:var(--wit);color:var(--zwart);border-color:var(--wit);text-decoration:none;transform:translateY(-2px)}
-.ow.geb{border-style:dashed}
-.ow .stijg{font-size:12px;background:#D7F0A8;color:#000;border-radius:999px;padding:1px 7px;white-space:nowrap}
-.wolk.zoekt .ow{opacity:.28}
-.wolk.zoekt .ow.raak{opacity:1;background:var(--wit);color:var(--zwart);border-color:var(--wit);transform:scale(1.06)}
-@keyframes op{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
-.meerwolk{display:none;margin:16px auto 0;background:none;border:1.5px solid var(--wit);color:var(--wit);border-radius:999px;padding:10px 18px;font:15px var(--font);cursor:pointer;min-height:44px}
-@media (max-width:700px){
-  /* mobiel: veegstrook met drie rijen in plaats van een hoge wolk */
-  .wolk{display:grid;grid-auto-flow:column;grid-template-rows:repeat(3,auto);gap:8px;justify-content:start;margin:20px -16px 0;padding:2px 16px 10px;overflow-x:auto;scroll-snap-type:x proximity;scrollbar-width:none;max-width:none}
-  .wolk::-webkit-scrollbar{display:none}
-  .ow{font-size:15px!important;padding:7px 12px;border-width:1px;white-space:nowrap;scroll-snap-align:start;justify-self:start}
-  .ow .stijg{font-size:11px}
-  .veeg{display:block!important;font-size:13px;margin-top:6px;opacity:.9}
-  .hero{padding:28px 16px 24px;text-align:left}.hero h1{margin:0 0 20px;font-size:30px}
-  .hero .zoekveld input{font-size:16px;min-height:52px;padding:14px 16px 14px 48px}.hero .zoekveld .loep{left:16px;top:14px}
-  .hero .legenda2{justify-content:flex-start;text-align:left;margin-top:16px}
-  .wolk.zoekt .ow:not(.raak){display:none}
-  .hero .legenda2{font-size:13px;gap:6px 16px}
-}
-.hero .legenda2{display:flex;flex-wrap:wrap;gap:8px 24px;margin-top:32px;font-size:14px;opacity:.95;justify-content:center}
-.hero .legenda2 a{color:var(--wit)}
-
-.besloten .item summary{grid-template-columns:minmax(0,1fr) auto}
-.besloten .item .meta{grid-column:1}
-.besloten .item .ctx{margin-left:0}
-.kaartraster{display:grid;grid-template-columns:minmax(0,1.75fr) minmax(0,1fr);gap:24px;align-items:start}
-.kaart{position:relative}
-.kaart svg{width:100%;height:auto;display:block}
-.kaart path.g{stroke:#fff;stroke-width:1.2;cursor:pointer;transition:fill .4s}
-.kaart path.g:hover{stroke:#000;stroke-width:1.5}
-.kaart path.g.sel{stroke:#000;stroke-width:2.5}
-.kaart path.h{fill:var(--grijs2)}
-.kaart path.w{fill:var(--water);pointer-events:none}
-.kaart text{font:700 17px var(--font);paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;fill:#000;pointer-events:none}
-.kaart text.klein{font-size:14px}
-.kaart .jaar{position:absolute;left:24px;top:20px;font-size:40px;line-height:1}
-.kaart .hint{position:absolute;left:24px;top:68px;font-size:15px;background:var(--wit);padding:4px 10px;border-radius:999px;box-shadow:0 1px 3px rgba(0,0,0,.15);transition:opacity .6s}
-.kaart .hint[hidden]{display:block!important;opacity:0}
-.bed{display:flex;align-items:center;gap:16px;margin-top:16px}
-.bed button{width:44px;height:44px;border-radius:50%;border:2px solid var(--zwart);background:var(--wit);cursor:pointer;font-size:14px;flex:none}
-.bed input{flex:1;accent-color:var(--groen);height:44px}
-.legenda{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:14px;margin-top:8px;align-items:center}
-.legenda span{display:inline-flex;align-items:center;gap:6px}
-.legenda i{display:inline-block;width:16px;height:12px;border-radius:2px}
-.paneel h3{margin-bottom:4px}
-.ond{display:grid;gap:4px;margin-top:16px}
-.ond a{display:grid;grid-template-columns:minmax(0,1fr) 3.4em;gap:8px;text-decoration:none;padding:6px 0;border-bottom:1px solid var(--grijs2)}
-.ond a:hover span:first-child{text-decoration:underline}
-.ond i{display:block;height:6px;border-radius:2px;background:var(--groen);margin-top:4px}
-.signalen{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
-.signalen>div{background:var(--wit);border-radius:var(--r);padding:24px;border-top:4px solid var(--grijs2)}
-.signalen h3{margin-bottom:8px}
-.woorden{display:grid;gap:4px}
-.woorden a{display:grid;grid-template-columns:minmax(0,1fr) 80px;gap:8px;align-items:center;padding:4px 0}
-.woorden svg{width:80px;height:22px}
-.wrap3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
-.wk{border-radius:var(--r);padding:24px;color:var(--wit);display:flex;flex-direction:column;gap:12px;text-decoration:none;min-height:220px}
-.wk:hover{text-decoration:none;filter:brightness(1.06)}
-.wk .w{font-size:36px;font-weight:700;line-height:1.05}
-.wk .verder{margin-top:auto;text-decoration:underline}
-@media (max-width:900px){.kaartraster,.signalen,.wrap3{grid-template-columns:minmax(0,1fr)}.hero{padding:32px 20px 28px}.hero .zaal{width:480px;right:-160px;bottom:-170px}.kaart .jaar{font-size:28px;left:12px;top:10px}.kaart .hint{top:48px;left:12px}}
-@media (prefers-reduced-motion:reduce){.ow{animation:none}}
-</style></head>
-<body>
+.hero{background:var(--wit);border-radius:var(--r);padding:32px;display:grid;gap:16px}
+.hero h1{font-size:36px}
+.zoekrij{display:flex;gap:8px;max-width:760px;flex-wrap:wrap}
+.zoekrij .zoekveld{flex:1;min-width:240px;position:relative}
+.zoekrij input{width:100%;font:18px var(--font);padding:14px 18px;border:2px solid var(--zwart);border-radius:999px}
+.zoekrij button{font:700 16px var(--font);background:var(--groen);color:var(--wit);border:0;border-radius:999px;padding:0 24px;min-height:52px;cursor:pointer}
+.hero .sub a{color:var(--sub)}
+.twee{display:grid;gap:24px;margin-top:24px}
+.drie{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;align-items:start}
+.twee>*{min-width:0}
+.mat{border-collapse:collapse;font-size:13px}
+.mat th{font-weight:400;padding:4px 8px 4px 0;text-align:left;white-space:nowrap}
+.mat th a{color:var(--zwart)}
+.mat thead th{vertical-align:bottom;padding:0 0 6px}
+.mat thead th span{display:block;writing-mode:vertical-rl;transform:rotate(180deg);white-space:nowrap;height:128px;font-size:13px}
+.mat td{padding:0;border:2px solid var(--wit)}
+.mat td a{display:block;width:40px;height:30px;line-height:30px;text-align:center;text-decoration:none;font-variant-numeric:tabular-nums;color:inherit}
+.mat td a:hover,.mat td a:focus-visible{outline:2px solid var(--zwart);outline-offset:-2px}
+.mat td.leeg{background:var(--grijs);color:var(--sub);text-align:center}
+.matvlak{overflow-x:auto}
+.leg{font-size:13px;color:var(--sub);margin-top:12px;max-width:72ch}
+.cijfers{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.cijfer{background:var(--grijs);border-radius:6px;padding:10px 12px;font-size:14px;line-height:1.3}
+.cijfer .groot{display:block;font-size:24px}
+.woorden a{display:flex;justify-content:space-between;gap:8px;padding:6px 0;border-bottom:1px solid var(--grijs2);text-decoration:none}
+.woorden a:hover span:first-child{text-decoration:underline}
+.woorden svg{width:80px;height:22px;flex:none}
+@media (max-width:980px){.drie{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:600px){.hero{padding:20px}.hero h1{font-size:28px}}
+</style></head><body>
 <header class="balk"></header>
 <main class="pagina">
-  <section class="hero" aria-labelledby="h1">
-    <svg class="zaal" viewBox="0 0 400 210" aria-hidden="true" id="zaal"></svg>
-    <p class="boven">Wat de Rotterdamse gemeenteraad zei en besloot, 2018–2026</p>
-    <h1 id="h1">Wat vindt de raad van jouw onderwerp?</h1>
-    <div class="zoekveld">
-      <label for="zoek">Zoek je onderwerp</label>
-      <svg class="loep" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="7" fill="none" stroke="#000" stroke-width="2.5"/><path d="M15.5 15.5 22 22" stroke="#000" stroke-width="2.5" stroke-linecap="round"/></svg>
-      <input id="zoek" type="text" placeholder="Typ een onderwerp, bijvoorbeeld parkeren of armoede" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="keuze" aria-autocomplete="list">
-      <ul class="keuze" id="keuze" role="listbox" aria-label="Onderwerpen"></ul>
+  <section class="hero">
+    <h1>Wat zei en besloot de Rotterdamse raad?</h1>
+    <form class="zoekrij" id="zf" role="search">
+      <div class="zoekveld"><label for="zoek" class="sub" style="position:absolute;left:-9999px">Zoek</label>
+        <input id="zoek" type="search" placeholder="Zoek een onderwerp, of in alle stukken…" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="keuze" aria-autocomplete="list">
+        <ul class="keuze" id="keuze" role="listbox" aria-label="Dossiers"></ul></div>
+      <button type="submit">Zoek</button></form>
+    <p class="sub">Of begin bij een <a href="domeinen.html">domein</a> of een <a href="wijk.html">gebied</a>. Debatten, moties, toezeggingen, brieven en wijkraadstukken sinds 2018.</p>
+  </section>
+  <div class="twee">
+    <section class="vlak">
+      <h2>Waar speelt wat?</h2>
+      <p style="margin:8px 0 16px;max-width:72ch">Per domein: hoe vaak stukken en debatten een gebied noemen of uit dat gebied komen. Klik op een vakje voor het dossier van die combinatie, bijvoorbeeld mobiliteit in Feijenoord.</p>
+      <div class="matvlak"><table class="mat" id="mat"></table></div>
+      <p class="leg">Donkerder = vaker, vergeleken met de andere gebieden in dezelfde rij. Stukken die vijf of meer gebieden noemen tellen als stadsbreed en staan hier niet in. 'Genoemd in' is automatisch herkend op wijk- en straatnamen en klopt in ongeveer 9 van de 10 gevallen.</p>
+    </section>
+    <div class="drie">
+      <section class="vlak"><h2>Net besloten</h2><p class="sub" id="nbsub" style="margin-top:4px"></p><div class="lijst" id="recent" style="margin-top:8px"></div></section>
+      <section class="vlak"><h2>Beloftes</h2><div class="cijfers" id="belofte"></div><p class="sub" style="margin-top:8px"><a href="domeinen.html">Per domein bekijken</a></p></section>
+      <section class="vlak woorden"><h2 style="margin-bottom:8px">Opkomende woorden</h2><div id="woorden"></div></section>
     </div>
-    <div class="wolk" id="wolk" aria-label="Alle onderwerpen, groter is meer aandacht in 2026"></div>
-    <p class="veeg" style="display:none">Veeg opzij voor alle 40 onderwerpen →</p>
-    <div class="legenda2"><span>Hoe groter, hoe meer de raad er in 2026 over sprak</span><span><span class="stijg" style="font-size:12px;background:#D7F0A8;color:#000;border-radius:999px;padding:1px 7px">↑ 45%</span> stijger ten opzichte van 2025</span><span>Gestippeld = gebied, <a href="wijk.html">kies een wijk</a></span></div>
-  </section>
-
-  <section class="sectie" aria-labelledby="nb">
-    <h2 id="nb" class="koptekst">Net besloten</h2>
-    <div class="vlak accent besloten"><p class="sub" id="nbsub" style="margin-bottom:12px"></p><div class="lijst" id="recent"></div>
-      <p style="margin-top:16px"><a id="allebesl" href="../raadzoeker.html#v=o&amp;os=1">Alle moties en besluiten</a></p></div>
-  </section>
-
-  <section class="sectie" aria-labelledby="kk">
-    <h2 id="kk" class="koptekst">Waar praat de raad over?</h2>
-    <div class="kaartraster">
-      <div class="vlak">
-        <div class="kaart" id="kaart" role="group" aria-label="Kaart van Rotterdam: hoe vaak de raad elk gebied noemt"><span class="jaar num" id="jaar" aria-hidden="true"></span><span class="hint" id="hint" aria-hidden="true">▶ Zo verandert de aandacht door de jaren</span></div>
-        <div class="bed"><button id="speel" type="button" aria-pressed="false" aria-label="Afspelen door de jaren">▶</button><input id="schuif" type="range" min="0" max="8" value="8" aria-label="Jaar"><span class="sub num" id="jaar2"></span></div>
-        <div class="legenda" id="legenda"></div>
-      </div>
-      <div class="vlak paneel" aria-live="polite">
-        <div class="sub" id="pkop">Hele stad</div>
-        <h3 id="ptitel">Meest besproken onderwerpen</h3>
-        <p class="sub" id="ptekst"></p>
-        <div class="ond" id="pond"></div>
-        <p style="margin-top:16px;display:flex;gap:16px;flex-wrap:wrap"><a id="plink" href="wijk.html" hidden>Open het gebied</a><button type="button" id="stad" class="knop wit" hidden>Toon hele stad</button></p>
-      </div>
-    </div>
-  </section>
-
-  <section class="sectie" aria-labelledby="sg">
-    <h2 id="sg" class="koptekst">Signalen</h2>
-    <div class="signalen">
-      <div><h3>Beloftemonitor</h3><p id="belofte"></p></div>
-      <div><h3>Wat komt op</h3><div class="woorden" id="woorden"></div><p class="sub" style="margin-top:8px">Woorden die in 2025–2026 veel vaker vallen dan in 2018–2022.</p></div>
-      <div><h3>Briefing in één A4</h3><p>Voor de commissie, een raadsvoorstel of een gesprek met de wethouder: open moties en toezeggingen, standpunten per fractie en recente debatten.</p><p style="margin-top:12px"><a href="briefing.html">Maak een briefing</a></p></div>
-    </div>
-  </section>
-
-  <section class="sectie" aria-labelledby="rw">
-    <h2 id="rw" class="koptekst">Raad Wrapped 2025</h2>
-    <div class="wrap3">
-      <a class="wk" style="background:#00811F" href="../raadzoeker.html#q=silja"><span>Woord van het jaar</span><span class="w">de Silja</span><span>Het opvangschip voor asielzoekers. In 2025 ruim vier keer zo vaak genoemd als in 2024, en in 2026 nog vaker.</span><span class="verder">Lees wat de raad erover zei</span></a>
-      <a class="wk" style="background:#00548F" href="wijk.html#feijenoord"><span>Meest besproken gebied</span><span class="w">Feijenoord</span><span>Twee keer zo vaak genoemd als Centrum, de nummer twee. Wist je dat? In 2018 was Feijenoord ook al koploper, met de Tweebosbuurt.</span><span class="verder">Bekijk het gebied</span></a>
-      <a class="wk" style="background:#004C31" href="lab.html#wrapped"><span>Moties in 2025</span><span class="w num">820</span><span>Daarvan werden er 381 aangenomen. GroenLinks diende de meeste in (152), daarna Leefbaar Rotterdam en de PvdA.</span><span class="verder">Elk jaar sinds 2018 in het Lab</span></a>
-    </div>
-  </section>
-  <p class="voet">Gegevens: notulen en ondertiteling van de gemeenteraad, iBabs en de Rekenkamer Rotterdam, stand 2 oktober 2026. Kaart: CBS en Kadaster via PDOK. Aandacht is hoe vaak een onderwerp of gebied valt per 100.000 gesproken woorden; een signaal, geen meting. <a href="over.html">Over deze tool</a>.</p>
+  </div>
+  <p class="voet">Onofficieel hulpmiddel op openbare gegevens van de gemeenteraad (iBabs), de Rekenkamer, de wijkraden, het Gemeenteblad en CBS. <a href="over.html">Over deze tool</a>.</p>
 </main>
-<script src="ontwerp.js?v=5"></script>
+<script src="ontwerp.js?v=6"></script>
 <script>
 kop('');
-// raadzaal-halfrond als achtergrond van de hero (45 zetels)
-(()=>{const rij=[[1,15],[.84,12],[.68,10],[.52,8]];let s='';for(const [r,n] of rij)for(let i=0;i<n;i++){const a=Math.PI*(1-i/(n-1));s+=`<circle cx="${(200+190*r*Math.cos(a)).toFixed(1)}" cy="${(200-190*r*Math.sin(a)).toFixed(1)}" r="9" fill="#fff"/>`;}$('zaal').innerHTML=s;})();
-Promise.all(['start.json','kaart.json'].map(f=>fetch(f).then(r=>r.json()))).then(([S,K])=>{
-  const OND=S.ond.map(o=>({naam:o[0],groep:o[1],sub:o[2],termen:o[3],nu:o[4],vorig:o[5],n:o[6]}));
-  const doel=o=>(o.groep==='Wijken en gebieden'&&o.naam!=='Nationaal Programma Rotterdam Zuid'?'wijk':'dossier')+'.html#'+slug(o.naam);
-  // wolk: grootte = aandacht 2026 (wortelschaal), stijgers met pijl
-  const mx=Math.max(...OND.map(o=>o.nu)),mn=Math.min(...OND.map(o=>o.nu));
-  const vs=OND.map(o=>({...o,f:Math.sqrt((o.nu-mn)/(mx-mn||1)),stijg:o.vorig>0?Math.round((o.nu-o.vorig)/o.vorig*100):0}));
-  const top=new Set(vs.filter(o=>o.n>=40&&o.stijg>=25).sort((a,b)=>b.stijg-a.stijg).slice(0,6).map(o=>o.naam));
-  // op mobiel alleen de 12 grootste onderwerpen (geen gebieden) en de stijgers; de rest achter een knop
-  const kern=new Set([...vs].filter(o=>o.groep!=='Wijken en gebieden').sort((a,b)=>b.nu-a.nu).slice(0,12).map(o=>o.naam).concat([...top].filter(n=>vs.find(o=>o.naam===n).groep!=='Wijken en gebieden')));
-  // grootste in het midden, kleinere eromheen: afwisselend achteraan en vooraan toevoegen
-  const volg=[];[...vs].sort((a,b)=>b.nu-a.nu).forEach((o,i)=>i%2?volg.unshift(o):volg.push(o));
-  const smal=matchMedia('(max-width:700px)').matches;
-  $('wolk').innerHTML=(smal?[...vs].sort((a,b)=>b.nu-a.nu):volg).map((o,i)=>`<a class="ow${o.groep==='Wijken en gebieden'?' geb':''}${kern.has(o.naam)?'':' extra'}" href="${doel(o)}" style="--i:${i};--fs:${(15+o.f*19).toFixed(1)}px;font-size:var(--fs);font-weight:${o.f>.55?700:400}" data-n="${esc(o.naam.toLowerCase())}" data-z="${esc(o.sub.join(' ').toLowerCase())}" title="${esc(o.naam)}: ${String(o.nu).replace('.',',')} keer per 100.000 woorden in 2026${o.vorig?`, ${o.stijg>0?'+':''}${o.stijg}% t.o.v. 2025`:''}">${esc(o.naam)}${top.has(o.naam)?`<span class="stijg">↑ ${o.stijg}%</span>`:''}</a>`).join('');
-  const zoek=$('zoek'),wolk=$('wolk');
-  zoek.addEventListener('input',()=>{const q=zoek.value.trim().toLowerCase();wolk.classList.toggle('zoekt',!!q);
-    wolk.querySelectorAll('.ow').forEach(a=>a.classList.toggle('raak',!!q&&(a.dataset.n.includes(q)||a.dataset.z.includes(q))));});
-  zoeklijst(zoek,$('keuze'),()=>OND,x=>{location.href=doel(x);});
+Promise.all(['d/overzicht.json','d/index.json','start.json'].map(f=>fetch(f).then(r=>r.json()))).then(([O,IX,S])=>{
+  const ALLE=IX.d.filter(x=>x.soort!=='kruising').map(x=>Object.assign({sub:[],termen:''},x));
+  zoeklijst($('zoek'),$('keuze'),()=>ALLE,x=>{location.href='dossier.html#'+x.slug;});
+  $('zf').addEventListener('submit',e=>{e.preventDefault();const q=$('zoek').value.trim();if(q)location.href='zoek.html#q='+encodeURIComponent(q);});
+  // matrix domein x gebied
+  const G=O.gebieden,heeft=new Set(IX.d.filter(x=>x.soort==='kruising').map(x=>x.slug));
+  $('mat').innerHTML=`<thead><tr><th></th>${G.map(g=>`<th><span>${esc(g)}</span></th>`).join('')}</tr></thead><tbody>`+O.domeinen.map(d=>{
+    const m=Math.max(1,...G.map(g=>d.kruising[g]||0));
+    return `<tr><th><a href="dossier.html#${d.slug}">${esc(d.naam)}</a></th>${G.map(g=>{const v=d.kruising[g]||0,a=v/m,s=d.slug+'--'+slug(g);
+      return heeft.has(s)?`<td style="background:rgba(0,129,31,${(0.08+0.85*a).toFixed(2)});color:${a>.55?'#fff':'#000'}"><a href="dossier.html#${s}" title="${esc(d.naam)} in ${esc(g)}: ${v} stukken en debatten">${nf(v)}</a></td>`:`<td class="leeg" title="Te weinig om te tonen">${v||''}</td>`;}).join('')}</tr>`;}).join('')+'</tbody>';
   // net besloten
   $('nbsub').textContent=`Aangenomen moties uit de raadsvergadering van ${fdl(S.laatst)} (${S.aantal_aangenomen} in totaal).`;
   $('recent').innerHTML=S.recent.slice(0,3).map(r=>rij([r[0],r[1],r[2],r[3],r[4],'',r[5]],'motie',S.stand)).join('');
-  $('allebesl').textContent=`Alle ${S.aantal_aangenomen} aangenomen moties en eerdere besluiten`;
-  // signalen
-  $('belofte').innerHTML=`Van de toezeggingen van het college staan er <a href="../raadzoeker.html#v=o&amp;os=0&amp;ost=4">${nf(S.toez_open)} open</a>, waarvan ${nf(S.toez_laat)} over de termijn. Van de aangenomen moties zijn er <a href="../raadzoeker.html#v=o&amp;os=1&amp;ost=4">${nf(S.mot_open)} nog niet afgedaan</a>, waarvan ${nf(S.mot_laat)} over de termijn.`;
-  $('woorden').innerHTML=S.rise.slice(0,6).map(w=>{const v=w[3],m=Math.max(...v),pts=v.map((x,i)=>`${(i/(v.length-1)*76+2).toFixed(1)},${(20-(x/m)*18).toFixed(1)}`),e=pts[pts.length-1].split(',');
-    return `<a href="../raadzoeker.html#q=${encodeURIComponent(w[0])}"><span>${esc(w[0])} <span class="sub num">${w[1]}×</span></span><svg viewBox="0 0 80 22" aria-hidden="true"><polyline points="${pts.join(' ')}" fill="none" stroke="#9DAFB6" stroke-width="1.5"/><circle cx="${e[0]}" cy="${e[1]}" r="2.5" fill="#00811F"/></svg></a>`;}).join('');
-  // kaart
-  const YRS=S.jaren,G=S.geb;
-  const KL=[[0,'#E1EFE2'],[3,'#99CCA0'],[6,'#4EB051'],[10,'#00811F'],[15,'#004C31']];
-  const klasse=v=>KL.filter(k=>v>=k[0]).pop()[1];
-  $('legenda').innerHTML=KL.map((k,i)=>`<span><i style="background:${k[1]}"></i>${i<KL.length-1?k[0]+'–'+KL[i+1][0]:k[0]+'+'}</span>`).join('')+'<span class="sub">keer per 100.000 woorden</span>';
-  $('kaart').insertAdjacentHTML('beforeend',`<svg viewBox="0 0 ${K.w} ${K.h}"><path class="h" d="${K.havens}"/>${K.gebieden.map(g=>`<path class="g" data-n="${esc(g.naam)}" d="${g.d}" tabindex="0" role="button"></path>`).join('')}<path class="w" d="${K.water}"/>${K.gebieden.map(g=>`<text x="${g.lx}" y="${g.ly+6}" text-anchor="middle" class="${['Pernis','Rozenburg','Hoek van Holland'].includes(g.naam)?'klein':''}">${esc(g.naam.replace('Hillegersberg-Schiebroek','Hillegersberg').replace('Kralingen-Crooswijk','Kralingen').replace('Prins Alexander','Alexander').replace('Hoek van Holland','Hoek v. Holland'))}</text>`).join('')}</svg>`);
-  let yi=YRS.length-1,sel=null,tm=null;
-  function paneel(){const y=YRS[yi],j=yi;
-    if(!sel){$('pkop').textContent='Hele stad, '+y;$('ptitel').textContent='Meest besproken onderwerpen';$('ptekst').textContent='Klik op een gebied om te zien waar het daar over gaat.';
-      const l=S.stad[y],m=l[0][1];$('pond').innerHTML=l.map(([n,v])=>`<a href="dossier.html#${slug(n)}"><span>${esc(n)}<i style="width:${v/m*100}%"></i></span><span class="sub num" style="text-align:right">${Math.round(v)}</span></a>`).join('');
-      $('plink').hidden=true;$('stad').hidden=true;return;}
-    const d=G[sel],pv=j?d.trend[j-1]:null,ch=pv?Math.round((d.trend[j]-pv)/Math.max(pv,.1)*100):null;
-    $('pkop').textContent=sel+', '+y;$('ptitel').textContent='Waar gaat het over in '+sel+'?';
-    $('ptekst').innerHTML=`${nf(d.trendn[j])} keer genoemd${ch!==null?`, ${ch>0?'+':''}${ch}% ten opzichte van ${YRS[j-1]}`:''}.`;
-    const genoeg=d.onderwerpen[y]&&d.onderwerpen[y].length>=3,l=genoeg?d.onderwerpen[y]:d.onderwerpen.alle,m=Math.max(1,...l.map(x=>x[1]));
-    $('pond').innerHTML=l.map(([n,c])=>`<a href="dossier.html#${slug(n)}"><span>${esc(n)}<i style="width:${c/m*100}%"></i></span><span class="sub num" style="text-align:right">${c}</span></a>`).join('')+(genoeg?'':'<p class="sub">Te weinig gegevens in dit jaar; dit zijn alle jaren samen.</p>');
-    $('plink').hidden=false;$('plink').href='wijk.html#'+slug(sel);$('plink').textContent='Open '+sel;$('stad').hidden=false;}
-  function teken(){const y=YRS[yi];$('jaar').textContent=y;$('jaar2').textContent=y;$('schuif').value=yi;
-    document.querySelectorAll('#kaart path.g').forEach(p=>{const v=G[p.dataset.n].trend[yi];p.style.fill=klasse(v);p.classList.toggle('sel',p.dataset.n===sel);p.setAttribute('aria-label',`${p.dataset.n}: ${String(v).replace('.',',')} per 100.000 woorden in ${y}`);});paneel();}
-  const kies=n=>{sel=sel===n?null:n;teken();};
-  $('kaart').addEventListener('click',e=>{const p=e.target.closest('path.g');if(p)kies(p.dataset.n);});
-  $('kaart').addEventListener('keydown',e=>{const p=e.target.closest('path.g');if(p&&(e.key==='Enter'||e.key===' ')){e.preventDefault();kies(p.dataset.n);}});
-  $('stad').addEventListener('click',()=>{sel=null;teken();});
-  $('schuif').addEventListener('input',e=>{yi=+e.target.value;teken();});
-  const speel=$('speel');speel.addEventListener('click',()=>{if(tm){clearInterval(tm);tm=null;speel.textContent='▶';speel.setAttribute('aria-pressed','false');return;}
-    speel.textContent='❚❚';speel.setAttribute('aria-pressed','true');yi=0;teken();tm=setInterval(()=>{yi++;if(yi>=YRS.length-1){clearInterval(tm);tm=null;yi=YRS.length-1;speel.textContent='▶';speel.setAttribute('aria-pressed','false');}teken();},900);});
-  teken();
-  // openingsanimatie zodra de kaart in beeld komt: één keer 2018 → 2026, dan stilstaan op de huidige stand
-  const rustig=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if(rustig){$('hint').hidden=true;}
-  else new IntersectionObserver((es,o)=>{if(!es[0].isIntersecting)return;o.disconnect();if(sel!==null||tm){$('hint').hidden=true;return;}
-    yi=0;teken();const intro=setInterval(()=>{if(tm||sel!==null){clearInterval(intro);$('hint').hidden=true;return;}yi++;teken();
-      if(yi>=YRS.length-1){clearInterval(intro);setTimeout(()=>{$('hint').hidden=true;},1400);}},420);},{threshold:.5}).observe($('kaart'));
+  // beloftes
+  $('belofte').innerHTML=`<div class="cijfer"><span class="groot num">${nf(S.mot_open)}</span>moties in uitvoering<div class="sub">${nf(S.mot_laat)} over de termijn</div></div>
+    <div class="cijfer"><span class="groot num">${nf(S.toez_open)}</span>toezeggingen open<div class="sub">${nf(S.toez_laat)} over de termijn</div></div>`;
+  // opkomende woorden
+  $('woorden').innerHTML=S.rise.slice(0,6).map(w=>{const v=w[3],m=Math.max(...v),pts=v.map((x,i)=>`${(i/(v.length-1)*76+2).toFixed(1)},${(20-(x/m)*18).toFixed(1)}`).join(' ');
+    return `<a href="zoek.html#q=${encodeURIComponent(w[0])}"><span>${esc(w[0])} <span class="sub num">${w[1]}×</span></span><svg viewBox="0 0 80 22" aria-hidden="true"><polyline points="${pts}" fill="none" stroke="#00811F" stroke-width="2"/></svg></a>`;}).join('');
 });
-</script>
-</body></html>
+</script></body></html>
