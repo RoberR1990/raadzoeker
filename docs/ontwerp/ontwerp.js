@@ -52,15 +52,13 @@ function rij(r,soort,stand){
   if(c.v)ctx+=`<div><b>Verzoek aan het college</b> ‘${esc(c.v)}’</div>`;
   if(c.o)ctx+=`<div><b>Toegezegd</b> ‘${esc(c.o)}’</div>`;
   ctx+=`<div><a href="${esc(r[4])}" target="_blank" rel="noopener">Open in iBabs${r[5]?' ('+esc(r[5])+')':''}</a></div>`;
-  return `<details class="item"><summary><span class="d">${fd(r[0])}</span><span>${esc(r[1])}</span><span class="pijl" aria-hidden="true">›</span>
-    <span class="meta">${status}${r[2]?`<span>${esc(r[2])}</span>`:''}</span></summary><div class="ctx">${ctx}</div></details>`;
+  return `<details class="item"><summary><span class="meta"><span class="d">${fd(r[0])}</span>${status}${r[2]?`<span class="wie">${esc(r[2])}</span>`:''}</span><span class="t">${esc(r[1])}</span><span class="pijl" aria-hidden="true">›</span></summary><div class="ctx">${ctx}</div></details>`;
 }
 /* debat met letterlijk fragment: x=[datum,agendaId,titel,treffers,fragment,start,lengte,sprekers,soort] */
 function debatRij(x,termen){
   const f=x[4]||'',a=x[5],l=x[6];const fr=a>=0?esc(f.slice(0,a))+'<mark>'+esc(f.slice(a,a+l))+'</mark>'+esc(f.slice(a+l)):esc(f);
   const archief=`../raadzoeker.html#q=${encodeURIComponent(termen)}&fd1=${x[0]}&fd2=${x[0]}`;
-  return `<details class="item"><summary><span class="d">${fd(x[0])}</span><span>${esc(x[2]||'Raadsvergadering')}</span><span class="pijl" aria-hidden="true">›</span>
-    <span class="meta"><span>${nf(x[3])} keer genoemd</span>${x[7]&&x[7].length?`<span>${esc(x[7].join(', '))}</span>`:''}</span></summary>
+  return `<details class="item"><summary><span class="meta"><span class="d">${fd(x[0])}</span><span>${nf(x[3])} ${x[5]<0?'spreekbeurten':'keer genoemd'}</span>${x[7]&&x[7].length?`<span class="wie">${esc(x[7].join(', '))}</span>`:''}</span><span class="t">${esc(x[2]||'Raadsvergadering')}</span><span class="pijl" aria-hidden="true">›</span></summary>
     <div class="ctx"><div>‘${fr}’${x[8]===4?' <span class="sub">(automatische ondertiteling)</span>':''}</div>
     <div><a href="${archief}">Lees het debat</a> · <a href="https://gemeenteraad.rotterdam.nl/Agenda/Index/${esc(x[1])}" target="_blank" rel="noopener">Vergadering en video in iBabs</a></div></div></details>`;
 }
