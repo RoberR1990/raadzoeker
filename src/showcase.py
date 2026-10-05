@@ -15,7 +15,7 @@ import themes, teksten as T
 
 # Per voorbeelddossier: naam, slug van het dossier, zoekpatroon (op gevouwen tekst), subthema's (naam, termen) en verwante dossiers.
 CONFIG={
- 'parkeren':dict(naam='Parkeren',rx=r'parkeer|parkeren|parkeert|geparkeerd|naheffing|scanauto|bewonersvergunning|bezoekersregeling',sub='themes:Parkeren',verwant=[]),
+ 'parkeren':dict(naam='Parkeren',rx=r'parkeer|parkeren|parkeert|geparkeerd|naheffing|scanauto|bewonersvergunning|bezoekersregeling',sub='themes:Parkeren',verwant=[],domein='mobiliteit'),
  'handhaving-en-toezicht':dict(naam='Handhaving en toezicht',
    rx=r"handhav|boa|boa's|toezichthouder|stadswacht|bestuurlijke boete|bestuurlijke strafbeschikking|last onder dwangsom|bodycam",
    sub=[("Handhavers en boa's","handhavers | boa | stadswacht | toezichthouder | stadsmarinier"),
@@ -26,7 +26,7 @@ CONFIG={
         ('Horeca en evenementen','horeca | terras | sluitingstijd | evenement'),
         ('Drugs en sluitingen','damocles | drugs | sluiting | ondermijning | lachgas'),
         ('Middelen en bevoegdheden','camera | bodycam | fouilleren | bestuurlijke strafbeschikking | bestuurlijke boete | last onder dwangsom | geweld tegen | wapenstok | bevoegdhe')],
-   verwant=['cameratoezicht','jongerenoverlast-en-jeugdcriminaliteit','lachgas','afval-zwerfvuil-en-grofvuil','goed-verhuurderschap-en-huisjesmelkers','horeca-terrassen-en-nachtleven','parkeren','ondermijning-en-drugscriminaliteit']),
+   verwant=['cameratoezicht','jongerenoverlast-en-jeugdcriminaliteit','lachgas','afval-zwerfvuil-en-grofvuil','goed-verhuurderschap-en-huisjesmelkers','horeca-terrassen-en-nachtleven','parkeren','ondermijning-en-drugscriminaliteit'],domein='veiligheid'),
 }
 NAAM=SLUG=None; RX=None; CFG=None
 DATUM=r'(\d{1,2})-(\d{1,2})-(\d{4})'
@@ -176,7 +176,9 @@ def main(slug='parkeren'):
     debatten=[{'datum':e['datum'],'verg':e['verg'],'punt':e['punt'],'agenda':e['agenda'],'n':e['n'],'fragment':e['best'][1],'wie':e['best'][2],'partij':e['best'][3],
                'video':e['best'][4] if e['best'][5] is not None and e['best'][5]>=0 else '','sec':e['best'][5],'auto':e['best'][6],
                'sprekers':[n for n,_ in e['sprekers'].most_common(4)],'sub':[n for n,_ in e['sub'].most_common(2)]} for e in sorted(top,key=lambda e:e['datum'],reverse=True)]
-    uit={'naam':NAAM,'stand':STAND,'verwant':CFG['verwant'],'sub':[n for n,_ in SUB],'spoor':spoor,'vastgesteld':vast,'komt':komt,'voorstellen':rv,'wijken':wijken,'stemmen':stemmen,'debatten':debatten}
+    import akkoord
+    akk={'titel':akkoord.TITEL,'url':akkoord.URL,'domein':CFG['domein'],'passages':akkoord.passages(CFG['rx'])}   # letterlijk uit het coalitieakkoord
+    uit={'naam':NAAM,'stand':STAND,'verwant':CFG['verwant'],'akkoord':akk,'sub':[n for n,_ in SUB],'spoor':spoor,'vastgesteld':vast,'komt':komt,'voorstellen':rv,'wijken':wijken,'stemmen':stemmen,'debatten':debatten}
     p=os.path.join(DOCS,'ontwerp','d',SLUG+'-extra.json'); json.dump(uit,open(p,'w',encoding='utf8'),ensure_ascii=False,separators=(',',':'))
     print('spoor',len(spoor),'open',sum(x['open'] for x in spoor),'vastgesteld',len(vast),'komt',len(komt),'voorstellen',len(rv),'stemmingen',nst,'debatten',len(debatten),os.path.getsize(p)//1000,'kB')
 

@@ -23,7 +23,7 @@ def vensters(t,r,n=4,breed=700,kop=400):
     return ' […] '.join(('…' if a else '')+ws(t[a:b])+('…' if b<len(t) else '') for a,b in uit)
 def main(nr):
     naam,pp=O[nr-1]; pakket(naam,rx(pp))
-def pakket(naam,r,kopnaam='het onderwerp'):
+def pakket(naam,r,kopnaam='het onderwerp',extra=None):
     """Bronnenpakket voor een onderwerp of gebied: r = regex op gevouwen tekst."""
     s=slug(naam)
     B={}; L=[]
@@ -83,6 +83,7 @@ def pakket(naam,r,kopnaam='het onderwerp'):
             keep=set(sorted(W,key=lambda c:-len(r.findall(T.fold(B[c]['titel']+' '+B[c]['titel']+' '+B[c]['tekst']))))[:mx])
             for c in W:
                 if c not in keep: del B[c]
+    if extra: B.update(extra)   # bijv. het coalitieakkoord als stuk (S-code)
     os.makedirs(os.path.join(WERK,'dossier'),exist_ok=True)
     json.dump({'onderwerp':naam,'bronnen':B},open(os.path.join(WERK,'dossier',f'bronnen_{s}.json'),'w',encoding='utf8'),ensure_ascii=False)
     # leesbare invoer voor het model

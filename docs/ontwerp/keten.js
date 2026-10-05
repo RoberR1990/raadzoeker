@@ -2,11 +2,12 @@
    Gebruikt door dossier.html als er een d/<slug>-extra.json is. Eén subthemafilter bovenaan filtert alle lijsten;
    een inhoudsbalk loopt mee. Elke regel heeft dezelfde vorm (datum + status klein, titel groot) en een uitklap
    met het beloftespoor, de stemming of het videomoment. */
-let KX=null,KD=null,KA=null,KSUB='',KWK=null,KKAART=null,KBEL='open';
+let KX=null,KD=null,KA=null,KSUB='',KWK=null,KKAART=null,KBEL='open',KAKK=null;
 const kslug=s=>slug(s);
 async function toonKeten(d,X,A){
   KD=d;KX=X;KA=A;CIT=[];verberg();
   if(!KWK){try{[KWK,KKAART]=await Promise.all(['wijken.json','kaart.json'].map(f=>fetch(f).then(r=>r.json())));}catch(e){}}
+  if(!KAKK){try{const r=await fetch('akkoord.json');if(r.ok)KAKK=await r.json();}catch(e){}}
   const h=decodeURIComponent(location.hash.slice(1)).split('/');KSUB=X.sub.find(s=>kslug(s)===h[1])||'';
   document.title=d.naam+' · raadzoeker';
   const crumb=(d.pad||[]).map(([t,u])=>`<a href="${u}">${esc(t)}</a>`).join(' › ')+' › '+esc(d.naam);
@@ -18,7 +19,7 @@ async function toonKeten(d,X,A){
       ${(X.verwant||[]).length?`<span class="sub">Verwant: ${X.verwant.map(s=>ALLE.find(x=>x.slug===s)).filter(Boolean).map(x=>`<a href="#${x.slug}">${esc(x.naam)}</a>`).join(' · ')}</span>`:''}</div></div>
   <nav class="kbalk" aria-label="Onderdelen van dit dossier"><div class="kin">
     <div class="ksub" role="group" aria-label="Filter op subthema"><span class="sub">Filter:</span><button type="button" data-sub="">Alles</button>${X.sub.map(s=>`<button type="button" data-sub="${esc(s)}">${esc(s)}</button>`).join('')}</div>
-    <div class="knav">${[['kort','Kort'],['komt','Komt eraan'],['gezegd','Gezegd'],['besloten','Besloten'],['beloofd','Beloofd'],['gedaan','Gedaan'],['stad','In de stad'],['achtergrond','Achtergrond']].map(([i,t])=>`<a href="#${d.slug}" data-naar="${i}">${t}</a>`).join('')}</div></div></nav>
+    <div class="knav">${[['kort','Kort'],...(X.akkoord?[['akkoord','Akkoord']]:[]),['komt','Komt eraan'],['gezegd','Gezegd'],['besloten','Besloten'],['beloofd','Beloofd'],['gedaan','Gedaan'],['stad','In de stad'],['achtergrond','Achtergrond']].map(([i,t])=>`<a href="#${d.slug}" data-naar="${i}">${t}</a>`).join('')}</div></div></nav>
   <div id="kinh"></div>`;
   deel($('deelrij'),d.naam+' in de Rotterdamse raad',new URL('dossier.html#'+d.slug,location.href).href);
   kTeken();window.scrollTo({top:0});
@@ -75,6 +76,12 @@ function kTeken(){
       <div class="cijfers" style="margin-top:12px"><div class="cijfer"><span class="groot num">${nf(open.length)}</span>beloftes open<div class="sub">${laat.length?`<span class="stip laat"></span>${laat.length} over de termijn`:'geen over de termijn'}</div></div>
       <div class="cijfer"><span class="groot num">${nf(komt.length+vs.length)}</span>komt eraan<div class="sub">deadlines en voorstellen</div></div></div></div></div>
     <ol class="keten" aria-label="De keten">${[['gezegd','Gezegd',`${deb.length} debatten`],['besloten','Besloten',`${mot.length} moties · ${vast.length} regels`],['beloofd','Beloofd',`${toez.length} toezeggingen`],['gedaan','Gedaan',`${gedaan.length} afgedaan`]].map(([i,t,n])=>`<li><a href="#${d.slug}" data-naar="${i}"><b>${t}</b><span>${n}</span></a></li>`).join('')}</ol></section>`;
+  // 1b coalitieakkoord: wat het nieuwe college van plan is (letterlijke passages + punten uit de samenvatting van het akkoord)
+  const AK=X.akkoord;
+  if(AK&&AK.passages.length){const dp=KAKK&&KAKK.domeinen&&KAKK.domeinen[AK.domein]||[];
+    h+=kSectie('akkoord','Coalitieakkoord 2026–2030','',`Het akkoord ‘Vaart maken’ van PRO, D66, VVD, CDA en Volt (juli 2026) zet de toon voor de komende jaren. Dit staat erin over ${esc(d.naam.toLowerCase())}, letterlijk overgenomen. <a href="akkoord.html">Samenvatting van het hele akkoord</a> · <a href="${esc(AK.url)}" target="_blank" rel="noopener">Het akkoord (pdf)</a>`,
+      `<div class="kakk">${AK.passages.map(([t,b])=>`<blockquote><p>‘${esc(t)}’</p><a class="sub" href="${esc(AK.url)}#page=${b}" target="_blank" rel="noopener">blz. ${b}</a></blockquote>`).join('')}</div>`+
+      (dp.length?blok('kak','Het akkoord over dit domein',`<p class="intro">Uit de samenvatting van het akkoord, bij het domein ${esc((ALLE.find(x=>x.soort==='domein'&&x.slug.startsWith(AK.domein))||{naam:AK.domein}).naam.toLowerCase())}.</p>`,dp.map(x=>`<div class="pt">${rijAI(x)}</div>`).join(''),`Toon ${dp.length} punten`,true).replace('class="vlak deel"','class="deel binnen"'):''));}
   // 2 komt eraan
   h+=kSectie('komt','Komt eraan'+fl,'','Raadsvoorstellen die nog behandeld worden en beloftes met een deadline na '+fd(STAND)+'.',
     (vs.length?`<div class="lijst">${vs.map(v=>`<details class="item"><summary><span class="meta"><span class="d">${fd(v.datum)}</span><span><span class="stip open"></span>Raadsvoorstel${v.behandeling?' · '+esc(v.behandeling.slice(0,80)):''}</span></span><span class="t">${esc(v.titel)}</span><span class="pijl" aria-hidden="true">›</span></summary><div class="ctx"><div><a href="${esc(v.url)}" target="_blank" rel="noopener">Open in iBabs</a></div></div></details>`).join('')}</div>`:'')+
