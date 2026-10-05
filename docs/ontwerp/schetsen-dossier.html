@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
+<title>Schetsen dossierpagina · raadzoeker</title>
+<link rel="stylesheet" href="stijl.css?v=8">
+<style>
+.keuze{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0 24px}
+.keuze button{font:inherit;padding:10px 16px;border:1px solid var(--lijn);background:var(--wit);border-radius:999px;cursor:pointer;min-height:44px}
+.keuze button.on{background:var(--groen);color:#fff;border-color:var(--groen)}
+.s{display:none}.s.on{display:block}
+.uitleg{background:var(--wit);border-left:4px solid var(--groen);padding:14px 18px;margin-bottom:16px;max-width:900px}
+.uitleg ul{margin:6px 0 0;padding-left:20px}
+.tel{width:380px;max-width:100%;border:10px solid #222;border-radius:28px;background:var(--grijs);padding:10px;font-size:12px;margin:0 auto}
+.duo{display:grid;grid-template-columns:minmax(0,1.6fr) 380px;gap:24px;align-items:start}
+.mock{background:var(--wit);border:1px solid var(--lijn);border-radius:8px;padding:16px;font-size:13px}
+.b{border:1px dashed #9DAFB6;border-radius:6px;background:var(--grijs);padding:8px 10px;margin-bottom:8px}
+.b b{display:block;font-size:13px}.g{background:var(--groen-zacht);border-color:var(--groen)}.k{background:#FFF4CC;border-color:#EDB500}
+.tabs{display:flex;gap:2px;border-bottom:2px solid #000;margin:8px 0;overflow-x:auto;white-space:nowrap}.tabs span{padding:6px 9px}.tabs span.on{border-bottom:3px solid var(--groen);font-weight:700}
+.kaart{display:grid;grid-template-columns:1fr auto;gap:2px 8px;border:1px solid var(--lijn);border-radius:6px;padding:8px 10px;margin-bottom:8px;background:#fff}
+.kaart .t{font-weight:700}.kaart .n{color:var(--sub)}.kaart .m{grid-column:1/-1;color:var(--sub)}
+.chip{display:inline-block;border:1px solid var(--lijn);border-radius:999px;padding:1px 8px;margin:2px;background:#fff}.chip.on{background:#000;color:#fff}
+.tegels{display:grid;grid-template-columns:1fr 1fr;gap:6px}.tegels div{border:1px solid var(--lijn);border-radius:6px;padding:8px;background:#fff}.tegels b{display:block;font-size:18px}
+h1.m{font-size:22px;margin:0 0 4px}
+@media (max-width:900px){.duo{grid-template-columns:minmax(0,1fr)}}
+</style></head><body>
+<header class="balk"></header>
+<main class="pagina">
+<h1>Dossierpagina: drie schetsen voor minder scrollen en een duidelijker filter</h1>
+<div class="uitleg"><b>Het probleem nu</b><ul><li>Alles staat onder elkaar: na de kern volgen akkoord, komt eraan, vier ketenstappen, de stad en de achtergrond. Dat zijn vele schermen scrollen.</li>
+<li>Het filter bovenaan werkt alleen op de lijsten, niet op de AI-tekst, het akkoord of de achtergrond. Je ziet niet wat er wel en niet gefilterd wordt.</li></ul>
+<b style="display:block;margin-top:8px">Ontwerpregel voor alle drie:</b> een filter staat direct boven het ding dat hij filtert, en nergens anders.</div>
+<div class="keuze"><button data-s="1" class="on">1 · Overzicht met uitklapblokken</button><button data-s="2">2 · Tabbladen per stap</button><button data-s="3">3 · Overzicht en verdieping</button></div>
+
+<section class="s on" id="s1">
+<div class="uitleg"><b>1 · Overzicht met uitklapblokken.</b> Eén pagina die kort begint. Elke stap is een blok met één samenvattende regel en de 3 nieuwste punten. 'Toon alle 27' klapt de volledige lijst open, en pas dán verschijnt het filter op subthema, boven die lijst. Achtergrond en akkoord zijn dichte blokken met een duidelijke titel.
+<ul><li>Voor: het verhaal (de keten) blijft in één oogopslag zichtbaar; de pagina past op ca. 2 schermen; het filter hoort zichtbaar bij één lijst.</li><li>Tegen: wie alles wil zien, klapt meerdere blokken open.</li></ul></div>
+<div class="duo"><div class="mock">
+<div class="sub">Domeinen › Mobiliteit</div><h1 class="m">Parkeren</h1>
+<div class="b g"><b>In het kort (AI)</b>4 zinnen + stand van zaken · <u>lees de hele samenvatting</u></div>
+<div class="b k"><b>Komt eraan</b>7 okt: afdoening kader betaald parkeren · referendumverzoek · <u>toon alle 12</u></div>
+<div class="kaart"><span class="t">Coalitieakkoord 2026–2030</span><span class="n">9 punten ▾</span><span class="m">Betaald parkeren in de hele stad, hogere tarieven, opbrengst 68,8 mln in 2030 …</span></div>
+<div class="kaart"><span class="t">1 · Gezegd</span><span class="n">40 debatten ▾</span><span class="m">Laatste: 1 okt 2026, debat ‘Uitbreiden betaald parkeren’ ▶ video</span></div>
+<div class="kaart"><span class="t">2 · Besloten</span><span class="n">55 moties · 26 regels ▴</span><span class="m">Filter: <span class="chip on">Alles</span><span class="chip">Vergunningen</span><span class="chip">Tarieven</span>…</span><span class="m">· motie … · motie … · motie … <u>toon alle 55</u> · <u>stemtabel per fractie</u></span></div>
+<div class="kaart"><span class="t">3 · Beloofd</span><span class="n">27 open, 9 te laat ▾</span><span class="m">nieuwste 3 beloftes met beloftespoor</span></div>
+<div class="kaart"><span class="t">4 · Gedaan</span><span class="n">81 afgedaan ▾</span><span class="m">mediaan 214 dagen van belofte tot afdoening</span></div>
+<div class="kaart"><span class="t">In de stad</span><span class="n">kaart ▾</span><span class="m">betaald parkeren 2016–2026, tijdschuif, geplande uitbreiding</span></div>
+<div class="kaart"><span class="t">Achtergrond</span><span class="n">▾</span><span class="m">verdieping, tijdlijn, fracties, open eindjes, cijfers</span></div>
+</div><div class="tel"><b>Op mobiel</b><div class="b g">In het kort</div><div class="b k">Komt eraan</div><div class="kaart"><span class="t">Akkoord</span><span class="n">▾</span></div><div class="kaart"><span class="t">1 · Gezegd</span><span class="n">40 ▾</span></div><div class="kaart"><span class="t">2 · Besloten</span><span class="n">55 ▾</span></div><div class="kaart"><span class="t">3 · Beloofd</span><span class="n">27 ▾</span></div><div class="kaart"><span class="t">4 · Gedaan</span><span class="n">81 ▾</span></div><div class="kaart"><span class="t">In de stad</span><span class="n">▾</span></div></div></div>
+</section>
+
+<section class="s" id="s2">
+<div class="uitleg"><b>2 · Tabbladen per stap.</b> Bovenaan kort + komt eraan, daaronder tabbladen: Overzicht · Akkoord · Gezegd · Besloten · Beloofd · Gedaan · Stad · Achtergrond. Elk tabblad is één korte pagina met zijn eigen filter. Elk tabblad heeft een eigen link (#parkeren/beloofd).
+<ul><li>Voor: nooit lang scrollen; filter hoort altijd bij het tabblad dat je ziet.</li><li>Tegen: 8 tabbladen is veel (op mobiel horizontaal schuiven); de samenhang tussen de stappen zie je minder.</li></ul></div>
+<div class="duo"><div class="mock">
+<div class="sub">Domeinen › Mobiliteit</div><h1 class="m">Parkeren</h1>
+<div class="b g"><b>In het kort (AI)</b></div><div class="b k"><b>Komt eraan</b></div>
+<div class="tabs"><span>Overzicht</span><span>Akkoord</span><span>Gezegd</span><span>Besloten</span><span class="on">Beloofd</span><span>Gedaan</span><span>Stad</span><span>Achtergrond</span></div>
+<div>Filter: <span class="chip on">Alles</span><span class="chip">Vergunningen</span><span class="chip">Tarieven</span> · <span class="chip on">Open 27</span><span class="chip">Te laat 9</span></div>
+<div class="b">lijst beloftes met beloftespoor</div><div class="b">AI: wat het college beloofde en deed</div>
+</div><div class="tel"><b>Op mobiel</b><div class="b g">In het kort</div><div class="tabs"><span>Akkoord</span><span>Gezegd</span><span class="on">Beloofd</span><span>Gedaan</span>→</div><div class="b">filter + lijst</div></div></div>
+</section>
+
+<section class="s" id="s3">
+<div class="uitleg"><b>3 · Overzicht en verdieping.</b> De dossierpagina is een overzicht met tegels: kort, akkoord (top 3), komt eraan, één tegel per ketenstap met het belangrijkste cijfer, en een kleine kaart. Een tegel opent een eigen verdiepingspagina voor die stap, met filter en een knop terug.
+<ul><li>Voor: het kortste overzicht; elke verdieping heeft alle ruimte.</li><li>Tegen: wie de lijst zoekt, moet altijd een klik dieper; meer losse pagina's.</li></ul></div>
+<div class="duo"><div class="mock">
+<div class="sub">Domeinen › Mobiliteit</div><h1 class="m">Parkeren</h1>
+<div class="b g"><b>In het kort (AI)</b></div>
+<div class="tegels"><div>Coalitieakkoord<b>9 punten</b></div><div>Komt eraan<b>12</b></div><div>Gezegd<b>40 debatten</b></div><div>Besloten<b>55 moties</b></div><div>Beloofd<b>27 open</b></div><div>Gedaan<b>81</b></div><div>In de stad<b>kaart</b></div><div>Achtergrond<b>verhaal</b></div></div>
+</div><div class="tel"><b>Op mobiel</b><div class="b g">In het kort</div><div class="tegels"><div>Akkoord</div><div>Komt eraan</div><div>Gezegd</div><div>Besloten</div><div>Beloofd</div><div>Gedaan</div></div></div></div>
+</section>
+<p class="voet">Advies: 1. Het houdt de keten (gezegd → besloten → beloofd → gedaan) in beeld, begint kort, en het filter staat alleen nog boven de lijst die hij filtert. De nieuwe parkeerkaart en de stemtabel krijgen een eigen blok ('In de stad' en 'Besloten').</p>
+</main>
+<script src="ontwerp.js?v=9"></script>
+<script>kop('domeinen');document.querySelectorAll('.keuze button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.keuze button').forEach(x=>x.classList.toggle('on',x===b));document.querySelectorAll('.s').forEach(s=>s.classList.toggle('on',s.id==='s'+b.dataset.s));});</script>
+</body></html>
