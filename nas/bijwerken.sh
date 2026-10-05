@@ -34,6 +34,8 @@ else
   stap "iBabs naar site" python src/ibabs_emit.py
   stap "zoekindex stukken" python src/teksten.py
 fi
+# Verkenner (kennisgraaf, ca. 35 min): wekelijks, in de nacht van zaterdag op zondag
+if [ "$MODUS" = "nacht" ] && [ "$(date +%u)" = "7" ]; then stap "verkenner" python src/verkenner.py; fi
 stap "dossierbestanden" python src/dossier_data.py
 stap "voorbeelddossiers" python src/showcase.py
 stap "Lab" python src/lab_data.py
