@@ -25,6 +25,16 @@ html,body{height:100%;overflow:hidden}body{display:flex;flex-direction:column;ba
 .buren{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px}
 .buren button{all:unset;cursor:pointer;border:1px solid #33454C;border-radius:999px;padding:3px 9px;font-size:12.5px}
 .buren button:hover{border-color:#8FE0A0}
+.buren button i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:0}
+.kopje{margin-top:12px}.kopje span{font-size:12px}
+.spoor{font-size:12.5px;color:var(--zacht);margin:0 22px 8px 0;line-height:1.6}.spoor button{all:unset;cursor:pointer;color:#8FE0A0;text-decoration:underline}.spoor b{color:#fff}
+.wist{background:#16302A;border-left:3px solid #8FE0A0;border-radius:8px;padding:9px 11px;margin:10px 0 4px;font-size:14px;line-height:1.45}
+.wist .lk{all:unset;cursor:pointer;color:#fff;font-weight:700;text-decoration:underline}
+.kn2{all:unset;box-sizing:border-box;cursor:pointer;flex:1;text-align:center;background:#22343B;border-radius:8px;padding:9px;font-size:13.5px;color:#fff}.kn2:hover{background:#2E4750}
+.meer{margin-top:8px;font-size:13.5px}.meer summary{cursor:pointer;color:var(--zacht)}
+#verras{position:absolute;right:14px;top:14px;z-index:4;background:#00811F;color:#fff;border:0;border-radius:999px;padding:10px 16px;font:700 14px var(--font);cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.35)}
+#hint{position:absolute;left:50%;bottom:20px;transform:translateX(-50%);z-index:4;background:var(--paneel);color:var(--tekst);border-radius:12px;padding:10px 14px;font-size:13.5px;max-width:calc(100% - 28px);text-align:center}
+#hint button{all:unset;cursor:pointer;border:1px solid #33454C;border-radius:999px;padding:4px 10px;margin:4px 2px 0}
 .sluit{all:unset;cursor:pointer;float:right;font-size:20px;color:var(--zacht);line-height:1}
 .clab{position:absolute;transform:translate(-50%,-50%);font:700 15px var(--font);color:#fff;opacity:.55;pointer-events:none;white-space:nowrap;text-shadow:0 0 8px #0E171B;z-index:2;transition:opacity .2s}
 #zoom{position:absolute;left:300px;bottom:14px;display:flex;flex-direction:column;gap:6px;z-index:5}
@@ -36,11 +46,15 @@ html,body{height:100%;overflow:hidden}body{display:flex;flex-direction:column;ba
 #tel{font-size:12.5px;color:var(--zacht);margin-top:8px;line-height:1.4}
 #klap{display:none}
 @media (max-width:760px){#zoom{left:auto;right:14px;bottom:14px}.clab{font-size:11px}#filters h1{font-size:17px}#filters{width:auto;right:14px;max-height:45%}#filters.dicht .inh{display:none}#klap{display:inline;all:unset;cursor:pointer;float:right;color:#8FE0A0}
-  #info{left:14px;right:14px;width:auto;top:auto;bottom:14px;max-height:55%}}
+  #info{left:0;right:0;width:auto;top:auto;bottom:0;max-height:none;height:56%;border-radius:16px 16px 0 0}
+  #graaf.open #sg,#graaf.open #clabs{bottom:56%}#graaf.open #filters,#graaf.open #zoom,#graaf.open #verras,#graaf.open #hint{display:none}
+  .buren button{padding:7px 12px;font-size:14px}#verras{top:auto;bottom:14px;right:70px}}
+#graaf.open #verras{display:none}
+@media (max-width:760px){body.vk-open .rzt-hulp{display:none}}
 </style></head><body>
 <header class="balk"></header>
 <div id="graaf">
-  <div id="sg"></div><div id="clabs"></div><div id="jaarbord"></div>
+  <div id="sg"></div><div id="vklaad" data-laad="Effe alle verbanden leggen…" style="position:absolute;inset:0;display:grid;place-items:center;z-index:3;color:#9FB0B6"></div><div id="clabs"></div><button id="verras" type="button">🎲 Verras me</button><div id="hint"></div><div id="jaarbord"></div>
   <div class="pnl" id="filters"><button id="klap">filters</button>
     <h1>Verkenner <span class="tag" style="font-size:11px;background:#33454C;border-radius:4px;padding:1px 6px;font-weight:400">proef</span></h1>
     <div class="inh">
@@ -65,7 +79,7 @@ html,body{height:100%;overflow:hidden}body{display:flex;flex-direction:column;ba
   <aside class="pnl" id="info" aria-live="polite"></aside>
   <div id="zoom"><button id="zin" aria-label="Inzoomen">+</button><button id="zuit" aria-label="Uitzoomen">−</button><button id="zhel" aria-label="Alles tonen" style="font-size:14px">⤢</button></div>
 </div>
-<script src="ontwerp.js?v=14"></script>
+<script src="ontwerp.js?v=17"></script>
 <script src="lib/graphology.umd.min.js"></script>
 <script src="lib/sigma.min.js"></script>
 <script>
@@ -109,35 +123,55 @@ let CL=[];
 function plaatsLabels(){if(!R)return;const r=R.getCamera().ratio;
   el('clabs').innerHTML=CL.map(c=>{const p=R.graphToViewport({x:c.x,y:c.y});return `<div class="clab" style="left:${p.x}px;top:${p.y}px;color:${KL[c.d]};opacity:${r>0.45?0.75:0}">${esc(DATA.dom[c.d][1])}</div>`;}).join('');}
 /* paneel met details */
+/* paneel met details: ingericht om door te klikken (spoor, 'wist je dat', dichtbij en over de grens, verras me) */
+let SPOOR=[];
 function paneel(n){
-  SEL=n;const P=el('info');if(n==null){P.style.display='none';R.refresh();bewaar();return;}
-  const i=+n,k=DATA.knopen[i],a=G.getNodeAttributes(n);
-  const bur=(BUREN[i]||[]).filter(([j])=>!G.getNodeAttribute(String(j),'hidden')).slice(0,14);
+  SEL=n;const P=el('info');if(n==null){P.style.display='none';el('graaf').classList.remove('open');document.body.classList.remove('vk-open');pasAan();R.refresh();bewaar();return;}
+  const i=+n,k=DATA.knopen[i];
+  if(SPOOR[SPOOR.length-1]!==i){const w=SPOOR.indexOf(i);SPOOR=w>=0?SPOOR.slice(0,w+1):SPOOR.concat(i).slice(-8);}
+  const zicht=([j])=>!G.getNodeAttribute(String(j),'hidden');
+  const alle=(BUREN[i]||[]).filter(zicht);
+  const nP=([j])=>DATA.knopen[j].s!=='p';
+  const dicht=alle.filter(x=>nP(x)&&DATA.knopen[x[0]].dom===k.dom).slice(0,10),grens=alle.filter(x=>nP(x)&&DATA.knopen[x[0]].dom!==k.dom).slice(0,10),waar=alle.filter(x=>!nP(x)).slice(0,8);
+  const wist=grens.filter(([j])=>DATA.knopen[j].s!=='p')[0];
   const dossiers=(BUREN[i]||[]).map(([j])=>DATA.knopen[j]).filter(x=>x.s==='o').slice(0,4);
-  const jm=Math.max(...k.j,1);
+  const jm=Math.max(...k.j,1),kort=l=>l.split(/,| en /)[0];
   const top=(arr,naam)=>arr.map((c,j)=>[c,j]).filter(x=>x[0]).sort((a,b)=>b[0]-a[0]).slice(0,4).map(([c,j])=>`${esc(naam(j))} <span class="sub">${nl(c)}</span>`).join(' · ');
+  const chip=([j,w,c])=>{const x=DATA.knopen[j];return `<button data-n="${j}" title="${nl(c)} keer samen"><i style="background:${KL[x.dom]}"></i>${esc(x.l)}</button>`;};
   P.innerHTML=`<button class="sluit" aria-label="Sluiten" onclick="paneel(null)">×</button>
-    <div class="sub">${k.s==='o'?'Onderwerp':k.s==='p'?'Plek':'Begrip'} · <span style="color:${KL[k.dom]}">${esc(DATA.dom[k.dom][1])}</span></div><h2>${esc(k.l)}</h2>
-    <div>In <b>${nl(k.n)}</b> tekstvensters, ${nl(k.j.reduce((x,y)=>x+y,0))} beurten en stukken</div>
-    <svg viewBox="0 0 270 48" style="width:100%;margin:8px 0 0">${k.j.map((v,y)=>`<rect x="${y*30}" y="${36-34*v/jm}" width="24" height="${34*v/jm}" rx="2" fill="${y>=F.v&&y<=F.t?KL[k.dom]:'#33454C'}"/><text x="${y*30+12}" y="47" font-size="9" text-anchor="middle" fill="#9FB0B6">'${DATA.jaren[y].slice(2)}</text>`).join('')}</svg>
+    ${SPOOR.length>1?`<div class="spoor" aria-label="Je route">${SPOOR.map((s,x)=>x===SPOOR.length-1?`<b>${esc(DATA.knopen[s].l)}</b>`:`<button data-n="${s}">${esc(DATA.knopen[s].l)}</button>`).join(' › ')}</div>`:''}
+    <div class="sub">${k.s==='o'?'Onderwerp':k.s==='p'?'Plek':'Begrip'} · <span style="color:${KL[k.dom]}">${esc(DATA.dom[k.dom][1])}</span> · ${nl(k.j.reduce((x,y)=>x+y,0))} beurten en stukken</div><h2>${esc(k.l)}</h2>
+    ${wist?`<div class="wist"><span class="sub">Wist je dat…</span><br>‘${esc(k.l)}’ opvallend vaak samen valt met <button data-n="${wist[0]}" class="lk">‘${esc(DATA.knopen[wist[0]].l)}’</button> uit ${esc(DATA.dom[DATA.knopen[wist[0]].dom][1])}? ${nl(wist[2])} keer. <a href="zoek.html?q=${encodeURIComponent(kort(k.l)+' '+kort(DATA.knopen[wist[0]].l))}">Lees waar →</a></div>`:''}
+    ${dicht.length?`<div class="sub kopje">Dichtbij <span>· zelfde domein</span></div><div class="buren">${dicht.map(chip).join('')}</div>`:''}
+    ${grens.length?`<div class="sub kopje">Over de grens <span>· andere domeinen</span></div><div class="buren">${grens.map(chip).join('')}</div>`:''}
+    ${waar.length?`<div class="sub kopje">Waar <span>· plekken en straten</span></div><div class="buren">${waar.map(chip).join('')}</div>`:''}
+    <div class="rij2" style="margin-top:12px"><button class="kn2" data-a="verras">🎲 Verras me</button><button class="kn2" data-a="deel">Deel deze ontdekking</button></div>
     <div id="vb"></div>
-    <div class="sub" style="margin-top:8px">Domeinen</div><div>${top(k.dm,j=>DATA.dom[j][1])||'–'}</div>
-    <div class="sub" style="margin-top:6px">Gebieden</div><div>${top(k.g,j=>DATA.geb[j])||'stadsbreed'}</div>
-    <div class="sub" style="margin-top:10px">Hangt samen met</div><div class="buren">${bur.map(([j,w,c])=>`<button data-n="${j}" title="${nl(c)} keer samen">${esc(DATA.knopen[j].l)}</button>`).join('')}</div>
+    <svg viewBox="0 0 270 48" style="width:100%;margin:8px 0 0" aria-label="Per jaar">${k.j.map((v,y)=>`<rect x="${y*30}" y="${36-34*v/jm}" width="24" height="${34*v/jm}" rx="2" fill="${y>=F.v&&y<=F.t?KL[k.dom]:'#33454C'}"/><text x="${y*30+12}" y="47" font-size="9" text-anchor="middle" fill="#9FB0B6">'${DATA.jaren[y].slice(2)}</text>`).join('')}</svg>
+    <details class="meer"><summary>Domeinen en gebieden</summary><div class="sub" style="margin-top:6px">Domeinen</div><div>${top(k.dm,j=>DATA.dom[j][1])||'–'}</div>
+    <div class="sub" style="margin-top:6px">Gebieden</div><div>${top(k.g,j=>DATA.geb[j])||'stadsbreed'}</div></details>
     <div style="margin-top:12px;display:grid;gap:5px">
       ${k.slug?`<a href="dossier.html#${k.slug}">Naar het dossier ${esc(k.l)} →</a>`:''}
       ${dossiers.filter(x=>x.slug!==k.slug).map(x=>`<a href="dossier.html#${x.slug}">Dossier in de buurt: ${esc(x.l)} →</a>`).join('')}
-      <a href="zoek.html?q=${encodeURIComponent(k.s==='o'?k.l.split(/,| en /)[0]:k.l)}">Zoek alles over '${esc(k.l)}' →</a>
+      <a href="zoek.html?q=${encodeURIComponent(k.s==='o'?kort(k.l):k.l)}">Zoek alles over '${esc(k.l)}' →</a>
       ${F.g!==''?`<a href="wijk.html?g=${slug(DATA.geb[F.g])}">Gebiedspagina ${esc(DATA.geb[F.g])} →</a>`:''}
     </div>`;
-  P.style.display='block';
-  P.querySelectorAll('.buren button').forEach(b=>b.onclick=()=>{kies(b.dataset.n,true);});
+  P.style.display='block';P.scrollTop=0;el('graaf').classList.add('open');document.body.classList.add('vk-open');pasAan();
+  P.querySelectorAll('[data-n]').forEach(b=>b.onclick=()=>kies(b.dataset.n,true));
+  P.querySelector('[data-a=verras]').onclick=verras;
+  P.querySelector('[data-a=deel]').onclick=async e=>{const u=location.href;try{if(navigator.share)await navigator.share({title:'Verkenner: '+k.l,url:u});else{await navigator.clipboard.writeText(u);e.target.textContent='✓ Link gekopieerd';}}catch(_){}};
   laadVb().then(()=>{const v=VB[k.id];if(!v||SEL!==n)return;const rx=new RegExp('('+k.l.replace(/[^\p{L}\p{N} ]/gu,'').split(/ /)[0].slice(0,Math.max(4,k.l.length-2))+'\\p{L}*)','giu');
     el('vb').innerHTML=`<div class="frag">${esc(v.f).replace(rx,'<mark>$1</mark>')}</div><div class="sub" style="font-size:12.5px">${esc(v.w)}${v.p?' ('+esc(v.p)+')':''} · ${esc(v.v)} · ${fd(v.d)}</div>`;});
   R.refresh();bewaar();
 }
+/* op de telefoon krijgt de kaart de bovenste helft als het paneel open is */
+function pasAan(){if(R&&R.resize){R.resize();R.refresh();}}
+/* verras me: een willekeurig begrip met verbanden over de domeingrens */
+function verras(){
+  const kand=DATA.knopen.map((k,i)=>[k,i]).filter(([k,i])=>k.s!=='p'&&k.n>=120&&!G.getNodeAttribute(String(i),'hidden')&&(BUREN[i]||[]).some(([j])=>DATA.knopen[j].dom!==k.dom));
+  if(!kand.length)return;const [,i]=kand[Math.floor(Math.random()*kand.length)];SPOOR=[];kies(String(i),true);}
 const laadVb=()=>VB?Promise.resolve():fetch('verkenner-vb.json').then(r=>r.json()).then(j=>{VB=j;});
-function kies(n,camera){paneel(n);if(camera){const d=R.getNodeDisplayData(n);if(d)R.getCamera().animate({x:d.x,y:d.y,ratio:Math.min(R.getCamera().ratio,0.35)},{duration:600});}}
+function kies(n,camera){paneel(n);if(camera){setTimeout(()=>{const d=R.getNodeDisplayData(n);if(d)R.getCamera().animate({x:d.x,y:d.y,ratio:Math.min(R.getCamera().ratio,innerWidth<760?0.45:0.35)},{duration:600});},60);}}
 /* tekenen: buren van aangewezen of gekozen knoop lichten op */
 let PAD=null,PADE=null,VERG=null;
 function nodeReducer(n,a){const r={...a};const f=HOV??SEL;
@@ -157,7 +191,7 @@ function tekenHover(ctx,data,st){const fs=st.labelSize+2,lab=data.label||'';ctx.
 function bewaar(){const p=[];if(SEL!=null)p.push('n='+encodeURIComponent(DATA.knopen[+SEL].id));['g','d','f'].forEach(k=>F[k]!==''&&p.push(k+'='+F[k]));if(F.v)p.push('v='+F.v);if(F.t!==8)p.push('t='+F.t);if(F.o)p.push('o=1');if(F.dom>=0)p.push('k='+F.dom);history.replaceState(null,'','#'+p.join('&'));}
 function lees(){const h=new URLSearchParams(location.hash.slice(1));['g','d','f'].forEach(k=>{if(h.has(k))F[k]=h.get(k);});if(h.has('v'))F.v=+h.get('v');if(h.has('t'))F.t=+h.get('t');F.o=h.get('o')==='1';if(h.has('k'))F.dom=+h.get('k');return h.get('n');}
 fetch(new URLSearchParams(location.search).get('bron')||'verkenner.json').then(r=>r.json()).then(D=>{
-  DATA=D;G=new graphology.Graph({type:'undirected'});
+  DATA=D;el('vklaad')?.remove();G=new graphology.Graph({type:'undirected'});
   D.knopen.forEach((k,i)=>G.addNode(String(i),{x:k.x,y:-k.y,label:k.l,size:3,color:KL[k.dom],dom:k.dom,s:k.s,forceLabel:false}));
   const em=Math.max(...D.e.map(e=>e[2]));
   const hx=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)).join(',');
@@ -188,7 +222,7 @@ el('fv').onchange=e=>{F.v=+e.target.value;if(F.t<F.v){F.t=F.v;el('ft').value=F.t
 el('ft').onchange=e=>{F.t=+e.target.value;if(F.v>F.t){F.v=F.t;el('fv').value=F.v;}herweeg();};
 el('fo').onchange=e=>{F.o=e.target.checked;herweeg();};
 el('leg').onclick=e=>{const b=e.target.closest('button');if(!b)return;const d=+b.dataset.d;F.dom=F.dom===d?-1:d;el('leg').querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',+x.dataset.d===F.dom));herweeg();};
-el('zk').onchange=e=>{const i=zoekKnoop(e.target.value);if(i<0){const q=e.target.value.trim(),b=bedoelJe(q,DATA.knopen.map(k=>k.l),4);const P=el('info');P.style.display='block';SEL=null;
+el('zk').onchange=e=>{window.rzEi&&rzEi(e.target.value);const i=zoekKnoop(e.target.value);if(i<0){const q=e.target.value.trim(),b=bedoelJe(q,DATA.knopen.map(k=>k.l),4);const P=el('info');P.style.display='block';SEL=null;
     P.innerHTML=`<button class="sluit" aria-label="Sluiten" onclick="paneel(null)">×</button><div class="sub">Niet in het web</div><h2>‘${esc(q)}’</h2><p>Dit woord staat niet in de Verkenner: die toont alleen begrippen die vaak genoeg en kenmerkend genoeg voorkomen.</p>
       ${b.length?`<div class="sub">Bedoel je</div><div class="buren">${b.map(x=>`<button data-l="${esc(x)}">${esc(x)}</button>`).join('')}</div>`:''}
       <p style="margin-top:12px"><a href="zoek.html?q=${encodeURIComponent(q)}">Zoek ‘${esc(q)}’ in alles wat er gezegd en geschreven is →</a></p>`;
@@ -248,5 +282,15 @@ el('foto').onclick=async()=>{const cs=R.getCanvases?R.getCanvases():{};const c0=
   x.fillStyle='#9FB0B6';x.font=`${14*s}px Arial`;x.fillText(el('tel').innerText.replace(/\n/g,' · ').slice(0,180),16*s,H+56*s);x.fillText(location.href,16*s,H+78*s);
   c.toBlob(async b=>{try{await navigator.clipboard.write([new ClipboardItem({'image/png':b})]);el('foto').textContent='✓ Gekopieerd';}catch(e){const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='verkenner.png';a.click();el('foto').textContent='✓ Opgeslagen';}setTimeout(()=>el('foto').textContent='⧉ Afbeelding',2000);});};
 el('klap').onclick=()=>el('filters').classList.toggle('dicht');
+el('verras').onclick=verras;
+/* easter egg: bij 'Maas' gaat er een golf door het web */
+addEventListener('rz-ei',e=>{if(e.detail!=='maas'||matchMedia('(prefers-reduced-motion: reduce)').matches)return;const t0=performance.now();G.forEachNode((n,a)=>G.setNodeAttribute(n,'y0',a.y));
+  const stap=t=>{const s=(t-t0)/1000;if(s>2.4){G.forEachNode((n,a)=>G.setNodeAttribute(n,'y',a.y0));return;}const env=Math.sin(Math.PI*s/2.4);
+    G.updateEachNodeAttributes((n,a)=>({...a,y:a.y0+45*env*Math.sin(a.x/140-s*7)}),{attributes:['y']});requestAnimationFrame(stap);};requestAnimationFrame(stap);});
+/* eerste hint: waar begin je? */
+(function(){const h=el('hint');let gezien=null;try{gezien=localStorage.getItem('rz-vk-hint');}catch(e){}
+  if(gezien||location.hash.includes('n=')){h.remove();return;}
+  h.innerHTML=`Tik op een bolletje, of begin bij: ${['Parkeren','tramlijn','Tweebosbuurt','statushouders'].map(x=>`<button data-l="${x}">${x}</button>`).join('')} <button data-a="weg" aria-label="Sluiten">×</button>`;
+  h.onclick=e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.l){el('zk').value=b.dataset.l;el('zk').dispatchEvent(new Event('change'));}h.remove();try{localStorage.setItem('rz-vk-hint','1');}catch(_){}};})();
 if(innerWidth<760)el('filters').classList.add('dicht');
 </script></body></html>

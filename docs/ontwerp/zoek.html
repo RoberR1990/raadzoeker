@@ -78,7 +78,7 @@
  </div>
 </main>
 <script src="fzstd.js"></script>
-<script src="ontwerp.js?v=14"></script>
+<script src="ontwerp.js?v=17"></script>
 <script src="keten.js?v=7"></script>
 <script>
 kop('zoeken');
@@ -110,7 +110,7 @@ async function zoek(){
   const q=$('q').value.trim();zetHash();
   if(!q){$('analyse').hidden=true;$('uit').hidden=true;$('meerv').hidden=true;$('ng').textContent='';$('ns').textContent='';$('telling').textContent='Typ een woord of zin.';return;}
   const {zinnen,termen}=leesQ(q);if(!termen.length)return;ZOEK={q,zinnen,termen};
-  $('telling').textContent='Zoeken…';
+  $('telling').textContent='Effe zoeken…';window.rzEi&&rzEi(q);
   const [ls,ld]=await Promise.all([ST.lijsten(termen),DB.lijsten(termen)]);
   const d=V('fdom'),g=V('fgeb');
   // stukken
@@ -150,7 +150,7 @@ function analyse(){
 }
 /* ---------- lijsten ---------- */
 async function toepassen(){
-  $('telling').textContent='Bezig…';
+  $('telling').textContent='Momentje…';
   const M=DB.M,fr=V('ffr'),sp=V('fsp'),br=V('fbr');
   let rd=RD.filter(([id])=>{const u=M.u[id];return (fr===''||u[2]===+fr)&&(sp===''||u[1]===+sp)&&(br===''||M.verg[M.ap[u[0]][0]][1]===+br);});
   let rs=RS.filter(([id])=>{const g=GROEP[groep][1];return !g||g.includes(ST.M.soorten[ST.M.d[id][0]]);});
@@ -187,7 +187,7 @@ async function leegStaat(nGez,nSt){
     if(t.length)tips.push(`<li>Bedoel je ${t.map(x=>`<button type="button" class="lk" data-q="${esc(x)}">${esc(x)}</button>`).join(' of ')}?</li>`);
     if(d.length)tips.push(`<li>Misschien zoek je het dossier ${d.map(x=>`<a href="${x.soort==='gebied'?'wijk.html?g=':'dossier.html?d='}${x.slug}">${esc(x.naam)}</a>`).join(' of ')}.</li>`);}
   tips.push('<li>Probeer een ander of algemener woord: woordvormen tellen al mee (woning vindt ook woningen).</li>');
-  L.innerHTML=`<h2>Niets gevonden voor ‘${esc(q)}’</h2><ul>${tips.join('')}</ul><p class="sub" style="margin:14px 0 0">Of probeer een van deze:</p><div class="chips">${VOORBEELD.map(v=>`<button type="button" data-q="${esc(v)}">${esc(v)}</button>`).join('')}</div>`;
+  L.innerHTML=`<h2>Hier ligt niks voor ‘${esc(q)}’</h2><p style="margin:0 0 4px">Maar we geven niet op. Probeer dit:</p><ul>${tips.join('')}</ul><p class="sub" style="margin:14px 0 0">Of probeer een van deze:</p><div class="chips">${VOORBEELD.map(v=>`<button type="button" data-q="${esc(v)}">${esc(v)}</button>`).join('')}</div>`;
   L.hidden=false;$('telling').textContent='';
 }
 $('leeg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
@@ -256,6 +256,6 @@ let IX=[];
   if(p.get('f')){const i=DB.M.par.indexOf(p.get('f'));if(i>=0){$('ffr').value=i;}}if(p.get('s')){const i=DB.M.spk.indexOf(p.get('s'));if(i>=0)$('fsp').value=i;}
   if(p.get('f')||p.get('s'))toepassen();
   if(!p.get('q')&&(p.get('d')||p.get('g'))){$('telling').textContent='Typ een zoekwoord; het filter op domein of gebied staat al aan.';}
-})().catch(e=>{$('telling').textContent='De zoekindex kon niet worden geladen.';console.error(e);});
+})().catch(e=>{$('telling').textContent='Dat ging mis: de zoekindex kwam niet aan. Ververs de pagina en probeer het nog eens.';console.error(e);});
 </script>
 </body></html>
