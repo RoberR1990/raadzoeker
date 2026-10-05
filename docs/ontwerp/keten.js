@@ -22,7 +22,7 @@ async function toonKeten(d,X,A){
     <div class="ksub" role="group" aria-label="Filter op subthema"><span class="sub">Filter:</span><button type="button" data-sub="">Alles</button>${X.sub.map(s=>`<button type="button" data-sub="${esc(s)}">${esc(s)}</button>`).join('')}</div>
     <div class="knav">${[['kort','Kort'],...(X.akkoord?[['akkoord','Akkoord']]:[]),['komt','Komt eraan'],['gezegd','Gezegd'],['besloten','Besloten'],['beloofd','Beloofd'],['gedaan','Gedaan'],['stad','In de stad'],['achtergrond','Achtergrond']].map(([i,t])=>`<a href="#${d.slug}" data-naar="${i}">${t}</a>`).join('')}</div></div></nav>
   <div id="kinh"></div>`;
-  deel($('deelrij'),d.naam+' in de Rotterdamse raad',new URL('dossier.html#'+d.slug,location.href).href);
+  deel($('deelrij'),d.naam+' in de Rotterdamse raad',new URL('dossier.html?d='+d.slug,location.href).href);
   kTeken();window.scrollTo({top:0});
 }
 const kIn=x=>!KSUB||(x.sub||[]).includes(KSUB);
