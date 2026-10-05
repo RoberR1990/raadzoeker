@@ -9,7 +9,7 @@ const fdl=d=>{const [y,m,dd]=d.split('-');return +dd+' '+MNDL[+m-1]+' '+y;};
 const slug=s=>s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/&/g,' ').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 const iso=s=>{const m=(s||'').match(/(\d\d)-(\d\d)-(\d{4})/);return m?`${m[3]}-${m[2]}-${m[1]}`:'';};
 const FREQ='Wordt automatisch bijgewerkt: elke nacht, en op werkdagen om 9, 12, 15, 18 en 21 uur.';
-const STAND='2026-10-02';   /* stand van de gegevens; ook in src/paden.py */
+const STAND='2026-10-05';   /* stand van de gegevens; ook in src/paden.py */
 const dagen=(a,b)=>Math.round((new Date(b)-new Date(a))/864e5);
 
 /* logo: halfrond van negen zetels (de raadzaal), één groen gemarkeerd; woordmerk in kleine letters */
