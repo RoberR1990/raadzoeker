@@ -89,7 +89,7 @@ h2{margin:40px 0 4px}
   <p>Mis je iets, of klopt er iets niet? Zie <a href="over.html#contact">Over</a> voor contact.</p>
   <p class="voet"><a href="#" id="welkomweer">Toon het welkomstvenster opnieuw</a></p>
 </div></main>
-<script src="ontwerp.js?v=19"></script>
+<script src="ontwerp.js?v=20"></script>
 <script>
 kop('');
 document.getElementById('zoekfaq').oninput=e=>{const q=e.target.value.toLowerCase().trim();document.querySelectorAll('#faqlijst details').forEach(d=>{const hit=!q||d.textContent.toLowerCase().includes(q);d.hidden=!hit;if(q&&hit)d.open=true;});};

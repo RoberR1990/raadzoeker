@@ -36,6 +36,11 @@ html,body{height:100%;overflow:hidden}body{display:flex;flex-direction:column;ba
 #hint{position:absolute;left:50%;bottom:20px;transform:translateX(-50%);z-index:4;background:var(--paneel);color:var(--tekst);border-radius:12px;padding:10px 14px;font-size:13.5px;max-width:calc(100% - 28px);text-align:center}
 #hint button{all:unset;cursor:pointer;border:1px solid #33454C;border-radius:999px;padding:4px 10px;margin:4px 2px 0}
 .sluit{all:unset;cursor:pointer;float:right;font-size:20px;color:var(--zacht);line-height:1}
+.bel{position:absolute;transform:translate(-50%,-50%);border-radius:50%;border:2px solid;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;cursor:pointer;z-index:3;transition:opacity .25s;padding:8px;box-sizing:border-box}
+.bel:hover{filter:brightness(1.25)}
+.bel b{font:700 15px var(--font);color:#fff;text-shadow:0 0 6px #0E171B;line-height:1.15}
+.bel span{font-size:11.5px;color:#DCE6E9;margin-top:4px;line-height:1.35;text-shadow:0 0 6px #0E171B}
+#overhint{position:absolute;left:50%;top:12px;transform:translateX(-50%);z-index:4;font-size:13px;color:var(--zacht);background:rgba(14,23,27,.7);border-radius:999px;padding:5px 12px;pointer-events:none}
 .clab{position:absolute;transform:translate(-50%,-50%);font:700 15px var(--font);color:#fff;opacity:.55;pointer-events:none;white-space:nowrap;text-shadow:0 0 8px #0E171B;z-index:2;transition:opacity .2s}
 #zoom{position:absolute;left:300px;bottom:14px;display:flex;flex-direction:column;gap:6px;z-index:5}
 #zoom button{width:40px;height:40px;border-radius:10px;border:0;background:var(--paneel);color:#fff;font:700 20px var(--font);cursor:pointer}
@@ -53,7 +58,7 @@ html,body{height:100%;overflow:hidden}body{display:flex;flex-direction:column;ba
 </style></head><body>
 <header class="balk"></header>
 <div id="graaf">
-  <div id="sg"></div><div id="vklaad" data-laad="Effe alle verbanden leggen…" style="position:absolute;inset:0;display:grid;place-items:center;z-index:3;color:#9FB0B6"></div><div id="clabs"></div><div id="hint"></div><div id="jaarbord"></div>
+  <div id="sg"></div><div id="vklaad" data-laad="Effe alle verbanden leggen…" style="position:absolute;inset:0;display:grid;place-items:center;z-index:3;color:#9FB0B6"></div><div id="bellen"></div><div id="clabs"></div><div id="hint"></div><div id="overhint">Tik op een domein om in te zoomen · scroll of knijp om te zoomen</div><div id="jaarbord"></div>
   <div class="pnl" id="filters"><button id="klap">filters</button>
     <h1>Verkenner <span class="tag" style="font-size:11px;background:#33454C;border-radius:4px;padding:1px 6px;font-weight:400">proef</span></h1>
     <button id="verras" type="button">🎲 Verras me</button>
@@ -79,7 +84,7 @@ html,body{height:100%;overflow:hidden}body{display:flex;flex-direction:column;ba
   <aside class="pnl" id="info" aria-live="polite"></aside>
   <div id="zoom"><button id="zin" aria-label="Inzoomen">+</button><button id="zuit" aria-label="Uitzoomen">−</button><button id="zhel" aria-label="Alles tonen" style="font-size:14px">⤢</button></div>
 </div>
-<script src="ontwerp.js?v=19"></script>
+<script src="ontwerp.js?v=20"></script>
 <script src="lib/graphology.umd.min.js"></script>
 <script src="lib/sigma.min.js"></script>
 <script>
@@ -119,9 +124,28 @@ function clusterLabels(){
   CL=Object.entries(acc).filter(([,v])=>v.w>200).map(([d,v])=>({d:+d,x:v.x/v.w,y:v.y/v.w}));
   plaatsLabels();
 }
-let CL=[];
-function plaatsLabels(){if(!R)return;const r=R.getCamera().ratio;
-  el('clabs').innerHTML=CL.map(c=>{const p=R.graphToViewport({x:c.x,y:c.y});return `<div class="clab" style="left:${p.x}px;top:${p.y}px;color:${KL[c.d]};opacity:${r>0.45?0.75:0}">${esc(DATA.dom[c.d][1])}</div>`;}).join('');}
+let CL=[],BEL=[],RANK={},NIV='over';
+const gefilterd=()=>F.g!==''||F.d!==''||F.f!==''||F.v>0||F.t<8||F.o||F.dom>=0;
+function niveau(){if(!R)return 'over';const r=R.getCamera().ratio;if(SEL!=null||PAD||VERG||gefilterd())return r>0.25?'mid':'dicht';return r>0.5?'over':r>0.22?'mid':'dicht';}
+/* domeinbellen: middelpunt en straal van de begrippen per domein, met de vijf meest besproken */
+function maakBellen(){const per={};DATA.knopen.forEach((k,i)=>{(per[k.dom]=per[k.dom]||[]).push([k,i]);});
+  BEL=Object.entries(per).filter(([,l])=>l.length>=25).map(([d,l])=>{let sx=0,sy=0,sw=0;l.forEach(([k])=>{const w=Math.sqrt(k.n);sx+=k.x*w;sy+=-k.y*w;sw+=w;});const x=sx/sw,y=sy/sw;
+    const af=l.map(([k])=>Math.hypot(k.x-x,-k.y-y)).sort((a,b)=>a-b);const top=l.filter(([k])=>k.s!=='p').sort((a,b)=>b[0].n-a[0].n).slice(0,5).map(([k])=>k.l);
+    return {d:+d,x,y,r:af[Math.floor(af.length*.5)],n:l.length,top};});}
+function tekenBellen(){const L=el('bellen');if(!R||NIV!=='over'){L.innerHTML='';el('overhint').style.display='none';return;}el('overhint').style.display='';
+  const hx=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)).join(',');
+  // middelpunten op het scherm, grootte naar aantal begrippen; daarna uit elkaar duwen zodat ze niet overlappen
+  const W=el('sg').clientWidth,H=el('sg').clientHeight,sch=Math.min(1,Math.min(W,H)/700);
+  const P=BEL.map(b=>{const p=R.graphToViewport({x:b.x,y:b.y});return {b,x:p.x,y:p.y,r:(40+4.2*Math.sqrt(b.n))*sch};});
+  for(let it=0;it<120;it++){for(let a=0;a<P.length;a++)for(let c=a+1;c<P.length;c++){const A=P[a],C=P[c];let dx=C.x-A.x,dy=C.y-A.y,d=Math.hypot(dx,dy)||1;const min=A.r+C.r+6;
+      if(d<min){const m=(min-d)/2;dx/=d;dy/=d;A.x-=dx*m;A.y-=dy*m;C.x+=dx*m;C.y+=dy*m;}}
+    P.forEach(q=>{q.x=Math.max(q.r+300*(W>760),Math.min(W-q.r-10,q.x));q.y=Math.max(q.r+40,Math.min(H-q.r-10,q.y));});}
+  L.innerHTML=P.map(({b,x,y,r})=>`<div class="bel" data-d="${b.d}" style="left:${x}px;top:${y}px;width:${2*r}px;height:${2*r}px;border-color:rgba(${hx(KL[b.d])},.85);background:radial-gradient(circle,rgba(${hx(KL[b.d])},.34),rgba(${hx(KL[b.d])},.12))"><b>${esc(DATA.dom[b.d][1])}</b>${r>78?`<span>${b.top.slice(0,r>100?5:3).map(esc).join('<br>')}</span>`:''}</div>`).join('');}
+el('bellen').addEventListener('click',e=>{const b=e.target.closest('.bel');if(!b)return;const B=BEL.find(x=>x.d===+b.dataset.d);const d=R.getNodeDisplayData(String(DATA.knopen.findIndex(k=>k.dom===B.d)));
+  // naar het middelpunt van het domein (in 'framed' coordinaten van de camera)
+  const p=R.graphToViewport({x:B.x,y:B.y}),c=R.viewportToFramedGraph(p);R.getCamera().animate({x:c.x,y:c.y,ratio:0.32},{duration:700});});
+function plaatsLabels(){if(!R)return;const r=R.getCamera().ratio,nv=niveau();if(nv!==NIV){NIV=nv;R.refresh();}tekenBellen();
+  el('clabs').innerHTML=CL.map(c=>{const p=R.graphToViewport({x:c.x,y:c.y});return `<div class="clab" style="left:${p.x}px;top:${p.y}px;color:${KL[c.d]};opacity:${NIV==='mid'?0.8:0}">${esc(DATA.dom[c.d][1])}</div>`;}).join('');}
 /* paneel met details */
 /* paneel met details: ingericht om door te klikken (spoor, 'wist je dat', dichtbij en over de grens, verras me) */
 let SPOOR=[];
@@ -175,13 +199,16 @@ function kies(n,camera){paneel(n);if(camera){setTimeout(()=>{const d=R.getNodeDi
 /* tekenen: buren van aangewezen of gekozen knoop lichten op */
 let PAD=null,PADE=null,VERG=null;
 function nodeReducer(n,a){const r={...a};const f=HOV??SEL;
+  if(f==null&&!PAD&&!VERG){const rk=RANK[n];
+    if(NIV==='over'){if(rk>320){r.hidden=true;return r;}r.size=Math.max(1.2,a.size*.45);r.label='';return r;}
+    if(NIV==='mid'&&!gefilterd()&&rk>800){r.hidden=true;return r;}}
   if(VERG&&VERG[n]!=null)r.color=VERG[n];
   if(PAD&&HOV==null){if(PAD.has(n)){r.forceLabel=true;r.zIndex=3;r.size=Math.max(a.size,7);}else{r.color='#26353B';r.label='';}return r;}
   if(f!=null){const i=+n;if(n===f){r.highlighted=true;r.forceLabel=true;r.zIndex=3;}else if(BUREN[+f]&&BUREN[+f].some(([j])=>j===i)){r.forceLabel=true;r.zIndex=2;}else{r.color='#2A3A40';r.label='';r.zIndex=0;}}
   return r;}
 function edgeReducer(e,a){const r={...a};const f=HOV??SEL;
   if(PAD&&HOV==null){if(PADE.has(e)){r.color='#FFFFFF';r.size=3;r.zIndex=3;}else r.hidden=true;return r;}
-  if(f==null&&(a.hub||!a.kern)){r.hidden=true;return r;}
+  if(f==null&&(NIV!=='dicht'||a.hub||!a.kern)){r.hidden=true;return r;}
   if(f!=null){const [s,t]=G.extremities(e);if(s===f||t===f){r.color='rgba(255,255,255,.55)';r.size=Math.max(1,a.size*1.6);r.zIndex=2;}else r.hidden=true;}
   return r;}
 function tekenHover(ctx,data,st){const fs=st.labelSize+2,lab=data.label||'';ctx.font=`700 ${fs}px Arial`;const w=ctx.measureText(lab).width;
@@ -205,11 +232,12 @@ fetch(new URLSearchParams(location.search).get('bron')||'verkenner.json').then(r
   D.jaren.forEach((j,i)=>{el('fv').insertAdjacentHTML('beforeend',`<option value="${i}">van ${j}</option>`);el('ft').insertAdjacentHTML('beforeend',`<option value="${i}">t/m ${j}</option>`);});
   el('zkl').innerHTML=D.knopen.map(k=>`<option value="${esc(k.l)}">`).join('');
   el('leg').innerHTML=D.dom.map(([s,n],i)=>`<button data-d="${i}" aria-pressed="false"><i style="background:${KL[i]}"></i>${esc(n)}</button>`).join('');
+  DATA.knopen.map((k,i)=>[k.n,i]).sort((a,b)=>b[0]-a[0]).forEach(([,i],r)=>RANK[String(i)]=r);maakBellen();
   const n0=lees();
   ['g','d','f'].forEach(k=>el('f'+k).value=F[k]);el('fv').value=F.v;el('ft').value=F.t;el('fo').checked=F.o;
   R=new Sigma(G,el('sg'),{nodeReducer,edgeReducer,defaultDrawNodeHover:tekenHover,labelColor:{color:'#E8EEF0'},labelFont:'Arial',labelSize:12,labelWeight:'400',
-    labelRenderedSizeThreshold:7,labelDensity:0.6,labelGridCellSize:90,zIndex:true,minCameraRatio:0.03,maxCameraRatio:3,stagePadding:40});
-  herweeg();
+    labelRenderedSizeThreshold:6,labelDensity:0.45,labelGridCellSize:110,zIndex:true,minCameraRatio:0.03,maxCameraRatio:3,stagePadding:40});
+  NIV=niveau();herweeg();
   R.getCamera().on('updated',plaatsLabels);
   R.on('enterNode',({node})=>{HOV=node;R.refresh();el('sg').style.cursor='pointer';});
   R.on('leaveNode',()=>{HOV=null;R.refresh();el('sg').style.cursor='';});
