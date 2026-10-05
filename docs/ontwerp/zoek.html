@@ -53,7 +53,7 @@
   <div class="vlak">
     <h1>Zoeken</h1>
     <p class="lead">Zoek op elk woord dat sinds 2018 in de raad (woordelijke notulen) en sinds 2022 in de commissies (ondertiteling) is gezegd, en in 44.500 stukken. Je ziet meteen wanneer, door wie en waar in de stad het speelt, en welke dossiers erbij horen.</p>
-    <form class="zoekrij" id="zf" role="search"><label for="q" style="position:absolute;left:-9999px">Zoek</label><input id="q" type="search" autocomplete="off" placeholder="bijvoorbeeld: deelscooters, of &quot;betaald parkeren&quot;"><button type="submit">Zoek</button></form>
+    <form class="zoekrij" id="zf" role="search"><label for="q" style="position:absolute;left:-9999px">Zoek</label><input id="q" type="search" autocomplete="off" placeholder="bijvoorbeeld: deelscooters, &quot;betaald parkeren&quot; of dakloos | nachtopvang"><button type="submit">Zoek</button></form>
     <p class="tip">Alle woorden moeten voorkomen; woordvormen tellen mee (woning vindt ook woningen). Zet woorden tussen aanhalingstekens voor een exacte zin.</p>
     <div class="rij2">
       <label>Van <select id="van"></select></label><label>Tot en met <select id="tot"></select></label>
@@ -78,7 +78,7 @@
  </div>
 </main>
 <script src="fzstd.js"></script>
-<script src="ontwerp.js?v=17"></script>
+<script src="ontwerp.js?v=18"></script>
 <script src="keten.js?v=7"></script>
 <script>
 kop('zoeken');
@@ -109,18 +109,21 @@ function jaarOk(d){const y=d.slice(0,4);return y>=V('van')&&y<=V('tot');}
 async function zoek(){
   const q=$('q').value.trim();zetHash();
   if(!q){$('analyse').hidden=true;$('uit').hidden=true;$('meerv').hidden=true;$('ng').textContent='';$('ns').textContent='';$('telling').textContent='Typ een woord of zin.';return;}
-  const {zinnen,termen}=leesQ(q);if(!termen.length)return;ZOEK={q,zinnen,termen};
+  // 'of': woorden gescheiden door | of OF; per alternatief moeten alle woorden voorkomen, de beste score telt
+  const alts=q.split(/\s*\|\s*|\s+OF\s+/).map(x=>x.trim()).filter(Boolean),delen=alts.map(leesQ).filter(x=>x.termen.length);if(!delen.length)return;
+  ZOEK={q,zinnen:delen.length>1?[]:delen[0].zinnen,termen:[...new Set(delen.flatMap(x=>x.termen))]};
   $('telling').textContent='Effe zoeken…';window.rzEi&&rzEi(q);
-  const [ls,ld]=await Promise.all([ST.lijsten(termen),DB.lijsten(termen)]);
-  const d=V('fdom'),g=V('fgeb');
-  // stukken
-  {const M=ST.M,{sc,hit}=bm25(ls,M.d.length,id=>M.d[id][5]||1,ST.avg);let ids=[...sc.keys()].filter(id=>hit.get(id)===termen.length);
-    ids=ids.filter(id=>M.d[id]&&jaarOk(M.d[id][1])&&(d===''||LB.d[id]===+d)&&(g===''||(LB.g[id]&(1<<+g))));
-    RS=ids.map(id=>[id,sc.get(id)*(1+.1*Math.max(0,+M.d[id][1].slice(0,4)-2020)/6)]);}
-  // debatten
-  {const M=DB.M,{sc,hit}=bm25(ld,M.u.length,id=>M.u[id][3]||1,DB.avg);let ids=[...sc.keys()].filter(id=>hit.get(id)===termen.length);
-    ids=ids.filter(id=>{const u=M.u[id],a=M.ap[u[0]],v=M.verg[a[0]];return jaarOk(v[0])&&(d===''||a[3]===+d)&&(g===''||(a[4]&(1<<+g)));});
-    RD=ids.map(id=>[id,sc.get(id)*(1+.1*Math.max(0,+DB.M.verg[DB.M.ap[DB.M.u[id][0]][0]][0].slice(0,4)-2020)/6)]);}
+  const d=V('fdom'),g=V('fgeb'),mS=new Map(),mD=new Map(),max=(m,id,v)=>{if(!(m.get(id)>=v))m.set(id,v);};
+  for(const {termen} of delen){
+    const [ls,ld]=await Promise.all([ST.lijsten(termen),DB.lijsten(termen)]);
+    {const M=ST.M,{sc,hit}=bm25(ls,M.d.length,id=>M.d[id][5]||1,ST.avg);
+      [...sc.keys()].filter(id=>hit.get(id)===termen.length&&M.d[id]&&jaarOk(M.d[id][1])&&(d===''||LB.d[id]===+d)&&(g===''||(LB.g[id]&(1<<+g))))
+        .forEach(id=>max(mS,id,sc.get(id)*(1+.1*Math.max(0,+M.d[id][1].slice(0,4)-2020)/6)));}
+    {const M=DB.M,{sc,hit}=bm25(ld,M.u.length,id=>M.u[id][3]||1,DB.avg);
+      [...sc.keys()].filter(id=>{if(hit.get(id)!==termen.length)return false;const u=M.u[id],a=M.ap[u[0]],v=M.verg[a[0]];return jaarOk(v[0])&&(d===''||a[3]===+d)&&(g===''||(a[4]&(1<<+g)));})
+        .forEach(id=>max(mD,id,sc.get(id)*(1+.1*Math.max(0,+M.verg[M.ap[M.u[id][0]][0]][0].slice(0,4)-2020)/6)));}
+  }
+  RS=[...mS];RD=[...mD];
   analyse();sprekers();await toepassen();
   logZoek(q,RS.length+RD.length);
 }

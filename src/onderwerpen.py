@@ -47,7 +47,7 @@ O=[
  ('Coffeeshops en drugsbeleid',[r'coffeeshop',r'softdrugs',r'drugsbeleid']),
  ('Walstroom en haven-uitstoot',[r'walstroom',r'cruiseschip',r'cruiseterminal']),
  ('Wijkraden en participatie',[r'participatie',r'wijkraden',r'bewonersinitiatie']),
- ('Handhaving en toezicht',[r'handhav',r'boa',r"boa's",r'toezichthouder',r'stadswacht',r'bestuurlijke boete',r'bestuurlijke strafbeschikking',r'last onder dwangsom',r'bodycam']),   # voorbeelddossier, zie showcase.py
+ ('Handhaving en toezicht',[r'handhav',r'boa\b',r"boa's",r'toezichthouder',r'stadswacht',r'bestuurlijke boete',r'bestuurlijke strafbeschikking',r'last onder dwangsom',r'bodycam']),   # voorbeelddossier, zie showcase.py
 ]
 def rx(pp): return re.compile(r'\b(?:'+'|'.join(pp)+r')')
 # Thema (themes.py) waaronder elk onderwerp valt; niet genoemde onderwerpen zijn geschrapt (te weinig bronnen of te breed).

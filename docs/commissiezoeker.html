@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<script>/* oude zoekpagina: door naar de nieuwe (Zoeken). Blijven kan met #oud=1 */(function(){var h=new URLSearchParams(location.hash.slice(1));if(h.get("oud"))return;var q=h.get("q")||"",x="";if(h.get("v")==="o")x+="&tab=stukken";if(h.get("fd1"))x+="&van="+h.get("fd1").slice(0,4);if(h.get("fd2"))x+="&tot="+h.get("fd2").slice(0,4);location.replace(q?"ontwerp/zoek.html#q="+encodeURIComponent(q)+x:"ontwerp/startpagina.html");})();</script>
 <title>Commissiezoeker – wat er in de Rotterdamse raadscommissies is gezegd</title>
 <style>
 :root{

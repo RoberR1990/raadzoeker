@@ -63,7 +63,7 @@ table.tafel .bar i{display:block;height:8px;background:var(--groen);border-radiu
   <div id="dossier"><p class="leeg" style="margin-top:24px">Laden…</p></div>
   <p class="voet">Gegevens: notulen en ondertiteling van de gemeenteraad, de registratie in iBabs (moties, toezeggingen, schriftelijke vragen, brieven), de Rekenkamer Rotterdam en de wijkraden, stand 2 oktober 2026. Domeinen volgen de indeling van de griffie (beleidsveld in iBabs), aangevuld met een woordmodel; een onderwerp is een vaste set zoekwoorden. Aantallen zijn een goede indicatie, geen exacte telling. Teksten met het label AI zijn automatisch gemaakt; elk punt heeft een letterlijk citaat dat een script woord voor woord met de bron heeft vergeleken. <a href="over.html">Meer over deze tool</a>.</p>
 </main>
-<script src="ontwerp.js?v=17"></script>
+<script src="ontwerp.js?v=18"></script>
 <script src="ai.js?v=1"></script>
 <script src="keten.js?v=7"></script>
 <script>
@@ -134,7 +134,7 @@ function lijst(){
   $('filt').innerHTML=[['open','Open'],['laat','Over de termijn'],['af','Afgedaan']].map(([k,t])=>`<button type="button" class="${k===FILTER?'on':''}" data-f="${k}" aria-pressed="${k===FILTER}">${t} (${nf(n[k])})</button>`).join('');
   document.querySelectorAll('[data-soort]').forEach(b=>b.setAttribute('aria-selected',b.dataset.soort===SOORT));
   const q=encodeURIComponent(d.termen);
-  $('meer').innerHTML=d.termen?`<a href="../raadzoeker.html#v=o&amp;q=${q}">Alle officiële stukken over ${esc(d.naam.toLowerCase())}</a> · <a href="zoek.html#q=${encodeURIComponent(d.termen.split('|')[0])}">Zoeken in de volledige teksten</a>`
+  $('meer').innerHTML=d.termen?`<a href="zoek.html#q=${q}&amp;tab=stukken">Alle officiële stukken over ${esc(d.naam.toLowerCase())}</a> · <a href="zoek.html#q=${q}">Alles wat erover is gezegd</a>`
     :`<a href="zoek.html#d=${esc(d.domein||d.slug)}${d.gebied?'&g='+encodeURIComponent(d.gebied):''}">Alle stukken in dit ${d.soort==='kruising'?'domein en gebied':'domein'} doorzoeken</a>`;
 }
 /* zijpaneel alleen vastzetten als het in beeld past */
@@ -150,10 +150,10 @@ async function toon(d){
   CIT=[];verberg();
   const m=d.moties,t=d.toez,ts=d.tsum,j=d.jaren.length-1,ch=d.trend[j-1]?Math.round((d.trend[j]-d.trend[j-1])/d.trend[j-1]*100):0;
   const pmx=Math.max(...d.partijen.map(p=>p[1]),1),cll=d.college.filter(p=>p[1]>0),cmx=Math.max(...cll.map(p=>p[1]),1);
-  const isOnd=d.soort==='onderwerp',isDom=d.soort==='domein',isKr=d.soort==='kruising',pct=d.eenheid==='procent';
+  const isOnd=d.soort==='onderwerp'||d.soort==='thema',isDom=d.soort==='domein',isKr=d.soort==='kruising',pct=d.eenheid==='procent';
   // kop: kruimelpad, onderwerpen binnen het domein, gebieden (kruisingen)
   const kinderen=isDom?ALLE.filter(x=>x.soort==='onderwerp'&&x.groep===d.naam):d.slug==='parkeren'?ALLE.filter(x=>x.groep==='Parkeren'):[];
-  const broers=isOnd?ALLE.filter(x=>x.soort==='onderwerp'&&x.groep===d.groep&&x.slug!==d.slug):[];
+  const broers=isOnd?ALLE.filter(x=>x.soort===d.soort&&x.groep===d.groep&&x.slug!==d.slug):[];
   const kr=isDom?ALLE.filter(x=>x.soort==='kruising'&&x.domein===d.slug):isKr?ALLE.filter(x=>x.soort==='kruising'&&x.domein===d.domein&&x.slug!==d.slug):[];
   const chip=x=>`<a href="#${x.slug}" class="${x.ai?'ai':''}">${esc(x.soort==='kruising'?x.gebied:x.naam)}</a>`;
   const crumb=(d.pad||[]).map(([t,u])=>`<a href="${u}">${esc(t)}</a>`).join(' › ')+' › '+esc(isKr?d.gebied:d.naam);
@@ -197,7 +197,7 @@ async function toon(d){
     if(dp.length)main+=blok('ak','Coalitieakkoord 2026–2030',`<p class="intro">Wat het akkoord ‘Vaart maken’ (PRO, D66, VVD, CDA, Volt) voor ${esc(d.naam.toLowerCase())} van plan is. <a href="akkoord.html">Het hele akkoord in het kort</a>.</p>`,dp.map(x=>`<div class="pt">${rijAI(x)}</div>`).join(''),`Toon ${dp.length} punten`,true);}
   if((d.brieven||[]).length)main+=blok('br','Brieven en voorstellen van het college',`<p class="intro">De nieuwste collegebrieven en raadsvoorstellen${isKr?' die '+esc(d.gebied)+' noemen':''}.</p>`,`<div class="lijst" style="margin-top:12px">${d.brieven.map(r=>rij(r,'stuk',DATA.stand)).join('')}</div>`,'Toon brieven en voorstellen');
   main+=blok('db','Waar het in de raad over ging',`<p class="intro">De ${d.debatten.length} debatten met de meeste aandacht voor ${esc(d.naam.toLowerCase())}, nieuwste eerst.</p>`,
-    `<div class="lijst" style="margin-top:12px">${d.debatten.map(x=>debatRij(x,d.termen)).join('')}</div><p class="sub" style="margin-top:16px"><a href="../raadzoeker.html#q=${encodeURIComponent(d.termen)}">Alles wat er letterlijk over is gezegd</a></p>`,'Toon de debatten');
+    `<div class="lijst" style="margin-top:12px">${d.debatten.map(x=>debatRij(x,d.termen)).join('')}</div><p class="sub" style="margin-top:16px"><a href="zoek.html#q=${encodeURIComponent(d.termen)}">Alles wat er letterlijk over is gezegd</a></p>`,'Toon de debatten');
   // 7 cijfers en verbanden, ingeklapt
   const cijfersInh=`<div class="cijferblok" style="margin-top:16px">
       <section class="grafiek"><h3>Wat werkt de raad af?</h3>${afhSvg(d)}<p style="margin-top:8px;font-size:14px"><span class="stip af"></span>afgedaan <span class="stip open" style="margin-left:12px"></span>nog open</p>
