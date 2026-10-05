@@ -26,3 +26,13 @@ Ca. 125 woorden voice-over.
 - Repository openbaar met MIT-licentie: eerst de git-geschiedenis nalopen op sleutels en persoonsgegevens.
 - Cloudflare Access: regel naar alle @rotterdam.nl-adressen.
 - Naam definitief (zie gesprek).
+
+## Feedback Robert op proef v1 (5-10-2026), te verwerken in v2
+
+- Totaal max. 90 seconden.
+- Woordenwolk 4 s.
+- Titel boven de zoekbalk: 'Wat zei de raad over …' (het woord parkeren staat al in de zoekbalk).
+- 'Bekijk dit moment': echt beeld van het debat erbij (videoframe van de vergadering), niet alleen een nagebouwde speler.
+- 'Elk onderwerp, elk gebied': rustiger, en duidelijker uitleggen wat de kolommen (gebieden) en rijen (domeinen) zijn.
+- Slot: geen 'elke bewering één klik van de bron' (te technisch), maar iets als 'Vind iedere uitspraak · bekijk de context · overzie het grotere plaatje'. Woord 'vibecode' weg. Klein: 'Vragen? Robert Riteco'.
+- Eventueel de samenhang-mindmap (samenhang.html) in de video.
