@@ -129,8 +129,8 @@ def main():
         for a in aps: gebtel.update(a['geb'])
         ws=[x for x in wst if x[1]==ds]
         sl=slug(dn); obj=bouw(dn,'Domeinen','domein',[['Domeinen','domeinen.html']],rs,aps,gebtel,ws)
-        obj['gebieden']=dict(gebtel); obj['domein']=sl; obj['code']=ds; schrijf(sl+'.json',obj)
-        index.append({'slug':sl,'naam':dn,'groep':'Domein','soort':'domein','domein':sl})
+        obj['gebieden']=dict(gebtel); obj['domein']=sl; obj['code']=ds; obj['ai']=os.path.exists(os.path.join(DOCS,'ontwerp','samenvattingen',sl+'.json')); schrijf(sl+'.json',obj)
+        index.append({'slug':sl,'naam':dn,'groep':'Domein','soort':'domein','domein':sl,'ai':obj['ai']})
         kr={}
         for gn in GNAAM.values():
             rg=[r for r,d,gg in stuk if d==ds and gn in gg]; ag=[a for a in aps if gn in a['geb']]; wg=[x for x in ws if gn in x[2]]
