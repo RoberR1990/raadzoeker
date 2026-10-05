@@ -175,7 +175,7 @@ async function toon(d){
   if(A)main+=`<section class="vlak kern" aria-labelledby="kk"><h2 id="kk">In het kort <span class="ai">AI-samenvatting</span></h2><p>${alinea(A.kern.slice(0,-1))}</p>
       ${standTxt?`<section class="stand m"><div class="t">Stand van zaken · AI</div><p>${standTxt}</p></section>`:''}
       <p class="sub" style="font-size:13px;margin-top:12px">Wijs een zin aan of tik erop voor het letterlijke citaat en de bron.</p></section>`;
-  else if(ts)main+=`<section class="vlak samen" aria-labelledby="ik"><h2 id="ik">In het kort <span class="ai">AI-samenvatting, kan fouten bevatten</span></h2><p style="max-width:68ch">${esc(ts.kern)}</p>
+  else if(ts)main+=`<section class="vlak samen" aria-labelledby="ik"><h2 id="ik">In het kort <span class="ai">korte AI-samenvatting, kan fouten bevatten</span></h2>${d.tsum_thema&&d.tsum_thema!==d.naam?`<p class="sub" style="margin:-4px 0 8px">Over het bredere thema ‘${esc(d.tsum_thema)}’. Gemaakt in oktober 2026 met een licht taalmodel; minder uitgebreid gecontroleerd dan de samenvattingen met citaten.</p>`:''}<p style="max-width:68ch">${esc(ts.kern)}</p>
       <details><summary>Standpunten per fractie en ontwikkeling</summary>
       ${ts.standpunten&&ts.standpunten.length?'<ul>'+ts.standpunten.map(s=>`<li>${esc(s.wie)}: ${esc(s.punt)}${s.citaat?`<span class="cit">‘${esc(s.citaat)}’</span>`:''}</li>`).join('')+'</ul>':''}
       ${ts.ontwikkeling&&ts.ontwikkeling.length?'<ul>'+ts.ontwikkeling.map(s=>`<li>${esc(s.periode)}: ${esc(s.wat)}</li>`).join('')+'</ul>':''}</details></section>`;
