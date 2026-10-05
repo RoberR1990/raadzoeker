@@ -65,7 +65,7 @@ html,body{height:100%;overflow:hidden}body{display:flex;flex-direction:column;ba
   <aside class="pnl" id="info" aria-live="polite"></aside>
   <div id="zoom"><button id="zin" aria-label="Inzoomen">+</button><button id="zuit" aria-label="Uitzoomen">−</button><button id="zhel" aria-label="Alles tonen" style="font-size:14px">⤢</button></div>
 </div>
-<script src="ontwerp.js?v=11"></script>
+<script src="ontwerp.js?v=14"></script>
 <script src="lib/graphology.umd.min.js"></script>
 <script src="lib/sigma.min.js"></script>
 <script>
@@ -188,7 +188,11 @@ el('fv').onchange=e=>{F.v=+e.target.value;if(F.t<F.v){F.t=F.v;el('ft').value=F.t
 el('ft').onchange=e=>{F.t=+e.target.value;if(F.v>F.t){F.v=F.t;el('fv').value=F.v;}herweeg();};
 el('fo').onchange=e=>{F.o=e.target.checked;herweeg();};
 el('leg').onclick=e=>{const b=e.target.closest('button');if(!b)return;const d=+b.dataset.d;F.dom=F.dom===d?-1:d;el('leg').querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',+x.dataset.d===F.dom));herweeg();};
-el('zk').onchange=e=>{const i=zoekKnoop(e.target.value);if(i<0){el('zk').setCustomValidity('Niet gevonden');el('zk').reportValidity();setTimeout(()=>el('zk').setCustomValidity(''),1500);return;}{if(G.getNodeAttribute(String(i),'hidden')){F.g=F.d=F.f='';F.o=false;F.dom=-1;['g','d','f'].forEach(k=>el('f'+k).value='');el('fo').checked=false;herweeg();}kies(String(i),true);}};
+el('zk').onchange=e=>{const i=zoekKnoop(e.target.value);if(i<0){const q=e.target.value.trim(),b=bedoelJe(q,DATA.knopen.map(k=>k.l),4);const P=el('info');P.style.display='block';SEL=null;
+    P.innerHTML=`<button class="sluit" aria-label="Sluiten" onclick="paneel(null)">×</button><div class="sub">Niet in het web</div><h2>‘${esc(q)}’</h2><p>Dit woord staat niet in de Verkenner: die toont alleen begrippen die vaak genoeg en kenmerkend genoeg voorkomen.</p>
+      ${b.length?`<div class="sub">Bedoel je</div><div class="buren">${b.map(x=>`<button data-l="${esc(x)}">${esc(x)}</button>`).join('')}</div>`:''}
+      <p style="margin-top:12px"><a href="zoek.html?q=${encodeURIComponent(q)}">Zoek ‘${esc(q)}’ in alles wat er gezegd en geschreven is →</a></p>`;
+    P.querySelectorAll('[data-l]').forEach(x=>x.onclick=()=>{el('zk').value=x.dataset.l;el('zk').dispatchEvent(new Event('change'));});return;}{if(G.getNodeAttribute(String(i),'hidden')){F.g=F.d=F.f='';F.o=false;F.dom=-1;['g','d','f'].forEach(k=>el('f'+k).value='');el('fo').checked=false;herweeg();}kies(String(i),true);}};
 el('zin').onclick=()=>R.getCamera().animatedZoom({duration:300});el('zuit').onclick=()=>R.getCamera().animatedUnzoom({duration:300});el('zhel').onclick=()=>R.getCamera().animatedReset({duration:400});
 /* ---- C: tijdmachine ---- */
 let SPEEL=null;

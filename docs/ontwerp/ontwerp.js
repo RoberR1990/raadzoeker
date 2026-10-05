@@ -25,14 +25,23 @@ function kop(actief){
   fetch('../data/status.json',{cache:'no-store'}).then(r=>r.ok?r.json():null).then(st=>{if(!st||!st.laatste)return;const el=document.getElementById('bijgewerkt');if(!el)return;
     const d=new Date(st.laatste);el.textContent='bijgewerkt '+d.getDate()+' '+MND[d.getMonth()]+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');}).catch(()=>{});
   // rondleiding, hulpknop en welkomstvenster (tour.js)
-  if(!document.getElementById('rz-tour')){const t=document.createElement('script');t.id='rz-tour';t.src='tour.js?v=1';document.body.appendChild(t);}
+  if(!document.getElementById('rz-tour')){const t=document.createElement('script');t.id='rz-tour';t.src='tour.js?v=2';document.body.appendChild(t);const w=document.createElement('script');w.src='woorden.js?v=3';document.body.appendChild(w);}
   const ic=document.createElement('link');ic.rel='icon';ic.href='data:image/svg+xml,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 34 34"><rect width="34" height="34" rx="7" fill="#00811F"/><g transform="translate(0,7)">${LOGO().replace(/<\/?svg[^>]*>/g,'')}</g></svg>`);document.head.appendChild(ic);
 }
 /* zoeken in onderwerpen of gebieden; kiezen roept kies(d) aan */
+/* bewerkingsafstand (Levenshtein), voor 'bedoel je…' bij tikfouten */
+function afstand(a,b){if(Math.abs(a.length-b.length)>3)return 9;let v=[...Array(b.length+1).keys()];for(let i=1;i<=a.length;i++){let p=v[0];v[0]=i;for(let j=1;j<=b.length;j++){const t=v[j];v[j]=Math.min(v[j]+1,v[j-1]+1,p+(a[i-1]===b[j-1]?0:1));p=t;}}return v[b.length];}
+/* beste 'bedoel je…' uit een lijst namen: per woord vergelijken, tolerantie naar woordlengte */
+function bedoelJe(q,namen,n=3){q=q.toLowerCase().trim();if(q.length<3)return[];
+  return namen.map(x=>{const w=x.toLowerCase().split(/[^a-z0-9à-ÿ]+/).filter(Boolean);const d=Math.min(...w.map(y=>afstand(q,y.slice(0,Math.max(q.length,y.length)))),afstand(q,x.toLowerCase()));return [d,x];})
+    .filter(([d])=>d<=(q.length<6?1:2)).sort((a,b)=>a[0]-b[0]).slice(0,n).map(x=>x[1]);}
 function zoeklijst(input,lijst,bron,kies){
   let hits=[],act=0;
-  const toon=()=>{lijst.innerHTML=hits.length?hits.map((d,i)=>`<li role="option" id="opt${i}" aria-selected="${i===act}" data-i="${i}">${esc(d.naam)} <span class="sub">· ${esc(d.groep)}</span></li>`).join(''):'<li class="leeg" role="option" aria-disabled="true">Niets gevonden. Probeer een ander woord.</li>';
+  const toon=()=>{lijst.innerHTML=hits.length?hits.map((d,i)=>`<li role="option" id="opt${i}" aria-selected="${i===act}" data-i="${i}">${esc(d.naam)} <span class="sub">· ${esc(d.groep)}</span></li>`).join(''):leegLijst();
     lijst.classList.add('on');input.setAttribute('aria-expanded','true');input.setAttribute('aria-activedescendant',hits.length?'opt'+act:'');};
+  const leegLijst=()=>{const q=input.value.trim(),b=bedoelJe(q,bron().map(d=>d.naam));
+    return `<li class="leeg" role="option" aria-disabled="true">Geen dossier met die naam.${b.length?` Bedoel je ${b.map(x=>`<a href="#" data-bedoel="${esc(x)}">${esc(x)}</a>`).join(' of ')}?`:''} <a href="zoek.html?q=${encodeURIComponent(q)}">Zoek '${esc(q)}' in alles wat er gezegd en geschreven is →</a></li>`;};
+  lijst.addEventListener('mousedown',e=>{const a=e.target.closest('[data-bedoel]');if(!a)return;e.preventDefault();input.value=a.dataset.bedoel;input.dispatchEvent(new Event('input'));});
   const sluit=()=>{lijst.classList.remove('on');input.setAttribute('aria-expanded','false');};
   input.addEventListener('input',()=>{const q=input.value.trim().toLowerCase();if(!q){sluit();return;}
     hits=bron().map(d=>{const n=d.naam.toLowerCase();return [n.startsWith(q)?3:n.includes(q)?2:d.sub.some(x=>x.toLowerCase().includes(q))?1.5:d.termen.toLowerCase().includes(q)?1:0,d];}).filter(x=>x[0]).sort((a,b)=>b[0]-a[0]).slice(0,10).map(x=>x[1]);act=0;toon();});
