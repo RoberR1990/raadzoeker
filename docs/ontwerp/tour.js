@@ -120,7 +120,7 @@ async function toon(i,richting){
   if(!T)return;
   if(stap.s&&!el){T.stappen.splice(i,1);return toon(i,richting);}   // element is er (nu) niet: stap overslaan
   T.i=i;T.el=el;
-  if(el){const r=el.getBoundingClientRect();if(r.top<70||r.bottom>innerHeight-40)el.scrollIntoView({block:r.height>innerHeight*.6?'start':'center',behavior:'smooth'});}
+  if(el)el.scrollIntoView({block:'nearest',inline:'center'});   // ook horizontaal (menu op mobiel)
   const n=T.stappen.length;
   T.tip.innerHTML=`<div class="rzt-tel">${i+1} van ${n}</div><h3>${stap.t}</h3><p>${stap.x}</p>
     ${stap.vb?`<button type="button" class="rzt-vb">▶ ${stap.vb[0]}</button>`:''}
@@ -131,8 +131,17 @@ async function toon(i,richting){
   const tb=T.tip.querySelector('[data-a=terug]');if(tb)tb.onclick=()=>toon(T.i-1,-1);
   T.tip.querySelector('[data-a=stop]').onclick=()=>{LS.set('tour-'+PAG,'ja');stop();};
   const vb=T.tip.querySelector('.rzt-vb');if(vb)vb.onclick=()=>{const f=stap.vb[1];stop();f();};
-  setTimeout(plaats,el?320:0);plaats();T.tip.focus({preventScroll:true});
+  plaats();inBeeld(el);setTimeout(plaats,el?420:0);T.tip.focus({preventScroll:true});
 }
+/* zorg dat het aangewezen element zichtbaar is in het deel van het scherm dat de uitleg niet bedekt (op mobiel zit de uitleg onderin) */
+function inBeeld(el){if(!el||!T)return;const r=el.getBoundingClientRect(),mob=innerWidth<=600,boven=64,onder=mob?innerHeight-T.tip.offsetHeight-28:innerHeight-24;
+  const ruimte=onder-boven;let dy=0;
+  if(mob&&!el.closest('header'))dy=r.top-90;               // telefoon: element altijd bovenin, ruim boven de uitleg
+  else if(r.height>ruimte)dy=r.top-boven;                       // te groot: bovenkant in beeld
+  else if(r.top<boven)dy=r.top-boven-(el.closest('header')?0:16);
+  else if(r.bottom>onder)dy=r.bottom-onder;
+  else if(!mob&&r.bottom+T.tip.offsetHeight+30>innerHeight&&r.top-T.tip.offsetHeight-30<0)dy=r.top-boven;
+  if(Math.abs(dy)>4)scrollBy({top:dy,behavior:'smooth'});}
 function plaats(){
   if(!T)return;const el=T.el,tip=T.tip;
   if(!el){T.spot.classList.add('leeg');tip.style.left=Math.max(16,(innerWidth-tip.offsetWidth)/2)+'px';tip.style.top=Math.max(16,(innerHeight-tip.offsetHeight)/2)+'px';return;}
