@@ -49,7 +49,7 @@ def get(url,binary=False,cache=True,data=None):
 def report(rid,start=0,length=500,base=BASE):
     """Eén pagina uit een iBabs-rapportage (DataTables server-side)."""
     d={'draw':'1','start':str(start),'length':str(length),'order[0][column]':'0','order[0][dir]':'asc','search[value]':'','search[regex]':'false'}
-    return json.loads(get(f'{base}/Reports/GetReportData/{rid}',data=d))
+    return json.loads(get(f'{base}/Reports/GetReportData/{rid}',data=d,cache=os.environ.get('RZ_VERS')!='1'))   # RZ_VERS=1: lijsten altijd vers (nachtelijke run)
 def report_all(rid,length=100,base=BASE):
     # de server geeft hooguit 100 rijen per keer, ook als je meer vraagt
     out=[];start=0
