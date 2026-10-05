@@ -200,21 +200,23 @@ def main(slug='parkeren'):
     aanwezig=collections.defaultdict(set)
     for p in glob.glob(os.path.join(DOCS,'data','raad','202[2-6].zst')):
         Y=zload(p); y=os.path.basename(p)[:4]
-        for pa in Y['s']['pa']:
-            if pa>=0: aanwezig[y].add(PAR[pa])
-    stem=collections.defaultdict(lambda:[0,0]); nst=0
+        for j,pa in enumerate(Y['s']['pa']):
+            if pa>=0: aanwezig[y].add(PAR[pa]); aanwezig[Y['M'][Y['s']['m'][j]][0]].add(PAR[pa])   # per jaar en per vergaderdag
+    stem=collections.defaultdict(lambda:[0,0]); nst=0; tabel=[]   # tabel: per motie hoe elke fractie stemde
     for r in jl(os.path.join(W,'items_moties.jsonl')):
         d=r['detail']; tit=d.get('Titel') or ''; datum=d_iso(d.get('Datum ingediend') or d.get('Datum ontvangen'))
         bb=d.get('BB nummer') or ''
         if datum<'2022' or not hoort(r['id'],tit,'') or bb not in STEM: continue
         aan,voor,tegen,zijde,fr=STEM[bb]
         if voor<0 or not fr: continue
-        genoemd={p for p in aanwezig[datum[:4]] if re.search(r'(?<![\w])'+re.escape(p)+r'(?![\w])',fr)}
+        dag=datum if datum in aanwezig else next((d for d in sorted(k for k in aanwezig if len(k)==10 and k>=datum)[:1]),datum[:4])   # fracties die die vergaderdag spraken
+        genoemd={p for p in aanwezig[dag] if re.search(r'(?<![\w])'+re.escape(p)+r'(?![\w])',fr)}
         if not genoemd: continue
-        nst+=1
-        for p in aanwezig[datum[:4]]:
-            v=(p in genoemd)==(zijde=='v'); stem[p][0 if v else 1]+=1
-    stemmen={'n':nst,'fracties':sorted([[p,a,b] for p,(a,b) in stem.items() if a+b>=5],key=lambda x:-x[1]/(x[1]+x[2]))}
+        nst+=1; per={}
+        for p in aanwezig[dag]:
+            v=(p in genoemd)==(zijde=='v'); stem[p][0 if v else 1]+=1; per[p]='v' if v else 't'
+        tabel.append([datum,tit,'https://gemeenteraad.rotterdam.nl/Reports/Item/'+r['id'],1 if aan else 0,per,subs(tit+' '+(r.get('tekst') or ''))])
+    stemmen={'n':nst,'fracties':sorted([[p,a,b] for p,(a,b) in stem.items() if a+b>=5],key=lambda x:-x[1]/(x[1]+x[2])),'tabel':sorted(tabel,reverse=True)[:60]}
     # debatten met videomoment (raad en commissies, 2022+)
     deb={}
     for bron in('raad','commissies'):
