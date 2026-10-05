@@ -28,6 +28,7 @@ if [ "$MODUS" = "nacht" ]; then
   stap "domeinen" python src/domeinen.py
   stap "gebieden" python src/gebieden.py
   stap "dossiers" python src/ontwerp_data.py
+  stap "RDW parkeren" python src/parkeren_rdw.py
 else
   stap "iBabs-stukken" python src/ibabs_items.py toezeggingen moties brieven --minuten 20
   stap "iBabs naar site" python src/ibabs_emit.py
