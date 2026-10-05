@@ -170,6 +170,14 @@ def main():
         pad=[['Domeinen','domeinen.html'],[DN[ds],'#'+slug(DN[ds])]]+([['Parkeren','#parkeren']] if o['groep']=='Parkeren' else [])
         sl=slug(o['naam']); o=dict(o,tsum=o.get('tsum') or THS.get(o['groep']),tsum_thema=o['groep']); x=dict(o,groep='Parkeren' if o['groep']=='Parkeren' else DN[ds],pad=pad,stand=STAND,ai=os.path.exists(os.path.join(DOCS,'ontwerp','samenvattingen',sl+'.json')))
         schrijf(sl+'.json',x); index.append({'slug':sl,'naam':o['naam'],'groep':x['groep'],'soort':'onderwerp','domein':slug(DN[ds]),'ai':x['ai'],'sub':[],'termen':o['termen']})
+    # thema's dwars door de organisatie (uit de 41 thema's, met hun korte samenvatting): eigen dossiers onder Domeinen
+    for o in dos:
+        if 'dwars' not in o['groep'].lower() or o['naam']=='Toezeggingen': continue
+        sl=slug(o['naam'])
+        x=dict(o,soort='thema',groep='Dwars door de organisatie',pad=[['Domeinen','domeinen.html'],['Dwars door de organisatie','domeinen.html#dwars']],stand=STAND,tsum_thema=o['naam'],
+               ai=os.path.exists(os.path.join(DOCS,'ontwerp','samenvattingen',sl+'.json')))
+        schrijf(sl+'.json',x); index.append({'slug':sl,'naam':o['naam'],'groep':'Dwars door de organisatie','soort':'thema','ai':x['ai'],'sub':[s[0] for s in o.get('sub',[])] if o.get('sub') and isinstance(o['sub'][0],list) else (o.get('sub') or []),'termen':o['termen'],
+                      'kern':((o.get('tsum') or {}).get('kern') or '')[:220]})
     # woordwolk voor de startpagina: onderwerpen en gebieden, grootte = aandacht in de raad dit jaar (per 100.000 woorden)
     wolk=[]
     for o in ond+[pk]:

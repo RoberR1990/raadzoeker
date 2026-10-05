@@ -17,7 +17,7 @@ import themes, teksten as T
 CONFIG={
  'parkeren':dict(naam='Parkeren',rx=r'parkeer|parkeren|parkeert|geparkeerd|naheffing|scanauto|bewonersvergunning|bezoekersregeling',sub='themes:Parkeren',verwant=[],domein='mobiliteit'),
  'handhaving-en-toezicht':dict(naam='Handhaving en toezicht',
-   rx=r"handhav|boa|boa's|toezichthouder|stadswacht|bestuurlijke boete|bestuurlijke strafbeschikking|last onder dwangsom|bodycam",
+   rx=r"handhav|\bboa\b|\bboa's|toezichthouder|stadswacht|bestuurlijke boete|bestuurlijke strafbeschikking|last onder dwangsom|bodycam",
    sub=[("Handhavers en boa's","handhavers | boa | stadswacht | toezichthouder | stadsmarinier"),
         ('Overlast en openbare orde','overlast | openbare orde | gebiedsverbod | noodverordening | samenscholing | hangjongeren'),
         ('Afval en vervuiling','afval | zwerfvuil | bijplaatsing | grofvuil | dumping'),
