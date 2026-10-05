@@ -1,5 +1,5 @@
 # Officiële bekendmakingen van de gemeente Rotterdam (Gemeenteblad, via de open SRU-API van repository.overheid.nl)
-# -> WERK/wijk/bekendmakingen.jsonl (hervatbaar per maand). Per stuk: datum, soort, titel, omschrijving, activiteit, locatiepunt, url.
+# -> WERK/wijk/bekendmakingen.jsonl (hervatbaar per maand; --recent haalt deze en vorige maand opnieuw op). Per stuk: datum, soort, titel, omschrijving, activiteit, locatiepunt, url.
 # Max 1 verzoek per seconde.
 import json,os,re,sys,time,html,urllib.request,urllib.parse,datetime
 from paden import WERK
@@ -32,6 +32,14 @@ def maand(j,m):
 if __name__=='__main__':
     klaar=set(open(KLAAR).read().split()) if os.path.exists(KLAAR) else set()
     vandaag=datetime.date.today()
+    if '--recent' in sys.argv:   # nachtelijke run: deze en vorige maand opnieuw ophalen (er komen elke dag bekendmakingen bij)
+        vorige=(vandaag.replace(day=1)-datetime.timedelta(days=1)).strftime('%Y-%m'); opnieuw={vorige,vandaag.strftime('%Y-%m')}
+        if os.path.exists(OUT):
+            rij=[l for l in open(OUT,encoding='utf8') if l.strip() and json.loads(l).get('d','')[:7] not in opnieuw]
+            tmp=OUT+'.tmp'; open(tmp,'w',encoding='utf8').writelines(rij); os.replace(tmp,OUT)
+        klaar-=opnieuw; open(KLAAR,'w').write('
+'.join(sorted(klaar))+'
+')
     with open(OUT,'a',encoding='utf8') as f:
         for j in range(2018,vandaag.year+1):
             for m in range(1,13):
