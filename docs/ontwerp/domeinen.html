@@ -15,11 +15,28 @@
 .laat{color:var(--laat)}
 .tabelvlak{overflow-x:auto;border:1px solid var(--lijn);border-radius:var(--r)}
 @media (max-width:800px){.kast .weg{display:none}}
+.uit{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.uit a{display:grid;gap:6px;text-decoration:none;background:var(--wit);border:1px solid var(--lijn);border-left:5px solid var(--groen);border-radius:8px;padding:14px 16px}
+.uit a:hover{border-color:var(--groen)}.uit b{font-size:18px}.uit span{font-size:14px;color:var(--sub)}
+.uit a.akk{border-left-color:var(--blauw)}
+.ondgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.ondgrid section{background:var(--wit);border-radius:8px;padding:12px 14px;border:1px solid var(--lijn)}
+.ondgrid h3{margin:0 0 6px;font-size:17px}.ondgrid h3 a{text-decoration:none}
+.ondgrid .n{font-size:13px;color:var(--sub);margin-bottom:6px}
+.ondgrid ul{list-style:none;margin:0;padding:0;display:grid;gap:4px;font-size:15px}
+.ondgrid .ai{font-size:10px;margin-left:4px;vertical-align:1px}
+@media (max-width:900px){.uit,.ondgrid{grid-template-columns:minmax(0,1fr)}}
 </style></head><body>
 <header class="balk"></header>
 <main class="pagina">
   <h1>Domeinen</h1>
   <p style="margin:12px 0 24px;max-width:72ch">Alles wat de raad bespreekt, ingedeeld in 13 domeinen zoals de griffie stukken indeelt (naar portefeuille). Klik op een domein voor het dossier: wat er speelt, wat er besloten en beloofd is, en waar in de stad.</p>
+  <h2 style="margin:0 0 12px">Uitgelicht</h2>
+  <div class="uit" id="uit"></div>
+  <h2 style="margin:32px 0 4px">Onderwerpen per domein</h2>
+  <p class="sub" style="margin:0 0 12px">Klik op een domein of een onderwerp voor het dossier. <span class="ai">AI</span> = met een uitgebreide samenvatting.</p>
+  <div class="ondgrid" id="ond"></div>
+  <h2 style="margin:32px 0 12px">Alle domeinen in cijfers</h2>
   <div class="tabelvlak"><table class="kast"><thead><tr>
     <th><button data-k="naam">Domein</button></th><th class="weg">Onderwerpen</th>
     <th class="n"><button data-k="open_moties">Open moties</button></th><th class="n"><button data-k="open_toez">Open toezeggingen</button></th>
@@ -35,13 +52,21 @@ Promise.all(['d/overzicht.json','d/index.json'].map(f=>fetch(f).then(r=>r.json()
   IX=ix.d;$('stand').textContent=fd(o.stand);
   D=o.domeinen.map(d=>Object.assign(d,{totaal:d.stukken+d.debatten,open:d.open_moties+d.open_toez}));
   teken();
+  const U=[['parkeren','Parkeren','Van betaald parkeren in de hele stad tot parkeerdruk per wijk: de hele keten van debat tot uitvoering.'],
+    ['handhaving-en-toezicht','Handhaving en toezicht',"Boa's, bevoegdheden en capaciteit; met wat het nieuwe college wil."],
+    ['wonen-en-bouwen','Wonen en bouwen','Het hele domein, met grote projecten en vergunningen op de kaart.']];
+  $('uit').innerHTML=U.map(([s,n,t])=>`<a href="dossier.html?d=${s}"><span>Voorbeelddossier</span><b>${esc(n)}</b><span>${esc(t)}</span></a>`).join('')+
+    `<a class="akk" href="akkoord.html"><span>Nieuw</span><b>Coalitieakkoord 2026–2030</b><span>‘Vaart maken’ in het kort, per domein en met het geld.</span></a>`;
+  $('ond').innerHTML=D.map(d=>{const o=IX.filter(x=>x.soort==='onderwerp'&&x.domein===d.slug&&x.groep!=='Parkeren');
+    return `<section><h3><a href="dossier.html?d=${d.slug}">${esc(d.naam)}</a>${IX.find(x=>x.slug===d.slug&&x.ai)?'<span class="ai">AI</span>':''}</h3><div class="n">${nf(d.open_moties+d.open_toez)} beloftes open${d.te_laat?`, waarvan ${nf(d.te_laat)} over de termijn`:''}</div>
+      <ul>${o.map(x=>`<li><a href="dossier.html?d=${x.slug}">${esc(x.naam)}</a>${x.ai?'<span class="ai">AI</span>':''}</li>`).join('')||'<li class="sub">nog geen losse onderwerpen</li>'}</ul></section>`;}).join('');
 });
 function teken(){
   const k=SORT,mx=Math.max(...D.map(d=>d.totaal));
   const r=[...D].sort((a,b)=>(k==='naam'?a.naam.localeCompare(b.naam):a[k]-b[k])*OP);
   $('rijen').innerHTML=r.map(d=>{const ond=IX.filter(x=>x.soort==='onderwerp'&&x.domein===d.slug&&x.groep!=='Parkeren');
-    return `<tr><td class="naam"><a href="dossier.html#${d.slug}">${esc(d.naam)}</a></td>
-    <td class="ond weg">${ond.map(x=>`<a href="dossier.html#${x.slug}">${esc(x.naam)}</a>`).join(', ')||'–'}</td>
+    return `<tr><td class="naam"><a href="dossier.html?d=${d.slug}">${esc(d.naam)}</a></td>
+    <td class="ond weg">${ond.map(x=>`<a href="dossier.html?d=${x.slug}">${esc(x.naam)}</a>`).join(', ')||'–'}</td>
     <td class="n">${nf(d.open_moties)}</td><td class="n">${nf(d.open_toez)}</td><td class="n${d.te_laat?' laat':''}">${nf(d.te_laat)}</td><td class="n weg">${nf(d.nieuw)}</td>
     <td class="n weg"><span class="bar" style="width:${Math.round(90*d.totaal/mx)}px"></span>${nf(d.totaal)}</td></tr>`;}).join('');
 }
