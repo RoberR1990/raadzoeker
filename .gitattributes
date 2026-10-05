@@ -1,0 +1,3 @@
+*.sh text eol=lf
+nas/crontab text eol=lf
+nas/Dockerfile text eol=lf
