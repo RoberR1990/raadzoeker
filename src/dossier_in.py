@@ -77,10 +77,10 @@ def pakket(naam,r,kopnaam='het onderwerp',extra=None):
             ks+=1; c=f'S{ks}'; tekst=vensters(t,r,n=3,breed=700,kop=500)
         B[c]={'soort':so,'datum':datum,'titel':ws(titel or ''),'wie':ws(wie or ''),'url':url,'tekst':tekst}
     # te veel wijkraadstukken: de meest relevante 80
-    for g,mx in(('W',60),('S',50),('V',140),('M',130)):   # te veel stukken: de meest relevante houden
+    for g,mx in(('W',60),('S',50),('V',140),('M',130),('T',120),('D',120)):   # te veel stukken: de meest relevante houden
         W=[c for c in B if c[0]==g]
         if len(W)>mx:
-            keep=set(sorted(W,key=lambda c:-len(r.findall(T.fold(B[c]['titel']+' '+B[c]['titel']+' '+B[c]['tekst']))))[:mx])
+            keep=set(sorted(W,key=lambda c:-len(r.findall(T.fold(B[c].get('titel',B[c].get('punt',''))*2+' '+B[c]['tekst']))))[:mx])
             for c in W:
                 if c not in keep: del B[c]
     if extra: B.update(extra)   # bijv. het coalitieakkoord als stuk (S-code)

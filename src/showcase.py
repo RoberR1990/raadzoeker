@@ -28,6 +28,12 @@ CONFIG={
         ('Middelen en bevoegdheden','camera | bodycam | fouilleren | bestuurlijke strafbeschikking | bestuurlijke boete | last onder dwangsom | geweld tegen | wapenstok | bevoegdhe')],
    verwant=['cameratoezicht','jongerenoverlast-en-jeugdcriminaliteit','lachgas','afval-zwerfvuil-en-grofvuil','goed-verhuurderschap-en-huisjesmelkers','horeca-terrassen-en-nachtleven','parkeren','ondermijning-en-drugscriminaliteit'],domein='veiligheid'),
 }
+CONFIG['wonen-en-bouwen']=dict(naam='Wonen en bouwen',label='wonen',   # domein: selectie op domeinlabel (fase 1), niet op zoekwoord
+   rx=r'woning|huurder|huurwoning|woonvisie|corporatie|nieuwbouw|woningbouw|bestemmingsplan|omgevingsplan|omgevingsvisie|gebiedsontwikkeling|sloop|middenhuur|sociale huur|verhuur|huisjesmelk|leegstand|erfpacht|hoogbouw|verdicht',
+   sub='themes:Wonen+Bouwen & ruimte',verwant=[],domein='wonen',vergunningen=True,
+   projecten=[('Feyenoord City en Stadionpark',r'feyenoord city|stadionpark'),('Merwe-Vierhavens (M4H)',r'merwe.?vierhaven|\bm4h\b'),('Rijnhaven',r'rijnhaven'),
+     ('Hart van Zuid',r'hart van zuid'),('Tweebosbuurt',r'tweebos'),('Pompenburg',r'pompenburg'),('Nieuw Kralingen',r'nieuw kralingen'),('Wielewaal',r'wielewaal'),
+     ('Nieuw-Crooswijk',r'nieuw.crooswijk'),('Centraal District en Weena',r'centraal district|\bweena\b'),('Bospolder-Tussendijken',r'bospolder.tussendijken|\bbotu\b'),('Kop van Zuid',r'kop van zuid')])
 NAAM=SLUG=None; RX=None; CFG=None
 DATUM=r'(\d{1,2})-(\d{1,2})-(\d{4})'
 def d_iso(s):
@@ -41,10 +47,21 @@ def main(slug='parkeren'):
     global NAAM,SLUG,RX,CFG
     CFG=CONFIG[slug]; NAAM=CFG['naam']; SLUG=slug; RX=re.compile(CFG['rx'])
     if isinstance(CFG['sub'],str):
-        th=next(t for g in themes.T for t in g[1] if t[0]==CFG['sub'].split(':')[1]); SUB=[(n,rx(t)) for n,t in th[2]]
+        SUB=[]
+        for naam in CFG['sub'].split(':')[1].split('+'):
+            th=next(t for g in themes.T for t in g[1] if t[0]==naam); SUB+=[(n,rx(t)) for n,t in th[2] if n!='Dak- en thuisloosheid' or naam!='Wonen' or 'label' not in CFG]
     else: SUB=[(n,rx(t)) for n,t in CFG['sub']]
     def subs(t): f=fold(t); return [n for n,r in SUB if r.search(f)]
     W=os.path.join(WERK,'ibabs')
+    LD=json.load(open(os.path.join(WERK,'labels','domein.json'),encoding='utf8')) if CFG.get('label') else {}
+    INFO0=json.load(open(os.path.join(WERK,'labels','info.json'),encoding='utf8')) if CFG.get('label') else {}
+    item2k={}
+    for k,v in INFO0.items():
+        m=re.search(r'/Item/([0-9a-f-]{36})',v[4] or '')
+        if m: item2k[m.group(1)]=k
+    def hoort(item_id,titel,tekst):
+        if CFG.get('label'): return LD.get(item2k.get(item_id),[None])[0]==CFG['label']
+        return bool(RX.search(fold(titel)) or len(RX.findall(fold(tekst)))>=2)
     # brieven op bb-nummer (voor de schakels in het spoor)
     brief={}
     for r in jl(os.path.join(W,'items_brieven.jsonl')):
@@ -77,7 +94,7 @@ def main(slug='parkeren'):
     for f,soort in(('items_moties.jsonl','motie'),('items_toezeggingen.jsonl','toezegging')):
         for r in jl(os.path.join(W,f)):
             d=r['detail']; tit=d.get('Titel') or ''; tekst=r.get('tekst') or d.get('Omschrijving') or ''
-            if not (RX.search(fold(tit)) or len(RX.findall(fold(tekst)))>=2): continue
+            if not hoort(r['id'],tit,tekst): continue
             datum=d_iso(d.get('Datum ingediend') or d.get('Datum ontvangen') or d.get('Datum toezegging'))
             if datum<'2022': continue
             if soort=='motie' and not re.search(r'aangenomen|geamendeerd',d.get('Uitslag') or '',re.I): continue
@@ -90,6 +107,8 @@ def main(slug='parkeren'):
             else: x['toezegging']=kort(re.sub(r'\s+',' ',d.get('Omschrijving') or ''),260)
             spoor.append(x)
     spoor.sort(key=lambda x:x['datum'],reverse=True)
+    if CFG.get('label'):   # een heel domein: alles wat open is, plus de 200 nieuwste afgedane (anders wordt de pagina te zwaar)
+        af=[x for x in spoor if not x['open']]; spoor=[x for x in spoor if x['open'] or x in af[:200]]
     # vastgesteld: Gemeenteblad
     bm=[b for b in jl(os.path.join(WERK,'wijk','bekendmakingen.jsonl'))]
     regels={}
@@ -106,7 +125,7 @@ def main(slug='parkeren'):
     rv=[]
     for r in jl(os.path.join(W,'items_raadsvoorstellen.jsonl')):
         d=r['detail']; tit=d.get('Titel') or ''
-        if not RX.search(fold(tit)): continue
+        if not hoort(r['id'],tit,''): continue
         beh=d.get('Behandeladvies') or ''; dd=d_iso(beh)
         if dd and dd>=STAND or d_iso(d.get('Datum ontvangen'))>=STAND[:4]+'-08-01':
             rv.append({'datum':d_iso(d.get('Datum ontvangen')),'titel':tit,'behandeling':beh,'url':'https://gemeenteraad.rotterdam.nl/Reports/Item/'+r['id'],'sub':subs(tit)})
@@ -124,14 +143,42 @@ def main(slug='parkeren'):
                 if w in tel: tel[w]['verkeersbesluit' if b['type'].startswith('verkeersbesluit') else 'besluit']+=1; vb[w].append([b['d'],b['titel'][:140],b['url']])
         elif k in INFO:
             s,d,tit,wie,url=INFO[k]
-            if not tit or not RX.search(fold(tit)): continue
+            if CFG.get('label'):
+                if LD.get(k,[None])[0]!=CFG['label']: continue
+            elif not tit or not RX.search(fold(tit)): continue
             soort='wijkraad' if s.startswith(('Wijk','Ongevraagd')) else 'raad'
             for w,meth,n in v:
                 if w in tel: tel[w][soort]+=1
+    vg=collections.defaultdict(collections.Counter)   # omgevingsvergunningen per wijk per jaar (geen kap- of standplaatsvergunningen)
+    if CFG.get('vergunningen'):
+        for k,v in LG.items():
+            if not k.startswith('b:'): continue
+            b=bm[int(k[2:])]
+            if b['type']!='omgevingsvergunning' or re.search(r'kap|standplaats',b['titel'],re.I): continue
+            for w,meth,n in v:
+                if w in tel: vg[w][b['d'][:4]]+=1
     wijken=[]
     for w in WK:
-        wijken.append({'slug':w['slug'],'naam':w['naam'],'gebied':w['gebied'],'n':dict(tel[w['slug']]),
-                       'recent':sorted(vb[w['slug']],reverse=True)[:3]})
+        c=w['cbs'].get('2024') or w['cbs'].get('2023') or {}
+        x={'slug':w['slug'],'naam':w['naam'],'gebied':w['gebied'],'n':dict(tel[w['slug']]),'recent':sorted(vb[w['slug']],reverse=True)[:3]}
+        if CFG.get('vergunningen'): x.update({'vg':dict(vg[w['slug']]),'huur':c.get('huur'),'corp':c.get('corp'),'woz':c.get('woz'),'lx':w.get('lx'),'ly':w.get('ly')})
+        wijken.append(x)
+    # grote projecten: waar (wijk die de stukken het vaakst noemen) en wat er over gezegd is
+    projecten=[]
+    if CFG.get('projecten'):
+        import domeinen as DM
+        m_,tekst_=DM.tekstdocs(); S_=m_['soorten']; WS={w['slug']:w for w in WK}
+        for pnaam,prx in CFG['projecten']:
+            r_=re.compile(prx); docs=[]; wt=collections.Counter()
+            for i,r in enumerate(m_['d']):
+                if r_.search(fold(r[2])) or (r[5] and r[5]<3000 and len(r_.findall(fold(tekst_(i))))>=2):
+                    docs.append([r[1],S_[r[0]],r[2][:140],r[4]])
+                    for w,meth,n in LG.get(f't:{i}',[]):
+                        if w in WS: wt[w]+=1
+            if not docs or not wt: continue
+            w0=wt.most_common(1)[0][0]; docs.sort(reverse=True)
+            projecten.append({'naam':pnaam,'wijk':w0,'wijknaam':WS[w0]['naam'],'lx':WS[w0]['lx'],'ly':WS[w0]['ly'],'n':len(docs),
+                              'per':dict(collections.Counter(d[0][:4] for d in docs)),'recent':docs[:5],'zoek':pnaam.split(' (')[0]})
     # stemgedrag per fractie (moties sinds 2022 met hoofdelijke stemming)
     meta=json.load(open(os.path.join(DOCS,'data','raad','meta.json'),encoding='utf8')); PAR=meta['par']
     aanwezig=collections.defaultdict(set)
@@ -143,7 +190,7 @@ def main(slug='parkeren'):
     for r in jl(os.path.join(W,'items_moties.jsonl')):
         d=r['detail']; tit=d.get('Titel') or ''; datum=d_iso(d.get('Datum ingediend') or d.get('Datum ontvangen'))
         bb=d.get('BB nummer') or ''
-        if datum<'2022' or not RX.search(fold(tit)) or bb not in STEM: continue
+        if datum<'2022' or not hoort(r['id'],tit,'') or bb not in STEM: continue
         aan,voor,tegen,zijde,fr=STEM[bb]
         if voor<0 or not fr: continue
         genoemd={p for p in aanwezig[datum[:4]] if re.search(r'(?<![\w])'+re.escape(p)+r'(?![\w])',fr)}
@@ -157,9 +204,10 @@ def main(slug='parkeren'):
     for bron in('raad','commissies'):
         meta=json.load(open(os.path.join(DOCS,'data',bron,'meta.json'),encoding='utf8')); SPK=meta['spk']; PA=meta['par']
         for p in sorted(glob.glob(os.path.join(DOCS,'data',bron,'202[2-6].zst'))):
-            Y=zload(p); S=Y['s']
+            Y=zload(p); S=Y['s']; yy=os.path.basename(p)[:4]; pre='r' if bron=='raad' else 'c'
             for i,t in enumerate(S['t']):
                 if S['k'][i] not in(0,4) or not t: continue
+                if CFG.get('label') and LD.get(f'{pre}:{yy}:{S["i"][i]}',[None])[0]!=CFG['label']: continue
                 h=len(RX.findall(fold(t)))
                 if not h: continue
                 M=Y['M'][S['m'][i]]; I=Y['I'][S['i'][i]]; key=(M[0],M[1],I[1])
@@ -178,7 +226,9 @@ def main(slug='parkeren'):
                'sprekers':[n for n,_ in e['sprekers'].most_common(4)],'sub':[n for n,_ in e['sub'].most_common(2)]} for e in sorted(top,key=lambda e:e['datum'],reverse=True)]
     import akkoord
     akk={'titel':akkoord.TITEL,'url':akkoord.URL,'domein':CFG['domein'],'passages':akkoord.passages(CFG['rx'])}   # letterlijk uit het coalitieakkoord
-    uit={'naam':NAAM,'stand':STAND,'verwant':CFG['verwant'],'akkoord':akk,'sub':[n for n,_ in SUB],'spoor':spoor,'vastgesteld':vast,'komt':komt,'voorstellen':rv,'wijken':wijken,'stemmen':stemmen,'debatten':debatten}
+    uit={'naam':NAAM,'stand':STAND,'verwant':CFG['verwant'],'akkoord':akk,'sub':[n for n,_ in SUB],'spoor':spoor,'vastgesteld':vast,'komt':komt,'voorstellen':rv,'wijken':wijken,'stemmen':stemmen,'debatten':debatten,'projecten':projecten,
+         'lagen':[['n','In de raad en wijkraden','stukken en debatten over dit domein die de wijk noemen of uit de wijk komen'],['vg','Omgevingsvergunningen','aangevraagd en verleend, per jaar (bekendmakingen; geen kapvergunningen)'],
+                  ['huur','Huurwoningen (%)','CBS 2024, ter vergelijking'],['corp','Corporatiewoningen (%)','CBS 2024, ter vergelijking'],['woz','WOZ-waarde (× € 1.000)','CBS 2024, ter vergelijking']] if CFG.get('vergunningen') else []}
     p=os.path.join(DOCS,'ontwerp','d',SLUG+'-extra.json'); json.dump(uit,open(p,'w',encoding='utf8'),ensure_ascii=False,separators=(',',':'))
     print('spoor',len(spoor),'open',sum(x['open'] for x in spoor),'vastgesteld',len(vast),'komt',len(komt),'voorstellen',len(rv),'stemmingen',nst,'debatten',len(debatten),os.path.getsize(p)//1000,'kB')
 
