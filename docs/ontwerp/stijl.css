@@ -8,6 +8,15 @@
   --open:#EDB500;--laat:#E56E02;--blauw:#00548F;--water:#CFE3EF;
   --font:"Bolder",Arial,Helvetica,sans-serif;--r:8px;
 }
+/* Donker thema: volgt de systeeminstelling. Kleuren als tokens, zodat alle pagina's meegaan. */
+:root{color-scheme:light dark}
+@media (prefers-color-scheme: dark){
+  :root{--groen:#1E8F3C;--groen-d:#8FE0A0;--groen-zacht:#173A25;--groen-mid:#4EB051;
+    --grijs:#0F181C;--grijs2:#22343B;--lijn:#33454C;--wit:#16232A;--zwart:#E6EDEF;--sub:#A3B3B9;
+    --open:#F2C230;--laat:#F08A3A;--blauw:#7DB9EA;--water:#1C3644}
+  .knop:hover{background:#176E2F}
+  img,video{filter:none}
+}
 *{box-sizing:border-box}
 html{background:var(--grijs)}
 body{margin:0;background:var(--grijs);color:var(--zwart);font:400 16px/1.5 var(--font)}

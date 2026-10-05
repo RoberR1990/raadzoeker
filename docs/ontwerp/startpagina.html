@@ -2,7 +2,7 @@
 <html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
 <title>raadzoeker · wat zei en besloot de Rotterdamse raad?</title>
 <meta property="og:title" content="raadzoeker"><meta property="og:description" content="Wat de Rotterdamse gemeenteraad zei, besloot en beloofde, per domein en per gebied.">
-<link rel="stylesheet" href="stijl.css?v=8">
+<link rel="stylesheet" href="stijl.css?v=9">
 <style>
 .hero{background:var(--wit);border-radius:var(--r);padding:32px;display:grid;gap:16px}
 .hero h1{font-size:36px}
@@ -104,7 +104,7 @@ details.leg summary{cursor:pointer}
   </div>
   <p class="voet">Onofficieel hulpmiddel op openbare gegevens van de gemeenteraad (iBabs), de Rekenkamer, de wijkraden, het Gemeenteblad en CBS. <a href="over.html">Over deze tool</a>.</p>
 </main>
-<script src="ontwerp.js?v=20"></script>
+<script src="ontwerp.js?v=21"></script>
 <script>
 kop('');
 Promise.all(['d/overzicht.json','d/index.json','start.json'].map(f=>fetch(f).then(r=>r.json()))).then(([O,IX,S])=>{

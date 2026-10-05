@@ -187,6 +187,7 @@ def main(slug='parkeren'):
         for pnaam,prx,*vaste_wijk in CFG['projecten']:   # derde element: vaste wijk als de stukken een andere plek noemen
             r_=re.compile(prx); docs=[]; wt=collections.Counter()
             for i,r in enumerate(m_['d']):
+                if not r: continue   # vervallen document-id in de tekstindex
                 if r_.search(fold(r[2])) or (r[5] and r[5]<3000 and len(r_.findall(fold(tekst_(i))))>=2):
                     docs.append([r[1],S_[r[0]],r[2][:140],r[4]])
                     for w,meth,n in LG.get(f't:{i}',[]):
