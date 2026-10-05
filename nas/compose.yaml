@@ -1,0 +1,13 @@
+# Container Manager -> Project -> Maken -> pad /volume1/docker/raadzoeker -> deze compose.yaml.
+# Daarna: Bouwen, en dan Starten (Bouwen alleen start de container niet).
+services:
+  bijwerker:
+    build: ./nas-build
+    container_name: raadzoeker-bijwerker
+    restart: unless-stopped
+    environment:
+      - NTFY=            # optioneel: een eigen, moeilijk te raden onderwerp op ntfy.sh voor een melding op je telefoon als een run faalt
+    volumes:
+      - /volume1/docker/raadzoeker/repo:/repo
+      - /volume1/docker/raadzoeker/werk:/werk
+      - /volume1/docker/raadzoeker/ssh:/ssh:ro

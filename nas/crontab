@@ -1,0 +1,4 @@
+# Elke nacht alles bijwerken; op werkdagen overdag elke 3 uur de stukken uit iBabs (moties, toezeggingen, brieven).
+# Cloudflare Pages (gratis) staat 500 builds per maand toe: 30 nachten + ca. 110 overdag-runs blijft daar ruim onder.
+30 2 * * *        sh /repo/nas/bijwerken.sh nacht
+15 9-21/3 * * 1-5 sh /repo/nas/bijwerken.sh overdag
