@@ -34,7 +34,7 @@ p{margin:0}
 .balk nav a.on{background:var(--wit);color:var(--zwart)}
 .balk nav.rechts{margin-left:auto}
 .balk nav.rechts a{font-size:15px}
-.balk .bijgewerkt{font-size:13px;opacity:.9;margin-left:8px;white-space:nowrap}
+.balk .bijgewerkt{font-size:13px;opacity:.9;margin-left:8px;white-space:nowrap;color:#fff;text-decoration:underline dotted}
 .tag{display:inline-block;font-size:12px;border:1px solid currentColor;border-radius:4px;padding:1px 5px;margin-left:6px}
 .pagina{max-width:1180px;margin:0 auto;padding:40px 24px 64px}
 .sectie{margin-top:64px}
@@ -131,3 +131,4 @@ section.deel h2{margin:0 0 12px}
 #bub{position:absolute;z-index:40;width:min(420px,calc(100vw - 32px));background:var(--zwart);color:var(--wit);padding:12px 14px;border-radius:6px;font:14px/1.45 var(--font);box-shadow:0 6px 20px rgba(0,0,0,.25)}
 #bub a{color:var(--wit)}#bub .b{display:block;margin-top:6px;font-size:13px;opacity:.85}#bub[hidden]{display:none}
 @media (max-width:900px){#bub{position:fixed;left:16px!important;right:16px;bottom:16px;top:auto!important;width:auto}}
+.balk nav a.bijgewerkt{padding:4px 6px;min-height:0;font-size:13px;border-radius:4px}
