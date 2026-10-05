@@ -190,6 +190,9 @@ async function toon(d){
   main+=`<section class="vlak accent" aria-labelledby="mtk"><h2 id="mtk">Moties en toezeggingen</h2>
       <div class="schakel" role="tablist"><button type="button" role="tab" data-soort="mot">Moties</button><button type="button" role="tab" data-soort="toez">Toezeggingen</button></div>
       <div class="filters chips" id="filt"></div><div class="lijst" id="lijst"></div><p class="sub" style="margin-top:16px" id="meer"></p></section>`;
+  if(isDom&&d.code){let AK=null;try{const r=await fetch('akkoord.json');if(r.ok)AK=await r.json();}catch(e){}
+    const dp=AK&&AK.domeinen&&AK.domeinen[d.code]||[];
+    if(dp.length)main+=blok('ak','Coalitieakkoord 2026–2030',`<p class="intro">Wat het akkoord ‘Vaart maken’ (PRO, D66, VVD, CDA, Volt) voor ${esc(d.naam.toLowerCase())} van plan is. <a href="akkoord.html">Het hele akkoord in het kort</a>.</p>`,dp.map(x=>`<div class="pt">${rijAI(x)}</div>`).join(''),`Toon ${dp.length} punten`,true);}
   if((d.brieven||[]).length)main+=blok('br','Brieven en voorstellen van het college',`<p class="intro">De nieuwste collegebrieven en raadsvoorstellen${isKr?' die '+esc(d.gebied)+' noemen':''}.</p>`,`<div class="lijst" style="margin-top:12px">${d.brieven.map(r=>rij(r,'stuk',DATA.stand)).join('')}</div>`,'Toon brieven en voorstellen');
   main+=blok('db','Waar het in de raad over ging',`<p class="intro">De ${d.debatten.length} debatten met de meeste aandacht voor ${esc(d.naam.toLowerCase())}, nieuwste eerst.</p>`,
     `<div class="lijst" style="margin-top:12px">${d.debatten.map(x=>debatRij(x,d.termen)).join('')}</div><p class="sub" style="margin-top:16px"><a href="../raadzoeker.html#q=${encodeURIComponent(d.termen)}">Alles wat er letterlijk over is gezegd</a></p>`,'Toon de debatten');

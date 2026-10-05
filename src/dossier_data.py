@@ -129,7 +129,7 @@ def main():
         for a in aps: gebtel.update(a['geb'])
         ws=[x for x in wst if x[1]==ds]
         sl=slug(dn); obj=bouw(dn,'Domeinen','domein',[['Domeinen','domeinen.html']],rs,aps,gebtel,ws)
-        obj['gebieden']=dict(gebtel); obj['domein']=sl; schrijf(sl+'.json',obj)
+        obj['gebieden']=dict(gebtel); obj['domein']=sl; obj['code']=ds; schrijf(sl+'.json',obj)
         index.append({'slug':sl,'naam':dn,'groep':'Domein','soort':'domein','domein':sl})
         kr={}
         for gn in GNAAM.values():
