@@ -3,3 +3,5 @@ node_modules/
 *.pkl
 *.bak
 *.tmp
+.env
+video/out/
