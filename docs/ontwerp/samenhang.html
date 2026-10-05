@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
+<title>Samenhang · Parkeren · raadzoeker</title>
+<link rel="stylesheet" href="stijl.css?v=8">
+<style>
+.kolom{max-width:1280px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}
+.tabs button{border:2px solid var(--lijn);background:var(--wit);border-radius:999px;padding:10px 18px;font:700 15px var(--font);cursor:pointer}
+.tabs button[aria-pressed="true"]{border-color:var(--groen);background:var(--groen-zacht)}
+.werk{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:20px;align-items:start}
+.doek{background:var(--wit);border-radius:12px;padding:8px;min-height:560px}
+.doek svg{width:100%;height:auto;display:block}
+.doek text{font-family:var(--font)}
+.knoop{cursor:pointer}.knoop:hover rect,.knoop:hover circle{stroke:var(--zwart);stroke-width:2}
+.paneel{background:var(--wit);border-radius:12px;padding:18px;position:sticky;top:12px;font-size:15px}
+.paneel h3{margin:0 0 4px;font-size:20px}
+.paneel .frag{background:var(--grijs);border-radius:8px;padding:10px 12px;margin:10px 0;line-height:1.45}
+.paneel mark{font-weight:700}
+.uitleg{max-width:80ch}
+.legenda{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;margin:8px 4px}.legenda i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.cel{cursor:pointer}.cel:hover{stroke:#000;stroke-width:1.5}
+@media (max-width:900px){.werk{grid-template-columns:minmax(0,1fr)}.paneel{position:static}}
+</style></head><body>
+<header class="balk"></header>
+<main class="pagina"><div class="kolom">
+  <div class="crumb sub" style="margin:8px 0 4px"><a href="domeinen.html">Domeinen</a> › <a href="dossier.html#mobiliteit">Mobiliteit</a> › <a href="dossier.html#parkeren">Parkeren</a> › Samenhang</div>
+  <h1>Samenhang: waar hangt parkeren mee samen? <span class="ai" style="background:#FFF3C4">schets, 3 varianten</span></h1>
+  <p class="uitleg intro" id="uitleg"></p>
+  <div class="tabs" role="group" aria-label="Variant">
+    <button data-v="a">A · Mindmap</button><button data-v="b">B · Krachtenveld over domeinen</button><button data-v="c">C · Samenhang door de tijd</button>
+  </div>
+  <p class="sub" id="vuitleg" style="margin:0 0 12px"></p>
+  <div class="werk"><div class="doek" id="doek"></div><aside class="paneel" id="paneel" aria-live="polite"></aside></div>
+  <p class="voet">Hoe geteld: twee onderwerpen hangen samen als ze binnen ca. 350 tekens van elkaar worden genoemd, in een debatbeurt (raad 2018–2026, commissies 2022–2026) of in een officieel stuk. Het getal is het aantal beurten en stukken, geen oordeel over belang. Het voorbeeld is het fragment waarin beide het dichtst bij elkaar staan; het kan ook een opsomming zijn.</p>
+</div></main>
+<script src="ontwerp.js?v=9"></script>
+<script>
+kop('domeinen');
+const DK=['#00811F','#1F6FB2','#B25E1F','#7A4FB0','#2E8C8C','#B0306A','#6B7A1F','#A08000','#4D5A63','#C0392B','#3A9A5B','#8E5A3C','#5B6CC0'];
+let S=null,V='a',SEL=null,DOMK={};
+const svgns=(w,h,inh)=>`<svg viewBox="0 0 ${w} ${h}" role="img">${inh}</svg>`;
+const kl=d=>DOMK[d]||'#4D5A63';
+const zoeklink=t=>'zoek.html?q='+encodeURIComponent('parkeren '+t);
+function spark(j,w=300,h=50){const m=Math.max(...j,1);return `<svg viewBox="0 0 ${w} ${h+16}" style="width:100%">${j.map((v,i)=>{const bw=w/j.length-4,bh=h*v/m;return `<rect x="${i*w/j.length}" y="${h-bh}" width="${bw}" height="${bh}" rx="2" fill="var(--groen)"/><text x="${i*w/j.length+bw/2}" y="${h+13}" font-size="10" text-anchor="middle" fill="#3E4B50">'${S.jaren[i].slice(2)}</text>`;}).join('')}</svg>`;}
+function markeer(t,term){return esc(t).replace(/(parkeer\w*|parkeren|geparkeerd)/gi,'<mark>$1</mark>').replace(new RegExp('('+term.replace(/[^a-z0-9 ]/gi,'')+'\\w*)','gi'),'<mark style="background:#FFF3C4">$1</mark>');}
+function paneel(k){
+  SEL=k;const P=$('paneel');
+  if(!k){P.innerHTML=`<h3>Parkeren</h3><p class="sub">${S.n.toLocaleString('nl-NL')} debatbeurten en stukken noemen parkeren. Klik op een onderwerp, gebied of blok voor het verband en een voorbeeld.</p><p><a href="dossier.html#parkeren">Naar het dossier Parkeren</a></p>`;if(S&&$('doek').innerHTML)teken();return;}
+  const [soort,id]=k.split(':');
+  if(soort==='v'){const r=S.verwant.find(x=>x.slug===id),v=r.vb;
+    P.innerHTML=`<div class="sub">${esc(r.domein)}</div><h3>Parkeren × ${esc(r.naam)}</h3>
+      <p style="margin:4px 0"><b>${r.n.toLocaleString('nl-NL')}</b> beurten en stukken noemen ze samen</p>${spark(r.jaren)}
+      ${v?`<div class="frag">${markeer(v.fragment,r.termen)}</div><div class="sub">${v.soort==='debat'?`${esc(v.wie||'')}${v.partij?' ('+esc(v.partij)+')':''} · ${esc(v.verg)} · ${fd(v.datum)}`:`${esc(v.soort)} · ${fd(v.datum)} · <a href="${esc(v.url)}" target="_blank" rel="noopener">${esc(v.titel)}</a>`}</div>`:''}
+      <p style="margin-top:12px;display:grid;gap:6px"><a href="${zoeklink(r.termen)}">Zoek alles waarin beide voorkomen →</a>${r.slug?`<a href="dossier.html#${r.slug}">Naar dossier ${esc(r.naam)} →</a>`:''}</p>`;}
+  else if(soort==='s'){const r=S.sub.find(x=>x[0]===id);P.innerHTML=`<div class="sub">Deelonderwerp van Parkeren</div><h3>${esc(id)}</h3><p><b>${r[1].toLocaleString('nl-NL')}</b> beurten en stukken</p><p><a href="dossier.html#parkeren/gezegd">In het dossier, gefilterd →</a></p>`;}
+  else if(soort==='g'){const r=S.gebieden.find(x=>x[0]===id);P.innerHTML=`<div class="sub">Gebied</div><h3>Parkeren in ${esc(id)}</h3><p><b>${r[1].toLocaleString('nl-NL')}</b> debatbeurten over parkeren bij agendapunten over dit gebied</p><p style="display:grid;gap:6px"><a href="dossier.html#mobiliteit--${slugify(id)}">Mobiliteit in ${esc(id)} →</a><a href="wijk.html?g=${slugify(id)}">Gebiedspagina →</a></p>`;}
+  else if(soort==='d'){const r=S.domeinen.find(x=>x[0]===id);P.innerHTML=`<div class="sub">Domein</div><h3>Parkeren bij ${esc(id)}</h3><p><b>${r[1].toLocaleString('nl-NL')}</b> debatbeurten over parkeren bij agendapunten van dit domein. Parkeren is formeel Mobiliteit, maar wordt ook hier besproken.</p>`;}
+  else if(soort==='k'){P.innerHTML=`<div class="sub">De keten</div><h3>${esc(id)}</h3><p>Zie het dossier: <a href="dossier.html#parkeren">gezegd, besloten, beloofd en gedaan →</a></p>`;}
+  teken();
+}
+const slugify=s=>s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+const tekstW=(t,fs)=>t.length*fs*0.55;
+function knoop(k,x,y,t,fs,kleur,vul,sub=''){const w=tekstW(t,fs)+22,h=fs+16,on=SEL===k;
+  return `<g class="knoop" data-k="${esc(k)}" tabindex="0"><rect x="${x-w/2}" y="${y-h/2}" width="${w}" height="${h}" rx="${h/2}" fill="${on?kleur:vul}" stroke="${kleur}" stroke-width="${on?2.5:1.5}"/><text x="${x}" y="${y+fs*0.36}" font-size="${fs}" text-anchor="middle" fill="${on?'#fff':'#000'}" font-weight="${fs>15?700:400}">${esc(t)}</text>${sub?`<text x="${x}" y="${y+h/2+13}" font-size="11" text-anchor="middle" fill="#3E4B50">${sub}</text>`:''}</g>`;}
+const lijn=(x1,y1,x2,y2,w,kl,o=.5)=>`<path d="M${x1},${y1} C${(x1+x2)/2},${y1} ${(x1+x2)/2},${y2} ${x2},${y2}" fill="none" stroke="${kl}" stroke-width="${w}" stroke-opacity="${o}"/>`;
+/* A: mindmap -- vier takken: deelonderwerpen, raakt aan, waar, de keten */
+function tekenA(){
+  const W=1060,H=720,cx=480,cy=360;let L='',N='';
+  const tak=(x,y,t,kl)=>{L+=lijn(cx,cy,x,y,6,kl,.35);N+=`<text x="${x}" y="${y+5}" font-size="17" font-weight="700" text-anchor="middle" fill="${kl}">${t}</text>`;};
+  // rechts: raakt aan (top 12), dikte = aantal
+  const V=S.verwant.slice(0,12),vm=V[0].n;tak(660,330,'Raakt aan','#3E4B50');
+  V.forEach((r,i)=>{const y=40+i*(640/11),w=tekstW(r.naam,13)+22,x=1050-w/2;L+=lijn(700,345,x-w/2,y,1+7*r.n/vm,kl(r.domein),.45);N+=knoop('v:'+r.slug,x,y,r.naam,13,kl(r.domein),'#fff');});
+  // linksboven: deelonderwerpen
+  const Sb=S.sub,sm=Math.max(...Sb.map(x=>x[1]));tak(300,190,'Deelonderwerpen','#00811F');
+  Sb.forEach(([n,v],i)=>{const a=Math.PI*(0.62+i*0.11),x=300+175*Math.cos(a)*1.0,y=150-150*Math.sin(a)*-0.0+(i-3.5)*34;const xx=110,yy=40+i*36;L+=lijn(240,190,xx+70,yy,1+5*v/sm,'#00811F',.4);N+=knoop('s:'+n,xx,yy,n,12,'#00811F','#E1EFE2');});
+  // linksonder: gebieden
+  const G=S.gebieden.slice().sort((a,b)=>a[0].localeCompare(b[0])),gm=Math.max(...G.map(x=>x[1]));tak(300,540,'Gebieden','#004C31');
+  G.forEach(([n,v],i)=>{const w=tekstW(n,11)+22,x=(i%2?200:85),y=372+i*24;L+=lijn(262,540,x+w/2,y,1+4*v/gm,'#004C31',.3);N+=knoop('g:'+n,x,y,n,11,'#004C31','#fff');});
+  // onder: de keten
+  const K=[['Gezegd',S.n],['Moties',S.keten.moties],['Toezeggingen',S.keten.toez],['Vragen',S.keten.sv]];tak(500,560,'De keten','#3E4B50');
+  K.forEach(([n,v],i)=>{const x=380+i*85,y=650;L+=lijn(500,575,x,y-14,2,'#3E4B50',.3);N+=knoop('k:'+n,x,y,n,11,'#3E4B50','#EFF4F6',v.toLocaleString('nl-NL'));});
+  N+=`<g class="knoop" data-k=""><circle cx="${cx}" cy="${cy}" r="62" fill="#00811F"/><text x="${cx}" y="${cy+8}" font-size="24" font-weight="700" text-anchor="middle" fill="#fff">Parkeren</text></g>`;
+  return svgns(W,H,L+N)+legenda(V);
+}
+/* B: krachtenveld -- domeinen als sectoren, hoe dichter bij het midden hoe vaker samen genoemd */
+function tekenB(){
+  const W=1100,H=780,cx=550,cy=395;const V=S.verwant.slice(0,24),vm=V[0].n;
+  const doms=[...new Set(V.map(r=>r.domein))];const gw=d=>Math.max(V.filter(r=>r.domein===d).length,2.2);const per={};V.forEach(r=>(per[r.domein]=per[r.domein]||[]).push(r));
+  let L='',N='',A='';const tot=doms.reduce((a,d)=>a+gw(d),0);let k=0;
+  [300,220,140].forEach((r,i)=>A+=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#DBE7EA" stroke-dasharray="${i?'4 4':''}"/>`);
+  doms.forEach(d=>{const rs=per[d],a0=k/tot*2*Math.PI,a1=(k+gw(d))/tot*2*Math.PI;
+    const am=(a0+a1)/2;A+=`<text x="${cx+345*Math.cos(am-Math.PI/2)}" y="${cy+345*Math.sin(am-Math.PI/2)+5}" font-size="14" font-weight="700" fill="${kl(d)}" text-anchor="middle">${esc(d)}</text>`;
+    A+=`<path d="M${cx+318*Math.cos(a0-Math.PI/2+.02)},${cy+318*Math.sin(a0-Math.PI/2+.02)} A318,318 0 0 1 ${cx+318*Math.cos(a1-Math.PI/2-.02)},${cy+318*Math.sin(a1-Math.PI/2-.02)}" stroke="${kl(d)}" stroke-width="6" fill="none" stroke-linecap="round"/>`;
+    rs.forEach((r,i)=>{const a=(k+(i+.5)*gw(d)/rs.length)/tot*2*Math.PI-Math.PI/2,rad=110+190*(1-Math.sqrt(r.n/vm)),x=cx+rad*Math.cos(a),y=cy+rad*Math.sin(a),rr=5+16*Math.sqrt(r.n/vm);
+      L+=`<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="${kl(d)}" stroke-opacity=".35" stroke-width="${1+5*r.n/vm}"/>`;
+      const on=SEL==='v:'+r.slug,lx=x+(Math.cos(a)>=0?rr+4:-rr-4);
+      N+=`<g class="knoop" data-k="v:${r.slug}"><circle cx="${x}" cy="${y}" r="${rr}" fill="${on?'#000':kl(d)}" fill-opacity="${on?1:.85}" stroke="#fff" stroke-width="1.5"/><text x="${lx}" y="${y+4}" font-size="12" text-anchor="${Math.cos(a)>=0?'start':'end'}" font-weight="${on?700:400}">${esc(r.naam)}</text></g>`;});
+    k+=gw(d);});
+  N+=`<g class="knoop" data-k=""><circle cx="${cx}" cy="${cy}" r="52" fill="#00811F"/><text x="${cx}" y="${cy+7}" font-size="20" font-weight="700" text-anchor="middle" fill="#fff">Parkeren</text></g>`;
+  return svgns(W,H,A+L+N);
+}
+/* C: door de tijd -- welk verband speelde wanneer (aandeel van alle parkeerbeurten/stukken dat jaar) */
+function tekenC(){
+  const V=S.verwant.slice(0,16),J=S.jaren,W=1000,lx=300,cw=(W-lx-80)/J.length,ch=34,top=50,H=top+V.length*ch+120;
+  const aand=V.map(r=>r.jaren.map((v,i)=>S.totaal[i]?v/S.totaal[i]:0)),m=Math.max(...aand.flat());
+  let s=J.map((j,i)=>`<text x="${lx+i*cw+cw/2}" y="${top-14}" font-size="13" text-anchor="middle" fill="#3E4B50">${j}</text>`).join('');
+  V.forEach((r,ri)=>{const y=top+ri*ch,on=SEL==='v:'+r.slug;
+    s+=`<g class="knoop" data-k="v:${r.slug}"><rect x="0" y="${y}" width="${lx-10}" height="${ch-4}" fill="${on?'#E1EFE2':'transparent'}" rx="4"/><circle cx="12" cy="${y+ch/2-2}" r="5" fill="${kl(r.domein)}"/><text x="24" y="${y+ch/2+3}" font-size="13" font-weight="${on?700:400}">${esc(r.naam)}</text></g>`;
+    aand[ri].forEach((a,i)=>{const t=Math.sqrt(a/m);s+=`<rect class="cel knoop" data-k="v:${r.slug}" x="${lx+i*cw+2}" y="${y}" width="${cw-4}" height="${ch-4}" rx="4" fill="#00811F" fill-opacity="${.05+.95*t}"><title>${esc(r.naam)} ${J[i]}: ${r.jaren[i]} van ${S.totaal[i]} (${Math.round(a*100)}%)</title></rect>`;});});
+  const y0=top+V.length*ch+20,tm=Math.max(...S.totaal);
+  s+=`<text x="0" y="${y0+30}" font-size="13" fill="#3E4B50">Alle beurten en stukken over parkeren</text>`+S.totaal.map((v,i)=>`<rect x="${lx+i*cw+6}" y="${y0+60-50*v/tm}" width="${cw-12}" height="${50*v/tm}" fill="#CAD6DA" rx="2"/><text x="${lx+i*cw+cw/2}" y="${y0+78}" font-size="11" text-anchor="middle" fill="#3E4B50">${v}</text>`).join('');
+  return svgns(W,H,s)+legenda(V)+`<p class="sub" style="margin:6px 8px">Kleur = aandeel van alle beurten en stukken over parkeren in dat jaar. Commissies tellen pas mee vanaf 2022 (daarvoor alleen de raad).</p>`;
+}
+function legenda(V){return `<div class="legenda">${[...new Set(V.map(r=>r.domein))].map(d=>`<span><i style="background:${kl(d)}"></i>${esc(d)}</span>`).join('')}</div>`;}
+const UITLEG={a:'Mindmap: Parkeren in het midden met vier takken. Rechts de onderwerpen waar het mee samen wordt genoemd (dikkere lijn = vaker), links de deelonderwerpen en gebieden, onder de keten van gezegd tot gedaan.',
+  b:'Krachtenveld: de verwante onderwerpen gegroepeerd per domein. Hoe dichter bij het midden en hoe groter de stip, hoe vaker ze samen met parkeren worden genoemd. Laat zien dat parkeren ver buiten Mobiliteit reikt.',
+  c:'Door de tijd: welk verband speelde in welk jaar. Een donker vakje = in dat jaar ging een groot deel van wat over parkeren werd gezegd en geschreven óók over dat onderwerp.'};
+function teken(){$('doek').innerHTML=V==='a'?tekenA():V==='b'?tekenB():tekenC();$('vuitleg').textContent=UITLEG[V];
+  document.querySelectorAll('.tabs button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===V));}
+document.querySelector('.tabs').onclick=e=>{const b=e.target.closest('button');if(!b)return;V=b.dataset.v;history.replaceState(null,'','#'+V);teken();};
+$('doek').addEventListener('click',e=>{const g=e.target.closest('.knoop');if(g)paneel(g.dataset.k||null);});
+$('doek').addEventListener('keydown',e=>{if(e.key==='Enter'){const g=e.target.closest('.knoop');if(g)paneel(g.dataset.k||null);}});
+fetch('d/parkeren-samenhang.json').then(r=>r.json()).then(d=>{S=d;
+  [...new Set(d.domeinen.map(x=>x[0]).concat(d.verwant.map(x=>x.domein)))].forEach((x,i)=>DOMK[x]=DK[i%DK.length]);DOMK['Mobiliteit']='#00811F';
+  $('uitleg').innerHTML=`Parkeren is formeel een onderwerp binnen Mobiliteit, maar in de raad hangt het samen met veel meer. Deze proef laat in drie varianten zien waarmee: berekend uit ${d.n.toLocaleString('nl-NL')} debatbeurten en officiële stukken die parkeren noemen (t/m ${fd(d.stand)}).`;
+  V=(location.hash.slice(1)||'a');if(!'abc'.includes(V))V='a';paneel(null);teken();});
+</script></body></html>
