@@ -11,3 +11,4 @@ services:
       - /volume1/docker/raadzoeker/repo:/repo
       - /volume1/docker/raadzoeker/werk:/werk
       - /volume1/docker/raadzoeker/ssh:/ssh:ro
+      - /volume1/docker/raadzoeker/nas-build/start.sh:/usr/local/bin/start.sh:ro   # startscript zonder herbouwen aan te passen

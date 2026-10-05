@@ -38,11 +38,16 @@ def get(url,binary=False,cache=True,data=None):
         if wait>0: time.sleep(wait)
         _last[0]=time.time()
     req=urllib.request.Request(url,data=body,headers={'User-Agent':UA,'Accept-Language':'nl','X-Requested-With':'XMLHttpRequest'} if body else {'User-Agent':UA,'Accept-Language':'nl'})
-    try:
-        with urllib.request.urlopen(req,timeout=60) as r: b=r.read()
-    except urllib.error.HTTPError as e:
-        if e.code in(403,429,503): raise Blokkade(f'{e.code} op {url}')
-        raise
+    for poging in range(4):   # tijdelijke serverfouten (500, 502, 504, time-out): tot 3 keer opnieuw, steeds langer wachten
+        try:
+            with urllib.request.urlopen(req,timeout=60) as r: b=r.read()
+            break
+        except urllib.error.HTTPError as e:
+            if e.code in(403,429,503): raise Blokkade(f'{e.code} op {url}')
+            if e.code not in(500,502,504) or poging==3: raise
+        except (urllib.error.URLError,TimeoutError,ConnectionError):
+            if poging==3: raise
+        time.sleep(10*(poging+1))
     if b'captcha' in b[:20000].lower() or b'cf-challenge' in b[:20000]: raise Blokkade('captcha/challenge op '+url)
     if cache: open(p,'wb').write(b)
     return b if binary else b.decode('utf8','replace')
