@@ -1,6 +1,7 @@
 # Haalt detailpagina's (en bij moties/amendementen de pdf-tekst van het hoofddocument) op uit iBabs.
 # Invoer: WERK/ibabs/lijsten.json (ibabs_lijsten.py). Uitvoer: WERK/ibabs/items_<soort>.jsonl, hervatbaar.
-# Gebruik: python src/ibabs_items.py toezeggingen moties amendementen raadsvoorstellen initiatiefvoorstellen
+# Gebruik: python src/ibabs_items.py toezeggingen moties amendementen raadsvoorstellen initiatiefvoorstellen [--ververs-open] [--minuten N]
+#   --ververs-open: ook de detailpagina's van nog niet afgedane stukken opnieuw ophalen (nachtelijke run)
 # Alleen stukken vanaf VANAF (2018). Max 1 verzoek per seconde (ibabs.get); stopt bij een blokkade.
 import json,os,re,sys,html,time
 import ibabs
@@ -59,6 +60,23 @@ def soort(naam,rows):
             f.write(json.dumps(d,ensure_ascii=False)+'\n'); f.flush()
             if k%200==0: print(naam,k,'/',len(todo),round((time.time()-t0)/60),'min',flush=True)
             if STOP and time.time()>STOP: raise TijdOp()
+def ververs_open(naam,rows,dagen=1200):
+    """Detailpagina's opnieuw ophalen van stukken die nog niet zijn afgedaan (status, tussenberichten, afdoening), van de laatste `dagen`.
+    Nieuwe stukken haalt soort() op; dit houdt de bestaande actueel."""
+    import datetime
+    out=os.path.join(WERK,'ibabs',f'items_{naam}.jsonl')
+    if not os.path.exists(out): return
+    regels=[json.loads(l) for l in open(out,encoding='utf8') if l.strip()]
+    lijst={r['DT_RowId']:r for r in rows}; grens=(datetime.date.today()-datetime.timedelta(days=dagen)).isoformat()
+    def iso(x): m=re.match(r'\s*(\d\d)-(\d\d)-(\d{4})',x or ''); return f'{m.group(3)}-{m.group(2)}-{m.group(1)}' if m else ''
+    todo=[i for i,d in enumerate(regels) if not d['detail'].get('Afgedaan') and not d['detail'].get('Datum afgedaan') and iso(d['lijst'].get('registrationdate'))>=grens]
+    print(naam,'open om te verversen',len(todo),flush=True)
+    try:
+        for n,i in enumerate(todo):
+            d=regels[i]; d['detail']=parse(ibabs.get('/Reports/Item/'+d['id'],cache=False)); d['lijst']=lijst.get(d['id'],d['lijst'])
+            if STOP and time.time()>STOP: raise TijdOp()
+    finally:
+        tmp=out+'.tmp'; open(tmp,'w',encoding='utf8').write(''.join(json.dumps(d,ensure_ascii=False)+'\n' for d in regels)); os.replace(tmp,out)
 if __name__=='__main__':
     L=json.load(open(os.path.join(WERK,'ibabs','lijsten.json'),encoding='utf8'))
     args=sys.argv[1:]
@@ -66,8 +84,12 @@ if __name__=='__main__':
         i=args.index('--minuten'); STOP=time.time()+60*float(args[i+1]); del args[i:i+2]
     if '--alleen' in args:
         i=args.index('--alleen'); ALLEEN=args[i+1]; del args[i:i+2]
+    VERS='--ververs-open' in args
+    if VERS: args.remove('--ververs-open')
     try:
-        for naam in args: soort(naam,L[naam])
+        for naam in args:
+            soort(naam,L[naam])
+            if VERS: ververs_open(naam,L[naam])
     except TijdOp:
         print('tijd op, later verder',flush=True); sys.exit(0)
     except ibabs.Blokkade as e:

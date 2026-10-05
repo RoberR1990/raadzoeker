@@ -134,15 +134,16 @@ function kWaarde(w){
   if(KLAAG==='vg')return KJR==='alle'?Object.values(w.vg||{}).reduce((a,b)=>a+b,0):((w.vg||{})[KJR]||0);
   return w[KLAAG];
 }
+const kCbs=()=>{const l=(KX.lagen||[]).find(x=>x[0]===KLAAG);return !!l&&/CBS/.test(l[2]);};
 function kKaart(){
   if(!KWK||!KKAART||!$('kkaart'))return;
-  const per=Object.fromEntries(KX.wijken.map(w=>[w.slug,w])),vals=KX.wijken.map(kWaarde).filter(v=>v!=null),mx=Math.max(1,...vals),mn=['huur','corp','woz'].includes(KLAAG)?Math.min(...vals):0;
+  const per=Object.fromEntries(KX.wijken.map(w=>[w.slug,w])),vals=KX.wijken.map(kWaarde).filter(v=>v!=null),mx=Math.max(1,...vals),mn=kCbs()?Math.min(...vals):0;
   const f=v=>v==null?null:(v-mn)/Math.max(1e-9,mx-mn),kl=x=>x==null?'#EFF4F6':x>.8?'#004C31':x>.6?'#00811F':x>.4?'#4EB051':x>.2?'#99CCA0':'#E1EFE2';
   const laag=(KX.lagen||[]).find(l=>l[0]===KLAAG);
   const proj=(KX.projecten||[]).map((p,i)=>`<g class="kpm" data-proj="${i}" tabindex="0" role="button" aria-label="${esc(p.naam)}"><circle cx="${p.lx}" cy="${p.ly}" r="${(4+Math.sqrt(p.n)/2).toFixed(1)}" fill="#00548F" fill-opacity=".85" stroke="#fff" stroke-width="1.5"/><title>${esc(p.naam)}: ${p.n} stukken</title></g>`).join('');
   $('kkaart').innerHTML=`<svg viewBox="0 0 ${KKAART.w} ${KKAART.h}" role="img" aria-label="Kaart van Rotterdam per wijk"><path class="h" d="${KKAART.havens}"/>${KWK.wijken.map(w=>{const x=per[w.slug],v=x?kWaarde(x):null;
     return `<path class="wk" data-w="${w.slug}" d="${w.d}" tabindex="0" fill="${kl(f(v))}"><title>${esc(w.naam)}: ${v==null?'geen gegevens':nf(Math.round(v*10)/10)}</title></path>`;}).join('')}<path class="w" d="${KKAART.water}"/>${proj}</svg>
-    <p class="sub" style="margin-top:6px">${laag?esc(laag[1])+': '+esc(laag[2])+'. ':''}Donkerder = meer${['huur','corp','woz'].includes(KLAAG)?'; cijfers ter vergelijking, geen oordeel':'. Aantallen zijn een indicatie: ‘genoemd in’ klopt in ongeveer 9 van de 10 gevallen'}.</p>`;
+    <p class="sub" style="margin-top:6px">${laag?esc(laag[1])+': '+esc(laag[2])+'. ':''}Donkerder = meer${kCbs()?'; cijfers ter vergelijking, geen oordeel':'. Aantallen zijn een indicatie: ‘genoemd in’ klopt in ongeveer 9 van de 10 gevallen'}.</p>`;
 }
 function kWijk(s){
   const x=KX.wijken.find(w=>w.slug===s);if(!x)return;
@@ -150,8 +151,8 @@ function kWijk(s){
   const t={raad:'raadsstukken en debatten die de wijk noemen',wijkraad:'stukken van de wijkraad',verkeersbesluit:'verkeersbesluiten',besluit:'andere besluiten'};
   const vg=x.vg?Object.values(x.vg).reduce((a,b)=>a+b,0):null;
   $('kwijk').innerHTML=`<h3>${esc(x.naam)} <span class="sub">· ${esc(x.gebied)}</span></h3>
-    <ul class="kn">${Object.entries(t).filter(([k])=>(x.n||{})[k]).map(([k,l])=>`<li><b class="num">${nf(x.n[k])}</b> ${l}</li>`).join('')}${vg!=null?`<li><b class="num">${nf(vg)}</b> omgevingsvergunningen sinds 2018</li>`:''}</ul>
-    ${x.huur!=null?`<p class="sub" style="margin:8px 0 0">Ter vergelijking (CBS 2024): ${x.huur}% huurwoningen, ${x.corp}% van corporaties, WOZ € ${nf(Math.round(x.woz))}.000.</p>`:''}
+    <ul class="kn">${Object.entries(t).filter(([k])=>(x.n||{})[k]).map(([k,l])=>`<li><b class="num">${nf(x.n[k])}</b> ${l}</li>`).join('')}${vg!=null?`<li><b class="num">${nf(vg)}</b> ${esc(((KX.lagen||[]).find(l=>l[0]==='vg')||[,'vergunningen'])[1].toLowerCase())} sinds 2018</li>`:''}</ul>
+    ${(KX.lagen||[]).filter(l=>/CBS/.test(l[2])&&x[l[0]]!=null).length?`<p class="sub" style="margin:8px 0 0">Ter vergelijking (CBS 2024): ${(KX.lagen||[]).filter(l=>/CBS/.test(l[2])&&x[l[0]]!=null).map(l=>`${esc(l[1].toLowerCase())}: ${nf(x[l[0]])}`).join(' · ')}.</p>`:''}
     ${x.recent.length?`<p class="sub" style="margin:8px 0 4px">Laatste besluiten over ${esc(KD.naam.toLowerCase())}:</p>${x.recent.map(r=>`<div class="pt" style="font-size:14px;padding:6px 0"><span class="sub">${fd(r[0])}</span><br><a href="${esc(r[2])}" target="_blank" rel="noopener">${esc(r[1])}</a></div>`).join('')}`:''}
     <p style="margin-top:8px"><a href="wijk.html#w-${x.slug}">Naar de wijk ${esc(x.naam)}</a> · <a href="zoek.html#q=${encodeURIComponent(x.naam)}&d=${encodeURIComponent(KD.domein||'')}">Zoek in de stukken</a></p>`;
 }

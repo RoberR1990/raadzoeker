@@ -15,7 +15,7 @@
 .laat{color:var(--laat)}
 .tabelvlak{overflow-x:auto;border:1px solid var(--lijn);border-radius:var(--r)}
 @media (max-width:800px){.kast .weg{display:none}}
-.uit{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.uit{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
 .uit a{display:grid;gap:6px;text-decoration:none;background:var(--wit);border:1px solid var(--lijn);border-left:5px solid var(--groen);border-radius:8px;padding:14px 16px}
 .uit a:hover{border-color:var(--groen)}.uit b{font-size:18px}.uit span{font-size:14px;color:var(--sub)}
 .uit a.akk{border-left-color:var(--blauw)}
@@ -54,7 +54,9 @@ Promise.all(['d/overzicht.json','d/index.json'].map(f=>fetch(f).then(r=>r.json()
   teken();
   const U=[['parkeren','Parkeren','Van betaald parkeren in de hele stad tot parkeerdruk per wijk: de hele keten van debat tot uitvoering.'],
     ['handhaving-en-toezicht','Handhaving en toezicht',"Boa's, bevoegdheden en capaciteit; met wat het nieuwe college wil."],
-    ['wonen-en-bouwen','Wonen en bouwen','Het hele domein, met grote projecten en vergunningen op de kaart.']];
+    ['wonen-en-bouwen','Wonen en bouwen','Het hele domein, met grote projecten en vergunningen op de kaart.'],
+    ['zorg-welzijn-en-jeugd','Zorg, welzijn en jeugd','Jeugdzorg, Wmo, ouderen en welzijn; met de financiële opgave uit het akkoord.'],
+    ['economie-en-haven','Economie en haven','Haven, ondernemers, horeca en toerisme; horecavergunningen en projecten op de kaart.']];
   $('uit').innerHTML=U.map(([s,n,t])=>`<a href="dossier.html?d=${s}"><span>Voorbeelddossier</span><b>${esc(n)}</b><span>${esc(t)}</span></a>`).join('')+
     `<a class="akk" href="akkoord.html"><span>Nieuw</span><b>Coalitieakkoord 2026–2030</b><span>‘Vaart maken’ in het kort, per domein en met het geld.</span></a>`;
   $('ond').innerHTML=D.map(d=>{const o=IX.filter(x=>x.soort==='onderwerp'&&x.domein===d.slug&&x.groep!=='Parkeren');
