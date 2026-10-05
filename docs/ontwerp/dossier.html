@@ -1,8 +1,8 @@
 <!doctype html>
 <html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
 <title>Dossier · raadzoeker</title>
-<link rel="stylesheet" href="stijl.css?v=8">
-<link rel="stylesheet" href="keten.css?v=4">
+<link rel="stylesheet" href="stijl.css?v=9">
+<link rel="stylesheet" href="keten.css?v=5">
 <style>
 .pagina.breed{max-width:1240px}
 .crumb{font-size:14px;color:var(--sub);margin:32px 0 4px}
@@ -63,7 +63,7 @@ table.tafel .bar i{display:block;height:8px;background:var(--groen);border-radiu
   <div id="dossier"><p class="leeg" style="margin-top:24px">Laden…</p></div>
   <p class="voet">Gegevens: notulen en ondertiteling van de gemeenteraad, de registratie in iBabs (moties, toezeggingen, schriftelijke vragen, brieven), de Rekenkamer Rotterdam en de wijkraden, stand 2 oktober 2026. Domeinen volgen de indeling van de griffie (beleidsveld in iBabs), aangevuld met een woordmodel; een onderwerp is een vaste set zoekwoorden. Aantallen zijn een goede indicatie, geen exacte telling. Teksten met het label AI zijn automatisch gemaakt; elk punt heeft een letterlijk citaat dat een script woord voor woord met de bron heeft vergeleken. <a href="over.html">Meer over deze tool</a>.</p>
 </main>
-<script src="ontwerp.js?v=20"></script>
+<script src="ontwerp.js?v=21"></script>
 <script src="ai.js?v=1"></script>
 <script src="keten.js?v=7"></script>
 <script>
@@ -101,15 +101,15 @@ document.addEventListener('click',e=>{
 function trendSvg(d){
   const W=520,H=200,L=34,B=28,T=14,ys=d.jaren,v=d.trend,mx=Math.max(...v)*1.15||1,bw=(W-L-8)/ys.length,y=x=>H-B-(x/mx)*(H-B-T);
   const step=[0.5,1,2,5,10,20,50,100].find(s=>mx/s<=5)||200;let g='';
-  for(let t=0;t<=mx;t+=step)g+=`<line x1="${L}" x2="${W-6}" y1="${y(t)}" y2="${y(t)}" stroke="#DBE7EA"/><text x="${L-6}" y="${y(t)+4}" text-anchor="end" font-size="12" fill="#3E4B50">${String(t).replace('.',',')}</text>`;
-  ys.forEach((yr,i)=>{const x=L+i*bw+bw*.2,w=bw*.6,last=i===ys.length-1;g+=`<rect x="${x}" y="${y(v[i])}" width="${w}" height="${H-B-y(v[i])}" rx="2" fill="${last?'#99CCA0':'#00811F'}"><title>${yr}: ${String(v[i]).replace('.',',')} per 100.000 woorden (${d.trendn[i]} keer)</title></rect><text x="${x+w/2}" y="${H-9}" text-anchor="middle" font-size="12" fill="#000">'${yr.slice(2)}</text>`;});
+  for(let t=0;t<=mx;t+=step)g+=`<line x1="${L}" x2="${W-6}" y1="${y(t)}" y2="${y(t)}" stroke="#DBE7EA"/><text x="${L-6}" y="${y(t)+4}" text-anchor="end" font-size="12" fill="currentColor" fill-opacity=".75">${String(t).replace('.',',')}</text>`;
+  ys.forEach((yr,i)=>{const x=L+i*bw+bw*.2,w=bw*.6,last=i===ys.length-1;g+=`<rect x="${x}" y="${y(v[i])}" width="${w}" height="${H-B-y(v[i])}" rx="2" fill="${last?'#99CCA0':'#00811F'}"><title>${yr}: ${String(v[i]).replace('.',',')} per 100.000 woorden (${d.trendn[i]} keer)</title></rect><text x="${x+w/2}" y="${H-9}" text-anchor="middle" font-size="12" fill="currentColor">'${yr.slice(2)}</text>`;});
   return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Aandacht per jaar: ${ys.map((y,i)=>y+' '+v[i]).join(', ')}">${g}</svg>`;
 }
 function tijdlijnSvg(d){
   const v=d.verdieping.tl,W=1100,L=110,R=14,y0=new Date('2018-01-01'),y1=new Date('2026-12-31'),x=s=>L+(new Date(s)-y0)/(y1-y0)*(W-L-R);
   const rij={deb:46,mot:104,toez:146,rk:186},H=214;let g='';
-  for(let y=2018;y<=2026;y++){const xx=x(y+'-01-01');g+=`<line x1="${xx}" x2="${xx}" y1="18" y2="${H-22}" stroke="#DBE7EA"/><text x="${xx+4}" y="${H-6}" font-size="13" fill="#3E4B50">${y}</text>`;}
-  [['deb','Debatten'],['mot','Moties'],['toez','Toezeggingen'],['rk','Rekenkamer']].forEach(([k,n])=>{g+=`<text x="0" y="${rij[k]+5}" font-size="14" fill="#000">${n}</text><line x1="${L}" x2="${W-R}" y1="${rij[k]}" y2="${rij[k]}" stroke="#EFF4F6" stroke-width="2"/>`;});
+  for(let y=2018;y<=2026;y++){const xx=x(y+'-01-01');g+=`<line x1="${xx}" x2="${xx}" y1="18" y2="${H-22}" stroke="#DBE7EA"/><text x="${xx+4}" y="${H-6}" font-size="13" fill="currentColor" fill-opacity=".75">${y}</text>`;}
+  [['deb','Debatten'],['mot','Moties'],['toez','Toezeggingen'],['rk','Rekenkamer']].forEach(([k,n])=>{g+=`<text x="0" y="${rij[k]+5}" font-size="14" fill="currentColor">${n}</text><line x1="${L}" x2="${W-R}" y1="${rij[k]}" y2="${rij[k]}" stroke="#EFF4F6" stroke-width="2"/>`;});
   const mx=Math.max(1,...v.deb.map(e=>e[1]));
   v.deb.forEach(([dt,c])=>{g+=`<circle cx="${x(dt).toFixed(1)}" cy="${rij.deb}" r="${(2+Math.sqrt(c/mx)*16).toFixed(1)}" fill="#00811F" fill-opacity=".35" stroke="#00811F"><title>${fd(dt)}: ${c} keer genoemd</title></circle>`;});
   v.mot.forEach(([dt,s])=>{g+=`<rect x="${(x(dt)-1.5).toFixed(1)}" y="${rij.mot-14}" width="3" height="28" fill="${s==='a'?'#00811F':s==='v'?'#9DAFB6':'#DBE7EA'}"><title>${fd(dt)}: motie ${s==='a'?'aangenomen':s==='v'?'verworpen':'ingetrokken of aangehouden'}</title></rect>`;});
@@ -121,7 +121,7 @@ function tijdlijnSvg(d){
 function afhSvg(d){
   const pj=d.verdieping.pj,ys=Object.keys(pj),W=520,H=170,L=30,B=24,mx=Math.max(1,...ys.map(y=>pj[y][0])),bw=(W-L)/ys.length,y=v=>H-B-(v/mx)*(H-B-14);let g='';
   ys.forEach((yr,i)=>{const [a,af]=pj[yr],xx=L+i*bw+bw*.2,w=bw*.6;
-    g+=`<rect x="${xx}" y="${y(a)}" width="${w}" height="${H-B-y(a)}" fill="#EDB500" stroke="#6b5200" stroke-width=".5"><title>${yr}: ${a} aangenomen, ${a-af} nog open</title></rect><rect x="${xx}" y="${y(af)}" width="${w}" height="${H-B-y(af)}" fill="#00811F"><title>${yr}: ${af} afgedaan</title></rect><text x="${xx+w/2}" y="${H-7}" text-anchor="middle" font-size="12">'${yr.slice(2)}</text>${a?`<text x="${xx+w/2}" y="${y(a)-4}" text-anchor="middle" font-size="11" fill="#3E4B50">${a}</text>`:''}`;});
+    g+=`<rect x="${xx}" y="${y(a)}" width="${w}" height="${H-B-y(a)}" fill="#EDB500" stroke="#6b5200" stroke-width=".5"><title>${yr}: ${a} aangenomen, ${a-af} nog open</title></rect><rect x="${xx}" y="${y(af)}" width="${w}" height="${H-B-y(af)}" fill="#00811F"><title>${yr}: ${af} afgedaan</title></rect><text x="${xx+w/2}" y="${H-7}" text-anchor="middle" font-size="12">'${yr.slice(2)}</text>${a?`<text x="${xx+w/2}" y="${y(a)-4}" text-anchor="middle" font-size="11" fill="currentColor" fill-opacity=".75">${a}</text>`:''}`;});
   return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Aangenomen moties per jaar en hoeveel daarvan afgedaan">${g}</svg>`;
 }
 function lijst(){

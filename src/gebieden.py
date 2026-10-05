@@ -179,6 +179,7 @@ def main():
                 s,mm=voorbeeld; ctx[k]=(mm.group(0),s,re.sub(r'\s+',' ',f[max(0,mm.start()-200):mm.end()+200]))
     tel=collections.Counter(); totaal=collections.Counter()
     for i,r in enumerate(m['d']):
+        if not r: continue   # vervallen document-id in de tekstindex
         k=f't:{i}'; s=S[r[0]]; totaal[s]+=1
         if s in WIJKRAAD:
             ws=alias.get(norm_raad(r[3])) or kort.get(W.n(norm_raad(r[3])))

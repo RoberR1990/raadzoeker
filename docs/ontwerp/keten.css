@@ -105,7 +105,7 @@
 .kmeer{font:15px var(--font);margin-top:8px;background:none;border:0;padding:6px 0;color:var(--groen-d);text-decoration:underline;cursor:pointer}
 .kfilter{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:4px 0 10px;font-size:14px}
 .kfilter button{font:14px var(--font);border:1px solid var(--lijn);background:var(--wit);border-radius:999px;padding:4px 12px;cursor:pointer;min-height:34px}
-.kfilter button[aria-pressed="true"]{background:var(--zwart);color:#fff;border-color:var(--zwart)}
+.kfilter button[aria-pressed="true"]{background:var(--zwart);color:var(--wit);border-color:var(--zwart)}
 /* stemtabel */
 .kstab{overflow-x:auto;border:1px solid var(--grijs2);border-radius:6px}
 .kstab table{border-collapse:collapse;font-size:13px;min-width:100%}

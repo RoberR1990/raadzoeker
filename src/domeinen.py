@@ -118,6 +118,7 @@ def main():
     iv,bbd,apd=ibabs_velden(); m,tekst=tekstdocs(); S=m['soorten']
     items=[]   # (sleutel, soort, datum, titel, wie, woorden, bronlabel, commissie)
     for i,r in enumerate(m['d']):
+        if not r: continue   # vervallen document-id in de tekstindex
         mm=re.search(r'/Item/([0-9a-f-]{36})',r[4] or ''); bb,com=iv.get(mm.group(1),([],'')) if mm else ([],'')
         dd=[BV[b] for b in bb if b in BV]
         items.append(dict(k=f't:{i}',soort=S[r[0]],datum=r[1],titel=r[2],wie=r[3],url=r[4],w=woorden(r[2],tekst(i)),bron=list(dict.fromkeys(dd)),com=com))

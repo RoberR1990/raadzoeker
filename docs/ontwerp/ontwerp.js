@@ -25,7 +25,7 @@ function kop(actief){
   fetch('../data/status.json',{cache:'no-store'}).then(r=>r.ok?r.json():null).then(st=>{if(!st||!st.laatste)return;const el=document.getElementById('bijgewerkt');if(!el)return;
     const d=new Date(st.laatste);el.textContent='bijgewerkt '+d.getDate()+' '+MND[d.getMonth()]+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');}).catch(()=>{});
   // rondleiding, hulpknop en welkomstvenster (tour.js)
-  if(!document.getElementById('rz-tour')){const t=document.createElement('script');t.id='rz-tour';t.src='tour.js?v=4';document.body.appendChild(t);const w=document.createElement('script');w.src='woorden.js?v=3';document.body.appendChild(w);const r=document.createElement('script');r.src='stad.js?v=3';document.body.appendChild(r);}
+  if(!document.getElementById('rz-tour')){const t=document.createElement('script');t.id='rz-tour';t.src='tour.js?v=5';document.body.appendChild(t);const w=document.createElement('script');w.src='woorden.js?v=3';document.body.appendChild(w);const r=document.createElement('script');r.src='stad.js?v=3';document.body.appendChild(r);}
   const ic=document.createElement('link');ic.rel='icon';ic.href='data:image/svg+xml,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 34 34"><rect width="34" height="34" rx="7" fill="#00811F"/><g transform="translate(0,7)">${LOGO().replace(/<\/?svg[^>]*>/g,'')}</g></svg>`);document.head.appendChild(ic);
 }
 /* zoeken in onderwerpen of gebieden; kiezen roept kies(d) aan */
