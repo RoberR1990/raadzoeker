@@ -34,7 +34,7 @@ def main():
     TH=[(g[0],t) for g in themes.T for t in g[1]]; R=[rx(t[1]) for _,t in TH]
     GEB=[k for k,(g,_) in enumerate(TH) if g=='Wijken en gebieden' and TH[k][1][0]!='Nationaal Programma Rotterdam Zuid']
     ONDERW=[k for k,(g,t) in enumerate(TH) if g!='Wijken en gebieden' and t[0]!='Toezeggingen']
-    OND=onderwerpen.actief(); NT=len(TH); R2=R+[onderwerpen.rx(pp) for _,pp in OND]   # concrete onderwerpen na de thema's
+    OND=onderwerpen.actief(); DW=onderwerpen.DWARS; NT=len(TH); R2=R+[onderwerpen.rx(pp) for _,pp in OND]+[onderwerpen.rx(pp) for _,pp,_ in DW]   # concrete onderwerpen na de thema's
     tsum={d['id']:d for f in glob.glob(f'{DATA}/tsum/out_*.json') for d in json.load(open(f,encoding='utf8'))}
     kaart=json.load(open(f'{DOCS}/ontwerp/kaart.json',encoding='utf8')); INW={g['naam']:g['inw'] for g in kaart['gebieden']}
     ST=zload(f'{DOCS}/data/ibabs/stukken.zst'); S=ST['soorten']
@@ -165,10 +165,24 @@ def main():
         d['verdieping']['ver']=[v for v in d['verdieping']['ver'] if v[0]!=d['groep']]   # eigen thema is geen verband
         d['ai']=os.path.exists(f'{DOCS}/ontwerp/samenvattingen/'+re.sub(r'[^a-z0-9]+','-',fold(naam)).strip('-')+'.json')
         ond.append(d)
+    # thema's dwars door de organisatie (onderwerpen.DWARS); korte samenvatting hergebruikt van het oude thema met dezelfde inhoud
+    OUD={'Participatie en inspraak':'Participatie & inspraak','Discriminatie en inclusie':'Discriminatie & inclusie','Integriteit en transparantie':'Integriteit & transparantie',
+         'Inkoop, aanbesteding en subsidie':'Inkoop, aanbesteding & subsidie','Rekenkamer, ombudsman en verantwoording':'Onderzoek & verantwoording',
+         'Innovatie en experimenten':'Innovatie & experimenten','Regio en Rijk':'Regio & Rijk'}
+    THK={t[0]:k for k,(_,t) in enumerate(TH)}
+    TSD={d['naam']:d for f in glob.glob(f'{DATA}/tsum/dwars_*.json') for d in json.load(open(f,encoding='utf8'))}   # nieuwe samenvattingen (op naam)
+    dw=[]
+    for j,(naam,pp,subs) in enumerate(DW):
+        k=NT+len(OND)+j; trn=[KY[k][y] for y in jaren]; tr=[round(KY[k][y]/max(1,WY[y])*1e5,1) for y in jaren]
+        pa=sorted([(p,round(c/max(1,WP[p])*1e5,1)) for p,c in KP[k].items() if WP[p]>20000],key=lambda x:-x[1])
+        ts=TSD.get(naam) or (tsum.get(THK[OUD[naam]]) if naam in OUD else None)
+        d=dossier(k,'Dwars door de organisatie',(naam,onderwerpen.termen(pp),[(sn,None) for sn,_ in subs]),tr,trn,pa,[],ts); d['soort']='thema'
+        d['ai']=os.path.exists(f'{DOCS}/ontwerp/samenvattingen/'+re.sub(r'[^a-z0-9]+','-',fold(naam)).strip('-')+'.json')
+        dw.append(d)
     # stadsbreed: onderwerpen per jaar (per 100.000 woorden)
     stad={y:sorted([[TH[k][1][0],I['ty'][k][j]] for k in ONDERW],key=lambda x:-x[1])[:6] for j,y in enumerate(jaren)}
     json.dump({'stand':STAND,'dossiers':out,'stad':stad},open(f'{DOCS}/ontwerp/dossiers.json','w',encoding='utf8'),ensure_ascii=False,separators=(',',':'))
-    json.dump({'stand':STAND,'onderwerpen':ond},open(f'{DOCS}/ontwerp/onderwerpen.json','w',encoding='utf8'),ensure_ascii=False,separators=(',',':'))   # concrete onderwerpen, apart geladen
+    json.dump({'stand':STAND,'onderwerpen':ond,'dwars':dw},open(f'{DOCS}/ontwerp/onderwerpen.json','w',encoding='utf8'),ensure_ascii=False,separators=(',',':'))   # concrete onderwerpen, apart geladen
     print('dossiers',len(out),os.path.getsize(f'{DOCS}/ontwerp/dossiers.json')//1000,'kB')
     lab(ST,S,I,TH,ONDERW,GEB)
     start(ST,S,I,meta,out,stad)

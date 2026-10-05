@@ -22,11 +22,17 @@ def main(ids,nn):
     dz=zstandard.ZstdDecompressor()
     data={y:json.loads(dz.decompress(open(f'{DOCS}/data/raad/{y}.zst','rb').read(),max_output_size=10**9)) for y in years}
     out=[]
+    import onderwerpen as OW
     for tid in ids:
-        groep,t=TH[tid]; R=rx(t[1]); rnd=random.Random(tid)
-        out.append(f'### THEMA id={tid} | groep: {groep} | naam: {t[0]}')
-        out.append('Zoektermen: '+t[1])
-        out.append('Trend (treffers per 100.000 gesproken woorden): '+', '.join(f'{y}: {v}' for y,v in zip(years,ins['ty'][tid])))
+        if tid>=100:   # thema dwars door de organisatie uit onderwerpen.DWARS (id 100+n)
+            naam,pp,_=OW.DWARS[tid-100]; R=OW.rx(pp); rnd=random.Random(tid)
+            out.append(f'### THEMA id={tid} | groep: Dwars door de organisatie | naam: {naam}')
+            out.append('Zoektermen: '+OW.termen(pp))
+        else:
+            groep,t=TH[tid]; R=rx(t[1]); rnd=random.Random(tid)
+            out.append(f'### THEMA id={tid} | groep: {groep} | naam: {t[0]}')
+            out.append('Zoektermen: '+t[1])
+            out.append('Trend (treffers per 100.000 gesproken woorden): '+', '.join(f'{y}: {v}' for y,v in zip(years,ins['ty'][tid])))
         for y in years:
             Y=data[y]; S=Y['s']; hits=[]
             for i,tx in enumerate(S['t']):

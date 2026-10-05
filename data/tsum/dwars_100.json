@@ -1,0 +1,57 @@
+[
+ {
+  "id": 100,
+  "kern": "In de raad staat de spanning centraal tussen digitalisering en veiligheid enerzijds, privacy en gegevensbescherming anderzijds. De fragmenten tonen bezorgdheid over discriminerende algoritmen, de nood aan transparantie en duidelijke spelregels voor kunstmatige intelligentie, en steeds meer aandacht voor cyberweerbaarheid van de stad.",
+  "ontwikkeling": [
+   {
+    "periode": "2018–2019",
+    "wat": "Privacy wordt gezien als mogelijk struikelblok voor efficiënt en veilig beleid. Er is discussie over data-gedreven werkwijzen en het SyRI-risicoprofileringssysteem.",
+    "citaat": "Je moet inspecteren volgens een bepaald algoritme omdat het ook echt nodig is om te inspecteren"
+   },
+   {
+    "periode": "2021",
+    "wat": "Een kritisch rekenkamerrapport 'Gekleurde technologie' waarschuwt voor discriminerende algoritmen in de gemeente. De raad vraagt om meer transparantie en begrijpelijke uitleg van algoritme-besluiten.",
+    "citaat": "Het gaat toch mis bij de gemeente Rotterdam. Dat zijn de woorden van de rekenkamer"
+   },
+   {
+    "periode": "2022",
+    "wat": "Invoering van een afwegingskader voor sensoren, datatoepassingen en AI; aandacht voor algoritme governance en waarborgen tegen misbruik.",
+    "citaat": "we bespreken het formuleren en implementeren van algoritme governance. Transparantie"
+   },
+   {
+    "periode": "2024",
+    "wat": "Vervolgonderzoek van de rekenkamer stelt vast dat discriminatie in zelflerende algoritmen niet volledig uit te sluiten is. Discussie over blijvende balans tussen innovatie en voorzichtigheid.",
+    "citaat": "bij zelflerende algoritmen discriminatie niet 100% uit te sluiten is"
+   },
+   {
+    "periode": "2025–2026",
+    "wat": "Ambitie voor Rotterdam AI Zone en mogelijk een AI Gigafactory in de haven. Parallel groeit bezorgdheid om cyberweerbaarheid en verdere cyberaanvallen.",
+    "citaat": "van Rotterdam een AI-stad te maken en uiteindelijk een AI-koploper"
+   }
+  ],
+  "standpunten": [
+   {
+    "wie": "D66",
+    "punt": "AI-toepassingen zijn welkom, maar alleen met duidelijke waarborgen, privacy en criteria; innovatie moet veilig kunnen groeien.",
+    "citaat": "we zijn geen tegenstander van de inzet van camera's en andere kunstmatige intelligentie-toepassingen, maar er moeten wel de juiste waarborgen en criteria voor gelden"
+   },
+   {
+    "wie": "VVD",
+    "punt": "Data-gedreven werkwijzen zijn belangrijk voor veiligheid en efficiëntie; meer investering in cyberweerbaarheid nodig.",
+    "citaat": "de gemeente in één keer een datagedreven overzicht krijgen van alle onveilige plekken in de stad"
+   },
+   {
+    "wie": "Leefbaar Rotterdam",
+    "punt": "Algoritmen zijn effectieve gereedschappen als ze goed ontworpen zijn, maar ook waarborgen voor privacy zijn essentieel.",
+    "citaat": "algoritmes gewoon zeer effectief kunnen werken als ze goed worden toegepast"
+   },
+   {
+    "wie": "Ahmed Aboutaleb (burgemeester)",
+    "punt": "Privacy en veiligheid moeten beide gediend worden; privacywetgeving moet burgers beschermen zonder criminelen te begunstigen.",
+    "citaat": "privacywetgeving echt in de toekomst te laten doen wat hij moet doen. Burgers beschermen en criminelen niet beschermen"
+   }
+  ],
+  "recent": "In 2025–2026 ontstaat een duidelijke ambitie voor Rotterdam als AI-koploper, inclusief onderzoek naar een AI Gigafactory in de haven. Tegelijk groeit de focus op cyberweerbaarheid als kritieke infrastructuur, onder druk van toenemende cyberaanvallen. De spanning tussen innovatie en voorzichtigheid rond algoritmen blijft centraal.",
+  "naam": "Digitalisering, data en AI"
+ }
+]
