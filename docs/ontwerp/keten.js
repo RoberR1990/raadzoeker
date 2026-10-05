@@ -5,17 +5,18 @@
 let KX=null,KD=null,KA=null,KSUB='',KWK=null,KKAART=null,KBEL='open',KAKK=null;
 const kslug=s=>slug(s);
 async function toonKeten(d,X,A){
-  KD=d;KX=X;KA=A;CIT=[];verberg();
+  KD=d;KX=X;KA=A;CIT=[];verberg();KLAAG='n';KJR='alle';if(KSPEEL){clearInterval(KSPEEL);KSPEEL=null;}
   if(!KWK){try{[KWK,KKAART]=await Promise.all(['wijken.json','kaart.json'].map(f=>fetch(f).then(r=>r.json())));}catch(e){}}
   if(!KAKK){try{const r=await fetch('akkoord.json');if(r.ok)KAKK=await r.json();}catch(e){}}
   const h=decodeURIComponent(location.hash.slice(1)).split('/');KSUB=X.sub.find(s=>kslug(s)===h[1])||'';
   document.title=d.naam+' · raadzoeker';
   const crumb=(d.pad||[]).map(([t,u])=>`<a href="${u}">${esc(t)}</a>`).join(' › ')+' › '+esc(d.naam);
-  const kinderen=ALLE.filter(x=>x.groep===d.naam);
+  const kinderen=ALLE.filter(x=>x.soort==='onderwerp'&&x.groep===d.naam),kr=d.soort==='domein'?ALLE.filter(x=>x.soort==='kruising'&&x.domein===d.slug):[];
   $('dossier').innerHTML=`<div class="crumb">${crumb}</div>
   <div class="kop"><h1>${esc(d.naam)}</h1>
     <div class="kopacties"><a class="knop" href="briefing.html#${d.slug}">Maak een briefing (A4, pdf of Word)</a><span class="sub" id="deelrij"></span>
       ${kinderen.length?`<span class="sub">Verdieping: ${kinderen.map(x=>`<a href="#${x.slug}">${esc(x.naam)}</a>`).join(' · ')}</span>`:''}
+      ${kr.length?`<span class="sub">Per gebied: ${kr.map(x=>`<a href="#${x.slug}">${esc(x.gebied)}</a>`).join(' · ')}</span>`:''}
       ${(X.verwant||[]).length?`<span class="sub">Verwant: ${X.verwant.map(s=>ALLE.find(x=>x.slug===s)).filter(Boolean).map(x=>`<a href="#${x.slug}">${esc(x.naam)}</a>`).join(' · ')}</span>`:''}</div></div>
   <nav class="kbalk" aria-label="Onderdelen van dit dossier"><div class="kin">
     <div class="ksub" role="group" aria-label="Filter op subthema"><span class="sub">Filter:</span><button type="button" data-sub="">Alles</button>${X.sub.map(s=>`<button type="button" data-sub="${esc(s)}">${esc(s)}</button>`).join('')}</div>
@@ -71,7 +72,7 @@ function kTeken(){
   // 1 kort: verhaal en stand
   const k=A&&A.kern||[];
   h+=`<section class="vlak ksec" id="k-kort" aria-labelledby="k-korth"><div class="kkort"><div><h2 id="k-korth">In het kort <span class="ai">AI-samenvatting</span></h2>
-      <p class="kern">${k.length?alinea(k.slice(0,-1)):esc(d.tsum?d.tsum.kern:'')}</p><p class="sub" style="font-size:13px;margin-top:8px">Wijs een zin aan of tik erop voor het letterlijke citaat en de bron.</p></div>
+      <p class="kern">${k.length?alinea(k.slice(0,-1)):d.tsum?esc(d.tsum.kern):'<span class="sub">De AI-samenvatting van dit dossier wordt nog gemaakt. Hieronder staat alles wat de raad zei, besloot en beloofde.</span>'}</p><p class="sub" style="font-size:13px;margin-top:8px">Wijs een zin aan of tik erop voor het letterlijke citaat en de bron.</p></div>
     <div>${k.length?`<section class="stand"><div class="t">Stand van zaken · AI</div><p>${zin(k[k.length-1])}</p></section>`:''}
       <div class="cijfers" style="margin-top:12px"><div class="cijfer"><span class="groot num">${nf(open.length)}</span>beloftes open<div class="sub">${laat.length?`<span class="stip laat"></span>${laat.length} over de termijn`:'geen over de termijn'}</div></div>
       <div class="cijfer"><span class="groot num">${nf(komt.length+vs.length)}</span>komt eraan<div class="sub">deadlines en voorstellen</div></div></div></div></div>
@@ -112,7 +113,11 @@ function kTeken(){
   // 7 in de stad
   const W=A&&A.wijken;
   h+=kSectie('stad','In de stad','','Waar in Rotterdam het over '+esc(d.naam.toLowerCase())+' gaat: wijkraadstukken, verkeersbesluiten en raadsstukken die de wijk noemen (alle subthema\'s). Klik op een wijk.',
-    `<div class="kstad"><div class="kkaart" id="kkaart"></div><div id="kwijk"><p class="sub">Klik op een wijk op de kaart.</p></div></div>`+
+    ((X.lagen||[]).length?`<div class="klagen" role="group" aria-label="Kaartlaag">${X.lagen.map(([id,t])=>`<button type="button" data-laag="${id}" aria-pressed="${id===KLAAG}">${esc(t)}</button>`).join('')}</div>
+      <div class="kjaar" id="kjaar" ${KLAAG==='vg'?'':'hidden'}><label for="kjr">Jaar</label><input type="range" id="kjr" min="2018" max="2026" step="1" value="${KJR}"><b id="kjrv">${KJR==='alle'?'alle jaren':KJR}</b><button type="button" class="knop wit klein" id="kspeel">▶ Afspelen</button><button type="button" class="wis" id="kalle">alle jaren</button></div>`:'')+
+    `<div class="kstad"><div class="kkaart" id="kkaart"></div><div id="kwijk"><p class="sub">Klik op een wijk${(X.projecten||[]).length?' of een project (●)':''} op de kaart.</p></div></div>`+
+    ((X.projecten||[]).length?`<h3 style="margin-top:20px">Grote projecten</h3><p class="sub" style="margin:0 0 8px">Waar de raad het over had, op de plek die de stukken het vaakst noemen. Klik voor de nieuwste stukken.</p><div class="kproj">${X.projecten.map((p,i)=>{const J=['2018','2019','2020','2021','2022','2023','2024','2025','2026'],m=Math.max(1,...J.map(j=>p.per[j]||0));
+      return `<button type="button" class="kp" data-proj="${i}"><b>${esc(p.naam)}</b><span class="sub">${esc(p.wijknaam)} · ${nf(p.n)} stukken</span><span class="kspark" aria-hidden="true">${J.map(j=>`<i style="height:${Math.max(2,(p.per[j]||0)/m*22)}px" title="${j}: ${p.per[j]||0}"></i>`).join('')}</span></button>`;}).join('')}</div>`:'')+
     (W&&W.punten&&W.punten.length?blok('kw','Signalen uit de wijken',`<p class="intro">${alinea(W.intro||[])}</p>`,W.punten.map(x=>`<div class="pt"><b>${esc(x.wijk)}</b> ${rijAI(x)}</div>`).join(''),`Toon ${W.punten.length} signalen`,true).replace('class="vlak deel"','class="deel binnen"'):''));
   // 8 achtergrond
   const T=A&&A.tijdlijn,O=A&&A.open;
@@ -120,26 +125,45 @@ function kTeken(){
   if(A&&A.verdieping&&A.verdieping.length)ach+=blok('kv','Meer diepgang',`<p class="intro">${alinea(A.verdieping[0])}</p>`,A.verdieping.length>1?`<div class="verd">${A.verdieping.slice(1).map(a=>`<p>${alinea(a)}</p>`).join('')}</div>`:'','Lees verder',true).replace('class="vlak deel"','class="deel binnen"');
   if(T&&T.punten&&T.punten.length)ach+=blok('kt','Tijdlijn',`<p class="intro">${alinea(T.intro||[])}</p>`,`<div class="tlr">${T.punten.map(x=>`<div class="d">${fd(x.bron_datum)}</div><div class="pt">${rijAI(x)}</div>`).join('')}</div><div style="margin-top:16px">${tijdlijnSvg(d)}</div>`,`Toon ${T.punten.length} momenten en de grafiek`,true).replace('class="vlak deel"','class="deel binnen"');
   if(O&&O.punten&&O.punten.length)ach+=blok('ko','Open eindjes',`<p class="intro">${alinea(O.intro||[])}</p>`,O.punten.map(x=>`<div class="pt">${rijAI(x)}</div>`).join(''),`Toon ${O.punten.length} punten`,true).replace('class="vlak deel"','class="deel binnen"');
-  ach+=blok('kcij','Cijfers',`<p class="intro">Aandacht per jaar en wie erover praat.</p>`,`<div class="cijferblok" style="margin-top:16px"><section class="grafiek"><h3>Aandacht per jaar</h3>${trendSvg(d)}<p class="sub">Keren genoemd per 100.000 gesproken woorden in de raad.</p></section><section><h3>Wie praat erover?</h3><div class="balken">${d.partijen.slice(0,8).map(p=>`<div class="balk2"><span>${esc(p[0])}</span><i style="width:${p[1]/Math.max(...d.partijen.map(q=>q[1]))*100}%"></i><span class="v num">${String(p[1]).replace('.',',')}</span></div>`).join('')}</div><p class="sub" style="margin-top:8px">Per 100.000 woorden van die fractie. Geen oordeel; alleen hoe vaak het onderwerp terugkomt.</p></section></div>`,'Toon cijfers').replace('class="vlak deel"','class="deel binnen"');
+  ach+=blok('kcij','Cijfers',`<p class="intro">Aandacht per jaar en wie erover praat.</p>`,`<div class="cijferblok" style="margin-top:16px"><section class="grafiek"><h3>Aandacht per jaar</h3>${trendSvg(d)}<p class="sub">${d.eenheid==='procent'?'Aandeel van alle gesproken woorden in de raad, in procenten.':'Keren genoemd per 100.000 gesproken woorden in de raad.'}</p></section><section><h3>Wie praat erover?</h3><div class="balken">${d.partijen.slice(0,8).map(p=>`<div class="balk2"><span>${esc(p[0])}</span><i style="width:${p[1]/Math.max(...d.partijen.map(q=>q[1]))*100}%"></i><span class="v num">${String(p[1]).replace('.',',')}</span></div>`).join('')}</div><p class="sub" style="margin-top:8px">${d.eenheid==='procent'?'Aandeel van de spreektijd van die fractie, in procenten.':'Per 100.000 woorden van die fractie.'} Geen oordeel; alleen hoe vaak het onderwerp terugkomt.</p></section></div>`,'Toon cijfers').replace('class="vlak deel"','class="deel binnen"');
   h+=kSectie('achtergrond','Achtergrond','','Het hele verhaal: meer diepgang, het verloop in de tijd, wat nog open is en de cijfers.',ach);
   $('kinh').innerHTML=h;
   kKaart();kVolg();
 }
+let KLAAG='n',KJR='alle',KSPEEL=null;
+function kWaarde(w){
+  if(KLAAG==='n')return Object.values(w.n||{}).reduce((a,b)=>a+b,0);
+  if(KLAAG==='vg')return KJR==='alle'?Object.values(w.vg||{}).reduce((a,b)=>a+b,0):((w.vg||{})[KJR]||0);
+  return w[KLAAG];
+}
 function kKaart(){
   if(!KWK||!KKAART||!$('kkaart'))return;
-  const n=w=>Object.values(w.n||{}).reduce((a,b)=>a+b,0),per=Object.fromEntries(KX.wijken.map(w=>[w.slug,w])),mx=Math.max(1,...KX.wijken.map(n));
-  $('kkaart').innerHTML=`<svg viewBox="0 0 ${KKAART.w} ${KKAART.h}" role="img" aria-label="Kaart van Rotterdam per wijk"><path class="h" d="${KKAART.havens}"/>${KWK.wijken.map(w=>{const x=per[w.slug],f=x?n(x)/mx:0;
-    return `<path class="wk" data-w="${w.slug}" d="${w.d}" tabindex="0" fill="${f>.6?'#004C31':f>.35?'#00811F':f>.15?'#4EB051':f>.05?'#99CCA0':'#E1EFE2'}"><title>${esc(w.naam)}: ${x?n(x):0}</title></path>`;}).join('')}<path class="w" d="${KKAART.water}"/></svg>
-    <p class="sub" style="margin-top:6px">Donkerder = vaker. Aantallen zijn een indicatie: 'genoemd in' klopt in ongeveer 9 van de 10 gevallen.</p>`;
+  const per=Object.fromEntries(KX.wijken.map(w=>[w.slug,w])),vals=KX.wijken.map(kWaarde).filter(v=>v!=null),mx=Math.max(1,...vals),mn=['huur','corp','woz'].includes(KLAAG)?Math.min(...vals):0;
+  const f=v=>v==null?null:(v-mn)/Math.max(1e-9,mx-mn),kl=x=>x==null?'#EFF4F6':x>.8?'#004C31':x>.6?'#00811F':x>.4?'#4EB051':x>.2?'#99CCA0':'#E1EFE2';
+  const laag=(KX.lagen||[]).find(l=>l[0]===KLAAG);
+  const proj=(KX.projecten||[]).map((p,i)=>`<g class="kpm" data-proj="${i}" tabindex="0" role="button" aria-label="${esc(p.naam)}"><circle cx="${p.lx}" cy="${p.ly}" r="${(4+Math.sqrt(p.n)/2).toFixed(1)}" fill="#00548F" fill-opacity=".85" stroke="#fff" stroke-width="1.5"/><title>${esc(p.naam)}: ${p.n} stukken</title></g>`).join('');
+  $('kkaart').innerHTML=`<svg viewBox="0 0 ${KKAART.w} ${KKAART.h}" role="img" aria-label="Kaart van Rotterdam per wijk"><path class="h" d="${KKAART.havens}"/>${KWK.wijken.map(w=>{const x=per[w.slug],v=x?kWaarde(x):null;
+    return `<path class="wk" data-w="${w.slug}" d="${w.d}" tabindex="0" fill="${kl(f(v))}"><title>${esc(w.naam)}: ${v==null?'geen gegevens':nf(Math.round(v*10)/10)}</title></path>`;}).join('')}<path class="w" d="${KKAART.water}"/>${proj}</svg>
+    <p class="sub" style="margin-top:6px">${laag?esc(laag[1])+': '+esc(laag[2])+'. ':''}Donkerder = meer${['huur','corp','woz'].includes(KLAAG)?'; cijfers ter vergelijking, geen oordeel':'. Aantallen zijn een indicatie: ‘genoemd in’ klopt in ongeveer 9 van de 10 gevallen'}.</p>`;
 }
 function kWijk(s){
   const x=KX.wijken.find(w=>w.slug===s);if(!x)return;
   document.querySelectorAll('#kkaart path.wk').forEach(p=>p.classList.toggle('sel',p.dataset.w===s));
-  const t={raad:'raadsstukken die de wijk noemen',wijkraad:'stukken van de wijkraad',verkeersbesluit:'verkeersbesluiten',besluit:'andere besluiten'};
+  const t={raad:'raadsstukken en debatten die de wijk noemen',wijkraad:'stukken van de wijkraad',verkeersbesluit:'verkeersbesluiten',besluit:'andere besluiten'};
+  const vg=x.vg?Object.values(x.vg).reduce((a,b)=>a+b,0):null;
   $('kwijk').innerHTML=`<h3>${esc(x.naam)} <span class="sub">· ${esc(x.gebied)}</span></h3>
-    <ul class="kn">${Object.entries(t).map(([k,l])=>`<li><b class="num">${nf((x.n||{})[k]||0)}</b> ${l}</li>`).join('')}</ul>
+    <ul class="kn">${Object.entries(t).filter(([k])=>(x.n||{})[k]).map(([k,l])=>`<li><b class="num">${nf(x.n[k])}</b> ${l}</li>`).join('')}${vg!=null?`<li><b class="num">${nf(vg)}</b> omgevingsvergunningen sinds 2018</li>`:''}</ul>
+    ${x.huur!=null?`<p class="sub" style="margin:8px 0 0">Ter vergelijking (CBS 2024): ${x.huur}% huurwoningen, ${x.corp}% van corporaties, WOZ € ${nf(Math.round(x.woz))}.000.</p>`:''}
     ${x.recent.length?`<p class="sub" style="margin:8px 0 4px">Laatste besluiten over ${esc(KD.naam.toLowerCase())}:</p>${x.recent.map(r=>`<div class="pt" style="font-size:14px;padding:6px 0"><span class="sub">${fd(r[0])}</span><br><a href="${esc(r[2])}" target="_blank" rel="noopener">${esc(r[1])}</a></div>`).join('')}`:''}
-    <p style="margin-top:8px"><a href="wijk.html#w-${x.slug}">Naar de wijk ${esc(x.naam)}</a> · <a href="zoek.html#q=${encodeURIComponent(KD.naam.toLowerCase()+' '+x.naam)}">Zoek in de stukken</a></p>`;
+    <p style="margin-top:8px"><a href="wijk.html#w-${x.slug}">Naar de wijk ${esc(x.naam)}</a> · <a href="zoek.html#q=${encodeURIComponent(x.naam)}&d=${encodeURIComponent(KD.domein||'')}">Zoek in de stukken</a></p>`;
+}
+function kProj(i){
+  const p=KX.projecten[i];if(!p)return;
+  document.querySelectorAll('.kp').forEach(b=>b.classList.toggle('on',b.dataset.proj===String(i)));
+  $('kwijk').innerHTML=`<h3>${esc(p.naam)} <span class="sub">· ${esc(p.wijknaam)}</span></h3><p class="sub">${nf(p.n)} stukken sinds 2018 die het project noemen. De nieuwste:</p>
+    ${p.recent.map(r=>`<div class="pt" style="font-size:14px;padding:6px 0"><span class="sub">${fd(r[0])} · ${esc(r[1])}</span><br><a href="${esc(r[3])}" target="_blank" rel="noopener">${esc(r[2])}</a></div>`).join('')}
+    <p style="margin-top:8px"><a href="zoek.html#q=${encodeURIComponent('"'+p.zoek.toLowerCase()+'"')}&vanaf=alle">Alle stukken over ${esc(p.zoek)}</a></p>`;
+  const k=$('kwijk');if(k.getBoundingClientRect().top<0||k.getBoundingClientRect().top>innerHeight)k.scrollIntoView({behavior:'smooth',block:'center'});
 }
 /* inhoudsbalk: markeer het onderdeel dat in beeld is */
 let KOBS=null;
@@ -154,8 +178,15 @@ document.addEventListener('click',e=>{
   const b=e.target.closest('[data-sub]');if(b){KSUB=b.dataset.sub;history.replaceState(null,'','#'+KD.slug+(KSUB?'/'+kslug(KSUB):''));const y=scrollY;kTeken();window.scrollTo({top:y});return;}
   const bl=e.target.closest('[data-bel]');if(bl){KBEL=bl.dataset.bel;const y=scrollY;kTeken();window.scrollTo({top:y});return;}
   const w=e.target.closest('#kkaart path.wk');if(w){kWijk(w.dataset.w);return;}
+  const pj=e.target.closest('[data-proj]');if(pj){kProj(+pj.dataset.proj);return;}
+  const lg=e.target.closest('[data-laag]');if(lg){KLAAG=lg.dataset.laag;document.querySelectorAll('[data-laag]').forEach(b=>b.setAttribute('aria-pressed',b===lg));$('kjaar').hidden=KLAAG!=='vg';kKaart();return;}
+  if(e.target.id==='kalle'){KJR='alle';$('kjrv').textContent='alle jaren';kKaart();return;}
+  if(e.target.id==='kspeel'){if(KSPEEL){clearInterval(KSPEEL);KSPEEL=null;e.target.textContent='▶ Afspelen';return;}
+    let j=2018;e.target.textContent='❚❚ Stop';const stap=()=>{KJR=String(j);$('kjr').value=j;$('kjrv').textContent=j;kKaart();j++;if(j>2026){clearInterval(KSPEEL);KSPEEL=null;e.target.textContent='▶ Afspelen';}};stap();KSPEEL=setInterval(stap,900);return;}
   const v=e.target.closest('[data-video]');if(v){kVideo(v.dataset.video,+v.dataset.sec,v.dataset.titel);}
 });
+document.addEventListener('input',e=>{if(e.target.id==='kjr'){KJR=e.target.value;$('kjrv').textContent=KJR;kKaart();}});
+document.addEventListener('keydown',e=>{const p=e.target.closest&&e.target.closest('[data-proj]');if(p&&p.tagName!=='BUTTON'&&(e.key==='Enter'||e.key===' ')){e.preventDefault();kProj(+p.dataset.proj);}});
 document.addEventListener('keydown',e=>{const w=e.target.closest&&e.target.closest('#kkaart path.wk');if(w&&(e.key==='Enter'||e.key===' ')){e.preventDefault();kWijk(w.dataset.w);}});
 /* videospeler: springt naar het moment (zelfde aanpak als het archief) */
 function kVideo(ref,sec,titel){
