@@ -78,6 +78,7 @@ Promise.all(['dossiers.json','kaart.json','wijken.json','d/overzicht.json','d/in
   $('kaart').addEventListener('click',e=>{const p=e.target.closest('path.wk');if(p)kies(p.dataset.s);});
   $('kaart').addEventListener('keydown',e=>{const p=e.target.closest('path.wk');if(p&&(e.key==='Enter'||e.key===' ')){e.preventDefault();kies(p.dataset.s);}});
   zoeklijst($('zoek'),$('keuze'),()=>[...G(),...W],x=>{location.hash=x.slug&&x.d?'w-'+x.slug:slug(x.naam);});
+  const qg=new URLSearchParams(location.search).get('g');if(qg)history.replaceState(null,'',location.pathname+'#'+qg);   // ?g= overleeft het inloggen
   const route=()=>{const h=decodeURIComponent(location.hash.slice(1));
     if(h.startsWith('w-')){const x=W.find(o=>o.slug===h.slice(2));if(x)return toonWijk(x);}
     toon(uitHash(G())||G().find(x=>x.naam==='Charlois'));};

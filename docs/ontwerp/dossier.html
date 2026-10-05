@@ -65,7 +65,7 @@ table.tafel .bar i{display:block;height:8px;background:var(--groen);border-radiu
 </main>
 <script src="ontwerp.js?v=8"></script>
 <script src="ai.js?v=1"></script>
-<script src="keten.js?v=3"></script>
+<script src="keten.js?v=4"></script>
 <script>
 kop('domeinen');
 let DATA={stand:STAND},ALLE=[],KAART=null,CUR=null,SOORT='mot',FILTER='open';
@@ -76,6 +76,8 @@ Promise.all(['d/index.json','kaart.json'].map(f=>fetch(f).then(r=>r.json()))).th
   $('vast').innerHTML='<span class="sub" style="align-self:center">Veel gekozen:</span>'+VAST.map(s=>`<a href="#${s}">${esc(nm(s))}</a>`).join('')+
     (ai.length?'<span class="sub" style="align-self:center;margin-left:8px">Met AI-samenvatting:</span>'+ai.map(x=>`<a href="#${x.slug}">${esc(x.naam)}</a>`).join(''):'');
   zoeklijst($('zoek'),$('keuze'),()=>ALLE,x=>{location.hash=x.slug;});
+  // ?d=slug overleeft het inloggen via Cloudflare Access (het deel na # niet); zet het om naar #slug
+  const qd=new URLSearchParams(location.search).get('d');if(qd)history.replaceState(null,'',location.pathname+'#'+qd);
   let h=decodeURIComponent(location.hash.slice(1)).split('/')[0];if(!ALLE.some(x=>x.slug===h)){h='';try{h=localStorage.getItem('rz-dossier')||'';}catch(e){}}
   laad(ALLE.some(x=>x.slug===h)?h:'parkeren');
 });
@@ -229,7 +231,7 @@ async function toon(d){
   $('mini').innerHTML=`<svg viewBox="0 0 ${KAART.w} ${KAART.h}"><path class="h" d="${KAART.havens}"/>${KAART.gebieden.map(g=>{const v=Wk[g.naam]||0,f=v/wm;return `<a href="${isDom&&ALLE.some(x=>x.slug===d.slug+'--'+slug(g.naam))?'#'+d.slug+'--'+slug(g.naam):'wijk.html#'+slug(g.naam)}"><path class="g" d="${g.d}" fill="${f>.75?'#004C31':f>.5?'#00811F':f>.25?'#4EB051':f>.1?'#99CCA0':'#E1EFE2'}"><title>${esc(g.naam)}: in ${String(v).replace('.',',')}% van de spreekbeurten</title></path></a>`;}).join('')}<path class="w" d="${KAART.water}"/></svg>`;
   const t3=Object.entries(Wk).sort((a,b)=>b[1]-a[1]).slice(0,3);
   $('minitxt').textContent=t3.length&&t3[0][1]>0?`${pct?'Het vaakst genoemd':'Valt het vaakst samen met'}: ${t3.map(x=>x[0]).join(', ')}. Donkerder is vaker; klik op een gebied.`:'Geen duidelijke koppeling met gebieden.';}
-  deel($('deelrij'),d.naam+' in de Rotterdamse raad',new URL('dossier.html#'+d.slug,location.href).href);
+  deel($('deelrij'),d.naam+' in de Rotterdamse raad',new URL('dossier.html?d='+d.slug,location.href).href);
   lijst();zetVast();window.scrollTo({top:0});
 }
 </script>
