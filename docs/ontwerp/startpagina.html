@@ -58,7 +58,7 @@
       <button type="submit" name="waar" value="debat">Zoek in debatten</button><button type="submit" name="waar" value="stuk" class="wit">Zoek in stukken</button></form>
     <div class="waarom">
       <a href="dossier.html?d=handhaving-en-toezicht"><b>Wat is er beloofd?</b><span>Per dossier de moties en toezeggingen, met wat het college ermee deed en wat over de termijn is.</span></a>
-      <a href="../raadzoeker.html#q=deelscooters"><b>Wie zei wat?</b><span>Zoek op elk woord in elk debat en spring naar het moment in de video.</span></a>
+      <a href="zoek.html?q=deelscooters"><b>Wie zei wat?</b><span>Zoek op elk woord in elk debat en spring naar het moment in de video.</span></a>
       <a href="wijk.html?g=delfshaven"><b>Wat speelt er in mijn wijk?</b><span>Per gebied en wijk wat de raad en de wijkraad bespraken, met een samenvatting.</span></a>
       <a href="akkoord.html"><b>Wat wil het nieuwe college?</b><span>Het coalitieakkoord 2026–2030 in het kort, per domein, naast wat er al gebeurde.</span></a>
     </div>
@@ -89,7 +89,7 @@ Promise.all(['d/overzicht.json','d/index.json','start.json'].map(f=>fetch(f).the
   const ALLE=IX.d.filter(x=>x.soort!=='kruising').map(x=>Object.assign({sub:[],termen:''},x));
   zoeklijst($('zoek'),$('keuze'),()=>ALLE,x=>{location.href='dossier.html#'+x.slug;});
   $('zf').addEventListener('submit',e=>{e.preventDefault();const q=$('zoek').value.trim();if(!q)return;
-    location.href=(e.submitter&&e.submitter.value==='stuk')?'zoek.html#q='+encodeURIComponent(q):'../raadzoeker.html#q='+encodeURIComponent(q);});
+    location.href='zoek.html?q='+encodeURIComponent(q)+((e.submitter&&e.submitter.value==='stuk')?'&tab=stukken':'');});
   // woordwolk: grootte per soort geschaald (wortel), stijgers met pijl
   const W=O.wolk||[],sc={};['onderwerp','gebied'].forEach(t=>{const v=W.filter(x=>x[1]===t).map(x=>x[3]);sc[t]=[Math.min(...v),Math.max(...v)];});
   const volg=[];[...W].sort((a,b)=>b[3]/sc[b[1]][1]-a[3]/sc[a[1]][1]).forEach((x,i)=>i%2?volg.unshift(x):volg.push(x));
@@ -109,6 +109,6 @@ Promise.all(['d/overzicht.json','d/index.json','start.json'].map(f=>fetch(f).the
     <div class="cijfer"><span class="groot num">${nf(S.toez_open)}</span>toezeggingen open<div class="sub">${nf(S.toez_laat)} over de termijn</div></div>`;
   // opkomende woorden
   $('woorden').innerHTML=S.rise.slice(0,6).map(w=>{const v=w[3],m=Math.max(...v),pts=v.map((x,i)=>`${(i/(v.length-1)*76+2).toFixed(1)},${(20-(x/m)*18).toFixed(1)}`).join(' ');
-    return `<a href="zoek.html#q=${encodeURIComponent(w[0])}"><span>${esc(w[0])} <span class="sub num">${w[1]}×</span></span><svg viewBox="0 0 80 22" aria-hidden="true"><polyline points="${pts}" fill="none" stroke="#00811F" stroke-width="2"/></svg></a>`;}).join('');
+    return `<a href="zoek.html?q=${encodeURIComponent(w[0])}"><span>${esc(w[0])} <span class="sub num">${w[1]}×</span></span><svg viewBox="0 0 80 22" aria-hidden="true"><polyline points="${pts}" fill="none" stroke="#00811F" stroke-width="2"/></svg></a>`;}).join('');
 });
 </script></body></html>
