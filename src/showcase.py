@@ -184,7 +184,7 @@ def main(slug='parkeren'):
     if CFG.get('projecten'):
         import domeinen as DM
         m_,tekst_=DM.tekstdocs(); S_=m_['soorten']; WS={w['slug']:w for w in WK}
-        for pnaam,prx,*vast in CFG['projecten']:   # derde element: vaste wijk als de stukken een andere plek noemen
+        for pnaam,prx,*vaste_wijk in CFG['projecten']:   # derde element: vaste wijk als de stukken een andere plek noemen
             r_=re.compile(prx); docs=[]; wt=collections.Counter()
             for i,r in enumerate(m_['d']):
                 if r_.search(fold(r[2])) or (r[5] and r[5]<3000 and len(r_.findall(fold(tekst_(i))))>=2):
@@ -192,7 +192,7 @@ def main(slug='parkeren'):
                     for w,meth,n in LG.get(f't:{i}',[]):
                         if w in WS: wt[w]+=1
             if not docs or not wt: continue
-            w0=vast[0] if vast else wt.most_common(1)[0][0]; docs.sort(reverse=True)
+            w0=vaste_wijk[0] if vaste_wijk else wt.most_common(1)[0][0]; docs.sort(reverse=True)
             projecten.append({'naam':pnaam,'wijk':w0,'wijknaam':WS[w0]['naam'],'lx':WS[w0]['lx'],'ly':WS[w0]['ly'],'n':len(docs),
                               'per':dict(collections.Counter(d[0][:4] for d in docs)),'recent':docs[:5],'zoek':pnaam.split(' (')[0]})
     # stemgedrag per fractie (moties sinds 2022 met hoofdelijke stemming)
