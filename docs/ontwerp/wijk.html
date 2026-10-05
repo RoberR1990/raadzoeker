@@ -12,6 +12,8 @@
 .minikaart path.wk{fill:var(--groen-zacht);stroke:#fff;stroke-width:.8;cursor:pointer}
 .minikaart path.wk:hover{fill:var(--groen-mid)}.minikaart path.wk.sel{fill:var(--groen)}.minikaart path.wk.ing{fill:#99CCA0}
 .minikaart path.gr{fill:none;stroke:#000;stroke-width:1.2;pointer-events:none;opacity:.55}
+.minikaart path.g{stroke:#fff;stroke-width:1.5}.minikaart path.g:focus-visible{outline:none;stroke:#000;stroke-width:2}
+.minikaart path.wkl{fill:none;stroke:#fff;stroke-width:.5;opacity:.7;pointer-events:none}.minikaart path.wkl.sel{stroke:#000;stroke-width:1.6;opacity:1}
 .blok3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
 .kc{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px}
 .kc div{background:var(--grijs);border-radius:6px;padding:10px 12px;font-size:14px}
@@ -58,7 +60,7 @@
       <label for="zoek">Over welke wijk of welk gebied wil je meer weten?</label>
       <input id="zoek" type="text" placeholder="Bijvoorbeeld Tarwewijk, Nesselande, Charlois…" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="keuze" aria-autocomplete="list">
       <ul class="keuze" id="keuze" role="listbox" aria-label="Wijken en gebieden"></ul>
-      <p class="sub" style="margin-top:12px">Of klik op de kaart: 71 wijken in 14 gebieden (indeling Wijkprofiel Rotterdam). Kies daarna eventueel het hele gebied.</p>
+      <p class="sub" style="margin-top:12px">Of klik op een gebied op de kaart. Een wijk (71, indeling Wijkprofiel Rotterdam) vind je via het zoekveld of op de gebiedspagina.</p>
     </div>
     <div class="minikaart" id="kaart" aria-label="Kaart: kies een gebied"></div>
   </div>
@@ -73,10 +75,11 @@ let DATA=null,K=null,WK=null,CUR=null,SOORT='mot',FILTER='open',JAAR='alle',OV=n
 Promise.all(['dossiers.json','kaart.json','wijken.json','d/overzicht.json','d/index.json'].map(f=>fetch(f).then(r=>r.json()))).then(([d,k,w,ov,ix])=>{DATA=d;K=k;WK=w;OV=ov;IX=ix.d;
   const G=()=>DATA.dossiers.filter(x=>x.groep==='Wijken en gebieden'&&x.inw!==undefined);
   const W=WK.wijken.map(x=>({...x,groep:'wijk in '+x.gebied,sub:[],termen:(x.zoek||[]).join(' ')+' '+x.gebied}));
-  $('kaart').innerHTML=`<svg viewBox="0 0 ${K.w} ${K.h}"><path class="h" d="${K.havens}"/>${W.map(x=>`<path class="wk" data-s="${x.slug}" d="${x.d}" tabindex="0" role="button" aria-label="${esc(x.naam)}, ${esc(x.gebied)}"><title>${esc(x.naam)} (${esc(x.gebied)})</title></path>`).join('')}${K.gebieden.map(g=>`<path class="gr" d="${g.d}"/>`).join('')}<path class="w" d="${K.water}"/></svg>`;
+  // kaart per gebied (14); de wijkgrenzen staan er dun in ter oriëntatie. Een wijk kies je via de zoeklijst of de lijst op de gebiedspagina.
+  $('kaart').innerHTML=`<svg viewBox="0 0 ${K.w} ${K.h}"><path class="h" d="${K.havens}"/>${K.gebieden.map(g=>`<path class="g" data-n="${esc(g.naam)}" d="${g.d}" tabindex="0" role="button" aria-label="${esc(g.naam)}"><title>${esc(g.naam)}</title></path>`).join('')}${W.map(x=>`<path class="wkl" data-s="${x.slug}" d="${x.d}"/>`).join('')}<path class="w" d="${K.water}"/></svg>`;
   const kies=s=>{location.hash='w-'+s;};
-  $('kaart').addEventListener('click',e=>{const p=e.target.closest('path.wk');if(p)kies(p.dataset.s);});
-  $('kaart').addEventListener('keydown',e=>{const p=e.target.closest('path.wk');if(p&&(e.key==='Enter'||e.key===' ')){e.preventDefault();kies(p.dataset.s);}});
+  $('kaart').addEventListener('click',e=>{const p=e.target.closest('path.g');if(p)location.hash=slug(p.dataset.n);});
+  $('kaart').addEventListener('keydown',e=>{const p=e.target.closest('path.g');if(p&&(e.key==='Enter'||e.key===' ')){e.preventDefault();location.hash=slug(p.dataset.n);}});
   zoeklijst($('zoek'),$('keuze'),()=>[...G(),...W],x=>{location.hash=x.slug&&x.d?'w-'+x.slug:slug(x.naam);});
   const qg=new URLSearchParams(location.search).get('g');if(qg)history.replaceState(null,'',location.pathname+'#'+qg);   // ?g= overleeft het inloggen
   const route=()=>{const h=decodeURIComponent(location.hash.slice(1));
@@ -130,7 +133,7 @@ function wpTabel(d){if(!d)return '';
     return `<div><b>${k[0].toUpperCase()+k.slice(1)}: ${x.index}</b>${x.algemeen?`<div class="sub">${esc(x.algemeen[0])}: ${x.algemeen[1]}</div>`:''}<table><thead><tr><th></th><th>beleving</th><th>feitelijk</th></tr></thead><tbody>${ks.map(s=>`<tr><td>${esc(s)}</td><td>${x.subjectief[s]??'–'}</td><td>${(x.objectief||{})[s]??'–'}</td></tr>`).join('')}</tbody></table></div>`;}).join('')+'</div>';}
 function toonWijk(w){
   CUR=null;document.title=w.naam+' · Wijken · raadzoeker';
-  document.querySelectorAll('#kaart path.wk').forEach(p=>{p.classList.toggle('sel',p.dataset.s===w.slug);p.classList.toggle('ing',p.dataset.s!==w.slug&&WK.wijken.find(o=>o.slug===p.dataset.s).gebied===w.gebied);});
+  document.querySelectorAll('#kaart path.g').forEach(p=>p.classList.toggle('sel',p.dataset.n===w.gebied));document.querySelectorAll('#kaart path.wkl').forEach(p=>p.classList.toggle('sel',p.dataset.s===w.slug));
   const jC=['2022','2023','2024','2025'],laatste=[...jC].reverse().find(j=>w.cbs[j]&&w.cbs[j].inw)||'2024',c=w.cbs[laatste]||{};
   const jr=WK.jaren,n=jr.map(j=>w.n[j]||0),nmx=Math.max(1,...n);
   const pol=w.politie||{},pj=['2018','2019','2020','2021','2022','2023','2024','2025'];
@@ -191,7 +194,7 @@ function onderwerpen(){
   $('ond').innerHTML=l.length?l.map(([n,c])=>`<a href="dossier.html#${slug(n)}"><span>${esc(n)}<i style="width:${c/mx*100}%"></i></span><span class="num sub" style="text-align:right">${c}</span></a>`).join(''):'<p class="leeg">Te weinig gegevens voor dit jaar.</p>';
 }
 function toon(d){
-  document.querySelectorAll('#kaart path.wk').forEach(p=>{const g=WK.wijken.find(o=>o.slug===p.dataset.s).gebied;p.classList.remove('sel');p.classList.toggle('ing',g===d.naam);});
+  document.querySelectorAll('#kaart path.wkl').forEach(p=>p.classList.remove('sel'));
   CUR=d;FILTER='open';document.title=d.naam+' · Wijken · raadzoeker';
   if(location.hash.slice(1)!==slug(d.naam))history.replaceState(null,'','#'+slug(d.naam));
   document.querySelectorAll('#kaart path.g').forEach(p=>p.classList.toggle('sel',p.dataset.n===d.naam));

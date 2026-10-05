@@ -165,6 +165,13 @@ def main():
         pad=[['Domeinen','domeinen.html'],[DN[ds],'#'+slug(DN[ds])]]+([['Parkeren','#parkeren']] if o['groep']=='Parkeren' else [])
         sl=slug(o['naam']); x=dict(o,groep='Parkeren' if o['groep']=='Parkeren' else DN[ds],pad=pad,stand=STAND,ai=os.path.exists(os.path.join(DOCS,'ontwerp','samenvattingen',sl+'.json')))
         schrijf(sl+'.json',x); index.append({'slug':sl,'naam':o['naam'],'groep':x['groep'],'soort':'onderwerp','domein':slug(DN[ds]),'ai':x['ai'],'sub':[],'termen':o['termen']})
+    # woordwolk voor de startpagina: onderwerpen en gebieden, grootte = aandacht in de raad dit jaar (per 100.000 woorden)
+    wolk=[]
+    for o in ond+[pk]:
+        if len(o.get('trend',[]))>=2 and o['naam']!='Wijkraden en participatie': wolk.append([o['naam'],'onderwerp',slug(o['naam']),o['trend'][-1],o['trend'][-2],bool(os.path.exists(os.path.join(DOCS,'ontwerp','samenvattingen',slug(o['naam'])+'.json')))])
+    for o in dos:
+        if o['groep']=='Wijken en gebieden' and o['naam'] in GNAAM.values(): wolk.append([o['naam'],'gebied',slug(o['naam']),o['trend'][-1],o['trend'][-2],bool(os.path.exists(os.path.join(DOCS,'ontwerp','samenvattingen',slug(o['naam'])+'.json')))])
+    overzicht['wolk']=wolk
     schrijf('index.json',{'stand':STAND,'d':index}); schrijf('overzicht.json',overzicht)
     # filters voor Zoeken: per document in de tekstindex het domein en de gebieden (bitmasker)
     import zstandard

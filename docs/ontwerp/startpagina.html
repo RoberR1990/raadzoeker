@@ -11,6 +11,18 @@
 .zoekrij input{width:100%;font:18px var(--font);padding:14px 18px;border:2px solid var(--zwart);border-radius:999px}
 .zoekrij button{font:700 16px var(--font);background:var(--groen);color:var(--wit);border:0;border-radius:999px;padding:0 24px;min-height:52px;cursor:pointer}
 .hero .sub a{color:var(--sub)}
+.hero .lead{font-size:18px;line-height:1.55;max-width:78ch;margin:0}
+.zoekrij button.wit{background:var(--wit);color:var(--groen-d);border:2px solid var(--groen)}
+.waarom{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.waarom a{display:grid;gap:4px;text-decoration:none;border:1px solid var(--lijn);border-radius:8px;padding:12px 14px;background:var(--grijs)}
+.waarom a:hover{border-color:var(--groen)}.waarom b{font-size:16px}.waarom span{font-size:14px;color:var(--sub)}
+.wolk{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;justify-content:center;padding:8px 0}
+.wolk a{text-decoration:none;line-height:1.1;color:var(--groen-d);padding:2px 4px;border-radius:4px}
+.wolk a.geb{color:var(--blauw)}
+.wolk a:hover{background:var(--groen-zacht);text-decoration:underline}
+.wolk a .st{font-size:.6em;vertical-align:super;color:var(--laat)}
+.wolk a .ai{font-size:10px;vertical-align:super;margin-left:2px}
+@media (max-width:980px){.waarom{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .twee{display:grid;gap:24px;margin-top:24px}
 .drie{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;align-items:start}
 .twee>*{min-width:0}
@@ -38,14 +50,23 @@
 <main class="pagina">
   <section class="hero">
     <h1>Wat zei en besloot de Rotterdamse raad?</h1>
+    <p class="lead">De raadzoeker zet alles wat de gemeenteraad sinds 2018 zei, besloot en beloofde op één plek. <b>Elk woord uit de debatten is doorzoekbaar</b>: de woordelijke notulen van de raad en de ondertiteling van de commissievergaderingen, samen ruim 32 miljoen woorden, met een link naar het moment in de video. Daarnaast 44.500 stukken: moties, toezeggingen, collegebrieven, schriftelijke vragen met het antwoord, raadsvoorstellen en stukken van de wijkraden.</p>
     <form class="zoekrij" id="zf" role="search">
       <div class="zoekveld"><label for="zoek" class="sub" style="position:absolute;left:-9999px">Zoek</label>
-        <input id="zoek" type="search" placeholder="Zoek een onderwerp, of in alle stukken…" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="keuze" aria-autocomplete="list">
+        <input id="zoek" type="search" placeholder="Zoek een onderwerp, een woord of een naam…" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="keuze" aria-autocomplete="list">
         <ul class="keuze" id="keuze" role="listbox" aria-label="Dossiers"></ul></div>
-      <button type="submit">Zoek</button></form>
-    <p class="nieuw"><span class="ai" style="background:var(--blauw);color:#fff">Nieuw</span> <a href="akkoord.html">Het coalitieakkoord 2026–2030 ‘Vaart maken’ in het kort</a>: wat het nieuwe college van plan is, per domein.</p>
-    <p class="sub">Of begin bij een <a href="domeinen.html">domein</a> of een <a href="wijk.html">gebied</a>. Debatten, moties, toezeggingen, brieven en wijkraadstukken sinds 2018.</p>
+      <button type="submit" name="waar" value="debat">Zoek in debatten</button><button type="submit" name="waar" value="stuk" class="wit">Zoek in stukken</button></form>
+    <div class="waarom">
+      <a href="dossier.html?d=handhaving-en-toezicht"><b>Wat is er beloofd?</b><span>Per dossier de moties en toezeggingen, met wat het college ermee deed en wat over de termijn is.</span></a>
+      <a href="../raadzoeker.html#q=deelscooters"><b>Wie zei wat?</b><span>Zoek op elk woord in elk debat en spring naar het moment in de video.</span></a>
+      <a href="wijk.html?g=delfshaven"><b>Wat speelt er in mijn wijk?</b><span>Per gebied en wijk wat de raad en de wijkraad bespraken, met een samenvatting.</span></a>
+      <a href="akkoord.html"><b>Wat wil het nieuwe college?</b><span>Het coalitieakkoord 2026–2030 in het kort, per domein, naast wat er al gebeurde.</span></a>
+    </div>
+    <p class="sub">Of begin bij een <a href="domeinen.html">domein of onderwerp</a> of een <a href="wijk.html">gebied</a>. Onofficieel hulpmiddel op openbare informatie; elke bewering is één klik van de bron.</p>
   </section>
+  <section class="vlak" style="margin-top:24px" aria-labelledby="hw"><h2 id="hw">Waar praat de raad over in 2026?</h2>
+    <p style="margin:6px 0 12px;max-width:72ch">Groter is vaker besproken in de raad dit jaar (gemeten per 100.000 gesproken woorden). Een pijl betekent duidelijk meer dan vorig jaar. Groen zijn onderwerpen, blauw zijn gebieden.</p>
+    <div class="wolk" id="wolk"></div></section>
   <div class="twee">
     <section class="vlak">
       <h2>Waar speelt wat?</h2>
@@ -67,7 +88,13 @@ kop('');
 Promise.all(['d/overzicht.json','d/index.json','start.json'].map(f=>fetch(f).then(r=>r.json()))).then(([O,IX,S])=>{
   const ALLE=IX.d.filter(x=>x.soort!=='kruising').map(x=>Object.assign({sub:[],termen:''},x));
   zoeklijst($('zoek'),$('keuze'),()=>ALLE,x=>{location.href='dossier.html#'+x.slug;});
-  $('zf').addEventListener('submit',e=>{e.preventDefault();const q=$('zoek').value.trim();if(q)location.href='zoek.html#q='+encodeURIComponent(q);});
+  $('zf').addEventListener('submit',e=>{e.preventDefault();const q=$('zoek').value.trim();if(!q)return;
+    location.href=(e.submitter&&e.submitter.value==='stuk')?'zoek.html#q='+encodeURIComponent(q):'../raadzoeker.html#q='+encodeURIComponent(q);});
+  // woordwolk: grootte per soort geschaald (wortel), stijgers met pijl
+  const W=O.wolk||[],sc={};['onderwerp','gebied'].forEach(t=>{const v=W.filter(x=>x[1]===t).map(x=>x[3]);sc[t]=[Math.min(...v),Math.max(...v)];});
+  const volg=[];[...W].sort((a,b)=>b[3]/sc[b[1]][1]-a[3]/sc[a[1]][1]).forEach((x,i)=>i%2?volg.unshift(x):volg.push(x));
+  $('wolk').innerHTML=volg.map(([n,t,sl,nu,vo,ai])=>{const [lo,hi]=sc[t],f=Math.sqrt((nu-lo)/Math.max(1e-9,hi-lo)),stijg=vo>0&&nu/vo>=1.25&&nu>=lo+(hi-lo)*.1;
+    return `<a class="${t==='gebied'?'geb':''}" href="${t==='gebied'?'wijk.html?g='+sl:'dossier.html?d='+sl}" style="font-size:${(14+f*26).toFixed(0)}px;font-weight:${f>.5?700:400}" title="${esc(n)}: ${String(nu).replace('.',',')} per 100.000 woorden in 2026 (${String(vo).replace('.',',')} in 2025)">${esc(n)}${stijg?'<span class="st" aria-label="stijgt">▲</span>':''}${ai?'<span class="ai">AI</span>':''}</a>`;}).join('');
   // matrix domein x gebied
   const G=O.gebieden,heeft=new Set(IX.d.filter(x=>x.soort==='kruising').map(x=>x.slug));
   $('mat').innerHTML=`<thead><tr><th></th>${G.map(g=>`<th><span>${esc(g)}</span></th>`).join('')}</tr></thead><tbody>`+O.domeinen.map(d=>{
