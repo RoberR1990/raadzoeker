@@ -30,6 +30,11 @@ def toets(i):
 if __name__=='__main__':
     schrijf='--schrijf' in sys.argv; ids=[int(x) for x in sys.argv[1:] if x!='--schrijf']
     res={i:toets(i) for i in ids}
+    if schrijf and all(i>=100 for i in ids):   # dwars-thema's: op naam in data/tsum/dwars_<id>.json
+        import onderwerpen as OW
+        for i in ids:
+            d=dict(res[i],naam=OW.DWARS[i-100][0]); json.dump([d],open(f'{DATA}/tsum/dwars_{i}.json','w',encoding='utf8'),ensure_ascii=False,indent=1)
+        print('geschreven'); sys.exit()
     if schrijf:
         for bb in sorted({BATCH[i] for i in ids}):
             f=f'{DATA}/tsum/out_{bb}.json'; L=json.load(open(f,encoding='utf8')) if os.path.exists(f) else []

@@ -171,8 +171,7 @@ def main():
         sl=slug(o['naam']); o=dict(o,tsum=o.get('tsum') or THS.get(o['groep']),tsum_thema=o['groep']); x=dict(o,groep='Parkeren' if o['groep']=='Parkeren' else DN[ds],pad=pad,stand=STAND,ai=os.path.exists(os.path.join(DOCS,'ontwerp','samenvattingen',sl+'.json')))
         schrijf(sl+'.json',x); index.append({'slug':sl,'naam':o['naam'],'groep':x['groep'],'soort':'onderwerp','domein':slug(DN[ds]),'ai':x['ai'],'sub':[],'termen':o['termen']})
     # thema's dwars door de organisatie (uit de 41 thema's, met hun korte samenvatting): eigen dossiers onder Domeinen
-    for o in dos:
-        if 'dwars' not in o['groep'].lower() or o['naam']=='Toezeggingen': continue
+    for o in json.load(open(os.path.join(DOCS,'ontwerp','onderwerpen.json'),encoding='utf8')).get('dwars',[]):
         sl=slug(o['naam'])
         x=dict(o,soort='thema',groep='Dwars door de organisatie',pad=[['Domeinen','domeinen.html'],['Dwars door de organisatie','domeinen.html#dwars']],stand=STAND,tsum_thema=o['naam'],
                ai=os.path.exists(os.path.join(DOCS,'ontwerp','samenvattingen',sl+'.json')))

@@ -49,6 +49,22 @@ O=[
  ('Wijkraden en participatie',[r'participatie',r'wijkraden',r'bewonersinitiatie']),
  ('Handhaving en toezicht',[r'handhav',r'boa\b',r"boa's",r'toezichthouder',r'stadswacht',r'bestuurlijke boete',r'bestuurlijke strafbeschikking',r'last onder dwangsom',r'bodycam']),   # voorbeelddossier, zie showcase.py
 ]
+# Thema's dwars door de organisatie (5-10-2026, herzien): scherper dan de oude thema's uit themes.py, zodat ze weinig overlappen
+# (gemeten met src/thema_overlap.py). AI, data en digitalisering samengevoegd; geen algemene woorden als 'monitor' of 'evaluatie'.
+DWARS=[
+ ('Digitalisering, data en AI',[r'kunstmatige intelligentie',r'artificial intelligence',r'ai\b',r'algoritme',r'chatgpt',r'taalmodel',r'machine learning',r'risicomodel',r'risicoprofiel',
+   r'privacy',r'avg\b',r'persoonsgegevens',r'datalek',r'gegevensbescherming',r'datagedreven',r'open data',r'digitalis',r'ict\b',r'cyber',r'glasvezel',r'smart city'],
+   [('AI en algoritmen',[r'kunstmatige intelligentie',r'artificial intelligence',r'ai\b',r'algoritme',r'chatgpt',r'taalmodel',r'machine learning',r'risicomodel',r'risicoprofiel']),
+    ('Privacy en data',[r'privacy',r'avg\b',r'persoonsgegevens',r'datalek',r'gegevensbescherming',r'datagedreven',r'open data']),
+    ('ICT en digitale dienstverlening',[r'digitalis',r'ict\b',r'cyber',r'glasvezel',r'smart city'])]),
+ ('Participatie en inspraak',[r'inspraak',r'participatietraject',r'participatieproces',r'participatieaanpak',r'burgerparticipatie',r'bewonersparticipatie',r'referendum',r'burgerberaad',r'burgerpanel',r'bewonersinitiatie',r'right to challenge'],[]),
+ ('Discriminatie en inclusie',[r'discriminatie',r'racisme',r'racistisch',r'inclusie',r'diversiteit',r'emancipatie',r'lhbt'],[]),
+ ('Integriteit en transparantie',[r'integriteit',r'geheimhouding',r'woo\b',r'transparant',r'klokkenluider',r'belangenverstrengeling',r'nevenfuncties'],[]),
+ ('Inkoop, aanbesteding en subsidie',[r'aanbested',r'inkoop',r'subsidie',r'leverancier',r'contractmanagement'],[]),
+ ('Rekenkamer, ombudsman en verantwoording',[r'rekenkamer',r'ombudsman',r'accountant',r'audit',r'doelmatigheid',r'jaarverslag',r'verantwoording'],[]),
+ ('Innovatie en experimenten',[r'innovatie',r'innovatief',r'experiment',r'proeftuin',r'pilot',r'start-?up'],[]),
+ ('Regio en Rijk',[r'metropoolregio',r'mrdh\b',r'provincie',r'rijksoverheid',r'vng\b',r'kabinet',r'het rijk\b'],[]),
+]
 def rx(pp): return re.compile(r'\b(?:'+'|'.join(pp)+r')')
 # Thema (themes.py) waaronder elk onderwerp valt; niet genoemde onderwerpen zijn geschrapt (te weinig bronnen of te breed).
 THEMA={'Deelscooters en deelfietsen':'Mobiliteit & verkeer','Parkeeroverlast en parkeerdruk':'Parkeren','Betaald parkeren en parkeervergunningen':'Parkeren',

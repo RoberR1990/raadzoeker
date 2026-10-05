@@ -32,7 +32,7 @@ html,body{height:100%;overflow:hidden}body{display:flex;flex-direction:column;ba
 .wist .lk{all:unset;cursor:pointer;color:#fff;font-weight:700;text-decoration:underline}
 .kn2{all:unset;box-sizing:border-box;cursor:pointer;flex:1;text-align:center;background:#22343B;border-radius:8px;padding:9px;font-size:13.5px;color:#fff}.kn2:hover{background:#2E4750}
 .meer{margin-top:8px;font-size:13.5px}.meer summary{cursor:pointer;color:var(--zacht)}
-#verras{position:absolute;right:14px;top:14px;z-index:4;background:#00811F;color:#fff;border:0;border-radius:999px;padding:10px 16px;font:700 14px var(--font);cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.35)}
+#verras{display:block;width:100%;margin:10px 0 2px;background:#00811F;color:#fff;border:0;border-radius:999px;padding:9px 14px;font:700 14px var(--font);cursor:pointer}#verras:hover{background:#00A028}
 #hint{position:absolute;left:50%;bottom:20px;transform:translateX(-50%);z-index:4;background:var(--paneel);color:var(--tekst);border-radius:12px;padding:10px 14px;font-size:13.5px;max-width:calc(100% - 28px);text-align:center}
 #hint button{all:unset;cursor:pointer;border:1px solid #33454C;border-radius:999px;padding:4px 10px;margin:4px 2px 0}
 .sluit{all:unset;cursor:pointer;float:right;font-size:20px;color:var(--zacht);line-height:1}
@@ -48,18 +48,18 @@ html,body{height:100%;overflow:hidden}body{display:flex;flex-direction:column;ba
 @media (max-width:760px){#zoom{left:auto;right:14px;bottom:14px}.clab{font-size:11px}#filters h1{font-size:17px}#filters{width:auto;right:14px;max-height:45%}#filters.dicht .inh{display:none}#klap{display:inline;all:unset;cursor:pointer;float:right;color:#8FE0A0}
   #info{left:0;right:0;width:auto;top:auto;bottom:0;max-height:none;height:56%;border-radius:16px 16px 0 0}
   #graaf.open #sg,#graaf.open #clabs{bottom:56%}#graaf.open #filters,#graaf.open #zoom,#graaf.open #verras,#graaf.open #hint{display:none}
-  .buren button{padding:7px 12px;font-size:14px}#verras{top:auto;bottom:14px;right:70px}}
-#graaf.open #verras{display:none}
+  .buren button{padding:7px 12px;font-size:14px}}
 @media (max-width:760px){body.vk-open .rzt-hulp{display:none}}
 </style></head><body>
 <header class="balk"></header>
 <div id="graaf">
-  <div id="sg"></div><div id="vklaad" data-laad="Effe alle verbanden leggen…" style="position:absolute;inset:0;display:grid;place-items:center;z-index:3;color:#9FB0B6"></div><div id="clabs"></div><button id="verras" type="button">🎲 Verras me</button><div id="hint"></div><div id="jaarbord"></div>
+  <div id="sg"></div><div id="vklaad" data-laad="Effe alle verbanden leggen…" style="position:absolute;inset:0;display:grid;place-items:center;z-index:3;color:#9FB0B6"></div><div id="clabs"></div><div id="hint"></div><div id="jaarbord"></div>
   <div class="pnl" id="filters"><button id="klap">filters</button>
     <h1>Verkenner <span class="tag" style="font-size:11px;background:#33454C;border-radius:4px;padding:1px 6px;font-weight:400">proef</span></h1>
+    <button id="verras" type="button">🎲 Verras me</button>
     <div class="inh">
       <p class="sub" style="margin:4px 0 0;font-size:13px">Alles wat de raad zei en schreef als één web. Begrippen die vaak samen vallen, staan dicht bij elkaar. Zoom in, wijs aan, klik.</p>
-      <label for="zk">Zoek een begrip</label><input id="zk" list="zkl" placeholder="bijv. wielklem, Tweebos, tramlijn" autocomplete="off"><datalist id="zkl"></datalist>
+      <label for="zk">Zoek een begrip</label><input id="zk" list="zkl" placeholder="bijv. scanauto, Tweebosbuurt, tramlijn" autocomplete="off"><datalist id="zkl"></datalist>
       <label for="fg">Gebied</label><select id="fg"><option value="">hele stad</option></select>
       <label for="fd">Domein</label><select id="fd"><option value="">alle domeinen</option></select>
       <label for="ff">Fractie (alleen debatten)</label><select id="ff"><option value="">alle fracties</option></select>
@@ -79,7 +79,7 @@ html,body{height:100%;overflow:hidden}body{display:flex;flex-direction:column;ba
   <aside class="pnl" id="info" aria-live="polite"></aside>
   <div id="zoom"><button id="zin" aria-label="Inzoomen">+</button><button id="zuit" aria-label="Uitzoomen">−</button><button id="zhel" aria-label="Alles tonen" style="font-size:14px">⤢</button></div>
 </div>
-<script src="ontwerp.js?v=18"></script>
+<script src="ontwerp.js?v=19"></script>
 <script src="lib/graphology.umd.min.js"></script>
 <script src="lib/sigma.min.js"></script>
 <script>

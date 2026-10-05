@@ -42,6 +42,7 @@ const KOP=[
   {s:'header nav a[href="zoek.html"]',t:'Zoeken',x:'Zoek in alles wat er in de raad en de commissies is gezegd en geschreven. Bij debatten spring je direct naar het moment in de video.'},
   {s:'header nav a[href="domeinen.html"]',t:'Domeinen',x:'Dossiers per beleidsveld en onderwerp: wat er is gezegd, besloten en beloofd, en wat ervan terechtkwam.'},
   {s:'header nav a[href="wijk.html"]',t:'Gebieden',x:'Kies een gebied of wijk: waar praat de raad over, wat vraagt de wijkraad, en een paar cijfers.'},
+  {s:'header nav a[href="lab.html"]',t:'Inzichten',x:'Grafieken over wat de raad doet, om te kopiëren in je eigen presentatie.'},
   {s:'header nav a[href="verkenner.html"]',t:'Verkenner',x:'Alles als één web van begrippen. Om rond te dwalen en verbanden te ontdekken.'},
   {s:'#bijgewerkt',t:'Altijd actueel',x:'Hier zie je hoe vers de gegevens zijn. De site werkt zichzelf elke paar uur bij.'},
   {s:'.rzt-hulp',t:'Hulp nodig?',x:'Via dit vraagteken start je deze uitleg opnieuw, per pagina, en vind je de veelgestelde vragen en een woordenlijst.'},
@@ -96,7 +97,7 @@ const STAP={
   akkoord:[{s:'#kern',t:'Het coalitieakkoord',x:'De kern van het akkoord, samengevat. Wijs een zin aan voor de letterlijke tekst en de pagina.'},{s:'#dom',t:'Per domein',x:'Wat het akkoord per domein van plan is, met een link naar het dossier.'}],
   briefing:[{s:'#a4',t:'Je briefing',x:'Een A4 met het belangrijkste uit het dossier.'},{s:'#print',t:'Exporteren',x:'Bewaar als pdf of open in Word en pas hem aan.'}],
 };
-const NAAM={startpagina:'de startpagina',zoek:'Zoeken',domeinen:'Domeinen',dossier:'dit dossier',wijk:'Gebieden',verkenner:'de Verkenner',lab:'het Lab',ideeen:'Ideeën',akkoord:'het akkoord',briefing:'de briefing'};
+const NAAM={startpagina:'de startpagina',zoek:'Zoeken',domeinen:'Domeinen',dossier:'dit dossier',wijk:'Gebieden',verkenner:'de Verkenner',lab:'Inzichten',ideeen:'Ideeën',akkoord:'het akkoord',briefing:'de briefing'};
 
 /* ---------- rondleiding ---------- */
 let T=null;
