@@ -6,7 +6,7 @@ import {C, F, ci, sp, inSchuif, Scene, Kop, Kaart, Zoekbalk, getypt, Mark} from 
 import X from './d2.json';
 import B from './d2b_ruw.json';
 
-export const DUUR2 = 480;
+export const DUUR2 = 510;
 const W = X.woonfraude;
 const getal = (s, f, a, b) => Math.round(+String(s).replace(/\./g, '') * ci(f, a, b)).toLocaleString('nl-NL');
 
@@ -50,13 +50,13 @@ const Diepte = () => {
 // kleine rood-witte knipoog bij Feyenoord, rond de zoekbalk
 const Knipoog = ({f, start}) => f < start ? null : (
   <>{Array.from({length: 26}, (_, i) => {const t = f - start, a = (i / 26) * Math.PI * 2, r = t * (7 + (i % 5));
-    return <div key={i} style={{position: 'absolute', left: 960 + Math.cos(a) * r * 1.6, top: 470 + Math.sin(a) * r * 0.7 + t * t * 0.08, width: 14, height: 7, background: i % 2 ? C.rood : '#fff', border: i % 2 ? 'none' : `1px solid ${C.lijn}`, transform: `rotate(${t * 12 + i * 30}deg)`, opacity: ci(f, start + 18, start + 34, 1, 0)}} />;})}</>
+    return <div key={i} style={{position: 'absolute', left: 960 + Math.cos(a) * r * 1.6, top: 470 + Math.sin(a) * r * 0.7 + t * t * 0.08, width: 14, height: 7, background: i % 2 ? C.rood : '#fff', border: i % 2 ? 'none' : `1px solid ${C.lijn}`, transform: `rotate(${t * 12 + i * 30}deg)`, opacity: ci(f, start + 33, start + 49, 1, 0)}} />;})}</>
 );
 const Breedte = () => {
   const f = useCurrentFrame(), per = 34, i = Math.min(BREED.length - 1, Math.floor(Math.max(0, f - 14) / per)), q = BREED[i], t0 = 14 + i * per;
   const [ng, ns] = B.breed[q];
   return (
-    <Scene dur={180}>
+    <Scene dur={210}>
       <Kop f={f} tekst="Over elk onderwerp" sub="Van tramlijn tot Tweebosbuurt" />
       <Zoekbalk x={380} y={420} w={1160} h={110} tekst={getypt(q, f, t0, 2)} f={f} />
       <div style={{position: 'absolute', left: 0, right: 0, top: 590, textAlign: 'center', fontSize: 52, color: C.sub, opacity: ci(f, t0 + 12, t0 + 18)}}>
@@ -73,6 +73,6 @@ const Breedte = () => {
 export const Deel2 = () => (
   <AbsoluteFill style={{background: C.grijs, fontFamily: F}}>
     <Sequence from={0} durationInFrames={300}><Diepte /></Sequence>
-    <Sequence from={300} durationInFrames={180}><Breedte /></Sequence>
+    <Sequence from={300} durationInFrames={210}><Breedte /></Sequence>
   </AbsoluteFill>
 );
