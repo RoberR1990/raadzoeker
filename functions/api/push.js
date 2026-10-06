@@ -20,7 +20,8 @@ export async function onRequestPost({ request, env }) {
   if (!env.DB) return json({ fout: 'geen database' }, 503);
   let body; try { body = await request.json(); } catch (e) { return json({ fout: 'ongeldig' }, 400); }
   const jwk = body.vapid || {}, volg = body.volg || {};
-  if (!jwk.d || !jwk.x || !jwk.y || b64u(Uint8Array.from([4, ...ub(jwk.x), ...ub(jwk.y)])) !== PUB) return json({ fout: 'geen toegang' }, 403);
+  let past = false; try { past = !!(jwk.d && jwk.x && jwk.y) && b64u(Uint8Array.from([4, ...ub(jwk.x), ...ub(jwk.y)])) === PUB; } catch (e) {}
+  if (!past) return json({ fout: 'geen toegang' }, 403);
   const D = volg.d || {}, stand = volg.stand || new Date().toISOString().slice(0, 10), pub = PUB;
   const { results } = await env.DB.prepare('SELECT id, endpoint, onderwerpen, gemeld FROM abonnees').all();
   const jwts = {}; let verstuurd = 0, weg = 0;
