@@ -1,24 +1,27 @@
 # Promovideo raadzoeker — draaiboek v4 (6-10-2026)
 
-Ca. 85 seconden, 16:9 (1920×1080). Zelfde stijl als v1/v3: rustige animaties, tekst in beeld (werkt zonder geluid), groen/wit, voice-over (ElevenLabs, stem 'Emma' uit Roberts Voices, nieuwste model) met zachte muziek eronder. Nieuw logo (raadzaal-ring met spreekgestoelte en vergrootglas).
+Ca. 74 seconden, 16:9 (1920×1080). Zelfde stijl als v1/v3: rustige animaties, tekst in beeld (werkt zonder geluid), groen/wit, voice-over (ElevenLabs, stem 'Emma' uit Roberts Voices, nieuwste model) met zachte muziek eronder. Nieuw logo (raadzaal-ring met spreekgestoelte en vergrootglas).
 
-Kern (besluit Robert): **samenvattingen van vergaderingen**, **zoeken in alles**, **mooie pagina's per domein, onderwerp en gebied**. Verkenner en Inzichten zijn bonus: kort, vooral de Verkenner voor de wow. Rotterdamse knipoog: 'Niet lullen maar zoeken' en zoeken op Feyenoord (confetti).
+Kern (besluit Robert): **samenvattingen van vergaderingen**, **zoeken in alles**, **een pagina per domein, onderwerp en gebied**, **volgen**. Verkenner en Inzichten zijn bonus. Rotterdamse knipoog: zoeken op Feyenoord (kleine confetti). Niet: 'Niet lullen maar zoeken' (te grof), 'Vind iedere uitspraak' (te vaag).
 
-| Tijd | Beeld | Tekst in beeld | Voice-over |
+Gebouwd in Remotion (`video/src/Deel1,2,3,5.jsx`, samen `Volledig`), ca. 74 s. Verkenner en Inzichten (`Deel4.jsx`) weggelaten (besluit Robert: vertroebelt de kernboodschap). Voice-over per fragment (ElevenLabs, stem 'Emma'), elk als los mp3-bestand; tekst ook in `ontwerp/voiceover.txt`:
+
+| # | Tijd | Beeld | Voice-over |
 |---|---|---|---|
-| 0–4 s | Woordenwolk van de raad bouwt op en trekt samen tot het nieuwe logo | raadzoeker | (muziek) |
-| 4–8 s | Vergaderingen-pagina schuift in: 'Laatste raadsvergadering', 'Komt eraan', 'Per commissie' | Elke vergadering samengevat | Wat besprak de raad gisteren? |
-| 8–13 s | Klik → samenvatting in één minuut, alinea's verschijnen | Lees het in één minuut | Raadzoeker vat elke vergadering samen, in één minuut. |
-| 13–19 s | Uitgebreid: tik op een fractie → letterlijk citaat schuift open → ▶ → echt videobeeld van dat moment | Wie zei wat, letterlijk | Tik op een fractie: je leest wat ze zei en kijkt het moment terug. |
-| 19–24 s | Per onderwerp: tijd, moties met uitslag (aangenomen/verworpen), tijdlijn commissie → raad | Van commissie tot besluit | Met de moties, de uitslag en waar het eerder besproken is. |
-| 24–40 s | **Zoeken.** Zoekbalk; titel 'Niet lullen, maar zoeken.' Getypt: 'woonfraude' → bovenaan 'Uit de vergaderverslagen', dan alles wat gezegd is en alle stukken, grafiek per jaar. Daarna snel getypt: 'Feyenoord' → rood-witte confetti | Niet lullen, maar zoeken. | Niet lullen, maar zoeken. Zoek in alles wat de raad sinds 2018 zei en schreef: debatten, moties, brieven en raadsvoorstellen. Ook als het over Feyenoord gaat. |
-| 40–58 s | **Pagina's.** Domeinen (dossierkast) → onderwerp Parkeren: kern, 'Net besproken', beloftespoor (moties en toezeggingen met status), kaart met parkeerzones. Dan Gebieden: kaart, klik Delfshaven → wat er speelt, besluiten van de wijkraden | Elk domein · elk onderwerp · elk gebied | Elk domein, onderwerp en gebied heeft een eigen pagina. Wat is er gezegd, besloten en beloofd? En wat speelt er in jouw wijk, tot aan de besluiten van de wijkraad. |
-| 58–72 s | **Bonus: Verkenner.** Hele kennisgraaf, rustig inzoomen op 'Feyenoord City en stadion', buren lichten op (Stadionpark, Feijenoord …), route naar 'Parkeren' tekent zich. Flits van één Inzichten-grafiek (2 s) | Ontdek de verbanden | En wie verder wil kijken: de Verkenner laat zien hoe alles met elkaar samenhangt. |
-| 72–76 s | Alles schuift weg, logo groot | raadzoeker | Raadzoeker. |
-| 76–81 s | Drie regels verschijnen één voor één | Vind iedere uitspraak · bekijk de context · zie het grotere plaatje | Vind iedere uitspraak, bekijk de context, zie het grotere plaatje. |
-| 81–85 s | Link groot, daaronder klein: 'Elke paar uur bijgewerkt · Vragen? RIO-groep Raadzoeker' | raadzoeker.nl | Open voor iedereen, op raadzoeker punt n l. |
+| 1 | 0–6,5 s | Woordenwolk trekt samen tot logo, naam en ondertitel | (muziek) |
+| 2 | 6,5–11 s | Vergaderingen-overzicht, Komt eraan | Wat heeft de gemeenteraad deze week besproken? |
+| 3 | 11–16,5 s | Korte en uitgebreide samenvatting | Raadzoeker vat elke vergadering samen. In één minuut, of uitgebreid in tien. |
+| 4 | 16,5–24 s | Fractie → citaat → echt videobeeld | Tik op een fractie: je leest letterlijk wat er is gezegd, en kijkt het moment zelf terug. |
+| 5 | 24–29 s | Moties met uitslag, tijdlijn | Met de moties, de uitslag, en waar het eerder op tafel lag. |
+| 6 | 29–39 s | Zoeken: woonfraude, zes soorten bronnen | Zoek in alles wat de raad sinds 2018 zei en schreef. Debatten, moties, vragen, brieven en de wijkraden. |
+| 7 | 39–46 s | Vijf zoekwoorden, confetti bij Feyenoord | Over elk onderwerp. Van tramlijn tot Tweebosbuurt. |
+| 8 | 46–50 s | Domeinen | Elk domein, onderwerp en gebied heeft een eigen pagina. |
+| 9 | 50–55 s | Parkeren: volgen, net besproken, beloofd | Wat is er gezegd, besloten en beloofd? Volg een onderwerp, en je krijgt een seintje bij nieuws. |
+| 10 | 55–61 s | Delfshaven, besluiten van de wijkraden | En wat speelt er in jouw wijk, tot aan de besluiten van de wijkraad. |
+| 11 | 61–69,5 s | Logo en vier kernpunten | Raadzoeker. Elke vergadering samengevat, zoeken in alles, een pagina per onderwerp, en volg wat jou raakt. |
+| 12 | 69,5–74 s | raadzoeker.nl, RIO-groep | Open voor iedereen, op raadzoeker punt n l. |
 
-Ca. 170 woorden voice-over (Nederlands, rustig tempo).
+Ca. 150 woorden (Nederlands, rustig tempo).
 
 ## Techniek
 

@@ -8,7 +8,7 @@ import X from './d1.json';
 const C = {groen: '#00811F', groenD: '#004C31', zacht: '#E1EFE2', mid: '#4EB051', grijs: '#EFF4F6', grijs2: '#DBE7EA', lijn: '#CAD6DA', sub: '#3E4B50', navy: '#0E2A4D', blauw: '#00548F', rood: '#C0392B'};
 const F = 'Arial, Helvetica, sans-serif';
 const FPS = 30;
-export const DUUR1 = 840;
+export const DUUR1 = 870;
 const ease = Easing.bezier(0.33, 0, 0.2, 1);
 const ci = (f, a, b, c = 0, d = 1, e = ease) => interpolate(f, [a, b], [c, d], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: e});
 const sp = (f, d = 0, cfg = {damping: 16, stiffness: 120}) => spring({frame: f - d, fps: FPS, config: cfg});
@@ -59,7 +59,7 @@ const Intro = () => {
   const f = useCurrentFrame();
   const lg = sp(f, 104, {damping: 14, stiffness: 90});
   return (
-    <AbsoluteFill style={{background: C.grijs, fontFamily: F, opacity: ci(f, 155, 165, 1, 0)}}>
+    <AbsoluteFill style={{background: C.grijs, fontFamily: F, opacity: ci(f, 185, 195, 1, 0)}}>
       <AbsoluteFill style={{transform: `scale(${ci(f, 0, 90, 1.05, 1)})`}}>
         {WOLK.map(({w, fs, x, y, i}) => {
           const s = sp(f, i * 1.3, {damping: 18, stiffness: 90}), m = ci(f, 72 + (i % 11), 108 + (i % 11), 0, 1, Easing.in(Easing.cubic));
@@ -201,10 +201,10 @@ const Moties = () => {
 
 export const Deel1 = () => (
   <AbsoluteFill style={{background: C.grijs}}>
-    <Sequence from={0} durationInFrames={165}><Intro /></Sequence>
-    <Sequence from={165} durationInFrames={135}><Overzicht /></Sequence>
-    <Sequence from={300} durationInFrames={165}><Kort /></Sequence>
-    <Sequence from={465} durationInFrames={225}><Fractie /></Sequence>
-    <Sequence from={690} durationInFrames={150}><Moties /></Sequence>
+    <Sequence from={0} durationInFrames={195}><Intro /></Sequence>
+    <Sequence from={195} durationInFrames={135}><Overzicht /></Sequence>
+    <Sequence from={330} durationInFrames={165}><Kort /></Sequence>
+    <Sequence from={495} durationInFrames={225}><Fractie /></Sequence>
+    <Sequence from={720} durationInFrames={150}><Moties /></Sequence>
   </AbsoluteFill>
 );

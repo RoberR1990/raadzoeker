@@ -5,7 +5,7 @@ import {AbsoluteFill, Sequence, useCurrentFrame} from 'remotion';
 import {C, F, ci, sp, inSchuif, Scene, Kop, Kaart} from './stijl';
 import X from './d4.json';
 
-export const DUUR4 = 420;
+export const DUUR4 = 630;
 const KL = ['#00811F', '#4EB051', '#00548F', '#0E2A4D', '#2E9C8F', '#D52B1E', '#8A5A00', '#B35A9A', '#E08A00', '#6C7A80', '#7A4FB0', '#3E4B50', '#9C6B30'];
 const N = X.nodes, BUREN = X.buren.filter((b, i) => N[b][1] < -100 && i !== 4 && i !== 5), LAB = Object.fromEntries(X.lab);
 const naamVan = {[X.route[1]]: 'Sportlaan'};
@@ -16,7 +16,7 @@ const mix = (a, b, t) => a + (b - a) * t;
 // camera zweeft langs clusters (breedte), zoomt per cluster in op begrippen (diepte) en eindigt rustig bij één verband
 const STOP = [[-643, -313, 'Veiligheid'], [-690, 380, 'Werk, inkomen en armoede'], [82, 152, 'Wonen en bouwen'], [291, -396, 'Mobiliteit']];
 const KAM = [[0, -130, 30, 1460], [55, -130, 30, 1460], [80, -643, -313, 560], [110, -643, -313, 500], [132, -690, 380, 560], [160, -690, 380, 500],
-  [182, 82, 152, 560], [207, 82, 152, 500], [228, 291, -396, 560], [248, 291, -396, 520], [272, 70, -215, 470], [330, 70, -215, 450]];
+  [182, 82, 152, 560], [207, 82, 152, 500], [228, 291, -396, 560], [248, 291, -396, 520], [282, 70, -215, 470], [390, 70, -215, 440]];
 const kam = (f) => {
   let i = 0; while (i < KAM.length - 2 && f > KAM[i + 1][0]) i++;
   const [a, b] = [KAM[i], KAM[i + 1]], t = ci(f, a[0], b[0]);
@@ -28,14 +28,14 @@ const TIJD = [[80, 125], [132, 177], [182, 222], [228, 262]];
 
 const Verkenner = () => {
   const f = useCurrentFrame(), [cx, cy, h] = kam(f), w = (h * 16) / 9, rs = h / 1080;
-  const fc = N[X.fc], bur = ci(f, 272, 286), rt = ci(f, 290, 315), vol = ci(f, 262, 280);
+  const fc = N[X.fc], bur = ci(f, 290, 310), rt = ci(f, 318, 350), vol = ci(f, 262, 285);
   const pad = X.route.map((i) => N[i]);
   const lengte = pad.slice(1).reduce((s, p, i) => s + Math.hypot(p[0] - pad[i][0], p[1] - pad[i][1]), 0);
   const tekst = (key, x, y, t, o, groot, kl) => <text key={key} x={x} y={y} textAnchor="middle" fontSize={(groot ? 30 : 23) * rs} fontWeight={groot ? 700 : 400}
     fill={kl || (groot ? '#000' : C.sub)} opacity={o} style={{paintOrder: 'stroke'}} stroke={C.grijs} strokeWidth={6 * rs}>{t}</text>;
   const label = (i, d, groot) => tekst('l' + i, N[i][0], N[i][1] - (groot ? 16 : 12) * rs, X.l[i], ci(f, d, d + 12), groot);
   return (
-    <Scene dur={330}>
+    <Scene dur={390}>
       <svg viewBox={`${cx - w / 2} ${cy - h / 2} ${w} ${h}`} width={1920} height={1080} style={{position: 'absolute', left: 0, top: 0, opacity: ci(f, 0, 20)}}>
         {X.e.map(([a, b], i) => <line key={i} x1={N[a][0]} y1={N[a][1]} x2={N[b][0]} y2={N[b][1]} stroke={KL[X.ndom[a]] || C.lijn} strokeWidth={0.9 * rs} opacity={0.22 * (1 - 0.7 * vol)} />)}
         {N.map(([x, y, s, n], i) => <circle key={i} cx={x} cy={y} r={(s === 'o' ? 9 : s === 'p' ? 6 : 3 + Math.min(4, Math.log10(n + 1))) * rs}
@@ -47,15 +47,15 @@ const Verkenner = () => {
         <polyline points={pad.map((p) => p.slice(0, 2).join(',')).join(' ')} fill="none" stroke={C.rood} strokeWidth={6 * rs} strokeLinecap="round"
           strokeDasharray={lengte} strokeDashoffset={lengte * (1 - rt)} />
         {[...BUREN, ...X.route].map((b) => <circle key={'k' + b} cx={N[b][0]} cy={N[b][1]} r={(b === X.fc || b === X.park ? 16 : 10) * rs}
-          fill={X.route.includes(b) && b !== X.fc ? C.rood : C.groen} stroke="#fff" strokeWidth={3 * rs} opacity={b === X.fc ? ci(f, 266, 276) : X.route.includes(b) ? ci(f, 290, 300) : bur} />)}
-        {label(X.fc, 266, true)}
-        {BUREN.map((b) => label(b, 276))}
-        {label(X.route[1], 298)}
-        {label(X.park, 308, true)}
+          fill={X.route.includes(b) && b !== X.fc ? C.rood : C.groen} stroke="#fff" strokeWidth={3 * rs} opacity={b === X.fc ? ci(f, 272, 284) : X.route.includes(b) ? ci(f, 318, 328) : bur} />)}
+        {label(X.fc, 272, true)}
+        {BUREN.map((b) => label(b, 296))}
+        {label(X.route[1], 330)}
+        {label(X.park, 345, true)}
       </svg>
       <div style={{position: 'absolute', left: 0, top: 0, width: 1100, height: 260, background: `radial-gradient(ellipse at 20% 30%, ${C.grijs} 55%, rgba(239,244,246,0) 75%)`}} />
       <Kop f={f} tekst="Ontdek de verbanden" sub={`De Verkenner: ${X.nodes.length.toLocaleString('nl-NL')} begrippen uit ${X.n.toLocaleString('nl-NL')} debatten en stukken`} />
-      <div style={{position: 'absolute', right: 90, bottom: 80, fontSize: 30, background: '#fff', borderRadius: 14, padding: '16px 26px', boxShadow: '0 12px 40px rgba(0,40,20,.10)', ...inSchuif(f, 296, 20)}}>
+      <div style={{position: 'absolute', right: 90, bottom: 80, fontSize: 30, background: '#fff', borderRadius: 14, padding: '16px 26px', boxShadow: '0 12px 40px rgba(0,40,20,.10)', ...inSchuif(f, 340, 20)}}>
         Route: <b>Feyenoord City</b> → Sportlaan → <b style={{color: C.rood}}>Parkeren</b>
       </div>
     </Scene>
@@ -87,9 +87,42 @@ const Inzichten = () => {
   );
 };
 
+// tweede inzicht: waar speelt wat? aandeel per domein binnen elk gebied (2022-2026, stadsbrede stukken niet meegeteld)
+const TINT = ['#F3F8F3', '#E1EFE2', '#D1E6CE', '#99CCA0', '#4EB051', '#00811F', '#006E32', '#004C31'];
+const tint = (p) => TINT[Math.max(0, Math.min(7, Math.round((Math.min(30, p) / 30) * 7)))];
+const UIT = [['Feijenoord', 0, 'wonen en bouwen'], ['Hoek van Holland', 3, 'economie en haven'], ['Pernis', 4, 'klimaat en energie']];
+const Waar = () => {
+  const f = useCurrentFrame(), lw = 330, cw = 100, rh = 40, x0 = 80, y0 = 150;
+  return (
+    <Scene dur={150}>
+      <Kop f={f} tekst="Waar speelt wat?" sub="Per gebied: welk domein het meest terugkomt in moties, toezeggingen en vragen" />
+      <Kaart style={{left: 90, top: 250, width: 1740, height: 740, padding: 0}}>
+        {X.wdom.map((d, i) => <div key={d} style={{position: 'absolute', left: x0 + lw + cw * i + 30, top: y0 - 14, fontSize: 21, color: C.sub, whiteSpace: 'nowrap',
+          transform: 'rotate(-35deg)', transformOrigin: 'left bottom', opacity: ci(f, 6, 18)}}>{d.split(/,| en /)[0]}</div>)}
+        {X.waar.map(([g, , v], r) => (
+          <React.Fragment key={g}>
+            <div style={{position: 'absolute', left: x0, top: y0 + rh * r + 8, fontSize: 24, opacity: ci(f, 4 + r, 14 + r)}}>{g}</div>
+            {v.map((p, i) => {
+              const d = 10 + r * 2 + i, uit = UIT.find((u) => u[0] === g && u[1] === i), o = ci(f, d, d + 10);
+              const dim = f > 78 && !uit ? ci(f, 78, 92, 1, 0.35) : 1;
+              return <div key={i} style={{position: 'absolute', left: x0 + lw + cw * i + 2, top: y0 + rh * r + 2, width: cw - 4, height: rh - 4, background: tint(p), opacity: o * dim,
+                fontSize: 19, color: p > 18 ? '#fff' : '#000', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 4,
+                outline: uit && f > 78 ? `4px solid ${C.navy}` : 'none', transform: `scale(${uit ? 1 + 0.12 * sp(f, 80, {damping: 12}) * ci(f, 80, 84) : 1})`}}>{p}%</div>;
+            })}
+          </React.Fragment>
+        ))}
+      </Kaart>
+      <div style={{position: 'absolute', left: 90, bottom: 40, fontSize: 28, color: C.sub, opacity: ci(f, 90, 102)}}>
+        {UIT.map(([g, , d], i) => <span key={g}>{i ? ' · ' : ''}<b style={{color: '#000'}}>{g}</b>: {d}</span>)}
+      </div>
+    </Scene>
+  );
+};
+
 export const Deel4 = () => (
   <AbsoluteFill style={{background: C.grijs, fontFamily: F}}>
-    <Sequence from={0} durationInFrames={330}><Verkenner /></Sequence>
-    <Sequence from={330} durationInFrames={90}><Inzichten /></Sequence>
+    <Sequence from={0} durationInFrames={390}><Verkenner /></Sequence>
+    <Sequence from={390} durationInFrames={90}><Inzichten /></Sequence>
+    <Sequence from={480} durationInFrames={150}><Waar /></Sequence>
   </AbsoluteFill>
 );
