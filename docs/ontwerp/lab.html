@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
-<title>Inzichten · raadzoeker</title>
-<link rel="stylesheet" href="stijl.css?v=9">
+<title>Inzichten · De Publieke Tribune</title>
+<link rel="stylesheet" href="stijl.css?v=10">
 <style>
 .fbalk{position:sticky;top:0;z-index:20;background:var(--grijs);margin:0 -24px 24px;padding:10px 24px;border-bottom:1px solid var(--lijn);display:flex;gap:8px 16px;flex-wrap:wrap;align-items:end;font-size:14px}
 .fbalk label{display:grid;gap:2px}
@@ -44,7 +44,7 @@
     <p class="uitleg">Het jaar van de raad in vier kaarten. Kies een jaar.</p><div class="jr" id="wjr"></div><div class="wr" id="wkaarten"></div></section>
   <p class="voet">Gegevens: iBabs (moties, toezeggingen, schriftelijke vragen), notulen en ondertiteling van de gemeenteraad, stand <span id="stand"></span>. Domeinen volgen het beleidsveld in iBabs; gebieden zijn herkend op wijk- en straatnamen (ongeveer 9 van de 10 goed). <a href="over.html">Meer over deze tool</a>.</p>
 </main>
-<script src="ontwerp.js?v=24"></script>
+<script src="ontwerp.js?v=25"></script>
 <script>
 kop('lab');
 let L=null,F={d:'',g:'',f:'',van:'2022',tot:'2026'};
@@ -164,7 +164,7 @@ async function kopieer(id){
   const g=G.find(x=>x[0]===id),sec=$('g-'+id),inner=sec.querySelector('.svg svg'),vb=inner.getAttribute('viewBox').split(' ').map(Number);
   const W=Math.max(760,vb[2]+48),H=vb[3]+150;zetHash(id);const link=location.href;
   const kop=T(24,40,g[1],{fs:24,bold:true})+T(24,66,'Filter: '+filterTekst(g[3]),{fs:14,kl:'#3E4B50'});
-  const voet=`<rect x="0" y="${H-50}" width="${W}" height="50" fill="#00811F"/>`+T(24,H-28,'raadzoeker · onofficieel · gegevens t/m '+fd(STAND)+' · bron: iBabs en notulen gemeenteraad Rotterdam',{fs:12,kl:'#fff'})+T(24,H-12,link,{fs:11,kl:'#fff'});
+  const voet=`<rect x="0" y="${H-50}" width="${W}" height="50" fill="#00811F"/>`+T(24,H-28,'De Publieke Tribune · onofficieel · gegevens t/m '+fd(STAND)+' · bron: iBabs en notulen gemeenteraad Rotterdam',{fs:12,kl:'#fff'})+T(24,H-12,link,{fs:11,kl:'#fff'});
   const body=inner.outerHTML.replace('<svg ',`<svg x="24" y="84" `);
   const s=`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}"><rect width="${W}" height="${H}" fill="#fff"/>${kop}${body}${voet}</svg>`;
   const img=new Image(),url=URL.createObjectURL(new Blob([s],{type:'image/svg+xml'}));
@@ -172,7 +172,7 @@ async function kopieer(id){
   const c=document.createElement('canvas'),sc=2;c.width=W*sc;c.height=H*sc;const x=c.getContext('2d');x.scale(sc,sc);x.drawImage(img,0,0);URL.revokeObjectURL(url);
   const blob=await new Promise(r=>c.toBlob(r,'image/png'));const m=sec.querySelector('.melding');
   try{await navigator.clipboard.write([new ClipboardItem({'image/png':blob})]);m.textContent='Afbeelding gekopieerd. Plak hem in een mail, Teams of een presentatie.';}
-  catch(e){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='raadzoeker-'+id+'.png';a.click();m.textContent='Kopiëren lukte niet in deze browser; de afbeelding is gedownload.';}
+  catch(e){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='publieke-tribune-'+id+'.png';a.click();m.textContent='Kopiëren lukte niet in deze browser; de afbeelding is gedownload.';}
 }
 document.addEventListener('click',async e=>{
   const k=e.target.closest('[data-kopieer]');if(k){k.disabled=true;try{await kopieer(k.dataset.kopieer);}finally{k.disabled=false;}return;}
