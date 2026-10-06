@@ -1,12 +1,12 @@
 <!doctype html>
 <html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Gebieden · raadzoeker</title>
-<link rel="stylesheet" href="stijl.css?v=18">
+<link rel="stylesheet" href="stijl.css?v=19">
 <style>
 .boven{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;align-items:start}
 .boven h1{margin:0 0 8px}.boven .lead{font-size:17px;line-height:1.5;margin:0 0 16px;max-width:60ch}
 .zoekveld input{font-size:18px}
-.minikaart svg{max-height:280px;width:auto;max-width:100%;margin:0 auto}
+.minikaart svg{max-width:100%;margin:0 auto}
 .kaartknop{display:none;font:700 16px var(--font);border:2px solid var(--zwart);background:var(--wit);border-radius:999px;padding:8px 18px;min-height:44px;cursor:pointer;margin-top:12px}
 .jouw{margin:24px 0 0}.jouw h2,.alle h2{font-size:20px;margin:0 0 12px}
 .gk{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
@@ -40,10 +40,11 @@
 .kieslijst a{display:flex;align-items:center;min-height:44px;padding:6px 12px;background:var(--grijs);border-radius:8px;font-size:15px;line-height:1.2}
 .leg{font-size:13px;color:var(--sub);margin-top:12px;max-width:72ch}details.leg summary{cursor:pointer}
 @media (max-width:600px){.matvlak,.mat-leg{display:none}.matmob{display:block}.gk{grid-template-columns:minmax(0,1fr)}.gk a{padding:10px 14px}.jouw{margin-top:16px}.pagina .boven{padding:16px}.boven h1{font-size:26px}.boven .lead{font-size:15px;margin-bottom:12px}}
+@media (max-width:600px){.minikaart text.gl{display:none}}
 @media (max-width:900px){.kaartknop{display:inline-flex;align-items:center}.minikaart.dicht svg{display:none}.minikaart.dicht{margin-top:-8px}}
 .minikaart svg{width:100%;height:auto;display:block}
-.minikaart path.g{fill:var(--groen-zacht);stroke:#fff;stroke-width:1;cursor:pointer}
-.minikaart path.g:hover{fill:var(--groen-mid)}
+.minikaart path.g{fill:var(--groen-mid);stroke:#fff;stroke-width:1;cursor:pointer}
+.minikaart path.g:hover{fill:var(--groen)}.minikaart text.gl{font:700 17px Arial,sans-serif;fill:#000;stroke:#fff;stroke-width:4px;paint-order:stroke;pointer-events:none}.kk-naam{margin:6px 0 0;text-align:center}
 .minikaart path.g.sel{fill:var(--groen)}
 .minikaart path.h{fill:var(--grijs2)}.minikaart path.w{fill:var(--water);pointer-events:none}
 .minikaart path.wk{fill:var(--groen-zacht);stroke:#fff;stroke-width:.8;cursor:pointer}
@@ -119,7 +120,7 @@
   <div id="wijk"><p class="leeg" style="margin-top:24px">Laden…</p></div>
   <p class="voet">Gegevens: notulen en ondertiteling van de gemeenteraad; iBabs (moties, toezeggingen, wijkraden); wijkraad.rotterdam.nl; CBS Kerncijfers wijken en buurten 2022–2025; Wijkprofiel Rotterdam (cijfers: gemeente Rotterdam, OBI, Wijkprofiel 2014–2026); politie, geregistreerde misdrijven per buurt (via CBS); officiële bekendmakingen (Gemeenteblad). Cijfers uit verschillende bronnen staan ter informatie naast elkaar; ze zeggen niets over oorzaak of verband. <a href="over.html">Meer over deze tool</a>.</p>
 </main>
-<script src="ontwerp.js?v=36"></script>
+<script src="ontwerp.js?v=37"></script>
 <script src="ai.js?v=1"></script>
 <script src="tel.js?v=1"></script>
 <script>
@@ -129,13 +130,16 @@ Promise.all(['dossiers.json','kaart.json','wijken.json','d/overzicht.json','d/in
   const G=()=>DATA.dossiers.filter(x=>x.groep==='Wijken en gebieden'&&x.inw!==undefined);
   const W=WK.wijken.map(x=>({...x,groep:'wijk in '+x.gebied,sub:[],termen:(x.zoek||[]).join(' ')+' '+x.gebied}));
   // kaart per gebied (14); de wijkgrenzen staan er dun in ter oriëntatie. Alleen op het overzicht; op een gebiedspagina is hij weg (was alleen navigatie).
-  $('kaart').innerHTML=`<svg viewBox="0 0 ${K.w} ${K.h}"><path class="h" d="${K.havens}"/>${K.gebieden.map(g=>`<path class="g" data-n="${esc(g.naam)}" d="${g.d}" tabindex="0" role="button" aria-label="${esc(g.naam)}"><title>${esc(g.naam)}</title></path>`).join('')}${W.map(x=>`<path class="wkl" data-s="${x.slug}" d="${x.d}"/>`).join('')}<path class="w" d="${K.water}"/></svg>`;
+  const KBB={};K.gebieden.forEach(g=>{const n=g.d.match(/-?\d+\.?\d*/g).map(Number);let a=1e9,b=1e9,c=-1e9,e=-1e9;for(let i=0;i<n.length-1;i+=2){a=Math.min(a,n[i]);c=Math.max(c,n[i]);b=Math.min(b,n[i+1]);e=Math.max(e,n[i+1]);}KBB[g.naam]=[(a+c)/2,(b+e)/2];});
+  $('kaart').innerHTML=`<svg viewBox="16 18 947 451" role="img" aria-label="Kaart van Rotterdam met de 14 gebieden"><path class="h" d="${K.havens}"/>${K.gebieden.map(g=>`<path class="g" data-n="${esc(g.naam)}" d="${g.d}" tabindex="0" role="button" aria-label="${esc(g.naam)}"><title>${esc(g.naam)}</title></path>`).join('')}${W.map(x=>`<path class="wkl" data-s="${x.slug}" d="${x.d}"/>`).join('')}<path class="w" d="${K.water}"/>${K.gebieden.map(g=>{const b=KBB[g.naam];return `<text class="gl" x="${b[0]}" y="${b[1]}" text-anchor="middle">${esc(g.naam)}</text>`;}).join('')}</svg><p class="sub kk-naam" id="kknaam" aria-live="polite">Tik of klik op een gebied.</p>`;
+  const kn=e=>{const p=e.target.closest&&e.target.closest('path.g');$('kknaam').textContent=p?p.dataset.n+' · open het gebied':'Tik of klik op een gebied.';};
+  $('kaart').addEventListener('mouseover',kn);$('kaart').addEventListener('focusin',kn);
   $('kaart').addEventListener('click',e=>{const p=e.target.closest('path.g');if(p)location.hash=slug(p.dataset.n);});
   $('kaart').addEventListener('keydown',e=>{const p=e.target.closest('path.g');if(p&&(e.key==='Enter'||e.key===' ')){e.preventDefault();location.hash=slug(p.dataset.n);}});
   $('kaartknop').onclick=()=>{const o=$('kaart').classList.toggle('dicht')===false;$('kaartknop').setAttribute('aria-expanded',o);$('kaartknop').textContent=o?'Verberg kaart':'Toon op kaart';};
   zoeklijst($('zoek'),$('keuze'),()=>[...G(),...W],x=>{location.hash=x.slug&&x.d?'w-'+x.slug:slug(x.naam);});
   bouwOverzicht(G(),W);
-  const qg=new URLSearchParams(location.search).get('g');if(qg)history.replaceState(null,'',location.pathname+'#'+qg);   // ?g= overleeft het inloggen
+  const sp=new URLSearchParams(location.search),qg=sp.get('g');if(qg){sp.delete('g');const rest=sp.toString();history.replaceState(null,'',location.pathname+(rest?'?'+rest:'')+'#'+qg);}   // ?g= overleeft het inloggen
   const route=()=>{const h=decodeURIComponent(location.hash.slice(1));
     if(h.startsWith('w-')){const x=W.find(o=>o.slug===h.slice(2));if(x){zetOverzicht(false);return toonWijk(x);}}
     const g=h&&h!=='gebieden'?uitHash(G()):null;
@@ -152,9 +156,9 @@ function zetOverzicht(o){
   if(o){document.title='Gebieden · raadzoeker';CUR=null;toonJouw();window.scrollTo({top:0});}
 }
 function gebiedKaart(g,eti){
-  const t=telling(g,null),w=WK.wijken.filter(o=>o.gebied===g.naam).sort((a,b)=>((b.cbs['2025']||b.cbs['2024']||{}).inw||0)-((a.cbs['2025']||a.cbs['2024']||{}).inw||0)).slice(0,3).map(o=>o.naam.replace(/ \(wijk\)$/,''));
+  const t=g.tel,w=WK.wijken.filter(o=>o.gebied===g.naam).sort((a,b)=>((b.cbs['2025']||b.cbs['2024']||{}).inw||0)-((a.cbs['2025']||a.cbs['2024']||{}).inw||0)).slice(0,3).map(o=>o.naam.replace(/ \(wijk\)$/,''));
   return `<a href="#${slug(g.naam)}">${eti?`<span class="eti">${eti}</span>`:''}<span class="naam"><span>${esc(g.naam)}</span>${spark(g.trend)}</span>
-    <span class="regel">${nf(g.inw)} inwoners · ${nf(t.mo)} ${t.mo===1?'motie':'moties'} en ${nf(t.tz)} ${t.tz===1?'toezegging':'toezeggingen'} open</span>
+    <span class="regel">${nf(g.inw)} inwoners${t?` · ${nf(t.mo)} ${t.mo===1?'motie':'moties'} en ${nf(t.tz)} ${t.tz===1?'toezegging':'toezeggingen'} open`:''}</span>
     <span class="wij">${esc(w.join(', '))}${WK.wijken.filter(o=>o.gebied===g.naam).length>3?'…':''}</span></a>`;
 }
 let GL=[];
@@ -164,9 +168,11 @@ function toonJouw(){
 }
 function bouwOverzicht(G,W){
   GL=[...G].sort((a,b)=>a.naam.localeCompare(b.naam,'nl'));
-  $('gk').innerHTML=GL.map(g=>gebiedKaart(g)).join('');
+  const kaarten=()=>{$('gk').innerHTML=GL.map(g=>gebiedKaart(g)).join('');toonJouw();};kaarten();
+  // aantallen komen uit d/<gebied>.json (zelfde telregel als de gebiedspagina); dossiers.json telt op thema's en liep achter
+  Promise.all(GL.map(g=>fetch('d/'+slug(g.naam)+'.json').then(r=>r.json()).then(d=>{g.tel=telling(d,null);}).catch(()=>{}))).then(kaarten);
   const O=OV,G14=O.gebieden,heeft=new Set(IX.filter(x=>x.soort==='kruising').map(x=>x.slug));
-  $('mat').innerHTML=`<thead><tr><th></th>${G14.map(g=>`<th><a href="wijk.html#${slug(g)}" title="Alles over ${esc(g)}"><span>${esc(g)}</span></a></th>`).join('')}</tr></thead><tbody>`+O.domeinen.map(d=>{
+  $('mat').innerHTML=`<thead><tr><th></th>${G14.map(g=>`<th><a href="wijk.html#${slug(g)}" title="Alles over ${esc(g)}"><span>${esc(g.replace('-Schiebroek',''))}</span></a></th>`).join('')}</tr></thead><tbody>`+O.domeinen.map(d=>{
     const m=Math.max(1,...G14.map(g=>d.kruising[g]||0));
     return `<tr><th class="rij"><a href="dossier.html#${d.slug}">${esc(d.naam)}</a></th>${G14.map(g=>{const v=d.kruising[g]||0,a=v/m,s=d.slug+'--'+slug(g);
       return heeft.has(s)?`<td style="background:rgba(0,129,31,${(0.08+0.85*a).toFixed(2)});color:${tekstKl(0.08+0.85*a)}"><a href="dossier.html#${s}" title="${esc(d.naam)} in ${esc(g)}: ${v} stukken en debatten">${nf(v)}</a></td>`:`<td class="leeg" title="Te weinig om te tonen">${v||''}</td>`;}).join('')}</tr>`;}).join('')+'</tbody>';
@@ -182,8 +188,10 @@ document.addEventListener('click',e=>{const a=e.target.closest('[data-ank]');if(
   el.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});});
 document.addEventListener('change',e=>{if(e.target.id==='gkies'&&e.target.value)location.hash=e.target.value;});
 /* ---------- AI-samenvatting van het gebied, verweven met de pagina: kern en diepgang bovenaan, de rest voor de moties ---------- */
+let AIX=null;
 async function aiBlok(g){
-  let A=null;try{const r=await fetch('samenvattingen/'+slug(g)+'.json');if(r.ok)A=await r.json();}catch(e){}
+  let A=null;try{AIX=AIX||fetch('samenvattingen/index.json').then(r=>r.ok?r.json():[]).catch(()=>[]);const ix=await AIX;
+    if(ix.some(x=>x.slug===slug(g))){const r=await fetch('samenvattingen/'+slug(g)+'.json');if(r.ok)A=await r.json();}}catch(e){}
   const kol=document.querySelector('#wijk .kol');if(!A||!kol||!A.kern||!A.kern.length)return;
   CIT=[];const k=A.kern,laatste=k[k.length-1];
   const oud=document.getElementById('ik');if(oud)oud.closest('section').remove();   // oudere, korte themasamenvatting vervangen

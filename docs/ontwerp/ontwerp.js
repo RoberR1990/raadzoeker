@@ -65,7 +65,7 @@ function kopZoekB(actief){
 function tabbalkB(actief){
   const ik=d=>`<svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
   const IK={zoek:ik('<circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/>'),dossiers:ik('<path d="M3 7a2 2 0 0 1 2-2h4l2 2.5h8a2 2 0 0 1 2 2V18a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>'),gebieden:ik('<path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/>'),verg:ik('<rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/>'),meer:ik('<circle cx="5.5" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="18.5" cy="12" r="1.2"/>'),x:ik('<path d="M6 6l12 12M18 6L6 18"/>')};
-  const MEER=['lab','verkenner','over','hulp','volg','nieuw'],opMeer=MEER.includes(actief);
+  const MEER=['lab','verkenner','over','hulp','volg','nieuw','akkoord'],opMeer=MEER.includes(actief)||(!actief&&MEER.includes(location.pathname.split('/').pop().replace(/\.html$/,'')));
   const act=actief==='dossier'?'domeinen':actief;
   const tab=(k,t,h,id)=>{const on=h&&act===k;return h?`<a href="${h}" class="tab${on?' on':''}"${on?' aria-current="page"':''}>${IK[id]}<span>${t}</span></a>`:'';};
   const nav=document.createElement('nav');nav.className='tabbalk';nav.setAttribute('aria-label','Hoofdnavigatie');

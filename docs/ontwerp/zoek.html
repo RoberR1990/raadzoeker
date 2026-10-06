@@ -1,8 +1,8 @@
 <!doctype html>
 <html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Zoeken · raadzoeker</title>
-<link rel="stylesheet" href="stijl.css?v=18">
-<link rel="stylesheet" href="keten.css?v=4">
+<link rel="stylesheet" href="stijl.css?v=19">
+<link rel="stylesheet" href="keten.css?v=7">
 <style>
 .kolom{max-width:1100px;margin:0 auto}
 .lead{font-size:17px;line-height:1.5;margin:8px 0 16px;max-width:75ch}
@@ -98,8 +98,8 @@ body.zq h1{font-size:24px;margin-bottom:8px}
  </div>
 </main>
 <script src="fzstd.js"></script>
-<script src="ontwerp.js?v=36"></script>
-<script src="keten.js?v=11"></script>
+<script src="ontwerp.js?v=37"></script>
+<script src="keten.js?v=12"></script>
 <script>
 kop('zoeken');
 const JAREN=['2018','2019','2020','2021','2022','2023','2024','2025','2026'];
@@ -111,6 +111,9 @@ const lees=async u=>{const r=await fetch(u);if(!r.ok)throw new Error(u);return J
 const fold=s=>s.normalize('NFD').toLowerCase().replace(/[̀-ͯ]/g,'');
 const stam=w=>{if(w.length>5&&w.endsWith('en'))w=w.slice(0,-2);else if(w.length>4&&w.endsWith('s')&&!w.endsWith('ss'))w=w.slice(0,-1);if(w.length>4&&w.endsWith('e'))w=w.slice(0,-1);return w;};
 const woorden=t=>(fold(t).match(/[a-z0-9]+/g)||[]).filter(w=>w.length>=2&&w.length<=30).map(stam);
+/* stopwoorden staan niet in de index (te vaak); ontbreken ze, dan tellen ze niet mee als verplicht woord */
+const STOP=new Set('van de het een en in op te voor met is dat die niet aan er ook bij om als zijn of door naar wordt worden dit over uit tot nog maar we ik u wij ze hij zij al dan wel kan moet hebben heeft was gaat deze hier dus zo nu meer geen alle wat wie waar hoe ons onze uw hun mijn je jullie men zou zullen kunnen mag na tegen onder'.split(' ').map(stam));
+const nodig=(termen,ls)=>termen.filter((t,i)=>ls[i]||!STOP.has(t)).length;
 const fnv=(s,ni)=>{let x=0x811c9dc5;const b=new TextEncoder().encode(s);for(const c of b){x^=c;x=Math.imul(x,0x01000193)>>>0;}return x%ni;};
 function bron(dir,blokNaam){const SH={},BL={};return {dir,M:null,
   shard(k){return SH[k]||(SH[k]=lees(dir+'i/'+String(k).padStart(3,'0')+'.zst'));},
@@ -118,7 +121,7 @@ function bron(dir,blokNaam){const SH={},BL={};return {dir,M:null,
   async tekst(id){return (await this.blok(Math.floor(id/this.M.blok)))[id%this.M.blok];},
   async lijsten(termen){return Promise.all(termen.map(async t=>{const s=await this.shard(fnv(t,this.M.ni));const p=s[t];if(!p)return null;const ids=[];let a=0;for(const d of p[0]){a+=d;ids.push(a);}return {ids,tf:p[1]};}));}};}
 const ST=bron('../data/tekst/',k=>String(k).padStart(3,'0')),DB=bron('../data/debat/',k=>String(k).padStart(4,'0'));
-let LB=null,TAB='gezegd',groep=0,ZOEK=null,RS=[],RD=[],LIJST=[],TOON=0,LOGQ='';
+let WACHT={},LB=null,TAB='gezegd',groep=0,ZOEK=null,RS=[],RD=[],LIJST=[],TOON=0,LOGQ='';
 function leesQ(q){const zinnen=[...q.matchAll(/"([^"]+)"/g)].map(m=>fold(m[1]).replace(/\s+/g,' ').trim()).filter(Boolean);return {zinnen,termen:[...new Set(woorden(q))]};}
 function bm25(lijsten,N,len,avg){const sc=new Map(),hit=new Map();
   lijsten.forEach(l=>{if(!l)return;const idf=Math.log(1+(N-l.ids.length+.5)/(l.ids.length+.5));
@@ -130,23 +133,30 @@ async function zoek(){
   const q=$('q').value.trim();zetHash();document.body.classList.toggle('zq',!!q);
   if(!q){$('analyse').hidden=true;$('vverslag').hidden=true;$('uit').hidden=true;$('meerv').hidden=true;$('ng').textContent='';$('ns').textContent='';$('telling').textContent='Typ een woord of zin.';return;}
   // 'of': woorden gescheiden door | of OF; per alternatief moeten alle woorden voorkomen, de beste score telt
-  const alts=q.split(/\s*\|\s*|\s+OF\s+/).map(x=>x.trim()).filter(Boolean),delen=alts.map(leesQ).filter(x=>x.termen.length);if(!delen.length)return;
+  const alts=q.split(/\s*\|\s*|\s+OF\s+/).map(x=>x.trim()).filter(Boolean),delen=alts.map(leesQ).filter(x=>x.termen.length);if(!delen.length){$('analyse').hidden=true;$('vverslag').hidden=true;$('uit').hidden=true;$('meerv').hidden=true;$('leeg').hidden=true;$('ng').textContent='';$('ns').textContent='';$('telling').textContent='Typ minstens één woord van twee letters.';return;}
   ZOEK={q,zinnen:delen.length>1?[]:delen[0].zinnen,termen:[...new Set(delen.flatMap(x=>x.termen))]};
   $('telling').textContent='Effe zoeken…';window.rzEi&&rzEi(q);
   const d=V('fdom'),g=V('fgeb'),mS=new Map(),mD=new Map(),max=(m,id,v)=>{if(!(m.get(id)>=v))m.set(id,v);};
   for(const {termen} of delen){
     const [ls,ld]=await Promise.all([ST.lijsten(termen),DB.lijsten(termen)]);
     {const M=ST.M,{sc,hit}=bm25(ls,M.d.length,id=>M.d[id][5]||1,ST.avg);
-      [...sc.keys()].filter(id=>hit.get(id)===termen.length&&M.d[id]&&jaarOk(M.d[id][1])&&(d===''||LB.d[id]===+d)&&(g===''||(LB.g[id]&(1<<+g))))
+      const nS=nodig(termen,ls);[...sc.keys()].filter(id=>hit.get(id)===nS&&M.d[id]&&jaarOk(M.d[id][1])&&(d===''||LB.d[id]===+d)&&(g===''||(LB.g[id]&(1<<+g))))
         .forEach(id=>max(mS,id,sc.get(id)*(1+.1*Math.max(0,+M.d[id][1].slice(0,4)-2020)/6)));}
     {const M=DB.M,{sc,hit}=bm25(ld,M.u.length,id=>M.u[id][3]||1,DB.avg);
-      [...sc.keys()].filter(id=>{if(hit.get(id)!==termen.length)return false;const u=M.u[id],a=M.ap[u[0]],v=M.verg[a[0]];return jaarOk(v[0])&&(d===''||a[3]===+d)&&(g===''||(a[4]&(1<<+g)));})
+      const nD=nodig(termen,ld);[...sc.keys()].filter(id=>{if(hit.get(id)!==nD)return false;const u=M.u[id],a=M.ap[u[0]],v=M.verg[a[0]];return jaarOk(v[0])&&(d===''||a[3]===+d)&&(g===''||(a[4]&(1<<+g)));})
         .forEach(id=>max(mD,id,sc.get(id)*(1+.1*Math.max(0,+M.verg[M.ap[M.u[id][0]][0]][0].slice(0,4)-2020)/6)));}
   }
-  RS=[...mS];RD=[...mD];verslagen(delen);
+  RS=[...mS];RD=[...mD];ZOEK.kand=RS.length+RD.length;ZOEK.af={s:false,d:false};
+  if(ZOEK.zinnen.length){$('telling').textContent='Zin controleren…';[RS,ZOEK.af.s]=await zinOk(RS,false);[RD,ZOEK.af.d]=await zinOk(RD,true);}
+  verslagen(delen);
   analyse();sprekers();await toepassen();
   logZoek(q,RS.length+RD.length);
 }
+/* exacte zin: controleer de beste 300 kandidaten op de tekst zelf; af = er waren er meer dan 300 */
+async function zinOk(L,gez){const s=L.slice().sort((a,b)=>b[1]-a[1]),ok=[];
+  for(let i=0;i<Math.min(300,s.length);i+=30)await Promise.all(s.slice(i,i+30).map(async r=>{const t=fold(gez?(await DB.tekst(r[0])).map(x=>x[1]).join('\n'):await ST.tekst(r[0])).replace(/\s+/g,' ');if(ZOEK.zinnen.every(z=>t.includes(z)))ok.push(r);}));
+  return [ok,s.length>300];}
+const aantal=(n,af)=>nf(n)+(af?'+':'');
 /* vergaderverslagen: samenvattingen per agendapunt (verg/zoek.json), bovenaan omdat ze het prettigst lezen */
 let VZ=null;
 /* alleen tonen als een zoekwoord (stam of exacte zin) echt in de getoonde tekst staat */
@@ -164,8 +174,10 @@ async function verslagen(delen){
   $('vlijst').innerHTML=uit.slice(0,3).map(([,x])=>kaart(x)).join('')+(uit.length>3?`<details><summary class="sub" style="cursor:pointer;margin-top:8px">Nog ${uit.length-3} onderwerpen uit vergaderingen</summary>${uit.slice(3).map(([,x])=>kaart(x)).join('')}</details>`:'');
 }
 function sprekers(){   // sprekers en fracties die in de resultaten voorkomen
-  const M=DB.M,fs=new Map(),sp=new Map();RD.forEach(([id])=>{const u=M.u[id];if(u[2]>=0)fs.set(u[2],(fs.get(u[2])||0)+1);if(u[1]>=0)sp.set(u[1],(sp.get(u[1])||0)+1);});
-  const kf=V('ffr'),ks=V('fsp');
+  const M=DB.M,fs=new Map(),sp=new Map();
+  let kf=V('ffr'),ks=V('fsp');
+  if(WACHT.f!=null){const i=M.par.indexOf(WACHT.f);if(i>=0)kf=String(i);}if(WACHT.s!=null){const i=M.spk.indexOf(WACHT.s);if(i>=0)ks=String(i);}WACHT={};
+  RD.forEach(([id])=>{const u=M.u[id];if(u[2]>=0)fs.set(u[2],(fs.get(u[2])||0)+1);if(u[1]>=0&&(kf===''||u[2]===+kf))sp.set(u[1],(sp.get(u[1])||0)+1);});
   $('ffr').innerHTML='<option value="">alle fracties</option>'+[...fs].sort((a,b)=>M.par[a[0]].localeCompare(M.par[b[0]])).map(([f,n])=>`<option value="${f}">${esc(M.par[f])} (${n})</option>`).join('');
   $('fsp').innerHTML='<option value="">alle sprekers</option>'+[...sp].sort((a,b)=>M.spk[a[0]].localeCompare(M.spk[b[0]])).map(([s,n])=>`<option value="${s}">${esc(M.spk[s])} (${n})</option>`).join('');
   if([...$('ffr').options].some(o=>o.value===kf))$('ffr').value=kf;if([...$('fsp').options].some(o=>o.value===ks))$('fsp').value=ks;
@@ -196,37 +208,36 @@ async function toepassen(){
   const datum=TAB==='gezegd'?id=>M.verg[M.ap[M.u[id][0]][0]][0]:id=>ST.M.d[id][1];
   LIJST=(TAB==='gezegd'?rd:rs).slice();
   if(V('orde')==='d')LIJST.sort((a,b)=>datum(b[0]).localeCompare(datum(a[0])));else LIJST.sort((a,b)=>b[1]-a[1]);
-  if(ZOEK.zinnen.length){const ok=[];for(const r of LIJST.slice(0,300)){const t=fold(await tekstVan(r[0])).replace(/\s+/g,' ');if(ZOEK.zinnen.every(z=>t.includes(z)))ok.push(r);}LIJST=ok;}
-  $('ng').textContent=nf(rd.length);$('ns').textContent=nf(rs.length);
+  $('ng').textContent=aantal(RD.length,ZOEK.af&&ZOEK.af.d);$('ns').textContent=aantal(RS.length,ZOEK.af&&ZOEK.af.s);
   chips(RS);$('soorten').hidden=TAB!=='stukken';$('fgez').hidden=TAB!=='gezegd';
   TOON=0;$('holder').append($('vverslag'),$('analyse'));$('uit').innerHTML='';$('uit').hidden=!LIJST.length;filterChips();
-  $('telling').textContent=LIJST.length?(TAB==='gezegd'?`${nf(LIJST.length)} keer gezegd in debatten`:`${nf(LIJST.length)} stukken gevonden`)+(ZOEK.zinnen.length?' (exacte zin, eerste 300 gecontroleerd)':''):'Niets gevonden met deze filters. Probeer minder woorden of een langere periode.';
+  $('telling').textContent=LIJST.length?(TAB==='gezegd'?`${nf(LIJST.length)} keer gezegd in debatten`:`${nf(LIJST.length)} stukken gevonden`)+(ZOEK.zinnen.length?(ZOEK.af[TAB==='gezegd'?'d':'s']?' (exacte zin; van de beste 300 treffers gecontroleerd, er kunnen er meer zijn)':' (exacte zin)'):''):'Niets gevonden met deze filters. Probeer minder woorden of een langere periode.';
   await meer();
   leegStaat(rd.length,rs.length);
 }
 /* lege staat: als er niets is gevonden, laten zien wat wél kan */
 const VOORBEELD=['deelscooters','tramlijn 4','"betaald parkeren"','Tweebosbuurt','schuldhulp','hittestress'];
 async function telAlleen(w){const {termen}=leesQ(w);if(!termen.length)return 0;const [ls,ld]=await Promise.all([ST.lijsten(termen),DB.lijsten(termen)]);
-  const n=(l,N,len,avg)=>{const {sc,hit}=bm25(l,N,len,avg);let c=0;sc.forEach((_,id)=>{if(hit.get(id)===termen.length)c++;});return c;};
+  const n=(l,N,len,avg)=>{const {sc,hit}=bm25(l,N,len,avg);let c=0;sc.forEach((_,id)=>{if(hit.get(id)===nodig(termen,l))c++;});return c;};
   return n(ls,ST.M.d.length,id=>ST.M.d[id][5]||1,ST.avg)+n(ld,DB.M.u.length,id=>DB.M.u[id][3]||1,DB.avg);}
 async function leegStaat(nGez,nSt){
   const L=$('leeg');if(LIJST.length||!ZOEK.q){L.hidden=true;return;}
   const q=ZOEK.q,tips=[],filters=[];
-  if(TAB==='gezegd'&&nSt)tips.push(`<li>Wel <b>${nf(nSt)}</b> keer in de officiële stukken: <button type="button" class="lk" data-tab="stukken">bekijk de stukken</button></li>`);
-  if(TAB==='stukken'&&nGez)tips.push(`<li>Wel <b>${nf(nGez)}</b> keer gezegd in debatten: <button type="button" class="lk" data-tab="gezegd">bekijk de debatten</button></li>`);
+  if(TAB==='gezegd'&&nSt)tips.push(`<li>Wel <b>${aantal(nSt,ZOEK.af.s)}</b> keer in de officiële stukken: <button type="button" class="lk" data-tab="stukken">bekijk de stukken</button></li>`);
+  if(TAB==='stukken'&&nGez)tips.push(`<li>Wel <b>${aantal(nGez,ZOEK.af.d)}</b> keer gezegd in debatten: <button type="button" class="lk" data-tab="gezegd">bekijk de debatten</button></li>`);
   if(V('fdom')!=='')filters.push('domein');if(V('fgeb')!=='')filters.push('gebied');if($('van').value!=='2018'||$('tot').value!=='2026')filters.push('periode');
   if(V('ffr')!==''||V('fsp')!==''||V('fbr')!=='')filters.push('fractie of spreker');
   if(filters.length)tips.push(`<li>Je filtert op ${filters.join(', ')}. <button type="button" class="lk" data-a="wis">Zoek zonder filters</button></li>`);
-  if(ZOEK.zinnen.length)tips.push(`<li>Je zoekt een exacte zin. <button type="button" class="lk" data-q="${esc(q.replace(/"/g,''))}">Zoek zonder aanhalingstekens</button></li>`);
+  if(ZOEK.zinnen.length)tips.push(`<li>${ZOEK.kand?'De woorden komen wel voor, maar niet als deze exacte zin. ':'Je zoekt een exacte zin. '}<button type="button" class="lk" data-q="${esc(q.replace(/"/g,''))}">Zoek zonder aanhalingstekens</button></li>`);
   const woorden=q.replace(/"/g,'').split(/\s+/).filter(w=>w.length>1);
-  if(woorden.length>1){const n=await Promise.all(woorden.map(telAlleen));const los=woorden.map((w,i)=>[w,n[i]]).filter(x=>x[1]);
+  if(woorden.length>1&&!(ZOEK.zinnen.length&&ZOEK.kand)){const n=await Promise.all(woorden.map(telAlleen));const los=woorden.map((w,i)=>[w,n[i]]).filter(x=>x[1]);
     if(los.length)tips.push(`<li>Alle woorden samen komen niet voor. Los wel: ${los.map(([w,c])=>`<button type="button" class="lk" data-q="${esc(w)}">${esc(w)}</button> (${nf(c)})`).join(' · ')}</li>`);}
   const dos=IX.filter(x=>x.soort!=='kruising');const b=bedoelJe(q.replace(/"/g,''),dos.map(x=>x.naam).concat(dos.flatMap(x=>(x.termen||'').split('|').map(t=>t.trim()).filter(t=>t.length>3))));
   if(b.length){const d=b.map(x=>dos.find(y=>y.naam===x)).filter(Boolean);const t=b.filter(x=>!dos.find(y=>y.naam===x));
     if(t.length)tips.push(`<li>Bedoel je ${t.map(x=>`<button type="button" class="lk" data-q="${esc(x)}">${esc(x)}</button>`).join(' of ')}?</li>`);
     if(d.length)tips.push(`<li>Misschien zoek je het dossier ${d.map(x=>`<a href="${x.soort==='gebied'?'wijk.html?g=':'dossier.html?d='}${x.slug}">${esc(x.naam)}</a>`).join(' of ')}.</li>`);}
   tips.push('<li>Probeer een ander of algemener woord: woordvormen tellen al mee (woning vindt ook woningen).</li>');
-  L.innerHTML=`<h2>Hier ligt niks voor ‘${esc(q)}’</h2><p style="margin:0 0 4px">Maar we geven niet op. Probeer dit:</p><ul>${tips.join('')}</ul><p class="sub" style="margin:14px 0 0">Of probeer een van deze:</p><div class="chips">${VOORBEELD.map(v=>`<button type="button" data-q="${esc(v)}">${esc(v)}</button>`).join('')}</div>`;
+  L.innerHTML=`<h2>Hier ligt niks voor ‘${esc(q)}’</h2><p style="margin:0 0 4px">Maar we geven niet op. Probeer dit:</p><ul>${tips.join('')}</ul><p class="sub" style="margin:14px 0 0">Of probeer een van deze:</p><div class="chips">${VOORBEELD.filter(v=>!leesQ(v).termen.some(w=>ZOEK.termen.includes(w))).slice(0,5).map(v=>`<button type="button" data-q="${esc(v)}">${esc(v)}</button>`).join('')}</div>`;
   L.hidden=false;$('telling').textContent='';
 }
 $('leeg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
@@ -268,7 +279,7 @@ async function kaartD(id){
 async function kaartS(id){
   const d=ST.M.d[id],soort=ST.M.soorten[d[0]],t=await ST.tekst(id);let fr='';
   if(soort==='Schriftelijke vragen'){const [v,a]=t.split('\nANTWOORD VAN HET COLLEGE');
-    fr+=`<p class="fr"><span class="lbl">Vraag</span>${fragment(v.replace(/^VRAGEN\n/,''))}</p>`+(a?`<p class="fr"><span class="lbl">Antwoord college</span>${fragment(a.replace(/^ \([\d-]+\)\n/,''))}</p>`:`<p class="fr"><span class="lbl">Antwoord college</span><span class="sub">nog niet beantwoord, of niet gekoppeld</span></p>`);}
+    fr+=`<p class="fr"><span class="lbl">Vraag</span> ${fragment(v.replace(/^VRAGEN\n/,''))}</p>`+(a?`<p class="fr"><span class="lbl">Antwoord college</span> ${fragment(a.replace(/^ \([\d-]+\)\n/,''))}</p>`:`<p class="fr"><span class="lbl">Antwoord college</span> <span class="sub">nog niet beantwoord, of niet gekoppeld</span></p>`);}
   else fr=`<p class="fr">${fragment(t)}</p>`;
   return `<article class="res"><h2><a href="${esc(d[4])}" target="_blank" rel="noopener">${esc(d[2]||soort)}</a></h2>
     <div class="m"><span class="soort">${esc(soort)}</span><span>${fd(d[1])}</span>${d[3]?`<span>${esc(d[3])}</span>`:''}</div>${fr}
@@ -280,7 +291,7 @@ function chips(r){const n=GROEP.map(([_,g])=>r.filter(([id])=>!g||g.includes(ST.
   $('soorten').innerHTML=GROEP.map(([naam],k)=>`<button type="button" class="${k===groep?'on':''}" aria-pressed="${k===groep}" data-k="${k}">${naam}<span class="n" style="margin-left:6px">${nf(n[k])}</span></button>`).join('');}
 $('soorten').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;groep=+b.dataset.k;toepassen();zetHash();});
 $('tabs').addEventListener('click',e=>{const b=e.target.closest('[data-tab]');if(!b)return;TAB=b.dataset.tab;document.querySelectorAll('#tabs [data-tab]').forEach(x=>x.setAttribute('aria-selected',x===b));if(ZOEK)toepassen();zetHash();});
-['ffr','fsp','fbr'].forEach(i=>$(i).addEventListener('change',()=>{if(ZOEK)toepassen();zetHash();}));
+['ffr','fsp','fbr'].forEach(i=>$(i).addEventListener('change',()=>{if(i==='ffr'&&ZOEK)sprekers();if(ZOEK)toepassen();zetHash();}));
 ['van','tot','fdom','fgeb'].forEach(i=>$(i).addEventListener('change',zoek));
 $('orde').addEventListener('change',()=>{if(ZOEK)toepassen();zetHash();});
 $('zf').addEventListener('submit',e=>{e.preventDefault();zoek();});
@@ -288,8 +299,8 @@ $('meer').addEventListener('click',meer);
 document.addEventListener('click',e=>{const v=e.target.closest('[data-video]');if(v)kVideo(v.dataset.video,+v.dataset.sec,v.dataset.titel);});
 function zetHash(){const p=new URLSearchParams();const q=$('q').value.trim();if(q)p.set('q',q);if(TAB!=='gezegd')p.set('tab',TAB);
   if(V('fdom')!=='')p.set('d',LB.dom[+V('fdom')][0]);if(V('fgeb')!=='')p.set('g',LB.geb[+V('fgeb')]);if(V('van')!=='2018')p.set('van',V('van'));if(V('tot')!=='2026')p.set('tot',V('tot'));
-  if(V('ffr')!=='')p.set('f',DB.M.par[+V('ffr')]);if(V('fsp')!=='')p.set('s',DB.M.spk[+V('fsp')]);if(V('fbr')!=='')p.set('v',V('fbr'));if(groep)p.set('soort',groep);if(V('orde')==='d')p.set('orde','d');
-  history.replaceState(null,'','#'+p.toString());}
+  const wf=V('ffr')!==''?DB.M.par[+V('ffr')]:WACHT.f,ws=V('fsp')!==''?DB.M.spk[+V('fsp')]:WACHT.s;if(wf)p.set('f',wf);if(ws)p.set('s',ws);if(V('fbr')!=='')p.set('v',V('fbr'));if(groep)p.set('soort',groep);if(V('orde')==='d')p.set('orde','d');
+  const sp=new URLSearchParams(location.search);sp.delete('q');const qs=sp.toString();history.replaceState(null,'',location.pathname+(qs?'?'+qs:'')+'#'+p.toString());}
 function logZoek(q,n){clearTimeout(logZoek.t);logZoek.t=setTimeout(()=>{if(!q||q===LOGQ)return;LOGQ=q;try{navigator.sendBeacon('/api/log',new Blob([JSON.stringify({q,n,pagina:'zoek'})],{type:'application/json'}));}catch(e){}},3000);}
 window.addEventListener('hashchange',()=>location.reload());
 let IX=[],VI=new Set();
@@ -307,9 +318,8 @@ let IX=[],VI=new Set();
   if(p.get('g')){const i=LB.geb.indexOf(p.get('g'));if(i>=0)$('fgeb').value=i;}
   if(p.get('van'))$('van').value=p.get('van')==='alle'?'2018':p.get('van');if(p.get('vanaf'))$('van').value=p.get('vanaf')==='alle'?'2018':p.get('vanaf');if(p.get('tot'))$('tot').value=p.get('tot');
   if(p.get('soort'))groep=+p.get('soort');if(p.get('orde'))$('orde').value=p.get('orde');if(p.get('v'))$('fbr').value=p.get('v');
+  WACHT={f:p.get('f'),s:p.get('s')};
   await zoek();
-  if(p.get('f')){const i=DB.M.par.indexOf(p.get('f'));if(i>=0){$('ffr').value=i;}}if(p.get('s')){const i=DB.M.spk.indexOf(p.get('s'));if(i>=0)$('fsp').value=i;}
-  if(p.get('f')||p.get('s'))toepassen();
   if(!p.get('q')&&(p.get('d')||p.get('g'))){$('telling').textContent='Typ een zoekwoord; het filter op domein of gebied staat al aan.';}
 })().catch(e=>{$('telling').textContent='Dat ging mis: de zoekindex kwam niet aan. Ververs de pagina en probeer het nog eens.';console.error(e);});
 </script>
