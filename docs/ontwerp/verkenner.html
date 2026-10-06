@@ -2,6 +2,7 @@
 <html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Verkenner · raadzoeker</title>
 <link rel="stylesheet" href="stijl.css?v=11">
+<script>(function(){var t=null;try{t=localStorage.getItem("rz-vk-thema");}catch(e){}if(!t)t=matchMedia("(prefers-color-scheme: dark)").matches?"donker":"licht";document.documentElement.dataset.thema=t;})();</script>
 <style>
 :root{--doek:#0E171B;--paneel:rgba(19,30,35,.92);--tekst:#E8EEF0;--zacht:#9FB0B6}
 html,body{height:100%;overflow:hidden}body{display:flex;flex-direction:column;background:var(--doek);height:100dvh}
@@ -48,8 +49,27 @@ html,body{height:100%;overflow:hidden}body{display:flex;flex-direction:column;ba
 .sectie{margin-top:10px;font-size:13px}.sectie summary{cursor:pointer;color:#fff}
 #jaarbord{position:absolute;left:50%;bottom:24px;transform:translateX(-50%);font:700 64px var(--font);color:#fff;opacity:.85;z-index:4;pointer-events:none;text-shadow:0 0 20px #0E171B}
 .hop{display:flex;gap:8px;align-items:flex-start;padding:6px 0;border-top:1px solid #22343B}.hop b{color:#fff}
-#tel{font-size:12.5px;color:var(--zacht);margin-top:8px;line-height:1.4}
+#tel b{color:#fff}#tel{font-size:12.5px;color:var(--zacht);margin-top:8px;line-height:1.4}
 #klap{display:none}
+
+:root[data-thema=licht]{--doek:#F4F7F8;--paneel:rgba(255,255,255,.95);--tekst:#16262C;--zacht:#566A71}
+[data-thema=licht] #graaf{background:radial-gradient(ellipse at 50% 45%,#FFFFFF 0%,#E8EEF0 75%)}
+[data-thema=licht] .pnl{box-shadow:0 10px 30px rgba(0,0,0,.15);border:1px solid #D5DEE1}
+[data-thema=licht] .pnl a,[data-thema=licht] .spoor button,[data-thema=licht] #klap{color:#00811F}
+[data-thema=licht] #filters h1,[data-thema=licht] #info h2,[data-thema=licht] .spoor b,[data-thema=licht] .wist .lk,[data-thema=licht] .hop b,[data-thema=licht] .sectie summary,[data-thema=licht] .bel b,[data-thema=licht] .clab,[data-thema=licht] #jaarbord{color:var(--tekst)}
+[data-thema=licht] #filters select,[data-thema=licht] #filters input{background:#fff;border-color:#B8C6CB}
+[data-thema=licht] .leg button:hover,[data-thema=licht] .leg button[aria-pressed="true"]{background:#E3EBEE}
+[data-thema=licht] #info .frag{background:#F0F4F5}[data-thema=licht] #info .frag mark{background:#BFE8C8;color:#16262C}
+[data-thema=licht] .buren button,[data-thema=licht] #hint button{border-color:#B8C6CB}[data-thema=licht] .buren button:hover{border-color:#00811F}
+[data-thema=licht] .wist{background:#E4F3E8;border-left-color:#00811F}
+[data-thema=licht] .kn2,[data-thema=licht] #filters .kn{background:#E3EBEE;color:var(--tekst)}[data-thema=licht] .kn2:hover,[data-thema=licht] #filters .kn:hover{background:#D3DFE3}
+[data-thema=licht] .hop{border-top-color:#D5DEE1}
+[data-thema=licht] .bel span{color:var(--tekst);text-shadow:none}[data-thema=licht] .bel b{text-shadow:none}
+[data-thema=licht] .clab{text-shadow:0 0 8px #fff;opacity:.9}
+[data-thema=licht] #overhint{background:rgba(255,255,255,.8)}
+[data-thema=licht] #zoom button{color:var(--tekst);box-shadow:0 2px 8px rgba(0,0,0,.18)}
+[data-thema=licht] #tel b{color:var(--tekst)!important}
+#bellen{pointer-events:none}.bel{pointer-events:auto}
 @media (max-width:760px){#zoom{left:auto;right:14px;bottom:14px}.clab{font-size:11px}#filters h1{font-size:17px}#filters{width:auto;right:14px;max-height:45%}#filters.dicht .inh{display:none}#klap{display:inline;all:unset;cursor:pointer;float:right;color:#8FE0A0}
   #info{left:0;right:0;width:auto;top:auto;bottom:0;max-height:none;height:56%;border-radius:16px 16px 0 0}
   #graaf.open #sg,#graaf.open #clabs{bottom:56%}#graaf.open #filters,#graaf.open #zoom,#graaf.open #verras,#graaf.open #hint{display:none}
@@ -82,7 +102,7 @@ html,body{height:100%;overflow:hidden}body{display:flex;flex-direction:column;ba
     </div>
   </div>
   <aside class="pnl" id="info" aria-live="polite"></aside>
-  <div id="zoom"><button id="zin" aria-label="Inzoomen">+</button><button id="zuit" aria-label="Uitzoomen">−</button><button id="zhel" aria-label="Alles tonen" style="font-size:14px">⤢</button></div>
+  <div id="zoom"><button id="zin" aria-label="Inzoomen">+</button><button id="zuit" aria-label="Uitzoomen">−</button><button id="zhel" aria-label="Alles tonen" style="font-size:14px">⤢</button><button id="thema" aria-label="Wissel tussen dag- en nachtmodus" title="Dag/nacht" style="font-size:17px"></button></div>
 </div>
 <script src="ontwerp.js?v=28"></script>
 <script src="lib/graphology.umd.min.js"></script>
@@ -91,6 +111,7 @@ html,body{height:100%;overflow:hidden}body{display:flex;flex-direction:column;ba
 kop('verkenner');
 const KL=['#7FD18B','#79B8F2','#F2A65A','#C39BF2','#5FD3C9','#F27BA8','#C9D46A','#F2D45A','#A9B8C0','#F27B6E','#9BE07A','#D9A27A','#8E9CF2'];
 let G=null,R=null,DATA=null,VB=null,HOV=null,SEL=null,W={},BUREN={},F={g:'',d:'',f:'',v:0,t:8,o:false,dom:-1};
+const LICHT=()=>document.documentElement.dataset.thema==='licht';
 const nl=n=>Math.round(n).toLocaleString('nl-NL');
 const el=id=>document.getElementById(id);
 /* gewicht van een knoop onder de filters: aantal beurten/stukken in periode (en gebied/domein/fractie) */
@@ -108,15 +129,15 @@ function gewicht(i,k){
 }
 function herweeg(){
   let max=1,zicht=0;W={};
-  DATA.knopen.forEach((k,i)=>{let w=gewicht(i,k);if(F.o&&k.s!=='o')w=0;if(F.dom>=0&&k.dom!==F.dom&&k.s!=='o')w=0;W[i]=w;if(w>max)max=w;});
+  DATA.knopen.forEach((k,i)=>{let w=gewicht(i,k);if(F.o&&k.s!=='o')w=0;if(F.dom>=0&&k.dom!==F.dom)w=0;W[i]=w;if(w>max)max=w;});
   // met een filter: de ca. 600 knopen die daar het meest spelen, zodat elk gebied, domein, jaar of fractie een eigen web laat zien
-  const gefilterd=F.g!==''||F.d!==''||F.f!==''||F.v>0||F.t<8;
+  const gefilterd=F.g!==''||F.d!==''||F.f!==''||F.v>0||F.t<8||F.dom>=0;
   const ws=Object.values(W).filter(w=>w>0).sort((a,b)=>b-a);
   const drempel=gefilterd?Math.max(3,ws[Math.min(600,ws.length-1)]||3):3;
   G.forEachNode((n,a)=>{const w=W[n];const aan=w>=drempel;if(aan)zicht++;
     G.mergeNodeAttributes(n,{hidden:!aan,size:aan?(a.s==='o'?6:2)+(a.s==='o'?14:11)*Math.sqrt(w/max):1});});
   const ne=G.filterEdges((e,a,s,t)=>!G.getNodeAttribute(s,'hidden')&&!G.getNodeAttribute(t,'hidden')).length;
-  el('tel').innerHTML=`<b style="color:#fff">${nl(zicht)}</b> begrippen en onderwerpen · <b style="color:#fff">${nl(ne)}</b> verbanden<br>uit ${nl(DATA.n)} debatbeurten en stukken, ${DATA.jaren[F.v]}–${DATA.jaren[F.t]}${F.g!==''?', '+DATA.geb[F.g]:''}${F.d!==''?', '+DATA.dom[F.d][1]:''}${F.f!==''?', '+DATA.par[F.f]:''}<br>Stand ${fd(DATA.stand)}`;
+  el('tel').innerHTML=`<b>${nl(zicht)}</b> begrippen en onderwerpen · <b>${nl(ne)}</b> verbanden<br>uit ${nl(DATA.n)} debatbeurten en stukken, ${DATA.jaren[F.v]}–${DATA.jaren[F.t]}${F.g!==''?', '+DATA.geb[F.g]:''}${F.d!==''?', '+DATA.dom[F.d][1]:''}${F.f!==''?', '+DATA.par[F.f]:''}<br>Stand ${fd(DATA.stand)}`;
   clusterLabels();R&&R.refresh();bewaar();
 }
 function clusterLabels(){
@@ -141,6 +162,7 @@ function tekenBellen(){const L=el('bellen');if(!R||NIV!=='over'){L.innerHTML='';
       if(d<min){const m=(min-d)/2;dx/=d;dy/=d;A.x-=dx*m;A.y-=dy*m;C.x+=dx*m;C.y+=dy*m;}}
     P.forEach(q=>{q.x=Math.max(q.r+300*(W>760),Math.min(W-q.r-10,q.x));q.y=Math.max(q.r+40,Math.min(H-q.r-10,q.y));});}
   L.innerHTML=P.map(({b,x,y,r})=>`<div class="bel" data-d="${b.d}" style="left:${x}px;top:${y}px;width:${2*r}px;height:${2*r}px;border-color:rgba(${hx(KL[b.d])},.85);background:radial-gradient(circle,rgba(${hx(KL[b.d])},.34),rgba(${hx(KL[b.d])},.12))"><b>${esc(DATA.dom[b.d][1])}</b>${r>78?`<span>${b.top.slice(0,r>100?5:3).map(esc).join('<br>')}</span>`:''}</div>`).join('');}
+el('bellen').addEventListener('wheel',e=>{const c=el('sg').querySelector('.sigma-mouse')||el('sg').querySelector('canvas:last-of-type');if(!c)return;e.preventDefault();c.dispatchEvent(new WheelEvent('wheel',{clientX:e.clientX,clientY:e.clientY,deltaY:e.deltaY,deltaX:e.deltaX,deltaMode:e.deltaMode,ctrlKey:e.ctrlKey,bubbles:true,cancelable:true}));},{passive:false});
 el('bellen').addEventListener('click',e=>{const b=e.target.closest('.bel');if(!b)return;const B=BEL.find(x=>x.d===+b.dataset.d);const d=R.getNodeDisplayData(String(DATA.knopen.findIndex(k=>k.dom===B.d)));
   // naar het middelpunt van het domein (in 'framed' coordinaten van de camera)
   const p=R.graphToViewport({x:B.x,y:B.y}),c=R.viewportToFramedGraph(p);R.getCamera().animate({x:c.x,y:c.y,ratio:0.32},{duration:700});});
@@ -203,17 +225,17 @@ function nodeReducer(n,a){const r={...a};const f=HOV??SEL;
     if(NIV==='over'){if(rk>320){r.hidden=true;return r;}r.size=Math.max(1.2,a.size*.45);r.label='';return r;}
     if(NIV==='mid'&&!gefilterd()&&rk>800){r.hidden=true;return r;}}
   if(VERG&&VERG[n]!=null)r.color=VERG[n];
-  if(PAD&&HOV==null){if(PAD.has(n)){r.forceLabel=true;r.zIndex=3;r.size=Math.max(a.size,7);}else{r.color='#26353B';r.label='';}return r;}
-  if(f!=null){const i=+n;if(n===f){r.highlighted=true;r.forceLabel=true;r.zIndex=3;}else if(BUREN[+f]&&BUREN[+f].some(([j])=>j===i)){r.forceLabel=true;r.zIndex=2;}else{r.color='#2A3A40';r.label='';r.zIndex=0;}}
+  if(PAD&&HOV==null){if(PAD.has(n)){r.forceLabel=true;r.zIndex=3;r.size=Math.max(a.size,7);}else{r.color=LICHT()?'#D5DEE1':'#26353B';r.label='';}return r;}
+  if(f!=null){const i=+n;if(n===f){r.highlighted=true;r.forceLabel=true;r.zIndex=3;}else if(BUREN[+f]&&BUREN[+f].some(([j])=>j===i)){r.forceLabel=true;r.zIndex=2;}else{r.color=LICHT()?'#DCE4E7':'#2A3A40';r.label='';r.zIndex=0;}}
   return r;}
 function edgeReducer(e,a){const r={...a};const f=HOV??SEL;
-  if(PAD&&HOV==null){if(PADE.has(e)){r.color='#FFFFFF';r.size=3;r.zIndex=3;}else r.hidden=true;return r;}
-  if(f==null&&(NIV!=='dicht'||a.hub||!a.kern)){r.hidden=true;return r;}
-  if(f!=null){const [s,t]=G.extremities(e);if(s===f||t===f){r.color='rgba(255,255,255,.55)';r.size=Math.max(1,a.size*1.6);r.zIndex=2;}else r.hidden=true;}
+  if(PAD&&HOV==null){if(PADE.has(e)){r.color=LICHT()?'#16262C':'#FFFFFF';r.size=3;r.zIndex=3;}else r.hidden=true;return r;}
+  if(f==null){r.hidden=true;return r;}
+  if(f!=null){const [s,t]=G.extremities(e);if(s===f||t===f){r.color=LICHT()?'rgba(22,38,44,.6)':'rgba(255,255,255,.55)';r.size=Math.max(1,a.size*1.6);r.zIndex=2;}else r.hidden=true;}
   return r;}
 function tekenHover(ctx,data,st){const fs=st.labelSize+2,lab=data.label||'';ctx.font=`700 ${fs}px Arial`;const w=ctx.measureText(lab).width;
-  ctx.fillStyle='rgba(14,23,27,.92)';ctx.beginPath();ctx.roundRect(data.x+data.size+3,data.y-fs/2-5,w+14,fs+10,6);ctx.fill();
-  ctx.fillStyle='#fff';ctx.fillText(lab,data.x+data.size+10,data.y+fs/3);ctx.beginPath();ctx.arc(data.x,data.y,data.size+2,0,Math.PI*2);ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();}
+  const L=LICHT();ctx.fillStyle=L?'rgba(255,255,255,.96)':'rgba(14,23,27,.92)';ctx.beginPath();ctx.roundRect(data.x+data.size+3,data.y-fs/2-5,w+14,fs+10,6);ctx.fill();
+  ctx.fillStyle=L?'#16262C':'#fff';ctx.fillText(lab,data.x+data.size+10,data.y+fs/3);ctx.beginPath();ctx.arc(data.x,data.y,data.size+2,0,Math.PI*2);ctx.strokeStyle=L?'#16262C':'#fff';ctx.lineWidth=2;ctx.stroke();}
 /* link: #n=<id>&g=..&d=..&f=..&v=..&t=.. */
 function bewaar(){const p=[];if(SEL!=null)p.push('n='+encodeURIComponent(DATA.knopen[+SEL].id));['g','d','f'].forEach(k=>F[k]!==''&&p.push(k+'='+F[k]));if(F.v)p.push('v='+F.v);if(F.t!==8)p.push('t='+F.t);if(F.o)p.push('o=1');if(F.dom>=0)p.push('k='+F.dom);history.replaceState(null,'','#'+p.join('&'));}
 function lees(){const h=new URLSearchParams(location.hash.slice(1));['g','d','f'].forEach(k=>{if(h.has(k))F[k]=h.get(k);});if(h.has('v'))F.v=+h.get('v');if(h.has('t'))F.t=+h.get('t');F.o=h.get('o')==='1';if(h.has('k'))F.dom=+h.get('k');return h.get('n');}
@@ -235,7 +257,7 @@ fetch(new URLSearchParams(location.search).get('bron')||'verkenner.json').then(r
   DATA.knopen.map((k,i)=>[k.n,i]).sort((a,b)=>b[0]-a[0]).forEach(([,i],r)=>RANK[String(i)]=r);maakBellen();
   const n0=lees();
   ['g','d','f'].forEach(k=>el('f'+k).value=F[k]);el('fv').value=F.v;el('ft').value=F.t;el('fo').checked=F.o;
-  R=new Sigma(G,el('sg'),{nodeReducer,edgeReducer,defaultDrawNodeHover:tekenHover,labelColor:{color:'#E8EEF0'},labelFont:'Arial',labelSize:12,labelWeight:'400',
+  R=new Sigma(G,el('sg'),{nodeReducer,edgeReducer,defaultDrawNodeHover:tekenHover,labelColor:{color:LICHT()?'#16262C':'#E8EEF0'},labelFont:'Arial',labelSize:12,labelWeight:'400',
     labelRenderedSizeThreshold:6,labelDensity:0.45,labelGridCellSize:110,zIndex:true,minCameraRatio:0.03,maxCameraRatio:3,stagePadding:40});
   NIV=niveau();herweeg();
   R.getCamera().on('updated',plaatsLabels);
@@ -305,10 +327,12 @@ el('verg').onclick=()=>{const a=+el('ca').value,b=+el('cb').value;if(a===b){VERG
 /* ---- C: kopieer als afbeelding (met titel, filter, bron en datum) ---- */
 el('foto').onclick=async()=>{const cs=R.getCanvases?R.getCanvases():{};const c0=cs.nodes||Object.values(cs)[0];if(!c0)return;
   const W=c0.width,H=c0.height,s=W/c0.clientWidth,c=document.createElement('canvas');c.width=W;c.height=H+90*s;const x=c.getContext('2d');
-  x.fillStyle='#0E171B';x.fillRect(0,0,c.width,c.height);['edges','nodes','labels','hovers','hoverNodes'].forEach(k=>cs[k]&&x.drawImage(cs[k],0,0));
-  x.fillStyle='#fff';x.font=`700 ${22*s}px Arial`;x.fillText('Verkenner · raadzoeker',16*s,H+32*s);
-  x.fillStyle='#9FB0B6';x.font=`${14*s}px Arial`;x.fillText(el('tel').innerText.replace(/\n/g,' · ').slice(0,180),16*s,H+56*s);x.fillText(location.href,16*s,H+78*s);
+  x.fillStyle=LICHT()?'#F4F7F8':'#0E171B';x.fillRect(0,0,c.width,c.height);['edges','nodes','labels','hovers','hoverNodes'].forEach(k=>cs[k]&&x.drawImage(cs[k],0,0));
+  x.fillStyle=LICHT()?'#16262C':'#fff';x.font=`700 ${22*s}px Arial`;x.fillText('Verkenner · raadzoeker',16*s,H+32*s);
+  x.fillStyle=LICHT()?'#566A71':'#9FB0B6';x.font=`${14*s}px Arial`;x.fillText(el('tel').innerText.replace(/\n/g,' · ').slice(0,180),16*s,H+56*s);x.fillText(location.href,16*s,H+78*s);
   c.toBlob(async b=>{try{await navigator.clipboard.write([new ClipboardItem({'image/png':b})]);el('foto').textContent='✓ Gekopieerd';}catch(e){const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='verkenner.png';a.click();el('foto').textContent='✓ Opgeslagen';}setTimeout(()=>el('foto').textContent='⧉ Afbeelding',2000);});};
+const themaKnop=()=>{el('thema').textContent=LICHT()?'☾':'☀';};themaKnop();
+el('thema').onclick=()=>{const t=LICHT()?'donker':'licht';document.documentElement.dataset.thema=t;try{localStorage.setItem('rz-vk-thema',t);}catch(e){}themaKnop();if(R){R.setSetting('labelColor',{color:LICHT()?'#16262C':'#E8EEF0'});plaatsLabels();R.refresh();}};
 el('klap').onclick=()=>el('filters').classList.toggle('dicht');
 el('verras').onclick=verras;
 /* easter egg: bij 'Maas' gaat er een golf door het web */
