@@ -144,8 +144,22 @@ function g7(){
   J.forEach((j,i)=>{const v=c[j]||0,bh=150*v/m,x=30+bw*i,inP=j>=F.van&&j<=F.tot;s+=`<rect x="${(x+bw*.15).toFixed(1)}" y="${(180-bh).toFixed(1)}" width="${(bw*.7).toFixed(1)}" height="${bh.toFixed(1)}" fill="${inP?'#00811F':'#99CCA0'}"><title>${j}: ${v}</title></rect>`+T(x+bw/2,175-bh,String(v),{anchor:'middle',fs:12})+T(x+bw/2,200,j+(j==='2026'?'*':''),{anchor:'middle',fs:12});});
   return svg(w,h,s+T(30,216,'* 2026 loopt tot oktober',{fs:11,kl:'#3E4B50'}),'Schriftelijke vragen per jaar');
 }
+/* 8 waar speelt wat: aandeel per domein binnen elk gebied */
+function g8(){
+  const r=rijen({zonder:['d','g']}),c={},tot={};
+  r.forEach(x=>{if(x[2]<0||!x[3])return;let n=0;for(let g=0;g<L.geb.length;g++)if(x[3]&(1<<g))n++;if(n>=5)return;   // stadsbreed telt niet mee
+    for(let g=0;g<L.geb.length;g++)if(x[3]&(1<<g)){c[g+'|'+x[2]]=(c[g+'|'+x[2]]||0)+1;tot[g]=(tot[g]||0)+1;}});
+  const geb=L.geb.map((x,i)=>i).filter(g=>tot[g]>=MIN(20));if(!geb.length)return leeg('Te weinig gegevens met deze filters.');
+  const lw=190,cw=62,rh=24,dom=L.dom.map((x,i)=>i),w=lw+cw*dom.length,h=110+rh*geb.length;let s='';
+  dom.forEach((d,i)=>{s+=T(lw+cw*i+cw/2,100,L.dom[d][1].split(/,| en /)[0],{anchor:'start',fs:12,rot:-40,bold:F.d===String(d)});});
+  geb.forEach((g,k)=>{const y=108+rh*k,sel=F.g===String(g);s+=T(0,y+16,L.geb[g]+' ('+tot[g]+')',{bold:sel});
+    dom.forEach((d,i)=>{const p=100*(c[g+'|'+d]||0)/tot[g],fv=Math.min(1,p/30);
+      s+=`<rect x="${lw+cw*i+1}" y="${y+1}" width="${cw-2}" height="${rh-2}" fill="${tint(fv)}"${sel||F.d===String(d)?' stroke="#000" stroke-width="1"':''}><title>${A(L.geb[g])}, ${A(L.dom[d][1])}: ${p.toFixed(1)}%</title></rect>`+T(lw+cw*i+cw/2,y+16,Math.round(p)+'%',{anchor:'middle',fs:11,kl:tekstKl(fv)});});});
+  return svg(w,h,s,'Aandeel per domein binnen elk gebied');
+}
 const G=[
   ['onderwerpen','Waar gaat het over, door de jaren?','Aantal moties, toezeggingen en schriftelijke vragen per domein en jaar. Kleur per rij: donkerder is drukker dan in andere jaren van dat domein.','gf',g1],
+  ['waar','Waar speelt wat?','Per gebied: welk deel van de moties, toezeggingen en schriftelijke vragen over dat gebied bij elk domein hoort. Stukken die vijf of meer gebieden noemen (stadsbreed) tellen niet mee. Tussen haakjes het aantal stukken.','fp',g8],
   ['spreektijd','Waar praat elke fractie over?','Welk deel van de spreektijd (woorden in de raad) een fractie aan elk domein besteedt.','p',g2],
   ['samen','Wie dient samen moties in?','Aantal moties dat twee fracties samen indienden. Kleur: hoe vaak, vergeleken met de kleinste van de twee.','dgp',g3],
   ['aangenomen','Hoe vaak wordt een motie aangenomen?','Aandeel aangenomen moties per fractie die de motie indiende of mede indiende.','dgp',g4],
