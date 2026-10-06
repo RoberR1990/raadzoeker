@@ -1,8 +1,8 @@
 <!doctype html>
 <html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Dossier · raadzoeker</title>
-<link rel="stylesheet" href="stijl.css?v=18">
-<link rel="stylesheet" href="keten.css?v=6">
+<link rel="stylesheet" href="stijl.css?v=19">
+<link rel="stylesheet" href="keten.css?v=7">
 <style>
 .pagina.breed{max-width:1240px}
 .crumb{font-size:14px;color:var(--sub);margin:32px 0 4px}
@@ -66,10 +66,10 @@ table.tafel .bar i{display:block;height:8px;background:var(--groen);border-radiu
   <div id="dossier"><p class="leeg" style="margin-top:24px">Laden…</p></div>
   <p class="voet">Gegevens: notulen en ondertiteling van de gemeenteraad, de registratie in iBabs (moties, toezeggingen, schriftelijke vragen, brieven), de Rekenkamer Rotterdam en de wijkraden, stand 2 oktober 2026. Domeinen volgen de indeling van de griffie (beleidsveld in iBabs), aangevuld met een woordmodel; een onderwerp is een vaste set zoekwoorden. Aantallen zijn een goede indicatie, geen exacte telling. Teksten met het label AI zijn automatisch gemaakt; elk punt heeft een letterlijk citaat dat een script woord voor woord met de bron heeft vergeleken. <a href="over.html">Meer over deze tool</a>.</p>
 </main>
-<script src="ontwerp.js?v=36"></script>
+<script src="ontwerp.js?v=37"></script>
 <script src="ai.js?v=1"></script>
 <script src="tel.js?v=1"></script>
-<script src="keten.js?v=11"></script>
+<script src="keten.js?v=12"></script>
 <script>
 kop('domeinen');
 let DATA={stand:STAND},ALLE=[],KAART=null,CUR=null,SOORT='mot',FILTER='open';
@@ -81,11 +81,17 @@ Promise.all(['d/index.json','kaart.json'].map(f=>fetch(f).then(r=>r.json()))).th
     (ai.length?'<span class="sub" style="align-self:center;margin-left:8px">Met AI-samenvatting:</span>'+ai.map(x=>`<a href="#${x.slug}">${esc(x.naam)}</a>`).join(''):'');
   zoeklijst($('zoek'),$('keuze'),()=>ALLE,x=>{location.hash=x.slug;});
   // ?d=slug overleeft het inloggen via Cloudflare Access (het deel na # niet); zet het om naar #slug
-  const qd=new URLSearchParams(location.search).get('d');if(qd)history.replaceState(null,'',location.pathname+'#'+qd);
-  let h=decodeURIComponent(location.hash.slice(1)).split('/')[0];if(!ALLE.some(x=>x.slug===h)){h='';try{h=localStorage.getItem('rz-dossier')||'';}catch(e){}}
+  const sp=new URLSearchParams(location.search),qd=sp.get('d');if(qd){sp.delete('d');const rest=sp.toString();history.replaceState(null,'',location.pathname+(rest?'?'+rest:'')+'#'+qd);}
+  let h=decodeURIComponent(location.hash.slice(1)).split('/')[0];if(h&&!ALLE.some(x=>x.slug===h))return onbekend(h);
+  if(!ALLE.some(x=>x.slug===h)){h='';try{h=localStorage.getItem('rz-dossier')||'';}catch(e){}}
   laad(ALLE.some(x=>x.slug===h)?h:'parkeren');
 });
-window.addEventListener('hashchange',()=>{const h=decodeURIComponent(location.hash.slice(1)).split('/')[0];if(ALLE.some(x=>x.slug===h)&&(!CUR||CUR.slug!==h))laad(h);});
+/* oude adressen (thema-indeling tot 4-10-2026) sturen door naar het nieuwe dossier */
+const OUD={"ai-algoritmen":"digitalisering-data-en-ai","asiel-migratie":"asielopvang-en-statushouders","bouwen-ruimte":"wonen-en-bouwen","buitenruimte-afval":"buitenruimte","cultuur-sport-evenementen":"cultuur-en-sport","data-privacy":"digitalisering-data-en-ai","dienstverlening-organisatie":"bestuur-en-organisatie","digitalisering-ict":"digitalisering-data-en-ai","discriminatie-inclusie":"discriminatie-en-inclusie","economie-haven":"economie-en-haven","energie-klimaat":"klimaat-en-energie","financien-belastingen":"financien","inkoop-aanbesteding-subsidie":"inkoop-aanbesteding-en-subsidie","innovatie-experimenten":"innovatie-en-experimenten","integriteit-transparantie":"integriteit-en-transparantie","mobiliteit-verkeer":"mobiliteit","nationaal-programma-rotterdam-zuid":"zoek.html?q=nationaal programma rotterdam zuid","onderzoek-verantwoording":"rekenkamer-ombudsman-en-verantwoording","participatie-inspraak":"participatie-en-inspraak","regio-rijk":"regio-en-rijk","toezeggingen":"lab.html","veiligheid-handhaving":"veiligheid","werk-inkomen":"werk-inkomen-en-armoede","wonen":"wonen-en-bouwen","zorg-welzijn-jeugd":"zorg-welzijn-en-jeugd"};
+function onbekend(h){const o=OUD[h.split('/')[0]];if(o){location.replace(o.includes('.html')?o:'dossier.html#'+o);return;}document.querySelectorAll('main.pagina>.vlak').forEach(x=>x.hidden=true);const dd=$('dossier'),tip=bedoelJe(h.replace(/-/g,' '),ALLE.map(x=>x.naam),3).map(n=>ALLE.find(x=>x.naam===n)).filter(Boolean);
+  document.title='Dossier niet gevonden · raadzoeker';CUR=null;
+  dd.innerHTML=`<div class="vlak" style="margin-top:24px"><h1 style="font-size:24px">Dit dossier bestaat niet (meer)</h1><p style="margin-top:8px">Er is geen dossier met de naam ‘${esc(h)}’.${tip.length?` Bedoel je ${tip.map(x=>`<a href="#${x.slug}">${esc(x.naam)}</a>`).join(', ')}?`:''}</p><p style="margin-top:8px"><a href="domeinen.html">Bekijk alle dossiers</a></p></div>`;}
+window.addEventListener('hashchange',()=>{if(!ALLE.length)return;const h=decodeURIComponent(location.hash.slice(1)).split('/')[0];if(h&&!ALLE.some(x=>x.slug===h))return onbekend(h);if(ALLE.some(x=>x.slug===h)&&(!CUR||CUR.slug!==h))laad(h);else if(KX&&CUR&&CUR.slug===h&&typeof kLeesHash==='function'){kLeesHash();kTeken();const e=KOPEN.size&&$('k-'+[...KOPEN][0]);if(e)e.scrollIntoView({block:'start'});}});
 async function laad(s){const d=await (await fetch('d/'+s+'.json')).json();d.slug=s;
   // voorbeelddossier langs de keten als er extra gegevens zijn
   let X=null;if((ALLE.find(x=>x.slug===s)||{}).extra){try{const r=await fetch('d/'+s+'-extra.json');if(r.ok)X=await r.json();}catch(e){}}

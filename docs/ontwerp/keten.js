@@ -3,14 +3,15 @@
    één blok met een samenvattende regel en de 3 nieuwste punten. 'Toon alles' klapt een blok open; pas dan verschijnt het filter
    op subthema, direct boven de lijst die het filtert. Een open blok staat in de link (#parkeren/besloten). */
 let KX=null,KD=null,KA=null,KWK=null,KKAART=null,KBEL='open',KAKK=null,KPK=null;
-let KOPEN=new Set(),KSUB={};
+let KOPEN=new Set(),KSUB={},KDICHT=new Set();
+const KBLOKKEN=['komt','akkoord','gezegd','besloten','beloofd','gedaan','stad','achtergrond'];
 const kslug=s=>slug(s);
 async function toonKeten(d,X,A){
-  KD=d;KX=X;KA=A;CIT=[];verberg();KLAAG='n';KJR='alle';PJR='2026';if(KSPEEL){clearInterval(KSPEEL);KSPEEL=null;}KSUB={};KBEL='open';
+  KD=d;KX=X;KA=A;CIT=[];verberg();KLAAG='n';KJR='alle';PJR='2026';if(KSPEEL){clearInterval(KSPEEL);KSPEEL=null;}KSUB={};KBEL='open';KDICHT=new Set();
   if(!KWK){try{[KWK,KKAART]=await Promise.all(['wijken.json','kaart.json'].map(f=>fetch(f).then(r=>r.json())));}catch(e){}}
   if(!KAKK){try{const r=await fetch('akkoord.json');if(r.ok)KAKK=await r.json();}catch(e){}}
   KPK=null;if((ALLE.find(x=>x.slug===d.slug)||{}).kaart){try{const r=await fetch('d/'+d.slug+'-kaart.json');if(r.ok)KPK=await r.json();}catch(e){}}
-  const h=decodeURIComponent(location.hash.slice(1)).split('/');KOPEN=new Set(h[1]?[h[1]]:[]);
+  kLeesHash();
   document.title=d.naam+' · raadzoeker';
   const crumb=(d.pad||[]).map(([t,u])=>`<a href="${u}">${esc(t)}</a>`).join(' › ')+' › '+esc(d.naam);
   const kinderen=ALLE.filter(x=>x.soort==='onderwerp'&&x.groep===d.naam),kr=d.soort==='domein'?ALLE.filter(x=>x.soort==='kruising'&&x.domein===d.slug):[];
@@ -25,6 +26,11 @@ async function toonKeten(d,X,A){
   deel($('deelrij'),d.naam+' in de Rotterdamse raad',new URL('dossier.html?d='+d.slug,location.href).href,d.slug);
   kTeken();
   if(KOPEN.size){const s=$('k-'+[...KOPEN][0]);if(s)setTimeout(()=>s.scrollIntoView({block:'start'}),50);}else window.scrollTo({top:0});
+}
+function kLeesHash(){
+  const h=decodeURIComponent(location.hash.slice(1)).split('/').slice(1).filter(Boolean);KOPEN=new Set();KSUB={};
+  let hs='';h.forEach(x=>{if(KBLOKKEN.includes(x))KOPEN.add(x);else if((KX.sub||[]).some(s=>kslug(s)===x))hs=x;});
+  if(hs){const sn=KX.sub.find(s=>kslug(s)===hs);KBLOKKEN.forEach(b=>KSUB[b]=sn);if(!KOPEN.size)KOPEN.add('gezegd');}
 }
 const kIn=(id,x)=>!KSUB[id]||(x.sub||[]).includes(KSUB[id]);
 const kNu=(dt)=>dt&&dt<STAND;
@@ -92,7 +98,7 @@ function kTeken(){
   // komt eraan: altijd zichtbaar, kort
   const komt=[...X.voorstellen.map(v=>({...v,_rv:1})),...X.komt];
   const rv=v=>`<details class="item"><summary><span class="meta"><span class="d">${fd(v.datum)}</span><span><span class="stip open"></span>Raadsvoorstel${v.behandeling?' · '+esc(v.behandeling.slice(0,70)):''}</span></span><span class="t">${esc(v.titel)}</span><span class="pijl" aria-hidden="true">›</span></summary><div class="ctx"><div><a href="${esc(v.url)}" target="_blank" rel="noopener">Open in iBabs</a></div></div></details>`;
-  h+=kBlok('komt','','Komt eraan',`${nf(komt.length)} punten`,'',o=>kLijst('komt',komt,x=>x._rv?rv(x):kRij(x),'Niets in de komende tijd.',o),{kleur:'geel',open:true});
+  h+=kBlok('komt','','Komt eraan',`${nf(komt.length)} punten`,'',o=>kLijst('komt',komt,x=>x._rv?rv(x):kRij(x),'Niets in de komende tijd.',o),{kleur:'geel',open:!KDICHT.has('komt')});
   // coalitieakkoord
   const AK=X.akkoord,AP=KAKK&&KAKK.dossiers&&KAKK.dossiers[d.slug]||[],DP=AK&&KAKK&&KAKK.domeinen&&KAKK.domeinen[AK.domein]||[],PT=AP.length?AP:DP;
   if(AK&&PT.length)h+=kBlok('akkoord','','Coalitieakkoord 2026–2030',`${PT.length} punten`,esc(PT[0].wat),
@@ -211,13 +217,14 @@ function kProj(i){
   const k=$('kwijk');if(k.getBoundingClientRect().top<0||k.getBoundingClientRect().top>innerHeight)k.scrollIntoView({behavior:'smooth',block:'center'});
 }
 /* ---------- bediening ---------- */
-function kZet(id,open){if(open)KOPEN.add(id);else KOPEN.delete(id);history.replaceState(null,'','#'+KD.slug+(open?'/'+id:''));}
+function kHash(id,open){const sn=open&&KSUB[id];history.replaceState(null,'','#'+KD.slug+(open?'/'+id:'')+(sn?'/'+kslug(sn):''));}
+function kZet(id,open){if(open)KOPEN.add(id);else KOPEN.delete(id);if(id==='komt'){if(open)KDICHT.delete(id);else KDICHT.add(id);}kHash(id,open);}
 function kHerteken(anker){const el=anker&&$('k-'+anker),y=el?el.getBoundingClientRect().top:0;kTeken();const n=anker&&$('k-'+anker);if(n)window.scrollBy(0,n.getBoundingClientRect().top-y);}
 document.addEventListener('click',e=>{
   if(!KX||!$('kinh'))return;
-  const b=e.target.closest('[data-blok]');if(b){const id=b.dataset.blok,open=!KOPEN.has(id)||b.classList.contains('kmeer');kZet(id,open);kHerteken(id);if(open&&b.classList.contains('kmeer'))$('k-'+id).scrollIntoView({block:'start',behavior:'smooth'});return;}
+  const b=e.target.closest('[data-blok]');if(b){const id=b.dataset.blok,open=b.classList.contains('kmeer')||(id==='komt'?KDICHT.has(id):!KOPEN.has(id));kZet(id,open);kHerteken(id);if(open&&b.classList.contains('kmeer'))$('k-'+id).scrollIntoView({block:'start',behavior:'smooth'});return;}
   const o=e.target.closest('[data-openen]');if(o){e.preventDefault();kZet(o.dataset.openen,true);kTeken();$('k-'+o.dataset.openen).scrollIntoView({block:'start',behavior:'smooth'});return;}
-  const f=e.target.closest('[data-ksub]');if(f){const [id,v]=f.dataset.ksub.split('|');KSUB[id]=v;kHerteken(id);return;}
+  const f=e.target.closest('[data-ksub]');if(f){const [id,v]=f.dataset.ksub.split('|');KSUB[id]=v;KOPEN.add(id);kHash(id,true);kHerteken(id);return;}
   const bl=e.target.closest('[data-bel]');if(bl){KBEL=bl.dataset.bel;kHerteken('beloofd');return;}
   const w=e.target.closest('#kkaart path.wk');if(w){kWijk(w.dataset.w);return;}
   const pj=e.target.closest('[data-proj]');if(pj){kProj(+pj.dataset.proj);return;}
