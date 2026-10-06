@@ -301,11 +301,24 @@ el('route').onclick=()=>{const a=zoekKnoop(el('rv').value),b=zoekKnoop(el('rn').
   const xs=pad.map(i=>R.getNodeDisplayData(String(i))).filter(Boolean);const cx=xs.reduce((s,d)=>s+d.x,0)/xs.length,cy=xs.reduce((s,d)=>s+d.y,0)/xs.length;
   R.getCamera().animate({x:cx,y:cy,ratio:0.8},{duration:600});R.refresh();};
 /* ---- C: verrassende verbanden: sterk samen, maar uit verschillende domeinen ---- */
+const PLEK=/(straat|weg|plein|laan|singel|kade|dijk|park|hof|dreef|baan|haven|brug|tunnel|buurt|kwartier|polder|plaat|waard|gracht|plas|bos|markt|eiland|boulevard|wal|steeg|oord|kerk|wijk|plantsoen|lei|pad|dam|veld|hoek|rijn|maas|stad|dorp)$/i;
+const isPlek=k=>{if(k.s==='p'||PLEK.test(k.l.trim()))return true;const g=k.g,t=g?g.reduce((x,y)=>x+y,0):0;return t>=30&&Math.max(...g)/t>.5;};
+const dvec=k=>{const n=Math.sqrt(k.dm.reduce((x,y)=>x+y*y,0))||1;return k.dm.map(x=>x/n);};
+/* verrassend = sterk verband tussen begrippen die inhoudelijk ver uit elkaar liggen: ander deel van het debat (lage cosinus van domeinprofielen) en nauwelijks gedeelde buren; geen plekken, afkortingen of vaste combinaties */
+function verrassend(){const K=DATA.knopen,V={},N={};
+  DATA.e.forEach(([a,b])=>{(N[a]=N[a]||new Set()).add(b);(N[b]=N[b]||new Set()).add(a);});
+  const vv=i=>V[i]||(V[i]=dvec(K[i]));const gezien=new Set();
+  return DATA.e.map(([a,b,w,c])=>{const A=K[a],B=K[b];
+    if(c<15||A.n<100||B.n<100||A.s==='p'||B.s==='p'||A.l===A.l.toUpperCase()||B.l===B.l.toUpperCase())return null;
+    if(G.getNodeAttribute(String(a),'hidden')||G.getNodeAttribute(String(b),'hidden'))return null;
+    const la=A.l.toLowerCase(),lb=B.l.toLowerCase();
+    if(la.slice(0,5)===lb.slice(0,5)||la.includes(lb)||lb.includes(la)||c/Math.min(A.n,B.n)>.3||isPlek(A)||isPlek(B))return null;
+    const va=vv(a),vb=vv(b),cs=va.reduce((x,y,i)=>x+y*vb[i],0);if(cs>.5)return null;
+    const sa=N[a],sb=N[b];let gem=0;sa.forEach(x=>{if(sb.has(x))gem++;});const jac=gem/(sa.size+sb.size-gem);
+    return [w*Math.log(c)*(1-cs)*(1-jac),a,b,w,c];}).filter(Boolean).sort((x,y)=>y[0]-x[0])
+    .filter(([,a,b])=>{const k=[a,b].sort().join();if(gezien.has(k))return false;gezien.add(k);const sl=[K[a].l,K[b].l].map(x=>x.toLowerCase()).sort().join();if(gezien.has(sl))return false;gezien.add(sl);return true;}).slice(0,24);}
 el('verr').onclick=()=>{PAD=null;const K=DATA.knopen;
-  // uit verschillende domeinen, allebei geen plek, vaak genoeg, geen vaste woordcombinatie (niet bijna altijd samen) en geen variant van hetzelfde woord
-  const L=DATA.e.filter(([a,b,w,c])=>c>=30&&K[a].dom!==K[b].dom&&K[a].s!=='p'&&K[b].s!=='p'&&K[a].n>=150&&K[b].n>=150&&c/Math.min(K[a].n,K[b].n)<0.25
-      &&K[a].l.slice(0,6).toLowerCase()!==K[b].l.slice(0,6).toLowerCase()&&!G.getNodeAttribute(String(a),'hidden')&&!G.getNodeAttribute(String(b),'hidden'))
-    .sort((x,y)=>y[2]*Math.log(y[3])-x[2]*Math.log(x[3])).slice(0,20);
+  const L=verrassend().map(([,a,b,w,c])=>[a,b,w,c]);
   const P=el('info');P.style.display='block';SEL=null;R.refresh();
   P.innerHTML=`<button class="sluit" aria-label="Sluiten" onclick="paneel(null)">×</button><div class="sub">Begrippen uit verschillende domeinen die opvallend vaak samen vallen</div><h2>Verrassende verbanden</h2>
     ${L.map(([a,b,w,c])=>{const A=DATA.knopen[a],B=DATA.knopen[b];return `<div class="hop"><div><button class="lk" data-a="${a}" data-b="${b}" style="all:unset;cursor:pointer"><b style="color:${KL[A.dom]}">${esc(A.l)}</b> + <b style="color:${KL[B.dom]}">${esc(B.l)}</b></button><br><span class="sub">${esc(DATA.dom[A.dom][1])} × ${esc(DATA.dom[B.dom][1])} · ${nl(c)} keer</span> · <a href="zoek.html?q=${encodeURIComponent(A.l+' '+B.l)}">lees waar →</a></div></div>`;}).join('')}`;
