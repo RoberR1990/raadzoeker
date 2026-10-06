@@ -1,0 +1,20 @@
+[
+{
+"id": "9f0ee187",
+"agendaId": "9f0ee187-8bf0-4ec4-994a-2c70299fd7f3",
+"datum": "2026-10-01",
+"naam": "Gemeenteraad",
+"raad": true,
+"kort": "Na een discussie over het reglement van orde werd het debat over uitbreiding van betaald parkeren op de agenda gezet en stelde de raad de spreektijd vast op 3,5 uur.",
+"n": 11
+},
+{
+"id": "3b5e9cce",
+"agendaId": "3b5e9cce-a8f8-4daf-87a6-63e1c46cc857",
+"datum": "2026-09-30",
+"naam": "Commissie Bouwen & Wonen",
+"raad": false,
+"kort": "De commissie Bouwen en Wonen hield een technische sessie over stedenbouw en verdichting.",
+"n": 2
+}
+]

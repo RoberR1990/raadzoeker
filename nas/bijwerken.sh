@@ -43,5 +43,6 @@ printf '{"laatste":"%s","modus":"%s","ok":true,"stand":"%s"}\n' "$(date -Isecond
 git add -A docs
 if git diff --cached --quiet; then echo "niets veranderd" >>"$LOG"; exit 0; fi
 stap "git commit" git commit -q -m "Automatisch bijgewerkt ($MODUS, $(date '+%d-%m-%Y %H:%M'))"
+stap "git pull --rebase" git pull --rebase -q   # er kan intussen iets anders gepusht zijn
 stap "git push" git push -q
 find /werk/logs -name '*.log' -mtime +30 -delete

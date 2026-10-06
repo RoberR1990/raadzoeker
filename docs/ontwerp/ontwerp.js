@@ -16,7 +16,7 @@ const dagen=(a,b)=>Math.round((new Date(b)-new Date(a))/864e5);
 const LOGO=(kleur='#fff',accent='#fff')=>{let s='';const n=9;for(let i=0;i<n;i++){const a=Math.PI*(1-i/(n-1)),x=17+13*Math.cos(a),y=18-13*Math.sin(a);s+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="2.6" fill="${i===6?accent:kleur}" ${i===6?'':'opacity=".75"'}/>`;}
   return `<svg viewBox="0 0 34 20" aria-hidden="true">${s}<circle cx="17" cy="17" r="3.2" fill="${kleur}"/></svg>`;};
 function kop(actief){
-  const m=[['zoeken','Zoeken','zoek.html'],['domeinen','Domeinen','domeinen.html'],['gebieden','Gebieden','wijk.html']];
+  const m=[['zoeken','Zoeken','zoek.html'],['vergaderingen','Vergaderingen','vergaderingen.html'],['domeinen','Domeinen','domeinen.html'],['gebieden','Gebieden','wijk.html']];
   const r=[['verkenner','Verkenner','verkenner.html'],['lab','Inzichten','lab.html'],['over','Over','over.html']];
   const a=x=>`<a href="${x[2]}" class="${x[0]===actief?'on':''}"${x[0]===actief?' aria-current="page"':''}>${x[1]}</a>`;
   document.querySelector('header.balk').innerHTML=`<div class="in"><a class="merk" href="startpagina.html" aria-label="raadzoeker, naar de startpagina">${LOGO()}<b>raadzoeker</b><small>onofficieel</small></a>

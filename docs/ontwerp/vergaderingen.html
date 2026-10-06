@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
+<title>Vergaderingen · raadzoeker</title>
+<link rel="stylesheet" href="stijl.css?v=9">
+<style>
+.kolom{max-width:900px;margin:0 auto}
+.week{margin-top:28px}.week h2{font-size:18px;color:var(--sub);margin:0 0 10px}
+.vk{display:grid;grid-template-columns:96px minmax(0,1fr);gap:4px 18px;background:var(--wit);border-radius:var(--r);padding:16px 20px;margin-bottom:10px;text-decoration:none;color:inherit;border-left:5px solid var(--groen-mid)}
+.vk.raad{border-left-color:var(--groen)}
+.vk:hover{box-shadow:0 4px 16px rgba(0,0,0,.08)}
+.vk .dag{font-weight:700;line-height:1.2}.vk .dag span{display:block;font-weight:400;color:var(--sub);font-size:14px}
+.vk h3{margin:0 0 4px;font-size:18px}.vk p{margin:0;color:var(--sub);font-size:15px;line-height:1.5}
+.vk .verder{font-size:14px;margin-top:6px;color:var(--groen);font-weight:700}
+@media (max-width:600px){.vk{grid-template-columns:minmax(0,1fr)}}
+</style></head><body>
+<header class="balk"></header>
+<main class="pagina"><div class="kolom">
+  <h1>Vergaderingen</h1>
+  <p class="intro" style="max-width:68ch">Wat er besproken is in de gemeenteraad en de raadscommissies, kort samengevat: in één minuut of uitgebreid, met per fractie wat ze zei en een link naar dat moment in de video.</p>
+  <div id="lijst"><p class="leeg">Laden…</p></div>
+</div></main>
+<script src="ontwerp.js?v=22"></script>
+<script>
+kop('vergaderingen');
+const MAAND=['jan','feb','mrt','apr','mei','jun','jul','aug','sep','okt','nov','dec'],DAG=['zondag','maandag','dinsdag','woensdag','donderdag','vrijdag','zaterdag'];
+const week=d=>{const t=new Date(d+'T12:00');const j=new Date(t);j.setDate(t.getDate()-((t.getDay()+6)%7));return j.toISOString().slice(0,10);};
+fetch('verg/index.json',{cache:'no-cache'}).then(r=>r.json()).then(L=>{
+  const W={};L.forEach(x=>(W[week(x.datum)]=W[week(x.datum)]||[]).push(x));
+  $('lijst').innerHTML=Object.keys(W).sort().reverse().map(w=>{const d=new Date(w+'T12:00'),e=new Date(d);e.setDate(d.getDate()+6);
+    return `<section class="week"><h2>Week van ${d.getDate()} ${MAAND[d.getMonth()]} t/m ${e.getDate()} ${MAAND[e.getMonth()]} ${e.getFullYear()}</h2>${W[w].sort((a,b)=>a.datum.localeCompare(b.datum)).map(x=>{const t=new Date(x.datum+'T12:00');
+      return `<a class="vk${x.raad?' raad':''}" href="vergadering.html?id=${x.id}"><div class="dag">${DAG[t.getDay()]}<span>${t.getDate()} ${MAAND[t.getMonth()]}</span></div><div><h3>${esc(x.naam)}</h3><p>${esc(x.kort)}</p><div class="verder">Lees in 1 minuut →</div></div></a>`;}).join('')}</section>`;}).join('')||'<p>Nog geen vergaderingen samengevat.</p>';
+});
+</script></body></html>
