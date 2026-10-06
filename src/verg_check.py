@@ -33,10 +33,12 @@ def main(ag,pad=None):
     wu=sum(woorden(a.get('wat',''))+woorden(a.get('uitkomst',''))+sum(woorden(x.get('punt',x.get('wat',''))) for v in ('fracties','college','toezeggingen') for x in a[v]) for a in d['agendapunten'])
     out={'agendaId':ag,'datum':V[0],'naam':V[2],'raad':V[1]==0,'video':V[4],'kort':kort,'agendapunten':d['agendapunten'],
          'leestijd':{'kort':max(1,round(wk/200)),'uitgebreid':max(1,round((wu+wk)/200))},'gemaakt':d.get('model','Claude Sonnet'),'geschrapt':len(weg)}
+    import verg_koppel; verg_koppel.verrijk(out,B)
     os.makedirs(os.path.join(DOCS,'ontwerp','verg'),exist_ok=True)
     json.dump(out,open(os.path.join(DOCS,'ontwerp','verg',f'{k}.json'),'w',encoding='utf8'),ensure_ascii=False,separators=(',',':'))
     ix=os.path.join(DOCS,'ontwerp','verg','index.json'); L=json.load(open(ix,encoding='utf8')) if os.path.exists(ix) else []
     L=[x for x in L if x['id']!=k]+[{'id':k,'agendaId':ag,'datum':V[0],'naam':V[2],'raad':V[1]==0,'kort':kort[0]['zin'] if kort else '','n':len(out['agendapunten'])}]
     json.dump(sorted(L,key=lambda x:(x['datum'],x['naam']),reverse=True),open(ix,'w',encoding='utf8'),ensure_ascii=False,indent=0)
+    verg_koppel.indexen()
     print(k,'kort',len(kort),'punten',len(out['agendapunten']),'leestijd',out['leestijd'],'geschrapt',len(weg)); [print('  -',w) for w in weg[:15]]
 if __name__=='__main__': main(*sys.argv[1:3])
