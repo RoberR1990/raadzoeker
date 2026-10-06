@@ -52,7 +52,9 @@ def bronnen_docs():
     for i,x in enumerate(M['d']):
         if not x: continue
         if i//M['blok']!=nb: nb=i//M['blok']; blok=z(os.path.join(OUT,'b',f'{nb:03d}.zst'))
-        so,datum,titel,wie,url,_=x; so=SO[so]; yield ('st:' if so in('Motie','Amendement','Toezegging') else 'tx:')+str(i),so,datum,titel,wie,url,blok[i%M['blok']]
+        so,datum,titel,wie,url,_=x; so=SO[so]; t=blok[i%M['blok']]
+        if so=='Schriftelijke vragen': t=re.sub(r'\n+ANTWOORD VAN HET COLLEGE','\n\nANTWOORD VAN HET COLLEGE',t,count=1)   # schoon() haalde de witregel weg
+        yield ('st:' if so in('Motie','Amendement','Toezegging') else 'tx:')+str(i),so,datum,titel,wie,url,t
 def bronnen():
     I=os.path.join(WERK,'ibabs')
     if not os.path.isdir(I): yield from bronnen_docs(); return
