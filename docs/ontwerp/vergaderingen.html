@@ -92,7 +92,7 @@ function archief(){const ms=maanden(),m=MAA||ms[0],[y,mm]=m.split('-').map(Numbe
         <ul>${x.p.map(([t,b])=>`<li>${esc(t)}<br><i>${esc(b)}</i></li>`).join('')}${x.init.length?`<li>Bewonersinitiatieven<br><i>${esc(x.init.join(' · '))}</i></li>`:''}</ul></div>`).join('')}</details>`).join('')}</div>
       <p class="sub2" style="margin-top:6px">Uit de besluitenlijsten van de wijkraden; namen van bewoners weggelaten.</p>`:''}`;
   $('mstrip').querySelectorAll('button').forEach(b=>b.onclick=()=>{MAA=b.dataset.m;try{history.replaceState(null,'','#'+MAA);}catch(e){}archief();});
-  $('mstrip').querySelector('[aria-pressed=true]')?.scrollIntoView({inline:'center',block:'nearest'});}
+  const sb=$('mstrip').querySelector('[aria-pressed=true]');if(sb)$('mstrip').scrollLeft=sb.offsetLeft-$('mstrip').clientWidth/2+sb.offsetWidth/2;}   // alleen de strook zelf, niet de pagina
 if(/^#\d{4}-\d{2}$/.test(location.hash))MAA=location.hash.slice(1);
 Promise.all([fetch('verg/index.json',{cache:'no-cache'}).then(r=>r.json()),fetch('verg/wijkraden.json').then(r=>r.ok?r.json():[]).catch(()=>[]),fetch('verg/vooruit.json',{cache:'no-cache'}).then(r=>r.json()).then(d=>d.v).catch(()=>[])])
   .then(([a,b,c])=>{R=a;W=b;VO=c;hero();komt();commissies();archief();if(MAA)setTimeout(()=>$('ha').scrollIntoView(),50);});
