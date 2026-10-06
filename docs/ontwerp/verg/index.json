@@ -27,6 +27,15 @@
 "n": 4
 },
 {
+"id": "41c1c0ad",
+"agendaId": "41c1c0ad-c5c5-4f35-9063-9920da2f47c1",
+"datum": "2026-09-23",
+"naam": "Commissie Zorg & Cultuur",
+"raad": false,
+"kort": "In de procedurevergadering van de commissie Zorg & Cultuur kwam de planning aan bod: de begroting wordt op 28 oktober in de commissie besproken, na een inspraakmoment op 14 oktober.",
+"n": 6
+},
+{
 "id": "d3da8d49",
 "agendaId": "d3da8d49-4da0-40e3-8cb9-61f8ff9b11e0",
 "datum": "2026-09-23",
@@ -51,6 +60,105 @@
 "naam": "Commissie Bouwen & Wonen",
 "raad": false,
 "kort": "De commissie Bouwen en Wonen sprak over funderingsproblematiek in Rotterdam.",
+"n": 2
+},
+{
+"id": "3e70dc84",
+"agendaId": "3e70dc84-008b-4952-8545-a5c3ce9755e3",
+"datum": "2026-09-22",
+"naam": "Commissie Leefomgeving & Economie",
+"raad": false,
+"kort": "De commissie Leefomgeving en Economie hield een extra vergadering waarin insprekers hun zegje deden over het raadsvoorstel voor het kader voor de invoering van betaald parkeren 2026.",
+"n": 2
+},
+{
+"id": "d918b080",
+"agendaId": "d918b080-5298-42de-a2b8-d852039c7f1d",
+"datum": "2026-09-17",
+"naam": "Commissie Veiligheid, Bestuur & Financiën",
+"raad": false,
+"kort": "In de procedurevergadering van de commissie Veiligheid, Bestuur en Financiën vroegen de SP en de Partij voor de Dieren om bespreking van een brief over Humanitas Welzijn Feijenoord in de commissie Zorg en Cultuur.",
+"n": 4
+},
+{
+"id": "0897b03a",
+"agendaId": "0897b03a-7fc1-488e-bc03-0f326a12e7e4",
+"datum": "2026-09-17",
+"naam": "Actualiteitenraad",
+"raad": false,
+"kort": "Over de bezuiniging op Rotterdam Festivals vroegen raadsleden of kleine, gratis festivals blijven bestaan; de wethouder zegt toe de raad voor 1 november mee te nemen in de stand van zaken.",
+"n": 6
+},
+{
+"id": "6665590b",
+"agendaId": "6665590b-4171-4d6c-8c85-9703778b3ece",
+"datum": "2026-09-16",
+"naam": "Commissie Zorg & Cultuur",
+"raad": false,
+"kort": "De commissie stelt de agenda vast; een verzoek om de spreektijd te verkorten haalt geen meerderheid.",
+"n": 3
+},
+{
+"id": "918b9788",
+"agendaId": "918b9788-d471-4e66-82a1-3ae8926f2e3c",
+"datum": "2026-09-16",
+"naam": "Commissie Onderwijs & Samenleven",
+"raad": false,
+"kort": "De commissie bespreekt de planning en haalt de MBO-uitvoeringsagenda van 23 september af, omdat er geen stukken zijn.",
+"n": 7
+},
+{
+"id": "972f7922",
+"agendaId": "972f7922-6772-4d88-8408-0ada8ba8ccac",
+"datum": "2026-09-16",
+"naam": "Commissie Leefomgeving & Economie",
+"raad": false,
+"kort": "De commissie stelde na een stemming de spreektijd voor deze vergadering vast op 2,5 uur.",
+"n": 4
+},
+{
+"id": "31a2b15f",
+"agendaId": "31a2b15f-4a17-4feb-b786-97aa4f55a076",
+"datum": "2026-09-16",
+"naam": "Commissie Bouwen & Wonen",
+"raad": false,
+"kort": "De commissie stelt de planning vast en kiest hoe de kennissessie over coöperatief wonen wordt ingericht.",
+"n": 7
+},
+{
+"id": "54c4fac9",
+"agendaId": "54c4fac9-8d66-4243-8238-2884cfc516d9",
+"datum": "2026-09-15",
+"naam": "Commissie tot Onderzoek van de Rekening",
+"raad": false,
+"kort": "De Commissie tot Onderzoek van de Rekening bespreekt de start van de jaarrekeningcontrole 2026, met de startnotitie en het controleplan van de accountant.",
+"n": 4
+},
+{
+"id": "14f573cc",
+"agendaId": "14f573cc-24bf-4c9d-b338-4b0141158bc4",
+"datum": "2026-09-15",
+"naam": "Commissie Leefomgeving & Economie",
+"raad": false,
+"kort": "De commissie hield een technische sessie over het MIRT-project Stadsbrug, ter voorbereiding op de overlegvergadering met de wethouder.",
+"n": 1
+},
+{
+"id": "c3deba48",
+"agendaId": "c3deba48-2f4b-4105-8a21-5ce62d44c3a2",
+"datum": "2026-09-10",
+"naam": "Gemeenteraad",
+"raad": true,
+"kort": "Leefbaar Rotterdam diende een initiatiefvoorstel in om Museum Boijmans tijdelijk in het leegstaande Schielandshuis onder te brengen; het college wordt om advies gevraagd.",
+"n": 11
+},
+{
+"id": "ed4b7567",
+"agendaId": "ed4b7567-d352-4c73-875d-841995fc7ba8",
+"datum": "2026-09-09",
+"naam": "Commissie Bouwen & Wonen",
+"raad": false,
+"kort": "De commissie Bouwen en Wonen kreeg een inwerksessie over de funderingsproblematiek van de gemeente en de woningcorporaties.",
 "n": 2
 }
 ]
