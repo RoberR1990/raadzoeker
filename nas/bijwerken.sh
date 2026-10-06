@@ -4,6 +4,7 @@
 #            zoekindex, domein- en gebiedslabels, dossiers, voorbeelddossiers, Lab
 #   overdag: alleen iBabs-lijsten en nieuwe moties, toezeggingen en brieven, en de pagina's die daarvan afhangen
 # Nog niet automatisch (zie ontwerp/fase6-instructies.md): nieuwe debatten (notulen/ondertiteling), wijkraadvergaderingen, AI-samenvattingen.
+# Logboek per run met wijzigingen: docs/data/logboek.json (src/logboek.py, pagina ontwerp/nieuw.html).
 # Status van elke run: /werk/status.json en in de site docs/data/status.json. Faalt een stap, dan wordt er niets gepusht.
 MODUS=${1:-nacht}
 cd /repo || exit 1
@@ -19,6 +20,11 @@ fout(){
 # altijd beginnen vanaf de laatste versie op GitHub; een eerdere, niet-gepushte run wordt weggegooid (alle data wordt opnieuw gemaakt)
 stap "git fetch" git fetch -q origin
 stap "git reset" git reset -q --hard origin/main
+# ontbrekende onderdelen zelf bijinstalleren (zo hoeft de container niet opnieuw gebouwd te worden na een wijziging in de Dockerfile)
+python -c "import PIL, zstandard" 2>/dev/null || pip install -q --no-cache-dir pillow zstandard >>"$LOG" 2>&1
+[ -f /usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf ] || { apt-get update -qq && apt-get install -y -qq --no-install-recommends fonts-liberation; } >>"$LOG" 2>&1
+# logboek 'Wat is er nieuw': stand vóór de run vastleggen (mag mislukken)
+python src/logboek.py voor >>"$LOG" 2>&1 || echo "logboek voor mislukt" >>"$LOG"
 stap "iBabs-lijsten" python src/ibabs_lijsten.py
 if [ "$MODUS" = "nacht" ]; then
   stap "iBabs-stukken" python src/ibabs_items.py toezeggingen moties amendementen raadsvoorstellen initiatiefvoorstellen brieven wijkraadadviezen --ververs-open --minuten 90
@@ -45,6 +51,7 @@ stap "Lab" python src/lab_data.py
 stap "vergaderingen koppelen" python src/verg_koppel.py
 stap "vooruitblik" python src/vooruit.py
 stap "volgen" python src/volg_data.py
+RZ_MODUS=$MODUS python src/logboek.py na >>"$LOG" 2>&1 || echo "logboek na mislukt" >>"$LOG"
 printf '{"laatste":"%s","modus":"%s","ok":true,"stand":"%s"}\n' "$(date -Iseconds)" "$MODUS" "$RZ_STAND" | tee /werk/status.json > docs/data/status.json
 git add -A docs
 if git diff --cached --quiet; then echo "niets veranderd" >>"$LOG"; exit 0; fi

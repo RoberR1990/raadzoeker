@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Wat is er nieuw · raadzoeker</title>
+<link rel="stylesheet" href="stijl.css?v=13">
+<style>
+.kolom{max-width:860px;margin:0 auto}
+.run{background:var(--wit);border-radius:var(--r);padding:16px 20px;margin-top:12px}
+.run h2{font-size:18px;margin:0 0 2px;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}.run h2 .sub2{font-size:13px;font-weight:400;color:var(--sub)}
+.tellers{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 4px;padding:0;list-style:none}.tellers li{background:var(--grijs);border-radius:999px;padding:3px 10px;font-size:13px}
+.tellers b{font-weight:700}
+.it{display:grid;grid-template-columns:150px minmax(0,1fr);gap:2px 10px;padding:6px 0;border-top:1px solid var(--grijs2);font-size:15px}
+.it .s{font-size:13px;color:var(--sub)}
+.run details{margin-top:6px}.run summary{cursor:pointer;font-size:15px;padding:6px 0}
+.run h3{font-size:15px;margin:12px 0 2px}
+.status{background:var(--wit);border-radius:var(--r);padding:14px 20px;margin-top:16px;border-left:5px solid var(--groen);font-size:15px}
+.status.fout{border-left-color:#C25700}
+@media (max-width:600px){.it{grid-template-columns:minmax(0,1fr)}}
+</style></head><body>
+<header class="balk"></header>
+<main class="pagina"><div class="kolom">
+  <h1 style="margin-bottom:4px">Wat is er nieuw</h1>
+  <p class="intro" style="margin:0">Elke run haalt nieuwe stukken uit iBabs en werkt de site bij: elke nacht, en op werkdagen om 9, 12, 15, 18 en 21 uur. Hieronder staat per run wat erbij kwam (laatste 3 dagen, maximaal 50 runs).</p>
+  <div class="status" id="status" hidden></div>
+  <div id="lijst"><p class="leeg">Laden…</p></div>
+  <p class="sub" style="font-size:13px;margin-top:20px">Nieuwe debatten (notulen en ondertiteling) en AI-samenvattingen worden nog niet automatisch toegevoegd; die verschijnen hier zodra ze in een run meekomen. Meer over bronnen en actualiteit: <a href="over.html#actueel">Hoe actueel is het?</a></p>
+</div></main>
+<script src="ontwerp.js?v=32"></script>
+<script>
+kop('');
+const M=['jan','feb','mrt','apr','mei','jun','jul','aug','sep','okt','nov','dec'],dd=d=>`${+d.slice(8,10)} ${M[+d.slice(5,7)-1]}`;
+const tijd=t=>{const d=new Date(t);return `${['zo','ma','di','wo','do','vr','za'][d.getDay()]} ${d.getDate()} ${M[d.getMonth()]}, ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;};
+const MV={Toezegging:'toezeggingen',Motie:'moties',Amendement:'amendementen',Initiatiefvoorstel:'initiatiefvoorstellen',Raadsvoorstel:'raadsvoorstellen',Collegebesluit:'collegebesluiten',Collegebrief:'collegebrieven','Schriftelijke vragen':'schriftelijke vragen',Wijkraadadvies:'wijkraadadviezen',Rekenkamerrapport:'rekenkamerrapporten','Ongevraagd wijkraadadvies':'ongevraagde wijkraadadviezen','Wijkakkoord of wijkplan':'wijkakkoorden of wijkplannen','Collegereactie op wijkplan':'collegereacties op wijkplannen',Wijkverslag:'wijkverslagen'};
+const meer=(n,w)=>`${n} ${n===1?w[0]:w[1]}`;
+const stukRij=x=>`<div class="it"><span class="s">${esc(x.soort)} · ${dd(x.datum)}</span>${x.link?`<a href="${esc(x.link)}" target="_blank" rel="noopener">${esc(x.titel)}</a>`:`<span>${esc(x.titel)}</span>`}</div>`;
+function run(r){
+  const kop=[r.n_nieuw?meer(r.n_nieuw,['nieuw stuk','nieuwe stukken']):'',r.n_afgedaan?`${r.n_afgedaan} afgedaan`:'',r.verslagen.length?meer(r.verslagen.length,['vergaderverslag','vergaderverslagen']):'',r.agenda.length?meer(r.agenda.length,['vergadering op de agenda','vergaderingen op de agenda']):''].filter(Boolean).join(' · ');
+  const tel=Object.entries(r.nieuw_per_soort||{}).map(([s,n])=>`<li><b>${n}</b> ${esc(n===1?s.toLowerCase():(MV[s]||s.toLowerCase()))}</li>`).join('');
+  let h=`<section class="run"><h2>${tijd(r.tijd)}<span class="sub2">${r.modus==='nacht'?'nachtelijke run':r.modus==='overdag'?'run overdag':''}</span></h2><p style="margin:0;font-size:15px">${kop}</p>${tel?`<ul class="tellers">${tel}</ul>`:''}`;
+  if(r.verslagen.length)h+=`<h3>Vergaderverslagen</h3>${r.verslagen.map(v=>`<div class="it"><span class="s">${esc(v.naam)} · ${dd(v.datum)}</span><span><a href="${esc(v.link)}">${esc(v.kort||v.naam)}</a></span></div>`).join('')}`;
+  if(r.agenda.length)h+=`<h3>Nieuw op de agenda</h3>${r.agenda.map(v=>`<div class="it"><span class="s">${dd(v.datum)}</span><span><a href="vergaderingen.html">${esc(v.naam)}</a> · ${meer(v.punten,['punt','punten'])}</span></div>`).join('')}`;
+  if(r.afgedaan.length)h+=`<details><summary>${meer(r.n_afgedaan,['motie of toezegging afgedaan','moties en toezeggingen afgedaan'])}</summary>${r.afgedaan.map(stukRij).join('')}</details>`;
+  if(r.nieuw.length)h+=`<details${r.nieuw.length<=5?' open':''}><summary>${r.n_nieuw>r.nieuw.length?`De ${r.nieuw.length} nieuwste van ${r.n_nieuw} stukken`:'Nieuwe stukken'}</summary>${r.nieuw.map(stukRij).join('')}</details>`;
+  return h+'</section>';
+}
+Promise.all([fetch('../data/logboek.json',{cache:'no-store'}).then(r=>r.ok?r.json():{regels:[]}).catch(()=>({regels:[]})),fetch('../data/status.json',{cache:'no-store'}).then(r=>r.ok?r.json():null).catch(()=>null)]).then(([L,st])=>{
+  if(st&&st.laatste){const s=$('status');s.hidden=false;
+    s.innerHTML=st.ok===false?`Laatste run (${tijd(st.laatste)}) is mislukt${st.stap?` bij '${esc(st.stap)}'`:''}; de site toont de stand van de run daarvoor.`:`Laatste run: <b>${tijd(st.laatste)}</b>${(L.regels[0]&&new Date(L.regels[0].tijd)>=new Date(st.laatste)-6e4)?'':' — daarin niets nieuws'}.`;
+    if(st.ok===false)s.classList.add('fout');}
+  $('lijst').innerHTML=L.regels.length?L.regels.map(run).join(''):'<p class="leeg">Nog geen runs met nieuwe stukken in de afgelopen dagen.</p>';
+});
+</script>
+</body></html>
