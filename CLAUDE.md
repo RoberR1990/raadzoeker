@@ -2,7 +2,7 @@
 
 Naam blijft **raadzoeker** (6-10-2026 kort "De Publieke Tribune" geprobeerd; domein bezet, teruggedraaid). Ondertitel: "wat de Rotterdamse raad zegt, besluit en belooft". Logo: `docs/ontwerp/logo.svg` (nagebouwd naar het logo van Robert: raadzaal-ring, spreekgestoelte, vergrootglas) en `logo-wit.svg` voor de groene kopbalk; ook favicon.
 
-Zoektool voor wat er in de Rotterdamse gemeenteraad en raadscommissies is gezegd. Eigenaar: Robert Riteco. Taal met Robert: Nederlands, kort, gewone taal, gefaseerd opleveren, bij een blokkade stoppen en voorleggen. Zwaar uitvoerend werk (samenvatten) naar lichte modellen/subagents.
+Zoektool voor wat er in de Rotterdamse gemeenteraad en raadscommissies is gezegd. Eigenaar: Robert Riteco. Taal met Robert: Nederlands, kort, gewone taal, gefaseerd opleveren, bij een blokkade stoppen en voorleggen. Zwaar uitvoerend werk (samenvatten) naar lichte modellen/subagents. Werkwijze git (besluit Robert 6-10-2026): na testen zelf een PR naar `main` maken en zelf mergen; niet eerst vragen.
 
 ## Mappen
 
