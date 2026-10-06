@@ -5,7 +5,7 @@ import json,os,re,sys,time,urllib.request
 from paden import WERK,DATA
 OLLAMA='http://localhost:11434/api/generate'
 def vraag(model,prompt,ctx=16384):
-    body=json.dumps({'model':model,'prompt':prompt,'stream':False,'format':'json','options':{'num_ctx':ctx,'temperature':0.2}}).encode()
+    body=json.dumps({'model':model,'prompt':prompt,'stream':False,'format':'json','options':{'num_ctx':ctx,'temperature':0.2,'num_predict':3500}}).encode()
     t=time.time()
     with urllib.request.urlopen(urllib.request.Request(OLLAMA,data=body,headers={'Content-Type':'application/json'}),timeout=3600) as r: d=json.load(r)
     return d['response'],time.time()-t,d.get('prompt_eval_count'),d.get('eval_count')
@@ -26,7 +26,8 @@ def main(ag,model):
         uit,sec,pin,pout=vraag(model,opdracht+'\n\n=== INVOERBESTAND ===\n'+g)
         totaal[0]+=sec; totaal[1]+=pin or 0; totaal[2]+=pout or 0
         try: d=json.loads(uit)
-        except Exception: print('geen geldige JSON'); continue
+        except Exception:
+            open(os.path.join(WERK,'verg',f'ruw_{k}_{model.replace(":","-")}.txt'),'a',encoding='utf8').write(uit+'\n====\n'); print('geen geldige JSON'); continue
         kort+=d.get('kort',[]); aps+=d.get('agendapunten',[])
         print(f'deel: {sec:.0f}s, in {pin} uit {pout} tokens')
     out={'kort':kort[:7],'agendapunten':aps,'model':model}

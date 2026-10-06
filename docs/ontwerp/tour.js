@@ -40,6 +40,7 @@ const st=document.createElement('style');st.textContent=css;document.head.append
 const KOP=[
   {s:'header .merk',t:'Welkom bij raadzoeker',x:'Hier vind je wat de Rotterdamse gemeenteraad sinds 2018 zei, besloot en beloofde. Het logo brengt je altijd terug naar de startpagina.'},
   {s:'header nav a[href="zoek.html"]',t:'Zoeken',x:'Zoek in alles wat er in de raad en de commissies is gezegd en geschreven. Bij debatten spring je direct naar het moment in de video.'},
+  {s:'header nav a[href="vergaderingen.html"]',t:'Vergaderingen',x:'Wat er in de raad en de commissies is besproken, samengevat in één minuut of uitgebreid, kort na de vergadering.'},
   {s:'header nav a[href="domeinen.html"]',t:'Domeinen',x:'Dossiers per beleidsveld en onderwerp: wat er is gezegd, besloten en beloofd, en wat ervan terechtkwam.'},
   {s:'header nav a[href="wijk.html"]',t:'Gebieden',x:'Kies een gebied of wijk: waar praat de raad over, wat vraagt de wijkraad, en een paar cijfers.'},
   {s:'header nav a[href="lab.html"]',t:'Inzichten',x:'Grafieken over wat de raad doet, om te kopiëren in je eigen presentatie.'},
@@ -93,11 +94,17 @@ const STAP={
     {s:'[data-kopieer]',t:'Kopieer als afbeelding',x:'Plak een grafiek direct in een presentatie of mail, met titel, filter, bron en link erbij.'},
     {s:'#g-wrapped',t:'Raad Wrapped',x:'Het jaar van de raad in deelbare kaarten.'},
   ],
+  vergaderingen:[{s:'#lijst',t:'Per week',x:'Alle samengevatte vergaderingen, nieuwste bovenaan. Klik op een vergadering voor de samenvatting.'}],
+  vergadering:[
+    {s:'.schakel',t:'Kort of uitgebreid',x:'Kies de korte versie (1 minuut lezen) of de uitgebreide, met per onderwerp wat de fracties en het college zeiden.'},
+    {s:'.kort .zin, .ap .pt',t:'Tik voor de bron',x:'Tik op een zin of een fractie: je ziet het letterlijke citaat en een knop naar dat moment in de video.'},
+    {s:'.vkop [data-video]',t:'De hele vergadering',x:'Of bekijk de vergadering zelf, met de agenda en stukken in iBabs ernaast.'},
+  ],
   ideeen:[{s:'#lijst',t:'Denk mee',x:'Stem op ideeën voor nieuwe functies (3 stemmen) of stel er zelf een voor.'}],
   akkoord:[{s:'#kern',t:'Het coalitieakkoord',x:'De kern van het akkoord, samengevat. Wijs een zin aan voor de letterlijke tekst en de pagina.'},{s:'#dom',t:'Per domein',x:'Wat het akkoord per domein van plan is, met een link naar het dossier.'}],
   briefing:[{s:'#a4',t:'Je briefing',x:'Een A4 met het belangrijkste uit het dossier.'},{s:'#print',t:'Exporteren',x:'Bewaar als pdf of open in Word en pas hem aan.'}],
 };
-const NAAM={startpagina:'de startpagina',zoek:'Zoeken',domeinen:'Domeinen',dossier:'dit dossier',wijk:'Gebieden',verkenner:'de Verkenner',lab:'Inzichten',ideeen:'Ideeën',akkoord:'het akkoord',briefing:'de briefing'};
+const NAAM={vergaderingen:'Vergaderingen',vergadering:'deze vergadering',startpagina:'de startpagina',zoek:'Zoeken',domeinen:'Domeinen',dossier:'dit dossier',wijk:'Gebieden',verkenner:'de Verkenner',lab:'Inzichten',ideeen:'Ideeën',akkoord:'het akkoord',briefing:'de briefing'};
 
 /* ---------- rondleiding ---------- */
 let T=null;
