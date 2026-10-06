@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
+<title>Vergaderingen · schetsen</title>
+<link rel="stylesheet" href="stijl.css?v=9">
+<style>
+.kolom{max-width:1120px;margin:0 auto}
+.keuze{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0 18px}.keuze button{border:1.5px solid var(--lijn);background:var(--wit);border-radius:999px;padding:8px 16px;font:700 15px var(--font);cursor:pointer;color:var(--zwart)}
+.keuze button[aria-pressed=true]{background:var(--zwart);color:var(--wit);border-color:var(--zwart)}
+.uitleg{background:var(--groen-zacht);border-radius:var(--r);padding:12px 16px;font-size:15px;margin-bottom:18px;max-width:80ch}
+.vlak2{background:var(--wit);border-radius:var(--r);padding:18px 20px}
+.sub2{color:var(--sub);font-size:13px}
+.tag{display:inline-block;font-size:12px;font-weight:700;border-radius:999px;padding:1px 8px;margin-right:4px}
+.t-raad{background:var(--groen);color:#fff}.t-com{background:var(--blauw);color:#fff}.t-wijk{background:var(--grijs2);color:var(--zwart)}.t-plan{border:1.5px dashed var(--sub);color:var(--sub)}
+.apl{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}.apl span{font-size:12px;background:var(--grijs);border-radius:4px;padding:1px 6px}
+/* ---- A kalender ---- */
+.A{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:18px;align-items:start}
+.mnav{display:flex;align-items:center;gap:10px;margin-bottom:10px}.mnav h2{margin:0;font-size:22px;flex:1}.mnav button{border:1px solid var(--lijn);background:var(--wit);border-radius:6px;padding:4px 12px;font-size:18px;cursor:pointer;color:var(--zwart)}
+.grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+.grid .wd{font-size:12px;color:var(--sub);text-align:center;padding:2px}
+.dag{min-height:84px;background:var(--grijs);border-radius:6px;padding:4px;font-size:12px;cursor:pointer;border:2px solid transparent;display:flex;flex-direction:column;gap:2px}
+.dag.leeg{background:none;cursor:default}.dag.sel{border-color:var(--groen)}.dag.vandaag .n{background:var(--zwart);color:var(--wit);border-radius:999px;padding:0 5px}
+.dag .n{font-weight:700;align-self:flex-start}.dag .c{border-radius:4px;padding:1px 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.c.raad{background:var(--groen);color:#fff}.c.com{background:var(--blauw);color:#fff}.c.wijk{background:var(--grijs2)}.c.plan{border:1px dashed var(--sub);color:var(--sub)}
+.dpan{position:sticky;top:12px}.dpan h3{margin:0 0 8px}
+.vm{padding:10px 0;border-top:1px solid var(--grijs2)}.vm:first-of-type{border-top:0}.vm h4{margin:0 0 3px;font-size:16px}.vm p{margin:3px 0;font-size:14px;line-height:1.45}
+@media (max-width:820px){.A{grid-template-columns:minmax(0,1fr)}.dag{min-height:48px}.dag .c{font-size:0;height:6px;padding:0}.dag .c.wijk{display:none}.dag .wx{display:block;font-size:10px;color:var(--sub)}}
+.dag .wx{display:none}
+/* ---- B per maand ---- */
+.mstrip{display:flex;gap:4px;overflow-x:auto;padding-bottom:6px;margin-bottom:12px;position:sticky;top:0;background:var(--grijs);z-index:2;padding-top:6px}
+.mstrip button{flex:none;border:1px solid var(--lijn);background:var(--wit);border-radius:999px;padding:5px 12px;font:14px var(--font);cursor:pointer;color:var(--zwart)}
+.mstrip button[aria-pressed=true]{background:var(--groen);color:#fff;border-color:var(--groen);font-weight:700}
+.mstrip button i{font-style:normal;font-size:11px;opacity:.75;margin-left:4px}
+.B h3{font-size:16px;margin:18px 0 8px;color:var(--sub)}
+.raadk{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px}
+.raadk a{display:block;background:var(--wit);border-radius:var(--r);padding:14px 16px;border-top:4px solid var(--groen);text-decoration:none;color:inherit}
+.raadk a b{display:block;font-size:17px}.raadk a p{font-size:14px;margin:6px 0 0;line-height:1.45;color:var(--sub)}
+.crij{display:grid;grid-template-columns:92px 210px minmax(0,1fr) 20px;gap:4px 12px;align-items:baseline;background:var(--wit);padding:10px 14px;border-bottom:1px solid var(--grijs2);text-decoration:none;color:inherit;font-size:14px}
+.crij:first-child{border-radius:var(--r) var(--r) 0 0}.crij:last-child{border-radius:0 0 var(--r) var(--r);border-bottom:0}.crij:hover{background:var(--groen-zacht)}
+.crij b{font-size:15px}
+@media (max-width:700px){.crij{grid-template-columns:minmax(0,1fr) 16px}.crij .d{grid-column:1}.crij .o{grid-column:1}}
+.wg{background:var(--wit);border-radius:var(--r);padding:4px 14px}.wg details{border-bottom:1px solid var(--grijs2);padding:8px 0}.wg details:last-child{border:0}.wg summary{cursor:pointer;font-weight:700;font-size:15px}.wg summary span{font-weight:400;color:var(--sub);font-size:13px}
+.wg li{font-size:14px;margin:3px 0}
+/* ---- C overzicht ---- */
+.C1{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:16px}
+.hero{background:var(--wit);border-radius:var(--r);padding:20px 24px;border-top:5px solid var(--groen)}.hero h2{margin:4px 0 8px;font-size:24px}.hero p{font-size:17px;line-height:1.6;margin:0 0 10px}
+.komt{background:var(--wit);border-radius:var(--r);padding:16px 18px;border-top:5px solid var(--blauw)}.komt h3{margin:0 0 8px}.komt div{font-size:14px;padding:5px 0;border-top:1px solid var(--grijs2)}
+.cols{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px;margin-top:16px}
+.col{background:var(--wit);border-radius:var(--r);padding:14px 16px}.col h4{margin:0 0 6px;font-size:15px}.col a{display:block;font-size:14px;padding:5px 0;border-top:1px solid var(--grijs2);text-decoration:none;color:inherit}.col a span{color:var(--sub);font-size:12px;display:block}
+.heat{display:grid;grid-auto-flow:column;grid-template-rows:repeat(1,14px);gap:3px;overflow-x:auto;padding:4px 0}
+.heat i{width:14px;height:28px;border-radius:3px;background:var(--grijs2);cursor:pointer}.heat i.sel{outline:2px solid var(--zwart)}
+.hlab{display:flex;justify-content:space-between;font-size:11px;color:var(--sub)}
+@media (max-width:820px){.C1{grid-template-columns:minmax(0,1fr)}}
+</style></head><body>
+<header class="balk"></header>
+<main class="pagina"><div class="kolom">
+  <h1 style="margin-bottom:4px">Vergaderingen: drie schetsen</h1>
+  <p class="sub" style="margin:0">Met echte gegevens (raad en commissies sinds juli 2026; wijkraden 24 maanden). Kies er één; daarna bouw ik hem uit.</p>
+  <div class="keuze" role="group"><button data-s="A" aria-pressed="true">A · Kalender</button><button data-s="B" aria-pressed="false">B · Per maand</button><button data-s="C" aria-pressed="false">C · Overzicht + archief</button></div>
+  <div class="uitleg" id="uitleg"></div>
+  <div id="schets"><p class="leeg">Laden…</p></div>
+</div></main>
+<script src="ontwerp.js?v=23"></script>
+<script>
+kop('vergaderingen');
+const MAAND=['januari','februari','maart','april','mei','juni','juli','augustus','september','oktober','november','december'],DAG=['zo','ma','di','wo','do','vr','za'],DAGL=['zondag','maandag','dinsdag','woensdag','donderdag','vrijdag','zaterdag'];
+const PROC=/^(commissieplanning|ingekomen stukken|rondvraag|opening|sluiting|mededelingen|vaststelling|procedure)/i;
+const kortNaam=n=>n.replace(/^Commissie (tot Onderzoek van de Rekening)$/,'Rekeningcommissie').replace(/^Commissie /,'').replace(/ \(20\d\d ?- ?20\d\d\)/,'').replace(/,.*$/,'');
+const dl=d=>{const t=new Date(d+'T12:00');return `${DAGL[t.getDay()]} ${t.getDate()} ${MAAND[t.getMonth()]}`;};
+const soort=x=>x.raad?'raad':'com';
+let R=[],W=[],VO=[],S='A',MAA=null,SEL=null;
+const UITLEG={
+ A:'<b>Kalender.</b> Eén maand tegelijk, elke vergadering als blokje (groen = raad, blauw = commissie, grijs = wijkraden, gestippeld = gepland). Tik op een dag: rechts (op mobiel eronder) staat wat er besproken is. Vertrouwd en snel om een datum terug te vinden; minder geschikt om te lezen wat er speelt.',
+ B:'<b>Per maand.</b> Bovenaan een strook met maanden (met aantallen); per maand eerst de raad als kaarten, dan de commissies als compacte regels met hun onderwerpen, en de wijkraden samengevat per gebied (uitklappen). Geen eindeloze lijst meer; goed om te scannen.',
+ C:'<b>Overzicht + archief.</b> Begint met wat nu telt: de laatste raadsvergadering in één minuut, wat er komende week op de agenda staat en per commissie de laatste vergaderingen. Onderaan een tijdbalk (elke streep een week, donkerder = meer vergaderd) om terug te bladeren. Meest "krant", minst lijst.'};
+function maanden(){const M={};R.forEach(x=>M[x.datum.slice(0,7)]=(M[x.datum.slice(0,7)]||0)+1);W.forEach(x=>M[x.datum.slice(0,7)]=M[x.datum.slice(0,7)]||0);return Object.keys(M).sort().reverse();}
+function vm(x){return `<div class="vm"><span class="tag t-${soort(x)}">${x.raad?'Raad':'Commissie'}</span><h4><a href="vergadering.html?id=${x.id}">${esc(x.raad?x.naam:kortNaam(x.naam))}</a></h4><p>${esc(x.kort)}</p><div class="apl">${(x.ap||[]).filter(t=>!PROC.test(t)).slice(0,6).map(t=>`<span>${esc(t)}</span>`).join('')}</div></div>`;}
+function wm(x){return `<div class="vm"><span class="tag t-wijk">Wijkraad</span><h4>${esc(x.raad)}</h4><p class="sub2">${x.p.length} besluiten${x.init.length?' · '+x.init.length+' bewonersinitiatieven':''}</p><ul style="margin:4px 0;padding-left:18px;font-size:13px">${x.p.slice(0,4).map(p=>`<li>${esc(p[0])}</li>`).join('')}</ul></div>`;}
+/* ---------- A ---------- */
+function tekenA(){const m=MAA||maanden()[0],[y,mm]=m.split('-').map(Number);const eerste=new Date(y,mm-1,1),n=new Date(y,mm,0).getDate(),start=(eerste.getDay()+6)%7;
+  const opDag=d=>({r:R.filter(x=>x.datum===d),w:W.filter(x=>x.datum===d),v:VO.filter(x=>x.datum===d)});const vandaag=new Date().toISOString().slice(0,10);
+  let cel=['ma','di','wo','do','vr','za','zo'].map(d=>`<div class="wd">${d}</div>`).join('')+'<div class="dag leeg"></div>'.repeat(start);
+  for(let i=1;i<=n;i++){const d=`${m}-${String(i).padStart(2,'0')}`,o=opDag(d);
+    cel+=`<div class="dag${d===SEL?' sel':''}${d===vandaag?' vandaag':''}" data-d="${d}"><span class="n">${i}</span>${o.r.map(x=>`<span class="c ${soort(x)}" title="${esc(x.naam)}">${esc(x.raad?'Raad':kortNaam(x.naam))}</span>`).join('')}${o.v.map(x=>`<span class="c plan">${esc(x.naam.startsWith('Gemeenteraad')?'Raad':kortNaam(x.naam))}</span>`).join('')}${o.w.length?`<span class="c wijk">${o.w.length} wijkraad${o.w.length>1?'en':''}</span><span class="wx">+${o.w.length} wk</span>`:''}</div>`;}
+  const ms=maanden(),i=ms.indexOf(m);
+  if(!SEL){const met=[...new Set(R.filter(x=>x.datum.startsWith(m)).map(x=>x.datum))].sort();SEL=met[met.length-1]||null;}
+  const o=SEL?opDag(SEL):{r:[],w:[],v:[]};
+  $('schets').innerHTML=`<div class="A"><div class="vlak2"><div class="mnav"><button data-m="${ms[i+1]||''}" ${ms[i+1]?'':'disabled'} aria-label="Vorige maand">‹</button><h2>${MAAND[mm-1]} ${y}</h2><button data-m="${ms[i-1]||''}" ${ms[i-1]?'':'disabled'} aria-label="Volgende maand">›</button></div><div class="grid">${cel}</div>
+    <p class="sub2" style="margin-top:8px"><span class="tag t-raad">Raad</span><span class="tag t-com">Commissie</span><span class="tag t-wijk">Wijkraden</span><span class="tag t-plan">Gepland</span></p></div>
+    <div class="vlak2 dpan"><h3>${SEL?dl(SEL):'Kies een dag'}</h3>${o.r.map(vm).join('')}${o.v.map(x=>`<div class="vm"><span class="tag t-plan">Gepland</span><h4>${esc(x.naam)}</h4>${x.punten.slice(0,5).map(p=>`<p>· ${esc(p.titel)}</p>`).join('')}</div>`).join('')}${o.w.map(wm).join('')}${SEL&&!o.r.length&&!o.w.length&&!o.v.length?'<p class="sub2">Geen vergaderingen op deze dag.</p>':''}</div></div>`;
+  $('schets').querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{if(b.dataset.m){MAA=b.dataset.m;SEL=null;tekenA();}});
+  $('schets').querySelectorAll('.dag[data-d]').forEach(c=>c.onclick=()=>{SEL=c.dataset.d;tekenA();});}
+/* ---------- B ---------- */
+function tekenB(){const ms=maanden(),m=MAA||ms[0],[y,mm]=m.split('-').map(Number);
+  const r=R.filter(x=>x.datum.startsWith(m)),raad=r.filter(x=>x.raad),com=r.filter(x=>!x.raad).sort((a,b)=>b.datum.localeCompare(a.datum)),w=W.filter(x=>x.datum.startsWith(m));
+  const perG={};w.forEach(x=>(x.gebied.length?x.gebied:['Overig']).forEach(g=>(perG[g]=perG[g]||[]).push(x)));
+  $('schets').innerHTML=`<div class="mstrip">${ms.map(k=>{const [a,b]=k.split('-');const n=R.filter(x=>x.datum.startsWith(k)).length;return `<button data-m="${k}" aria-pressed="${k===m}">${MAAND[+b-1].slice(0,3)} ${a.slice(2)}<i>${n||''}</i></button>`;}).join('')}</div>
+   <div class="B"><h2 style="margin:4px 0 0">${MAAND[mm-1]} ${y}</h2><p class="sub2">${raad.length} raadsvergaderingen · ${com.length} commissievergaderingen · ${w.length} wijkraadvergaderingen</p>
+   ${raad.length?`<h3>Gemeenteraad</h3><div class="raadk">${raad.map(x=>`<a href="vergadering.html?id=${x.id}"><span class="sub2">${dl(x.datum)}</span><b>${esc(x.naam)}</b><div class="apl">${(x.ap||[]).filter(t=>!PROC.test(t)).slice(0,8).map(t=>`<span>${esc(t)}</span>`).join('')}</div><p>${esc(x.kort)}</p></a>`).join('')}</div>`:''}
+   ${com.length?`<h3>Commissies</h3><div>${com.map(x=>`<a class="crij" href="vergadering.html?id=${x.id}"><span class="d sub2">${dl(x.datum).replace(/^(\w+)dag/,'$1')}</span><b>${esc(kortNaam(x.naam))}</b><span class="o">${(x.ap||[]).filter(t=>!PROC.test(t)).slice(0,4).map(esc).join(' · ')}</span><span>→</span></a>`).join('')}</div>`:''}
+   ${w.length?`<h3>Wijkraden <span class="sub2">(besluiten, per gebied)</span></h3><div class="wg">${Object.keys(perG).sort().map(g=>`<details><summary>${esc(g)} <span>· ${perG[g].length} vergaderingen · ${perG[g].reduce((a,x)=>a+x.p.length,0)} besluiten</span></summary><ul>${perG[g].map(x=>`<li><b>${esc(x.raad)}</b> (${+x.datum.slice(8)} ${MAAND[+x.datum.slice(5,7)-1].slice(0,3)}): ${x.p.slice(0,3).map(p=>esc(p[0])).join(' · ')}${x.p.length>3?' …':''}</li>`).join('')}</ul></details>`).join('')}</div>`:''}</div>`;
+  $('schets').querySelectorAll('.mstrip button').forEach(b=>b.onclick=()=>{MAA=b.dataset.m;tekenB();});
+  $('schets').querySelector('.mstrip [aria-pressed=true]')?.scrollIntoView({inline:'center',block:'nearest'});}
+/* ---------- C ---------- */
+function tekenC(){const raad=R.filter(x=>x.raad&&x.naam==='Gemeenteraad').sort((a,b)=>b.datum.localeCompare(a.datum))[0];
+  const per={};R.filter(x=>!x.raad).sort((a,b)=>b.datum.localeCompare(a.datum)).forEach(x=>{const k=kortNaam(x.naam);(per[k]=per[k]||[]).push(x);});
+  const vandaag=new Date().toISOString().slice(0,10),komt=VO.filter(x=>x.datum>=vandaag).slice(0,5);
+  // weken voor de tijdbalk
+  const wk=d=>{const t=new Date(d+'T12:00');t.setDate(t.getDate()-((t.getDay()+6)%7));return t.toISOString().slice(0,10);};
+  const H={};R.forEach(x=>{H[wk(x.datum)]=(H[wk(x.datum)]||0)+3;});W.forEach(x=>{H[wk(x.datum)]=(H[wk(x.datum)]||0)+1;});
+  const ks=Object.keys(H).sort(),mx=Math.max(...Object.values(H));SEL=SEL&&H[SEL]!=null?SEL:ks[ks.length-1];
+  const inW=x=>wk(x.datum)===SEL;
+  $('schets').innerHTML=`<div class="C1"><div class="hero"><span class="tag t-raad">Laatste raadsvergadering</span> <span class="sub2">${dl(raad.datum)}</span><h2>Wat besloot de raad?</h2><p>${esc(raad.kort)}</p><div class="apl">${raad.ap.filter(t=>!PROC.test(t)).map(t=>`<span>${esc(t)}</span>`).join('')}</div><p style="margin-top:12px"><a class="knop" href="vergadering.html?id=${raad.id}">Lees in 1 minuut</a></p></div>
+    <div class="komt"><h3>Komt eraan</h3>${komt.map(x=>`<div><b>${esc(x.naam.startsWith('Gemeenteraad')?'Gemeenteraad':kortNaam(x.naam))}</b> <span class="sub2">${dl(x.datum)}</span><br>${x.punten.slice(0,3).map(p=>esc(p.titel)).join(' · ')||'<span class="sub2">agenda volgt</span>'}</div>`).join('')}</div></div>
+    <h2 style="font-size:20px;margin:22px 0 0">Per commissie</h2><div class="cols">${Object.keys(per).sort().map(k=>`<div class="col"><h4>${esc(k)}</h4>${per[k].slice(0,3).map(x=>`<a href="vergadering.html?id=${x.id}"><span>${dl(x.datum)}</span>${(x.ap||[]).filter(t=>!PROC.test(t)).slice(0,2).map(esc).join(' · ')||esc(x.kort.slice(0,80))}</a>`).join('')}</div>`).join('')}</div>
+    <h2 style="font-size:20px;margin:22px 0 4px">Archief</h2><div class="vlak2"><div class="hlab"><span>${MAAND[+ks[0].slice(5,7)-1]} ${ks[0].slice(0,4)}</span><span>nu</span></div>
+    <div class="heat">${ks.map(k=>`<i data-w="${k}" class="${k===SEL?'sel':''}" title="week van ${k}" style="background:color-mix(in srgb,var(--groen) ${Math.round(15+85*H[k]/mx)}%,var(--grijs2))"></i>`).join('')}</div>
+    <h3 style="margin:12px 0 0">Week van ${dl(SEL)}</h3>${R.filter(inW).map(vm).join('')}${W.filter(inW).map(wm).join('')}</div>`;
+  $('schets').querySelectorAll('.heat i').forEach(i=>i.onclick=()=>{SEL=i.dataset.w;tekenC();});
+  $('schets').querySelector('.heat .sel')?.scrollIntoView({inline:'center',block:'nearest'});}
+function teken(){$('uitleg').innerHTML=UITLEG[S];MAA=null;SEL=null;({A:tekenA,B:tekenB,C:tekenC})[S]();}
+document.querySelectorAll('.keuze button').forEach(b=>b.onclick=()=>{S=b.dataset.s;document.querySelectorAll('.keuze button').forEach(x=>x.setAttribute('aria-pressed',x===b));teken();});
+Promise.all([fetch('verg/index.json',{cache:'no-cache'}).then(r=>r.json()),fetch('verg/wijkraden.json').then(r=>r.json()),fetch('verg/vooruit.json').then(r=>r.json()).then(d=>d.v).catch(()=>[])]).then(([a,b,c])=>{R=a;W=b;VO=c;teken();});
+</script></body></html>
