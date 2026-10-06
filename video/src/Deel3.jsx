@@ -5,7 +5,7 @@ import {AbsoluteFill, Sequence, useCurrentFrame} from 'remotion';
 import {C, F, ci, sp, inSchuif, Scene, Kop, Kaart, Cursor} from './stijl';
 import X from './d3.json';
 
-export const DUUR3 = 460;
+export const DUUR3 = 520;
 const MND = ['jan', 'feb', 'mrt', 'apr', 'mei', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'dec'];
 const dat = (s) => `${+s.slice(8, 10)} ${MND[+s.slice(5, 7) - 1]} ${s.slice(0, 4)}`;
 const punten = (d) => (d.match(/-?\d+(\.\d+)?/g) || []).map(Number);
@@ -20,7 +20,7 @@ const Badge = ({kl, children, style}) => <span style={{fontSize: 19, fontWeight:
 const Domeinen = () => {
   const f = useCurrentFrame(), klik = 62, mi = X.dom.indexOf('Mobiliteit');
   return (
-    <Scene dur={110}>
+    <Scene dur={135}>
       <Kop f={f} tekst="Elk domein, onderwerp en gebied" sub="Een eigen pagina, met wat er is gezegd, besloten en beloofd" />
       {X.dom.map((n, i) => {
         const col = i % 5, rij = Math.floor(i / 5), aan = i === mi && f >= klik;
@@ -46,7 +46,7 @@ const SPOOR = [
 const Parkeren = () => {
   const f = useCurrentFrame(), klik = 70, volg = f >= klik;
   return (
-    <Scene dur={170}>
+    <Scene dur={205}>
       <div>
         <div style={{position: 'absolute', left: 90, top: 58, fontSize: 26, color: C.sub, ...inSchuif(f, 0, 20)}}>Domeinen › Mobiliteit › <b style={{color: '#000'}}>Parkeren</b></div>
         <div style={{position: 'absolute', left: 90, top: 100, fontSize: 76, fontWeight: 700, ...inSchuif(f, 4, 24)}}>Parkeren</div>
@@ -126,8 +126,8 @@ const Gebieden = () => {
 
 export const Deel3 = () => (
   <AbsoluteFill style={{background: C.grijs, fontFamily: F}}>
-    <Sequence from={0} durationInFrames={110}><Domeinen /></Sequence>
-    <Sequence from={110} durationInFrames={170}><Parkeren /></Sequence>
-    <Sequence from={280} durationInFrames={180}><Gebieden /></Sequence>
+    <Sequence from={0} durationInFrames={135}><Domeinen /></Sequence>
+    <Sequence from={135} durationInFrames={205}><Parkeren /></Sequence>
+    <Sequence from={340} durationInFrames={180}><Gebieden /></Sequence>
   </AbsoluteFill>
 );

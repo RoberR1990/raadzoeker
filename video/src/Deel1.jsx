@@ -8,7 +8,7 @@ import X from './d1.json';
 const C = {groen: '#00811F', groenD: '#004C31', zacht: '#E1EFE2', mid: '#4EB051', grijs: '#EFF4F6', grijs2: '#DBE7EA', lijn: '#CAD6DA', sub: '#3E4B50', navy: '#0E2A4D', blauw: '#00548F', rood: '#C0392B'};
 const F = 'Arial, Helvetica, sans-serif';
 const FPS = 30;
-export const DUUR1 = 870;
+export const DUUR1 = 930;
 const ease = Easing.bezier(0.33, 0, 0.2, 1);
 const ci = (f, a, b, c = 0, d = 1, e = ease) => interpolate(f, [a, b], [c, d], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: e});
 const sp = (f, d = 0, cfg = {damping: 16, stiffness: 120}) => spring({frame: f - d, fps: FPS, config: cfg});
@@ -108,7 +108,7 @@ const Kort = () => {
   const f = useCurrentFrame(), al = X.raad.kort.slice(0, 2), uit = f >= 120;
   let n = 0;
   return (
-    <Scene dur={165}>
+    <Scene dur={215}>
       <Kop f={f} tekst="Lees de samenvatting in 1 minuut" sub="of de uitgebreide versie in 10 minuten" />
       <div style={{position: 'absolute', left: 90, top: 250, display: 'flex', background: C.grijs2, borderRadius: 999, padding: 6, ...inSchuif(f, 4, 14)}}>
         {[['Kort', '1 min'], ['Uitgebreid', `${X.raad.lees.uitgebreid} min`]].map(([a, b], i) => (
@@ -172,7 +172,7 @@ const BADGE = {Aangenomen: [C.groen, '#fff'], Verworpen: [C.grijs2, '#000'], Ing
 const Moties = () => {
   const f = useCurrentFrame(), M = X.mo, T = M.tl;
   return (
-    <Scene dur={150}>
+    <Scene dur={160}>
       <Kop f={f} tekst="Van commissie tot besluit" sub="Moties met uitslag, en waar het eerder besproken is" />
       <Kaart style={{left: 90, top: 250, width: 1060, height: 760, ...inSchuif(f, 6)}}>
         <div style={{fontSize: 22, color: C.sub, fontWeight: 700}}>Gemeenteraad · {M.datum}</div>
@@ -203,8 +203,8 @@ export const Deel1 = () => (
   <AbsoluteFill style={{background: C.grijs}}>
     <Sequence from={0} durationInFrames={195}><Intro /></Sequence>
     <Sequence from={195} durationInFrames={135}><Overzicht /></Sequence>
-    <Sequence from={330} durationInFrames={165}><Kort /></Sequence>
-    <Sequence from={495} durationInFrames={225}><Fractie /></Sequence>
-    <Sequence from={720} durationInFrames={150}><Moties /></Sequence>
+    <Sequence from={330} durationInFrames={215}><Kort /></Sequence>
+    <Sequence from={545} durationInFrames={225}><Fractie /></Sequence>
+    <Sequence from={770} durationInFrames={160}><Moties /></Sequence>
   </AbsoluteFill>
 );

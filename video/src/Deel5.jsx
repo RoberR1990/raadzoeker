@@ -3,7 +3,7 @@ import React from 'react';
 import {AbsoluteFill, Img, staticFile, useCurrentFrame} from 'remotion';
 import {C, F, ci, sp, inSchuif} from './stijl';
 
-export const DUUR5 = 390;
+export const DUUR5 = 460;
 const I = {
   verg: <><rect x="6" y="10" width="36" height="30" rx="4" fill="none" stroke="#fff" strokeWidth="3.4" /><path d="M6 18 H42 M15 6 V13 M33 6 V13" stroke="#fff" strokeWidth="3.4" strokeLinecap="round" /><path d="M13 26 H35 M13 33 H27" stroke="#fff" strokeWidth="3" strokeLinecap="round" /></>,
   zoek: <><circle cx="20" cy="20" r="12" fill="none" stroke="#fff" strokeWidth="3.6" /><path d="M29 29 L41 41" stroke="#fff" strokeWidth="4" strokeLinecap="round" /></>,
@@ -18,7 +18,7 @@ const PUNT = [
 ];
 
 export const Deel5 = () => {
-  const f = useCurrentFrame(), eind = 250;
+  const f = useCurrentFrame(), eind = 320;
   const logo = sp(f, 0, {damping: 14, stiffness: 90}), naarBoven = ci(f, 50, 80);
   return (
     <AbsoluteFill style={{background: C.grijs, fontFamily: F, overflow: 'hidden', opacity: ci(f, 0, 10)}}>

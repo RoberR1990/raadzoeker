@@ -1,38 +1,38 @@
-Raadzoeker promovideo v4 - voice-over (stem Emma, ElevenLabs)
-Totaal ca. 74 seconden, ca. 150 woorden. Elk fragment los opnemen.
+Raadzoeker promovideo v4 - voice-over (ElevenLabs, stem h6uBOiAjLKklte8hdYio, model Eleven v4)
+Totaal ca. 85 seconden. Elk fragment los opgenomen (video/public/vo/vo01-12.mp3); muziek: ElevenLabs Music 'Civic Connections' (video/public/muziek.mp3).
 
-1. 0–6,5 s - Woordenwolk trekt samen tot logo, naam en ondertitel
-   (muziek)
+1. 1,0 s - logo, naam en ondertitel
+   Wat zegt de Rotterdamse gemeenteraad? Wat besluit hij, en wat belooft hij?
 
-2. 6,5–11 s - Vergaderingen-overzicht, Komt eraan
-   Wat heeft de gemeenteraad deze week besproken?
+2. 6,8 s - vergaderingen-overzicht
+   Wat besprak de raad deze week? En wat komt er nog aan?
 
-3. 11–16,5 s - Korte en uitgebreide samenvatting
-   Raadzoeker vat elke vergadering samen. In één minuut, of uitgebreid in tien.
+3. 11,3 s - korte en uitgebreide samenvatting
+   Raadzoeker vat elke vergadering samen: de hoofdlijnen in één minuut, of uitgebreid in tien.
 
-4. 16,5–24 s - Fractie → citaat → echt videobeeld
-   Tik op een fractie: je leest letterlijk wat er is gezegd, en kijkt het moment zelf terug.
+4. 18,7 s - fractie, citaat, echt videobeeld
+   Tik op een fractie, lees letterlijk wat er is gezegd, en kijk het moment zelf terug in de raadzaal.
 
-5. 24–29 s - Moties met uitslag, tijdlijn
-   Met de moties, de uitslag, en waar het eerder op tafel lag.
+5. 26,0 s - moties met uitslag, tijdlijn
+   Met de moties, de stemuitslag, en waar het eerder op tafel lag.
 
-6. 29–39 s - Zoeken: woonfraude, zes soorten bronnen
-   Zoek in alles wat de raad sinds 2018 zei en schreef. Debatten, moties, vragen, brieven en de wijkraden.
+6. 31,5 s - zoeken: woonfraude, zes soorten bronnen
+   Zoek in alles wat de raad sinds 2018 zei en schreef. Debatten, verslagen, moties, schriftelijke vragen, collegebrieven en de wijkraden. Alles op één plek.
 
-7. 39–46 s - Vijf zoekwoorden, confetti bij Feyenoord
-   Over elk onderwerp. Van tramlijn tot Tweebosbuurt.
+7. 44,0 s - vijf zoekwoorden, confetti bij Feyenoord
+   Over elk onderwerp, groot of klein. Van tramlijn 4 tot de Tweebosbuurt, en van hittestress tot deelscooters.
 
-8. 46–50 s - Domeinen
+8. 52,7 s - domeinen
    Elk domein, onderwerp en gebied heeft een eigen pagina.
 
-9. 50–55 s - Parkeren: volgen, net besproken, beloofd
-   Wat is er gezegd, besloten en beloofd? Volg een onderwerp, en je krijgt een seintje bij nieuws.
+9. 57,2 s - Parkeren: volgen, net besproken, beloofd
+   Wat is er gezegd, besloten en beloofd? Volg een onderwerp, en krijg een seintje bij nieuws.
 
-10. 55–61 s - Delfshaven, besluiten van de wijkraden
-   En wat speelt er in jouw wijk, tot aan de besluiten van de wijkraad.
+10. 64,2 s - Delfshaven, besluiten van de wijkraden
+   En wat speelt er in jouw wijk? Van de gemeenteraad tot de besluiten van de wijkraad.
 
-11. 61–69,5 s - Logo en vier kernpunten
-   Raadzoeker. Elke vergadering samengevat, zoeken in alles, een pagina per onderwerp, en volg wat jou raakt.
+11. 70,1 s - logo en vier kernpunten
+   Raadzoeker. Elke vergadering samengevat. Zoeken in alles. Een pagina per domein, onderwerp en gebied. En volg wat jou raakt.
 
-12. 69,5–74 s - raadzoeker.nl, RIO-groep
-   Open voor iedereen, op raadzoeker punt n l.
+12. 81,0 s - raadzoeker.nl, RIO-groep
+   Open voor iedereen, op raadzoeker punt N L.

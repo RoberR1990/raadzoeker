@@ -6,7 +6,7 @@ import {C, F, ci, sp, inSchuif, Scene, Kop, Kaart, Zoekbalk, getypt, Mark} from 
 import X from './d2.json';
 import B from './d2b_ruw.json';
 
-export const DUUR2 = 510;
+export const DUUR2 = 640;
 const W = X.woonfraude;
 const getal = (s, f, a, b) => Math.round(+String(s).replace(/\./g, '') * ci(f, a, b)).toLocaleString('nl-NL');
 
@@ -24,7 +24,7 @@ const BREED = ['tramlijn 4', 'Tweebosbuurt', 'hittestress', 'deelscooters', 'Fey
 const Diepte = () => {
   const f = useCurrentFrame();
   return (
-    <Scene dur={300}>
+    <Scene dur={380}>
       <Kop f={f} tekst="Zoek in alles wat de raad zei en schreef" sub="Debatten, verslagen, moties, vragen, brieven en wijkraden, sinds 2018" />
       <Zoekbalk x={90} y={250} w={1000} h={88} tekst={getypt('woonfraude', f, 22)} f={f} />
       <div style={{position: 'absolute', left: 1130, top: 264, display: 'flex', gap: 14, ...inSchuif(f, 58, 14)}}>
@@ -56,7 +56,7 @@ const Breedte = () => {
   const f = useCurrentFrame(), per = 34, i = Math.min(BREED.length - 1, Math.floor(Math.max(0, f - 14) / per)), q = BREED[i], t0 = 14 + i * per;
   const [ng, ns] = B.breed[q];
   return (
-    <Scene dur={210}>
+    <Scene dur={260}>
       <Kop f={f} tekst="Over elk onderwerp" sub="Van tramlijn tot Tweebosbuurt" />
       <Zoekbalk x={380} y={420} w={1160} h={110} tekst={getypt(q, f, t0, 2)} f={f} />
       <div style={{position: 'absolute', left: 0, right: 0, top: 590, textAlign: 'center', fontSize: 52, color: C.sub, opacity: ci(f, t0 + 12, t0 + 18)}}>
@@ -72,7 +72,7 @@ const Breedte = () => {
 
 export const Deel2 = () => (
   <AbsoluteFill style={{background: C.grijs, fontFamily: F}}>
-    <Sequence from={0} durationInFrames={300}><Diepte /></Sequence>
-    <Sequence from={300} durationInFrames={210}><Breedte /></Sequence>
+    <Sequence from={0} durationInFrames={380}><Diepte /></Sequence>
+    <Sequence from={380} durationInFrames={260}><Breedte /></Sequence>
   </AbsoluteFill>
 );
