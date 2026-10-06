@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Wat je volgt · raadzoeker</title>
+<link rel="stylesheet" href="stijl.css?v=11">
+<style>
+.kolom{max-width:860px;margin:0 auto}
+.vb{background:var(--wit);border-radius:var(--r);padding:16px 20px;margin-top:12px}
+.vb h2{font-size:19px;margin:0;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}.vb h2 a{text-decoration:none}.vb h2 .sub2{font-size:13px;font-weight:400;color:var(--sub)}
+.vb .acties{margin-left:auto;display:flex;gap:6px}.vb .acties button{font-size:13px;padding:4px 10px}
+.it{display:grid;grid-template-columns:86px 110px minmax(0,1fr);gap:2px 10px;padding:7px 0;border-top:1px solid var(--grijs2);font-size:15px}
+.it:first-of-type{border-top:0}.it .d{color:var(--sub);font-size:13px}.it .s{font-size:12px;font-weight:700;color:var(--groen)}.it.oud{opacity:.6}
+.push{background:var(--wit);border-radius:var(--r);padding:16px 20px;margin-top:16px;border-left:5px solid var(--groen)}
+.push p{margin:4px 0;font-size:15px}.leeg2{background:var(--wit);border-radius:var(--r);padding:18px 20px;margin-top:16px}
+@media (max-width:600px){.it{grid-template-columns:minmax(0,1fr)}.vb .acties{margin-left:0}}
+</style></head><body>
+<header class="balk"></header>
+<main class="pagina"><div class="kolom">
+  <h1 style="margin-bottom:4px">Wat je volgt</h1>
+  <p class="intro" style="margin:0">Het nieuwste uit de raad over de onderwerpen, domeinen en gebieden die je volgt. Volgen doe je met ☆ Volg bovenaan een dossier- of gebiedspagina.</p>
+  <section class="push" id="push" aria-labelledby="hp"></section>
+  <div id="lijst"><p class="leeg">Laden…</p></div>
+  <p class="sub" style="font-size:13px;margin-top:20px">Wat je volgt, staat alleen in deze browser. Zet je meldingen aan, dan bewaren we het adres dat je browser daarvoor geeft en de lijst die je volgt; geen naam, geen e-mailadres. Meldingen uit = alles weg. <a href="over.html#privacy">Privacy</a></p>
+</div></main>
+<script src="ontwerp.js?v=28"></script>
+<script>
+kop('');
+const SOORT={vergadering:'Vergadering',motie:'Motie',toezegging:'Toezegging',vragen:'Vragen',debat:'Debat'};
+const M=['jan','feb','mrt','apr','mei','jun','jul','aug','sep','okt','nov','dec'],dd=d=>`${+d.slice(8)} ${M[+d.slice(5,7)-1]}`;
+async function teken(){
+  const L=RZV.lijst(),ks=Object.keys(L);
+  if(!ks.length){$('lijst').innerHTML=`<div class="leeg2"><b>Je volgt nog niets.</b><p style="margin:6px 0 0">Open een onderwerp, domein of gebied en klik op <b>☆ Volg</b>. Bijvoorbeeld <a href="dossier.html?d=parkeren">Parkeren</a>, <a href="dossier.html?d=discriminatie-en-racisme">Discriminatie en racisme</a> of <a href="domeinen.html">kies uit alle domeinen</a>.</p></div>`;return;}
+  RZV.data=null;await RZV.nieuws();const D=(await RZV.data).d||{};
+  $('lijst').innerHTML=ks.sort((a,b)=>L[a].naam.localeCompare(L[b].naam)).map(s=>{const it=(D[s]||{}).i||[],n=it.filter(i=>i[0]>L[s].gezien).length;
+    const link=((D[s]||{}).soort==='gebied'?'wijk.html?g=':'dossier.html?d=')+s;
+    return `<section class="vb"><h2><a href="${link}">${esc(L[s].naam)}</a><span class="sub2">${n?`${n} nieuw sinds ${dd(L[s].gezien)}`:'niets nieuws'}</span><span class="acties">${n?`<button type="button" class="knop wit" data-gezien="${esc(s)}">Gezien</button>`:''}${volgKnop(s,L[s].naam)}</span></h2>
+      ${it.length?it.map(i=>`<div class="it${i[0]>L[s].gezien?'':' oud'}"><span class="d">${dd(i[0])}</span><span class="s">${SOORT[i[1]]||i[1]}</span><a href="${esc(i[3])}"${i[3].startsWith('http')?' target="_blank" rel="noopener"':''}>${esc(i[2])}</a></div>`).join(''):'<p class="sub" style="margin:8px 0 0;font-size:14px">De afgelopen twee maanden niets nieuws.</p>'}</section>`;}).join('');
+}
+async function pushBlok(){
+  if(!RZV.pushKan()){$('push').innerHTML=`<p><b>Meldingen</b> werken niet in deze browser. Op een iPhone: zet raadzoeker eerst op je beginscherm (Deel → Zet op beginscherm) en open het daar.</p>`;return;}
+  const s=await RZV.sub().catch(()=>null);
+  $('push').innerHTML=s?`<p><b>Meldingen staan aan.</b> Je krijgt een melding als er iets nieuws is in wat je volgt (hooguit een paar keer per dag).</p><p><button type="button" class="knop wit" id="puit">Meldingen uit</button></p>`
+    :`<p><b>Meldingen bij nieuws?</b> Krijg een melding op je computer of telefoon als er iets nieuws is in wat je volgt.</p><p><button type="button" class="knop" id="paan">Meldingen aan</button> <span class="sub" id="pst" style="font-size:13px"></span></p>`;
+  $('paan')&&($('paan').onclick=async()=>{$('pst').textContent='Even toestemming vragen…';try{await RZV.pushAan();pushBlok();}catch(e){$('pst').textContent=e.message==='geweigerd'?'Meldingen zijn geblokkeerd in je browserinstellingen.':'Aanzetten lukte niet.';}});
+  $('puit')&&($('puit').onclick=async()=>{await RZV.pushUit();pushBlok();});
+}
+document.addEventListener('click',e=>{const g=e.target.closest('[data-gezien]');if(g){RZV.gezien(g.dataset.gezien);teken();volgBel();}if(e.target.closest('[data-volg]'))setTimeout(teken,50);});
+teken();pushBlok();
+</script></body></html>

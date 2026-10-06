@@ -84,6 +84,7 @@ const EIEREN=[
 ];
 let laatste='';
 window.rzEi=q=>{q=(q||'').trim();if(!q||q===laatste)return;laatste=q;for(const [rx,f] of EIEREN)if(rx.test(q)){f();break;}};
+window.rzToast=toast;
 
 function logoSpel(){
   if(!/startpagina/.test(location.pathname))return;const m=document.querySelector('header .merk');if(!m)return;let n=0,t;const z=[...m.querySelectorAll('svg circle')];

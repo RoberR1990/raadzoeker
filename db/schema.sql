@@ -22,3 +22,6 @@ INSERT OR IGNORE INTO ideeen (id, titel, toelichting, status, volgorde) VALUES
  (9, 'Elk onderwerp als voorbeeldpagina', 'De opbouw van Parkeren (komt eraan, gezegd, besloten, beloofd, gedaan, in de stad) voor alle onderwerpen.', 'idee', 9),
  (10, 'Persoonlijke volglijst', 'Onderwerpen, wijken en moties bewaren in een eigen lijst, met wat er sinds je laatste bezoek is veranderd.', 'idee', 10),
  (11, 'Briefing direct in Teams delen', 'De briefing als kaart in een Teams-kanaal plaatsen, met link naar de bron.', 'idee', 11);
+
+-- abonnees: pushmeldingen voor gevolgde dossiers. id = SHA-256 van het push-adres; geen naam of e-mail. gemeld = stand van de laatste melding.
+CREATE TABLE IF NOT EXISTS abonnees (id TEXT PRIMARY KEY, endpoint TEXT NOT NULL, onderwerpen TEXT, sinds TEXT, gemeld TEXT, bericht TEXT);

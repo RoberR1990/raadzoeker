@@ -41,10 +41,13 @@ stap "voorbeelddossiers" python src/showcase.py
 stap "Lab" python src/lab_data.py
 stap "vergaderingen koppelen" python src/verg_koppel.py
 stap "vooruitblik" python src/vooruit.py
+stap "volgen" python src/volg_data.py
 printf '{"laatste":"%s","modus":"%s","ok":true,"stand":"%s"}\n' "$(date -Iseconds)" "$MODUS" "$RZ_STAND" | tee /werk/status.json > docs/data/status.json
 git add -A docs
 if git diff --cached --quiet; then echo "niets veranderd" >>"$LOG"; exit 0; fi
 stap "git commit" git commit -q -m "Automatisch bijgewerkt ($MODUS, $(date '+%d-%m-%Y %H:%M'))"
 stap "git pull --rebase" git pull --rebase -q   # er kan intussen iets anders gepusht zijn
 stap "git push" git push -q
+# meldingen voor wie onderwerpen volgt (mag mislukken zonder de run te laten falen)
+python src/push_stuur.py >>"$LOG" 2>&1 || echo "push mislukt" >>"$LOG"
 find /werk/logs -name '*.log' -mtime +30 -delete
