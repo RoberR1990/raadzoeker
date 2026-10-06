@@ -3,7 +3,7 @@
 #   python src/verg_koppel.py   -> herbouwt docs/ontwerp/verg/zoek.json en koppel.json uit alle verg/<id8>.json
 # verrijk(out, B) wordt aangeroepen door verg_check.py vóór het wegschrijven.
 import json,os,re,glob,unicodedata
-from paden import DOCS
+from paden import DOCS,WERK
 import onderwerpen as O
 VD=os.path.join(DOCS,'ontwerp','verg')
 def fold(s): return ''.join(c for c in unicodedata.normalize('NFD',(s or '').lower()) if unicodedata.category(c)!='Mn')
@@ -74,8 +74,59 @@ def verrijk(out,B):
         if groot and ((groot>=doel and ap!=vorig) or groot>=doel+1): n+=1; groot=0
         z['alinea']=n; z['ap']=ap; groot+=1; vorig=ap
     return out
+# ---- iBabs: welke stukken hangen aan welk agendapunt, en waar werden ze nog meer besproken (tijdlijn) ----
+MND={m:i+1 for i,m in enumerate(['januari','februari','maart','april','mei','juni','juli','augustus','september','oktober','november','december'])}
+AP=re.compile(r'(Gemeenteraad|Commissie [^\n]*?) (20\d\d)\s*\n\(([\d.]*)\s*([^\n]*)\)\s*\n\w+ (\d+) (\w+)')
+SOORT={'moties':'Motie','amendementen':'Amendement','raadsvoorstellen':'Raadsvoorstel','initiatiefvoorstellen':'Initiatiefvoorstel','brieven':'Brief','toezeggingen':'Toezegging'}
+def orgnorm(s): return re.sub(r'\s+',' ',re.sub(r'\(.*?\)|\b20\d\d\b|^commissie ','',fold(s))).strip()
+def momenten(a):
+    uit=[]
+    for org,j,nr,tit,dag,mnd in AP.findall(a if isinstance(a,str) else ''):
+        if mnd not in MND: continue
+        raad=org=='Gemeenteraad'; nr=nr.strip('.')
+        if (not raad and nr.startswith('1')) or (raad and re.search(r'mededeling|ingekomen|doorlopende lijst|vaststelling van de (agenda|notulen)',tit,re.I)) or not nr: continue
+        uit.append((f'{j}-{MND[mnd]:02d}-{int(dag):02d}','Gemeenteraad' if raad else re.sub(r'\s*\(.*?\)','',org).strip(),nr,tit.strip()))
+    return uit
+def ibabs():
+    I=[]
+    for soort,naam in SOORT.items():
+        p=os.path.join(WERK,'ibabs',f'items_{soort}.jsonl')
+        if not os.path.exists(p): continue
+        for l in open(p,encoding='utf8'):
+            d=json.loads(l); D=d.get('detail') or {}; L=d.get('lijst') or {}
+            m=momenten(D.get('Agendapunt',''))
+            if m: I.append({'id':d['id'],'soort':naam,'titel':D.get('Titel') or L.get('title',''),'m':m,'uitslag':L.get('uitslag') or D.get('Uitslag') or '',
+                            'partij':L.get('partij') or D.get('Partij') or ''})
+    return I
+STOP={'over','debat','raad','voor','naar','door','met','het','van','de','een','raadsvoorstel','collegebrief','bespreking','betrekken','bij','aangevraagd'}
+def woordset(t): return {w for w in re.findall(r'[a-z0-9]{4,}',fold(t))}-STOP
+def spoor(V,a,I,VERG,GEDAAN):
+    """Stukken bij dit agendapunt (moties met uitslag, voorstellen, brieven) en alle andere momenten waarop die stukken op de agenda stonden."""
+    org=orgnorm(V['naam']); ws=woordset(a.get('titel_off',''))
+    raad=V['raad'] if 'raad' in V else V['naam']=='Gemeenteraad'
+    # raad: agendapuntnummers kloppen met iBabs; commissies hebben in de debatindex soms grovere nummers, dan op titel
+    def hier(mm): return mm[0]==V['datum'] and orgnorm(mm[1])==org and (mm[2]==a['nr'] or (not raad and ws and len(ws&woordset(mm[3]))/len(ws)>=.5))
+    stukken=[x for x in I if any(hier(mm) for mm in x['m'])]
+    mo=[[x['soort'],x['titel'],x['partij'],x['uitslag'],x['id']] for x in stukken if x['soort'] in ('Motie','Amendement')]
+    st=[[x['soort'],x['titel'],x['id']] for x in stukken if x['soort'] not in ('Motie','Amendement','Toezegging')]
+    tl={}
+    for x in stukken:
+        if x['soort'] in ('Motie','Amendement','Toezegging'): continue
+        for mm in x['m']:
+            k=(mm[0],orgnorm(mm[1]),mm[2]); 
+            if k in tl: continue
+            ag=VERG.get((mm[0],orgnorm(mm[1])))
+            tl[k]=[mm[0],mm[1],mm[2],mm[3],(ag or '')[:8] if (ag or '')[:8] in GEDAAN else '',ag or '',1 if hier(mm) else 0]
+    # subpunten ('2.04.01 Betrekken bij …') vallen onder hun hoofdpunt op dezelfde dag
+    tl=sorted(x for x in tl.values() if not any(y is not x and y[0]==x[0] and y[1]==x[1] and x[2].startswith(y[2]+'.') for y in tl.values()))
+    return {'mo':mo,'st':st[:12],'tl':tl if len(tl)>1 else []}
 def indexen():
-    Z=[];K={}
+    Z=[];K={};S={}
+    from ontwerp_data import zload
+    m=zload(os.path.join(DOCS,'data','debat','meta.zst'))
+    VERG={(v[0],orgnorm(v[2])):v[3] for v in m['verg'] if v[3]}
+    GEDAAN={os.path.basename(p)[:8] for p in glob.glob(os.path.join(VD,'*.json'))}
+    I=ibabs()
     for p in sorted(glob.glob(os.path.join(VD,'*.json'))):
         k=os.path.basename(p)[:-5]
         if len(k)!=8: continue
@@ -84,10 +135,14 @@ def indexen():
             if not (a.get('wat') or '').strip(): continue
             tekst=' '.join([a.get('titel_off',''),a.get('wat',''),a.get('uitkomst','')]+[x.get('wie','')+' '+x.get('punt','') for f in ('fracties','college') for x in a.get(f,[])])
             Z.append([k,a['nr'],a['titel'],v['datum'],v['naam'],a.get('wat',''),tekst])
+            sp=spoor(v,a,I,VERG,GEDAAN)
+            if sp['mo'] or sp['st'] or sp['tl']: S[k+'|'+a['nr']]=sp
             for d in a.get('dossiers',[]):
                 K.setdefault(d['slug'],[]).append([k,a['nr'],a['titel'],v['datum'],v['naam']])
     for L in K.values(): L.sort(key=lambda x:x[3],reverse=True)
     json.dump(Z,open(os.path.join(VD,'zoek.json'),'w',encoding='utf8'),ensure_ascii=False,separators=(',',':'))
     json.dump(K,open(os.path.join(VD,'koppel.json'),'w',encoding='utf8'),ensure_ascii=False,separators=(',',':'))
+    json.dump(S,open(os.path.join(VD,'spoor.json'),'w',encoding='utf8'),ensure_ascii=False,separators=(',',':'))
+    print('spoor.json',len(S),'agendapunten met stukken of tijdlijn')
     print('zoek.json',len(Z),'agendapunten; koppel.json',len(K),'dossiers')
 if __name__=='__main__': indexen()
