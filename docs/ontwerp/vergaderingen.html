@@ -14,13 +14,19 @@
 .vooruit{background:var(--wit);border-radius:var(--r);padding:18px 22px;margin-top:18px;border-top:5px solid var(--blauw,#0b5394)}
 .vooruit h2{margin:0 0 4px;font-size:20px}.vooruit details{border-top:1px solid var(--grijs2);padding:8px 0}.vooruit summary{cursor:pointer;font-weight:700}
 .vooruit summary .sub{font-weight:400}.vp{padding:6px 0 6px 14px;font-size:15px}.vp .e{font-size:13px;color:var(--sub)}.vp .ch a{font-size:12px;background:var(--groen-zacht);border-radius:999px;padding:1px 8px;margin-right:4px;text-decoration:none;color:var(--zwart)}
+.filt{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:18px 0 0}.filt button{border:1.5px solid var(--lijn);background:var(--wit);border-radius:999px;padding:6px 14px;font:400 14px var(--font);cursor:pointer;color:var(--zwart)}
+.filt button[aria-pressed=true]{background:var(--groen);border-color:var(--groen);color:#fff;font-weight:700}.filt select{font:14px var(--font);padding:5px;border-radius:6px}
+.wr{background:var(--wit);border-radius:var(--r);padding:12px 20px;margin-bottom:10px;border-left:5px solid var(--grijs2)}.wr summary{cursor:pointer;font-weight:700}.wr summary span{font-weight:400;color:var(--sub);font-size:14px}
+.wr ul{margin:8px 0 4px;padding-left:18px;font-size:15px;line-height:1.5}.wr li{margin:4px 0}.wr li i{color:var(--sub);font-style:normal}
 @media (max-width:600px){.vk{grid-template-columns:minmax(0,1fr)}}
 </style></head><body>
 <header class="balk"></header>
 <main class="pagina"><div class="kolom">
   <h1>Vergaderingen</h1>
-  <p class="intro" style="max-width:68ch">Wat er besproken is in de gemeenteraad en de raadscommissies, kort samengevat: in één minuut of uitgebreid, met per fractie wat ze zei en een link naar dat moment in de video.</p>
+  <p class="intro" style="max-width:68ch">Wat er besproken is in de gemeenteraad en de raadscommissies, kort samengevat: in één minuut of uitgebreid, met per fractie wat ze zei en een link naar dat moment in de video. Van de wijkraden de besluiten.</p>
   <section class="vooruit" id="vooruit" hidden><h2>Komende vergaderingen</h2><p class="sub" style="margin:0 0 8px;font-size:14px">Wat er op de agenda staat, met wanneer het eerder besproken is.</p><div id="vlijst"></div></section>
+  <div class="filt" role="group" aria-label="Soort vergadering"><button type="button" data-f="alles" aria-pressed="true">Alles</button><button type="button" data-f="raad" aria-pressed="false">Raad en commissies</button><button type="button" data-f="wijk" aria-pressed="false">Wijkraden</button>
+    <select id="fgeb" aria-label="Gebied" hidden><option value="">alle gebieden</option></select></div>
   <div id="lijst"><p class="leeg">Laden…</p></div>
 </div></main>
 <script src="ontwerp.js?v=23"></script>
@@ -35,10 +41,21 @@ fetch('verg/vooruit.json',{cache:'no-cache'}).then(r=>r.ok?r.json():null).then(d
       ${p.eerder.length?`<div class="e">Eerder: ${p.eerder.map(e=>{const t=`${+e[0].slice(8)} ${MAAND[+e[0].slice(5,7)-1]}${e[0].slice(0,4)!==v.datum.slice(0,4)?' '+e[0].slice(0,4):''} ${esc(e[1])}`;return e[4]?`<a href="vergadering.html?id=${e[4]}#ap-${encodeURIComponent(e[2])}">${t}</a> (samenvatting)`:e[5]?`<a href="https://gemeenteraad.rotterdam.nl/Agenda/Index/${e[5]}" target="_blank" rel="noopener">${t}</a>`:t;}).join(' · ')}</div>`:''}</div>`).join('')}
     <div class="vp"><a href="https://gemeenteraad.rotterdam.nl/Agenda/Index/${v.agendaId}" target="_blank" rel="noopener">Agenda en stukken in iBabs</a></div></details>`).join('');
   $('vooruit').hidden=false;});
-fetch('verg/index.json',{cache:'no-cache'}).then(r=>r.json()).then(L=>{
-  const W={};L.forEach(x=>(W[week(x.datum)]=W[week(x.datum)]||[]).push(x));
-  $('lijst').innerHTML=Object.keys(W).sort().reverse().map(w=>{const d=new Date(w+'T12:00'),e=new Date(d);e.setDate(d.getDate()+6);
-    return `<section class="week"><h2>Week van ${d.getDate()} ${MAAND[d.getMonth()]} t/m ${e.getDate()} ${MAAND[e.getMonth()]} ${e.getFullYear()}</h2>${W[w].sort((a,b)=>a.datum.localeCompare(b.datum)).map(x=>{const t=new Date(x.datum+'T12:00');
-      return `<a class="vk${x.raad?' raad':''}" href="vergadering.html?id=${x.id}"><div class="dag">${DAG[t.getDay()]}<span>${t.getDate()} ${MAAND[t.getMonth()]}</span></div><div><h3>${esc(x.naam)}</h3><p>${esc(x.kort)}</p><div class="verder">Lees in 1 minuut →</div></div></a>`;}).join('')}</section>`;}).join('')||'<p>Nog geen vergaderingen samengevat.</p>';
-});
+let F='alles',RV=[],WR=[];
+function teken(){const g=$('fgeb').value,W={},bak=w=>W[w]=W[w]||{r:[],w:[]};
+  if(F!=='wijk')RV.forEach(x=>bak(week(x.datum)).r.push(x));
+  if(F!=='raad')WR.filter(x=>!g||x.gebied.includes(g)).forEach(x=>bak(week(x.datum)).w.push(x));
+  $('fgeb').hidden=F==='raad';
+  $('lijst').innerHTML=Object.keys(W).sort().reverse().map(w=>{const d=new Date(w+'T12:00'),e=new Date(d);e.setDate(d.getDate()+6);const X=W[w];
+    const rv=X.r.sort((a,b)=>a.datum.localeCompare(b.datum)).map(x=>{const t=new Date(x.datum+'T12:00');
+      return `<a class="vk${x.raad?' raad':''}" href="vergadering.html?id=${x.id}"><div class="dag">${DAG[t.getDay()]}<span>${t.getDate()} ${MAAND[t.getMonth()]}</span></div><div><h3>${esc(x.naam)}</h3><p>${esc(x.kort)}</p><div class="verder">Lees in 1 minuut →</div></div></a>`;}).join('');
+    const wr=X.w.sort((a,b)=>a.datum.localeCompare(b.datum)).map(x=>{const t=new Date(x.datum+'T12:00');
+      return `<details class="wr"><summary>${esc(x.raad)} <span>· ${DAG[t.getDay()]} ${t.getDate()} ${MAAND[t.getMonth()]} · ${x.p.length} ${x.p.length===1?'besluit':'besluiten'}${x.gebied.length?' · '+esc(x.gebied.join(', ')):''}</span></summary>
+        <ul>${x.p.map(([ti,b])=>`<li><b>${esc(ti)}</b><br><i>${esc(b)}</i></li>`).join('')}${x.init.length?`<li><b>Bewonersinitiatieven</b><br><i>${esc(x.init.join(' · '))}</i></li>`:''}</ul>
+        <p class="sub" style="font-size:13px;margin:4px 0">Uit de besluitenlijst van de wijkraad, namen van bewoners weggelaten.${x.agendaId?` <a href="https://wijkraad.rotterdam.nl/Agenda/Index/${x.agendaId}" target="_blank" rel="noopener">Agenda en stukken</a>`:''}</p></details>`;}).join('');
+    return `<section class="week"><h2>Week van ${d.getDate()} ${MAAND[d.getMonth()]} t/m ${e.getDate()} ${MAAND[e.getMonth()]} ${e.getFullYear()}</h2>${rv}${wr}</section>`;}).join('')||'<p>Geen vergaderingen gevonden.</p>';}
+document.querySelectorAll('.filt button').forEach(b=>b.onclick=()=>{F=b.dataset.f;document.querySelectorAll('.filt button').forEach(x=>x.setAttribute('aria-pressed',x===b));teken();});
+$('fgeb').onchange=teken;
+Promise.all([fetch('verg/index.json',{cache:'no-cache'}).then(r=>r.json()),fetch('verg/wijkraden.json').then(r=>r.ok?r.json():[]).catch(()=>[])]).then(([L,W])=>{RV=L;WR=W;
+  [...new Set(W.flatMap(x=>x.gebied))].sort().forEach(g=>$('fgeb').insertAdjacentHTML('beforeend',`<option>${esc(g)}</option>`));teken();});
 </script></body></html>

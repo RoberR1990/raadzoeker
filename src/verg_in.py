@@ -12,7 +12,8 @@ def tijd(s): s=max(0,int(s)); return f'{s//3600}:{s//60%60:02d}:{s%60:02d}'
 def kort(woorden,n):
     if len(woorden)<=n: return ' '.join(woorden)
     a=int(n*.7); return ' '.join(woorden[:a])+' […] '+' '.join(woorden[-(n-a):])
-def main(ag):
+def main(ag,maxap=None):
+    maxap=maxap or MAXAP
     D=os.path.join(DOCS,'data','debat'); m=zload(os.path.join(D,'meta.zst')); B=m['blok']
     vi=next(i for i,v in enumerate(m['verg']) if v[3]==ag); V=m['verg'][vi]
     aps=[i for i,a in enumerate(m['ap']) if a[0]==vi]; us=[i for i,u in enumerate(m['u']) if u[0] in aps]
@@ -29,12 +30,11 @@ def main(ag):
         bron['ap'][A[1]]={'titel':A[2],'dom':A[3],'geb':A[4],'u':[str(i) for i in ua]}
         uit.append(f'## {A[1]} {A[2]}' + ('' if tot>=MINAP else '  (procedureel, niet samenvatten)'))
         if tot<MINAP: continue
-        budget=MAXAP
         for i in sorted(ua,key=lambda i:tekst(i)[0][0]):
             U=m['u'][i]; segs=tekst(i); wie=m['spk'][U[1]] if U[1]>=0 else 'Onbekend'; par=m['par'][U[2]] if U[2]>=0 else ''
             if wie.lower().startswith('inspreker'): wie='Inspreker'   # privacy: geen namen van insprekers
             t=AANLOOP.sub('',' '.join(s for _,s in segs)); w=t.split()
-            n=max(60,int(MAXAP*U[3]/max(1,tot)))
+            n=max(50,int(maxap*U[3]/max(1,tot)))
             uit.append(f'#U{i} [{tijd(segs[0][0])}] {wie}{" ("+par+")" if par else ""}: {kort(w,n)}')
             bron['u'][str(i)]={'wie':wie,'par':par,'segs':segs}
         uit.append('')
@@ -42,4 +42,5 @@ def main(ag):
     open(os.path.join(WERK,'verg',f'in_{k}.txt'),'w',encoding='utf8').write('\n'.join(uit))
     json.dump(bron,open(os.path.join(WERK,'verg',f'bron_{k}.json'),'w',encoding='utf8'),ensure_ascii=False)
     print(k,len('\n'.join(uit).split()),'woorden in het pakket')
-if __name__=='__main__': main(sys.argv[1])
+# --zuinig: hooguit 2.200 woorden per agendapunt (terugwerkend samenvatten; ca. 40% minder invoer)
+if __name__=='__main__': main(sys.argv[1],2200 if '--zuinig' in sys.argv else None)
