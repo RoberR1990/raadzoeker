@@ -39,10 +39,10 @@ const st=document.createElement('style');st.textContent=css;document.head.append
 /* ---------- de stappen ---------- */
 const KOP=[
   {s:'.kopzoek, #tabzoek',alt:'#zf',t:'Zoeken',x:'Typ een woord, onderwerp of wijk in het zoekveld (op een telefoon: tik op Zoek). Je krijgt alles wat er in de raad en de commissies is gezegd en geschreven, met een knop naar het moment in de video.'},
-  {s:'header nav a[href="domeinen.html"], .tabbalk a[href="domeinen.html"]',t:'Dossiers',x:'Dossiers per beleidsveld en onderwerp: wat er is gezegd, besloten en beloofd, en wat ervan terechtkwam.'},
-  {s:'header nav a[href="wijk.html"], .tabbalk a[href="wijk.html"]',t:'Gebieden',x:'Kies een gebied of wijk: waar praat de raad over, wat vraagt de wijkraad, en een paar cijfers.'},
-  {s:'header nav a[href="vergaderingen.html"], .tabbalk a[href="vergaderingen.html"]',t:'Vergaderingen',x:'Wat er in de raad en de commissies is besproken, samengevat in één minuut of uitgebreid, kort na de vergadering.'},
-  {s:'header nav a[href="lab.html"]',t:'Inzichten',x:'Grafieken over wat de raad doet, de woordwolk, Raad Wrapped en de Verkenner: alles als één web van begrippen.'},
+  {s:'.menupaneel a[href="domeinen.html"], .tabbalk a[href="domeinen.html"]',t:'Dossiers',x:'Dossiers per beleidsveld en onderwerp: wat er is gezegd, besloten en beloofd, en wat ervan terechtkwam.'},
+  {s:'.menupaneel a[href="wijk.html"], .tabbalk a[href="wijk.html"]',t:'Gebieden',x:'Kies een gebied of wijk: waar praat de raad over, wat vraagt de wijkraad, en een paar cijfers.'},
+  {s:'.menupaneel a[href="vergaderingen.html"], .tabbalk a[href="vergaderingen.html"]',t:'Vergaderingen',x:'Wat er in de raad en de commissies is besproken, samengevat in één minuut of uitgebreid, kort na de vergadering.'},
+  {s:'.menupaneel a[href="lab.html"]',t:'Inzichten',x:'Grafieken over wat de raad doet, de woordwolk, Raad Wrapped en de Verkenner: alles als één web van begrippen.'},
   {s:'#tabmeer',t:'Meer',x:'Onder Meer vind je Inzichten (met de Verkenner), Volgen, Over, Hulp en Wat is nieuw.'},
   {s:'#bijgewerkt',t:'Wat is er nieuw',x:'Het klokje laat zien hoe vers de gegevens zijn. De site werkt zichzelf elke paar uur bij; klik voor wat er de afgelopen dagen bij kwam.'},
   {s:'.rzt-hulp',t:'Hulp nodig?',x:'Via dit vraagteken start je deze uitleg opnieuw, per pagina, en vind je de veelgestelde vragen en een woordenlijst.'},
@@ -204,9 +204,9 @@ function balkje(){
   document.body.appendChild(b);setTimeout(()=>{if(b.isConnected)weg();},14000);
 }
 function hulpknop(){
-  const nav=document.querySelector('header .kopknoppen')||document.querySelector('header .rechts');if(!nav||nav.querySelector('.rzt-hulp'))return;
+  const nav=document.querySelector('header .kopknoppen');if(!nav||nav.querySelector('.rzt-hulp'))return;
   const k=Object.assign(document.createElement('button'),{type:'button',className:'rzt-hulp',textContent:'?',title:'Hulp en uitleg'});k.setAttribute('aria-label','Hulp en uitleg');k.setAttribute('aria-haspopup','menu');
-  nav.insertBefore(k,nav.querySelector('.menuknop'));
+  nav.appendChild(k);
   k.onclick=e=>{e.stopPropagation();const oud=document.querySelector('.rzt-menu');if(oud){oud.remove();return;}
     const m=Object.assign(document.createElement('div'),{className:'rzt-menu'});m.setAttribute('role','menu');
     m.innerHTML=`${pagina().length?`<button type="button" data-a="p">Uitleg van ${NAAM[PAG]||'deze pagina'}</button>`:''}<button type="button" data-a="s">Rondleiding door de site</button><a href="hulp.html#faq">Veelgestelde vragen</a><a href="hulp.html#woorden">Wat betekent… (woordenlijst)</a><button type="button" data-a="f">Fout melden</button><a href="hulp.html#contact">Vraag stellen</a>`;

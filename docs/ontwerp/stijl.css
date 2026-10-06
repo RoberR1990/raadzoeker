@@ -29,7 +29,7 @@ p{margin:0}
 .num{font-variant-numeric:tabular-nums}
 .sub{color:var(--sub);font-size:14px}
 
-/* kop: logo = home, hoofdmenu links, Verkenner/Inzichten/Over rechts; onder 1100px een Menu-knop met paneel */
+/* kop: logo = home, zoekveld, hoofdmenu; onder 1100px slanke kop met tabbalk onderin (zie 'kop' verderop) */
 .balk{background:var(--groen);color:#fff;position:relative}
 .balk .in{max-width:1280px;margin:0 auto;padding:8px 24px;display:flex;align-items:center;gap:16px}
 .merk{display:flex;align-items:center;gap:10px;color:#fff;text-decoration:none;flex:none}
@@ -43,24 +43,9 @@ p{margin:0}
 .balk nav a{color:#fff;text-decoration:none;padding:10px 10px;border-radius:999px;font-size:16px;min-height:44px;display:inline-flex;align-items:center;white-space:nowrap}
 .balk nav a:hover{text-decoration:underline}
 .balk nav a.on{background:#fff;color:#000}
-.balk nav.rechts{margin-left:auto}
-.balk nav a.bijgewerkt{font-size:13px;padding:4px 8px;min-height:44px;gap:5px;margin-left:4px}
-.balk .bijgewerkt .kopvol{display:none}
 .kopknoppen{display:flex;align-items:center;gap:6px;flex:none}
-.menuknop{display:none;font:700 16px var(--font);color:#fff;background:transparent;border:2px solid #fff;border-radius:999px;padding:0 18px;min-height:44px;cursor:pointer}
 .balk :focus-visible{outline:3px solid #fff;box-shadow:0 0 0 6px #000;outline-offset:2px}
 .balk nav a.on:focus-visible{outline-color:#000;box-shadow:0 0 0 6px #fff}
-@media (max-width:1099.98px){
-  .menuknop{display:inline-flex;align-items:center}
-  .menupaneel{display:none;position:absolute;left:0;right:0;top:100%;z-index:50;flex-direction:column;align-items:stretch;gap:0;background:var(--groen);padding:8px 16px 16px;border-top:1px solid rgba(255,255,255,.5);box-shadow:0 12px 24px rgba(0,0,0,.25)}
-  .balk.open .menupaneel{display:flex}
-  .balk nav{flex-direction:column;align-items:stretch;gap:0}
-  .balk nav a{min-height:48px;padding:12px 12px;font-size:17px;border-radius:8px}
-  .balk nav.rechts{margin:8px 0 0;padding-top:8px;border-top:1px solid rgba(255,255,255,.35)}
-  .balk nav a.bijgewerkt{font-size:14px;margin:4px 0 0}.balk .bijgewerkt .kopvol{display:inline}
-  .merk{margin-right:auto}
-  .merk small{display:block}
-}
 @media (max-width:700px){.balk .in{padding:8px 16px}.merk img{height:36px}.merk b{font-size:20px}}
 .tag{display:inline-block;font-size:12px;border:1px solid currentColor;border-radius:4px;padding:1px 5px;margin-left:6px}
 .pagina{max-width:1180px;margin:0 auto;padding:40px 24px 64px}
@@ -158,7 +143,7 @@ section.deel h2{margin:0 0 12px}
 #bub a{color:var(--wit)}#bub .b{display:block;margin-top:6px;font-size:13px;opacity:.85}#bub[hidden]{display:none}
 @media (max-width:900px){#bub{position:fixed;left:16px!important;right:16px;bottom:16px;top:auto!important;width:auto}}
 
-/* kopvariant B (standaard): zoekveld in de kop, 4 hoofditems, Over/Hulp/Verkenner in menu en voettekst */
+/* kop: zoekveld in de kop, 4 hoofditems, Over/Hulp/Verkenner in menu en voettekst */
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .keuze.geen li[aria-selected="true"]:not(:hover){background:none}
 .balk.kb .kopzoek{position:relative;flex:1 1 200px;max-width:420px;min-width:0}
@@ -174,13 +159,13 @@ section.deel h2{margin:0 0 12px}
 .balk.kb.zonderzoek .menupaneel{margin-left:auto}.balk.kb.zonderzoek .kopknoppen{margin-left:0}
 .balk.kb .kopklok{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;color:#fff;border-radius:50%}
 .balk.kb .kopklok:hover{background:rgba(255,255,255,.18)}
-.balk.kb nav.extra{display:none}
 @media (max-width:1099.98px){
   /* variant B op telefoon en tablet: slanke kop, tabbalk onderaan, zoeklaag en Meer-sheet */
   .balk.kb .in{padding:6px 16px}
   .balk.kb .merk img{height:32px}.balk.kb .merk b{font-size:19px}
   .balk.kb .kopzoek,.balk.kb .menupaneel,.balk.kb .kopklok{display:none}
   .balk.kb .kopknoppen{margin-left:0;gap:4px}
+  .balk .merk{margin-right:auto}
   html.kop-b .rzt-hulp{position:static;width:40px;height:40px;margin-left:0;background:transparent;box-shadow:none;border-color:#fff;color:#fff;z-index:auto}
   html.kop-b .rzt-hulp:hover{background:#fff;color:#00811F}
   html.kop-b body{padding-bottom:calc(64px + env(safe-area-inset-bottom))}

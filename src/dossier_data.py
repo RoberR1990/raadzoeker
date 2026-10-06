@@ -132,7 +132,7 @@ def main():
             if d==ds: gebtel.update(gg)
         for a in aps: gebtel.update(a['geb'])
         ws=[x for x in wst if x[1]==ds]
-        sl=slug(dn); obj=bouw(dn,'Domeinen','domein',[['Domeinen','domeinen.html']],rs,aps,gebtel,ws)
+        sl=slug(dn); obj=bouw(dn,'Domeinen','domein',[['Dossiers','domeinen.html']],rs,aps,gebtel,ws)
         obj['gebieden']=dict(gebtel); obj['domein']=sl; obj['code']=ds; obj['tsum']=THS.get(HOOFDTHEMA[ds]); obj['tsum_thema']=HOOFDTHEMA[ds]; obj['ai']=os.path.exists(os.path.join(DOCS,'ontwerp','samenvattingen',sl+'.json')); schrijf(sl+'.json',obj)
         index.append({'slug':sl,'naam':dn,'groep':'Domein','soort':'domein','domein':sl,'ai':obj['ai']})
         kr={}
@@ -141,7 +141,7 @@ def main():
             n=len(rg)+len(ag)+len(wg); kr[gn]=n
             if n<5: continue
             ks=sl+'--'+slug(gn)
-            o=bouw(f'{dn} in {gn}',dn,'kruising',[['Domeinen','domeinen.html'],[dn,'#'+sl]],rg,ag,{gn:1},wg); o['gebied']=gn; o['domein']=sl
+            o=bouw(f'{dn} in {gn}',dn,'kruising',[['Dossiers','domeinen.html'],[dn,'#'+sl]],rg,ag,{gn:1},wg); o['gebied']=gn; o['domein']=sl
             schrijf(ks+'.json',o); index.append({'slug':ks,'naam':f'{dn} in {gn}','groep':dn,'soort':'kruising','domein':sl,'gebied':gn})
         m=obj['moties']; t=obj['toez']
         overzicht['domeinen'].append({'slug':sl,'naam':dn,'open_moties':m['open'],'open_toez':t['open'],'te_laat':m['te_laat']+t['te_laat'],
@@ -161,19 +161,19 @@ def main():
     ond=json.load(open(os.path.join(DOCS,'ontwerp','onderwerpen.json'),encoding='utf8'))['onderwerpen']
     dos=json.load(open(os.path.join(DOCS,'ontwerp','dossiers.json'),encoding='utf8'))['dossiers']
     pk=next(x for x in dos if x['naam']=='Parkeren')
-    pk=dict(pk,soort='onderwerp',groep=DN['mobiliteit'],pad=[['Domeinen','domeinen.html'],[DN['mobiliteit'],'#'+slug(DN['mobiliteit'])]],stand=STAND)
+    pk=dict(pk,soort='onderwerp',groep=DN['mobiliteit'],pad=[['Dossiers','domeinen.html'],[DN['mobiliteit'],'#'+slug(DN['mobiliteit'])]],stand=STAND)
     pk['ai']=os.path.exists(os.path.join(DOCS,'ontwerp','samenvattingen','parkeren.json'))
     schrijf('parkeren.json',pk); index.append({'slug':'parkeren','naam':'Parkeren','groep':DN['mobiliteit'],'soort':'onderwerp','domein':slug(DN['mobiliteit']),'sub':pk['sub'],'termen':pk['termen'],'ai':pk['ai']})
     for o in ond:
         ds=TH.get(o['groep']);
         if not ds: print('geen domein voor',o['naam'],o['groep']); continue
-        pad=[['Domeinen','domeinen.html'],[DN[ds],'#'+slug(DN[ds])]]+([['Parkeren','#parkeren']] if o['groep']=='Parkeren' else [])
+        pad=[['Dossiers','domeinen.html'],[DN[ds],'#'+slug(DN[ds])]]+([['Parkeren','#parkeren']] if o['groep']=='Parkeren' else [])
         sl=slug(o['naam']); o=dict(o,tsum=o.get('tsum'),tsum_thema=o['naam'] if o.get('tsum') else None)   # alleen een samenvatting die over dit onderwerp zelf gaat, niet die van het bredere thema (THS): dan toont de pagina 'nog geen samenvatting'; x=dict(o,groep='Parkeren' if o['groep']=='Parkeren' else DN[ds],pad=pad,stand=STAND,ai=os.path.exists(os.path.join(DOCS,'ontwerp','samenvattingen',sl+'.json')))
         schrijf(sl+'.json',x); index.append({'slug':sl,'naam':o['naam'],'groep':x['groep'],'soort':'onderwerp','domein':slug(DN[ds]),'ai':x['ai'],'sub':[],'termen':o['termen']})
     # thema's dwars door de organisatie (uit de 41 thema's, met hun korte samenvatting): eigen dossiers onder Domeinen
     for o in json.load(open(os.path.join(DOCS,'ontwerp','onderwerpen.json'),encoding='utf8')).get('dwars',[]):
         sl=slug(o['naam'])
-        x=dict(o,soort='thema',groep='Dwars door de organisatie',pad=[['Domeinen','domeinen.html'],['Dwars door de organisatie','domeinen.html#dwars']],stand=STAND,tsum_thema=o['naam'],
+        x=dict(o,soort='thema',groep='Dwars door de organisatie',pad=[['Dossiers','domeinen.html'],['Dwars door de organisatie','domeinen.html#dwars']],stand=STAND,tsum_thema=o['naam'],
                ai=os.path.exists(os.path.join(DOCS,'ontwerp','samenvattingen',sl+'.json')))
         schrijf(sl+'.json',x); index.append({'slug':sl,'naam':o['naam'],'groep':'Dwars door de organisatie','soort':'thema','ai':x['ai'],'sub':[s[0] for s in o.get('sub',[])] if o.get('sub') and isinstance(o['sub'][0],list) else (o.get('sub') or []),'termen':o['termen'],
                       'kern':((o.get('tsum') or {}).get('kern') or '')[:220]})
