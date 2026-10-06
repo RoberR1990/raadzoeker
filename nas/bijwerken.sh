@@ -16,7 +16,9 @@ fout(){
   [ -n "$NTFY" ] && curl -s -d "Raadzoeker: $MODUS mislukt bij '$STAP'. Zie $LOG" "https://ntfy.sh/$NTFY" >/dev/null
   git -C /repo checkout -- docs >/dev/null 2>&1
 }
-stap "git pull" git pull --ff-only
+# altijd beginnen vanaf de laatste versie op GitHub; een eerdere, niet-gepushte run wordt weggegooid (alle data wordt opnieuw gemaakt)
+stap "git fetch" git fetch -q origin
+stap "git reset" git reset -q --hard origin/main
 stap "iBabs-lijsten" python src/ibabs_lijsten.py
 if [ "$MODUS" = "nacht" ]; then
   stap "iBabs-stukken" python src/ibabs_items.py toezeggingen moties amendementen raadsvoorstellen initiatiefvoorstellen brieven wijkraadadviezen --ververs-open --minuten 90
@@ -46,8 +48,9 @@ printf '{"laatste":"%s","modus":"%s","ok":true,"stand":"%s"}\n' "$(date -Isecond
 git add -A docs
 if git diff --cached --quiet; then echo "niets veranderd" >>"$LOG"; exit 0; fi
 stap "git commit" git commit -q -m "Automatisch bijgewerkt ($MODUS, $(date '+%d-%m-%Y %H:%M'))"
-stap "git pull --rebase" git pull --rebase -q   # er kan intussen iets anders gepusht zijn
-stap "git push" git push -q
+# er kan intussen iets anders gepusht zijn: tot 3 keer bijwerken en opnieuw proberen
+duw(){ for i in 1 2 3; do git pull --rebase -q && git push -q && return 0; sleep 20; done; return 1; }
+stap "git push" duw
 # meldingen voor wie onderwerpen volgt (mag mislukken zonder de run te laten falen)
 python src/push_stuur.py >>"$LOG" 2>&1 || echo "push mislukt" >>"$LOG"
 find /werk/logs -name '*.log' -mtime +30 -delete
