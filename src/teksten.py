@@ -45,8 +45,19 @@ def jl(p):
         for l in open(p,encoding='utf8'):
             try: yield json.loads(l)
             except Exception: pass
+def bronnen_docs():
+    """Terugval zonder werkmap (bijv. in een cloudsessie): de teksten uit docs/data/tekst (afgekapt, wijkraadteksten al gelakt)."""
+    D=zstandard.ZstdDecompressor(); z=lambda p:json.loads(D.decompress(open(p,'rb').read(),max_output_size=10**9))
+    M=z(os.path.join(OUT,'meta.zst')); SO=M['soorten']; blok=None; nb=-1
+    for i,x in enumerate(M['d']):
+        if not x: continue
+        if i//M['blok']!=nb: nb=i//M['blok']; blok=z(os.path.join(OUT,'b',f'{nb:03d}.zst'))
+        so,datum,titel,wie,url,_=x; so=SO[so]; t=blok[i%M['blok']]
+        if so=='Schriftelijke vragen': t=re.sub(r'\n+ANTWOORD VAN HET COLLEGE','\n\nANTWOORD VAN HET COLLEGE',t,count=1)   # schoon() haalde de witregel weg
+        yield ('st:' if so in('Motie','Amendement','Toezegging') else 'tx:')+str(i),so,datum,titel,wie,url,t
 def bronnen():
     I=os.path.join(WERK,'ibabs')
+    if not os.path.isdir(I): yield from bronnen_docs(); return
     # raadsvoorstellen: hoofddocument
     rv={d['id']:d['tekst'] for d in jl(os.path.join(I,'rv_tekst.jsonl'))}
     for d in jl(os.path.join(I,'items_raadsvoorstellen.jsonl')):
