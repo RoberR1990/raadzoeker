@@ -63,9 +63,9 @@ table.tafel .bar i{display:block;height:8px;background:var(--groen);border-radiu
   <div id="dossier"><p class="leeg" style="margin-top:24px">Laden…</p></div>
   <p class="voet">Gegevens: notulen en ondertiteling van de gemeenteraad, de registratie in iBabs (moties, toezeggingen, schriftelijke vragen, brieven), de Rekenkamer Rotterdam en de wijkraden, stand 2 oktober 2026. Domeinen volgen de indeling van de griffie (beleidsveld in iBabs), aangevuld met een woordmodel; een onderwerp is een vaste set zoekwoorden. Aantallen zijn een goede indicatie, geen exacte telling. Teksten met het label AI zijn automatisch gemaakt; elk punt heeft een letterlijk citaat dat een script woord voor woord met de bron heeft vergeleken. <a href="over.html">Meer over deze tool</a>.</p>
 </main>
-<script src="ontwerp.js?v=27"></script>
+<script src="ontwerp.js?v=28"></script>
 <script src="ai.js?v=1"></script>
-<script src="keten.js?v=7"></script>
+<script src="keten.js?v=8"></script>
 <script>
 kop('domeinen');
 let DATA={stand:STAND},ALLE=[],KAART=null,CUR=null,SOORT='mot',FILTER='open';
@@ -231,7 +231,7 @@ async function toon(d){
   if(!isKr&&d.soort!=='gebied')side+=`<section class="vlak"><h3 style="margin:0 0 8px">In welke gebieden?</h3><div class="mini" id="mini"></div><p class="sub" id="minitxt" style="margin-top:8px"></p></section>`;
   const ver=d.verdieping.ver.filter(v=>ALLE.some(x=>x.slug===slug(v[0])));
   if(ver.length)side+=`<section class="vlak"><h3 style="margin:0 0 8px">Hangt samen met</h3><div class="verwant">${ver.map(([nm,p,l])=>`<a href="#${slug(nm)}" title="In ${p}% van de spreekbeurten hierover gaat het ook over ${esc(nm.toLowerCase())}">${esc(nm)} <span class="sub num">${String(l).replace('.',',')}×</span></a>`).join('')}</div></section>`;
-  const acties=`<div class="kopacties"><a class="knop" href="briefing.html#${d.slug}">Maak een briefing (A4, pdf of Word)</a><span class="sub" id="deelrij"></span>${isKr||d.soort==='gebied'?`<a class="sub" href="wijk.html#${slug(d.gebied)}">Naar de gebiedspagina met kaart en cijfers</a>`:''}</div>`;
+  const acties=`<div class="kopacties">${isKr?'':volgKnop(d.slug,d.naam)}<a class="knop" href="briefing.html#${d.slug}">Maak een briefing (A4, pdf of Word)</a><span class="sub" id="deelrij"></span>${isKr||d.soort==='gebied'?`<a class="sub" href="wijk.html#${slug(d.gebied)}">Naar de gebiedspagina met kaart en cijfers</a>`:''}</div>`;
   $('dossier').innerHTML=`<div class="crumb">${crumb}</div><div class="kop"><h1>${esc(d.naam)}</h1>${acties}${verwant}</div><div class="C"><main>${main}</main><aside>${side}</aside></div>`;
   // mini-kaart
   const Wk=d.verdieping.wijk,wm=Math.max(.1,...Object.values(Wk));if($('mini')){

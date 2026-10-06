@@ -67,7 +67,7 @@
   <div id="wijk"><p class="leeg" style="margin-top:24px">Laden…</p></div>
   <p class="voet">Gegevens: notulen en ondertiteling van de gemeenteraad; iBabs (moties, toezeggingen, wijkraden); wijkraad.rotterdam.nl; CBS Kerncijfers wijken en buurten 2022–2025; Wijkprofiel Rotterdam (cijfers: gemeente Rotterdam, OBI, Wijkprofiel 2014–2026); politie, geregistreerde misdrijven per buurt (via CBS); officiële bekendmakingen (Gemeenteblad). Cijfers uit verschillende bronnen staan ter informatie naast elkaar; ze zeggen niets over oorzaak of verband. <a href="over.html">Meer over deze tool</a>.</p>
 </main>
-<script src="ontwerp.js?v=27"></script>
+<script src="ontwerp.js?v=28"></script>
 <script src="ai.js?v=1"></script>
 <script>
 kop('gebieden');
@@ -200,7 +200,7 @@ function toon(d){
   document.querySelectorAll('#kaart path.g').forEach(p=>p.classList.toggle('sel',p.dataset.n===d.naam));
   const m=d.moties,t=d.toez,ts=d.tsum,j=d.jaren.length-1,ch=d.trend[j-1]?Math.round((d.trend[j]-d.trend[j-1])/d.trend[j-1]*100):0;
   $('wijk').innerHTML=`
-  <div class="kop"><div><div class="sub">Gebied</div><h1>${esc(d.naam)}</h1>${d.sub.length?`<div class="sub" style="margin-top:8px">Met o.a. ${esc(d.termen.split('|').map(s=>s.trim().replace(/"/g,'')).filter(s=>s.toLowerCase()!==d.naam.toLowerCase()).slice(0,6).join(', '))}</div>`:''}</div>
+  <div class="kop"><div><div class="sub">Gebied</div><h1>${esc(d.naam)}</h1><div style="margin:6px 0 0">${volgKnop(slug(d.naam),d.naam)}</div>${d.sub.length?`<div class="sub" style="margin-top:8px">Met o.a. ${esc(d.termen.split('|').map(s=>s.trim().replace(/"/g,'')).filter(s=>s.toLowerCase()!==d.naam.toLowerCase()).slice(0,6).join(', '))}</div>`:''}</div>
     <div class="acties"><a class="knop" href="briefing.html#${slug(d.naam)}">Maak een briefing (A4)</a><span class="sub" id="deelrij"></span><a class="sub" href="deel/${slug(d.naam)}.png" target="_blank" rel="noopener">Deelkaart als afbeelding</a></div></div>
   <div class="cijfers">
     <div class="cijfer"><span class="groot num">${nf(d.inw)}</span><span>inwoners</span><div class="sub">CBS, 2024</div></div>

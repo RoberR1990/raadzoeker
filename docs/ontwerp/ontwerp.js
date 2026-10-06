@@ -25,7 +25,7 @@ function kop(actief){
   fetch('../data/status.json',{cache:'no-store'}).then(r=>r.ok?r.json():null).then(st=>{if(!st||!st.laatste)return;const el=document.getElementById('bijgewerkt');if(!el)return;
     const d=new Date(st.laatste);el.textContent='bijgewerkt '+d.getDate()+' '+MND[d.getMonth()]+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');}).catch(()=>{});
   // rondleiding, hulpknop en welkomstvenster (tour.js)
-  if(!document.getElementById('rz-tour')){const t=document.createElement('script');t.id='rz-tour';t.src='tour.js?v=8';document.body.appendChild(t);const w=document.createElement('script');w.src='woorden.js?v=3';document.body.appendChild(w);const r=document.createElement('script');r.src='stad.js?v=3';document.body.appendChild(r);}
+  if(!document.getElementById('rz-tour')){const t=document.createElement('script');t.id='rz-tour';t.src='tour.js?v=8';document.body.appendChild(t);const w=document.createElement('script');w.src='woorden.js?v=3';document.body.appendChild(w);const r=document.createElement('script');r.src='stad.js?v=4';document.body.appendChild(r);}
   const ic=document.createElement('link');ic.rel='icon';ic.type='image/svg+xml';ic.href='logo.svg';document.head.appendChild(ic);
 }
 /* zoeken in onderwerpen of gebieden; kiezen roept kies(d) aan */
@@ -117,3 +117,45 @@ function rzFout(over){
 .rzf h2{margin:0 0 8px;font-size:21px}.rzf p{margin:0 0 10px;font-size:15px;line-height:1.5}.rzf label{font-weight:700;font-size:14px}.rzf textarea{width:100%;box-sizing:border-box;font:15px var(--font);padding:8px;border:1.5px solid var(--lijn);border-radius:6px;margin:4px 0 8px;background:var(--wit);color:var(--zwart)}
 .rzf-over{background:var(--grijs);border-radius:6px;padding:6px 10px;font-size:13px!important}.rzf-klein{font-size:12px!important;color:var(--sub)}
 .rzf-rij{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.rzf button{font:700 15px var(--font);border-radius:999px;padding:8px 18px;border:2px solid var(--groen);background:var(--groen);color:#fff;cursor:pointer}.rzf button.wit{background:var(--wit);color:var(--groen)}.rzf-st{font-size:13px;color:var(--sub)}`;document.head.appendChild(s);})();
+
+/* ---------- volgen: onderwerpen, domeinen en gebieden volgen (in je eigen browser), met optioneel pushmeldingen ---------- */
+const RZV={
+  pub:'BCQ5wiH7FYmjbMIOViN3DznTaCF-4ClUMhS7n1KqXt4fFbNWBp947WtCU_nhCw-SugxSNpFqvyI-t3C-9DVSBiY',
+  lijst(){try{return JSON.parse(localStorage.getItem('rz-volg')||'{}');}catch(e){return {};}},
+  bewaar(L){try{localStorage.setItem('rz-volg',JSON.stringify(L));}catch(e){}},
+  volgt(s){return !!this.lijst()[s];},
+  zet(s,naam){const L=this.lijst();L[s]={naam,gezien:new Date(Date.now()-14*864e5).toISOString().slice(0,10)};   // de laatste twee weken tellen als nieuw
+    this.bewaar(L);this.sync();},
+  weg(s){const L=this.lijst();delete L[s];this.bewaar(L);this.sync();},
+  gezien(s){const L=this.lijst();if(L[s]){L[s].gezien=new Date().toISOString().slice(0,10);this.bewaar(L);}},
+  data:null,
+  async nieuws(){if(!Object.keys(this.lijst()).length)return {};this.data=this.data||fetch('volg.json',{cache:'no-cache'}).then(r=>r.ok?r.json():{d:{}}).catch(()=>({d:{}}));
+    const D=(await this.data).d||{},L=this.lijst(),uit={};for(const s in L)uit[s]=((D[s]||{}).i||[]).filter(i=>i[0]>L[s].gezien);return uit;},
+  pushKan(){return 'serviceWorker' in navigator&&'PushManager' in window&&'Notification' in window;},
+  async sub(){if(!this.pushKan())return null;const r=await navigator.serviceWorker.getRegistration('/');return r?r.pushManager.getSubscription():null;},
+  async pushAan(){
+    if(!this.pushKan())throw new Error('kan niet');
+    const reg=await navigator.serviceWorker.register('/sw.js',{scope:'/'});await navigator.serviceWorker.ready;
+    if(await Notification.requestPermission()!=='granted')throw new Error('geweigerd');
+    const k=Uint8Array.from(atob(this.pub.replace(/-/g,'+').replace(/_/g,'/')),c=>c.charCodeAt(0));
+    const s=(await reg.pushManager.getSubscription())||await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:k});
+    await this.sync(s);return true;},
+  async pushUit(){const s=await this.sub();if(!s)return;await fetch('/api/volg',{method:'DELETE',headers:{'content-type':'application/json'},body:JSON.stringify({endpoint:s.endpoint})}).catch(()=>{});await s.unsubscribe();},
+  async sync(s){s=s||await this.sub().catch(()=>null);if(!s)return;
+    await fetch('/api/volg',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({endpoint:s.endpoint,onderwerpen:Object.keys(this.lijst())})}).catch(()=>{});}
+};
+window.RZV=RZV;
+// knop 'Volg' (in de kop van een dossier- of gebiedspagina)
+function volgKnop(slug,naam){return `<button type="button" class="knop wit volgknop" data-volg="${esc(slug)}" data-naam="${esc(naam)}" aria-pressed="${RZV.volgt(slug)}">${RZV.volgt(slug)?'★ Volgend':'☆ Volg'}</button>`;}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-volg]');if(!b)return;const s=b.dataset.volg;
+  if(RZV.volgt(s)){RZV.weg(s);}else{RZV.zet(s,b.dataset.naam);window.rzToast&&rzToast('Je volgt nu '+b.dataset.naam+'. Nieuws zie je bij ★ bovenaan.');}
+  document.querySelectorAll(`[data-volg="${CSS.escape(s)}"]`).forEach(x=>{x.setAttribute('aria-pressed',RZV.volgt(s));x.textContent=RZV.volgt(s)?'★ Volgend':'☆ Volg';});volgBel();});
+// ster met aantal nieuwe items in de kop, alleen als je iets volgt
+async function volgBel(){const nav=document.querySelector('header .rechts');if(!nav)return;let a=nav.querySelector('.volgbel');
+  if(!Object.keys(RZV.lijst()).length){a&&a.remove();return;}
+  if(!a){a=document.createElement('a');a.className='volgbel';a.href='volg.html';a.title='Wat je volgt';a.innerHTML='★<span class="n"></span>';nav.insertBefore(a,nav.firstChild);}
+  const N=await RZV.nieuws(),n=Object.values(N).reduce((x,l)=>x+l.length,0);a.querySelector('.n').textContent=n?n:'';a.setAttribute('aria-label',n?`Wat je volgt: ${n} nieuw`:'Wat je volgt');}
+(()=>{const s=document.createElement('style');s.textContent=`.volgbel{position:relative;font-size:18px;text-decoration:none;color:var(--wit);padding:6px 10px}.volgbel .n:not(:empty){position:absolute;top:0;right:0;background:#E56E02;color:#fff;border-radius:999px;font-size:11px;font-weight:700;padding:1px 5px;line-height:1.3}
+.volgknop[aria-pressed=true]{background:var(--groen-zacht);border-color:var(--groen);color:var(--zwart)}`;document.head.appendChild(s);
+  const m=document.createElement('link');m.rel='manifest';m.href='/manifest.webmanifest';document.head.appendChild(m);
+  setTimeout(volgBel,300);})();
