@@ -38,23 +38,22 @@ const st=document.createElement('style');st.textContent=css;document.head.append
 
 /* ---------- de stappen ---------- */
 const KOP=[
-  {s:'header .merk',t:'Welkom bij raadzoeker',x:'Hier vind je wat de Rotterdamse gemeenteraad sinds 2018 zei, besloot en beloofde. Het logo brengt je altijd terug naar de startpagina.'},
-  {s:'header nav a[href="zoek.html"]',t:'Zoeken',x:'Zoek in alles wat er in de raad en de commissies is gezegd en geschreven. Bij debatten spring je direct naar het moment in de video.'},
-  {s:'header nav a[href="vergaderingen.html"]',t:'Vergaderingen',x:'Wat er in de raad en de commissies is besproken, samengevat in één minuut of uitgebreid, kort na de vergadering.'},
-  {s:'header nav a[href="domeinen.html"]',t:document.documentElement.classList.contains('kop-b')?'Dossiers':'Domeinen',x:'Dossiers per beleidsveld en onderwerp: wat er is gezegd, besloten en beloofd, en wat ervan terechtkwam.'},
-  {s:'header nav a[href="wijk.html"]',t:'Gebieden',x:'Kies een gebied of wijk: waar praat de raad over, wat vraagt de wijkraad, en een paar cijfers.'},
-  {s:'header nav a[href="lab.html"]',t:'Inzichten',x:'Grafieken over wat de raad doet, om te kopiëren in je eigen presentatie.'},
-  {s:'header nav a[href="verkenner.html"]',t:'Verkenner',x:'Alles als één web van begrippen. Om rond te dwalen en verbanden te ontdekken.'},
-  {s:'#bijgewerkt',t:'Altijd actueel',x:'Hier zie je hoe vers de gegevens zijn. De site werkt zichzelf elke paar uur bij.'},
+  {s:'.kopzoek, #tabzoek',alt:'#zf',t:'Zoeken',x:'Typ een woord, onderwerp of wijk in het zoekveld (op een telefoon: tik op Zoek). Je krijgt alles wat er in de raad en de commissies is gezegd en geschreven, met een knop naar het moment in de video.'},
+  {s:'header nav a[href="domeinen.html"], .tabbalk a[href="domeinen.html"]',t:'Dossiers',x:'Dossiers per beleidsveld en onderwerp: wat er is gezegd, besloten en beloofd, en wat ervan terechtkwam.'},
+  {s:'header nav a[href="wijk.html"], .tabbalk a[href="wijk.html"]',t:'Gebieden',x:'Kies een gebied of wijk: waar praat de raad over, wat vraagt de wijkraad, en een paar cijfers.'},
+  {s:'header nav a[href="vergaderingen.html"], .tabbalk a[href="vergaderingen.html"]',t:'Vergaderingen',x:'Wat er in de raad en de commissies is besproken, samengevat in één minuut of uitgebreid, kort na de vergadering.'},
+  {s:'header nav a[href="lab.html"]',t:'Inzichten',x:'Grafieken over wat de raad doet, de woordwolk, Raad Wrapped en de Verkenner: alles als één web van begrippen.'},
+  {s:'#tabmeer',t:'Meer',x:'Onder Meer vind je Inzichten (met de Verkenner), Volgen, Over, Hulp en Wat is nieuw.'},
+  {s:'#bijgewerkt',t:'Wat is er nieuw',x:'Het klokje laat zien hoe vers de gegevens zijn. De site werkt zichzelf elke paar uur bij; klik voor wat er de afgelopen dagen bij kwam.'},
   {s:'.rzt-hulp',t:'Hulp nodig?',x:'Via dit vraagteken start je deze uitleg opnieuw, per pagina, en vind je de veelgestelde vragen en een woordenlijst.'},
 ];
 const STAP={
   startpagina:[
     {s:'#zf',t:'Begin met zoeken',x:'Typ een onderwerp, wijk of woord. Je krijgt alles wat de raad erover zei, met de stukken erbij.',vb:['Probeer: parkeren',()=>location.href='zoek.html?q=parkeren']},
-    {s:'#wolk',t:'Waar praat de raad over?',x:'De grootste woorden kregen dit jaar de meeste aandacht. Klik op een woord voor het dossier.'},
-    {s:'#mat',t:'Domein × gebied',x:'Elke rij is een beleidsveld, elke kolom een gebied. Hoe donkerder, hoe meer er over die combinatie is gezegd en geschreven. Klik op een vakje.'},
-    {s:'#recent',t:'Net besloten',x:'De nieuwste besluiten, moties en toezeggingen, met een link naar de officiële stukken.'},
-    {s:'#belofte',t:'Beloftes',x:'Hoeveel moties en toezeggingen nog open staan of al zijn afgedaan.'},
+    {s:'#cit',t:'Een echt citaat',x:'Een zin uit de laatste raadsvergadering. Met de knop met het driehoekje kijk je dat moment terug, en met Ander citaat zie je wat een andere fractie zei.'},
+    {s:'.komt',t:'Komt eraan',x:'Wat er de komende weken op de agenda van de raad en de commissies staat.'},
+    {s:'#dossiers',t:'Dossiers in beweging',x:'De dossiers waar de afgelopen 30 dagen de meeste nieuwe punten bij kwamen. Klik op een titel voor het hele dossier.'},
+    {s:'#tegel',t:'Ontdek verbanden',x:'De Verkenner laat alles wat de raad zei zien als één web. Klik op Verras me voor een willekeurig begrip.'},
   ],
   zoek:[
     {s:'#zf',t:'Zoek in alles',x:'Alle woorden moeten voorkomen. Zet woorden tussen "aanhalingstekens" voor een exacte zin.',vb:['Laat een voorbeeld zien',()=>{const q=document.getElementById('q');if(q){q.value='tramlijn 4';q.form.requestSubmit?q.form.requestSubmit():q.form.submit();}}]},
@@ -76,7 +75,11 @@ const STAP={
     {s:'#deelrij',t:'Delen',x:'Deel de link via e-mail, Teams of WhatsApp. Wie de link opent, komt precies hier uit.'},
   ],
   wijk:[
-    {s:'#kaart',t:'Kies een gebied',x:'Klik op de kaart of kies uit de lijst.'},
+    {s:'#over #zoek',t:'Zoek je wijk',x:'Typ een wijk, straat of gebied. Een straat brengt je naar de wijk waar hij ligt.'},
+    {s:'#gk',t:'De 14 gebieden',x:'Per gebied het aantal inwoners, wat er openstaat en een paar wijken. Klik op een gebied voor alles wat de raad erover zei.'},
+    {s:'#mat',t:'Waar speelt wat?',x:'Rijen zijn domeinen, kolommen gebieden. Hoe donkerder, hoe vaker. Klik op een vakje voor dat domein in dat gebied.'},
+    {s:'#gkies',t:'Ander gebied',x:'Wissel hier direct naar een ander gebied.'},
+    {s:'#ank',t:'Op deze pagina',x:'Spring naar een onderdeel: samenvatting, moties, debatten, wijken, wijkraden.'},
     {s:'#ak',t:'In het kort',x:'Wat er in dit gebied speelt, als samenvatting met citaten. Wijs een zin aan voor de bron.'},
     {s:'#ow',t:'Waar praat de raad over?',x:'De onderwerpen per jaar als het over dit gebied gaat. Klik op een jaar of onderwerp.'},
     {s:'#wr',t:'De wijkraad',x:'Adviezen, wijkakkoorden en verslagen van de wijkraden in dit gebied.'},
@@ -110,7 +113,7 @@ const STAP={
   akkoord:[{s:'#kern',t:'Het coalitieakkoord',x:'De kern van het akkoord, samengevat. Wijs een zin aan voor de letterlijke tekst en de pagina.'},{s:'#dom',t:'Per domein',x:'Wat het akkoord per domein van plan is, met een link naar het dossier.'}],
   briefing:[{s:'#a4',t:'Je briefing',x:'Een A4 met het belangrijkste uit het dossier.'},{s:'#print',t:'Exporteren',x:'Bewaar als pdf of open in Word en pas hem aan.'}],
 };
-const NAAM={vergaderingen:'Vergaderingen',vergadering:'deze vergadering',startpagina:'de startpagina',zoek:'Zoeken',domeinen:'Domeinen',dossier:'dit dossier',wijk:'Gebieden',verkenner:'de Verkenner',lab:'Inzichten',ideeen:'Ideeën',akkoord:'het akkoord',briefing:'de briefing'};
+const NAAM={vergaderingen:'Vergaderingen',vergadering:'deze vergadering',startpagina:'de startpagina',zoek:'Zoeken',domeinen:'Dossiers',dossier:'dit dossier',wijk:'Gebieden',verkenner:'de Verkenner',lab:'Inzichten',ideeen:'Ideeën',akkoord:'het akkoord',briefing:'de briefing'};
 
 /* ---------- rondleiding ---------- */
 let T=null;
@@ -174,7 +177,7 @@ function plaats(){
 }
 const pagina=()=>STAP[PAG]||[];
 function tourPagina(){start(pagina().length?pagina():KOP);}
-function tourSite(){start(KOP.concat(pagina()));}
+function tourSite(){start(PAG==='startpagina'?KOP:KOP.concat(pagina()));}
 
 /* ---------- welkom, balkje, ?-knop ---------- */
 function welkom(){
