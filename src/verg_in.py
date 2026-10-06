@@ -23,9 +23,10 @@ def main(ag):
         return blok[b][i%B]
     uit=[f'### VERGADERING {V[2]} | {V[0]} | agendaId {ag} | video {V[4]}',
          'Codes: #U<nr> = één spreker bij één agendapunt; [h:mm:ss] = moment in de video. […] = ingekort.','']
-    bron={'verg':V,'u':{}}
+    bron={'verg':V,'u':{},'ap':{}}
     for a in aps:
         A=m['ap'][a]; ua=[i for i in us if m['u'][i][0]==a]; tot=sum(m['u'][i][3] for i in ua)
+        bron['ap'][A[1]]={'titel':A[2],'dom':A[3],'geb':A[4],'u':[str(i) for i in ua]}
         uit.append(f'## {A[1]} {A[2]}' + ('' if tot>=MINAP else '  (procedureel, niet samenvatten)'))
         if tot<MINAP: continue
         budget=MAXAP

@@ -97,8 +97,11 @@ const STAP={
   vergaderingen:[{s:'#lijst',t:'Per week',x:'Alle samengevatte vergaderingen, nieuwste bovenaan. Klik op een vergadering voor de samenvatting.'}],
   vergadering:[
     {s:'.schakel',t:'Kort of uitgebreid',x:'Kies de korte versie (1 minuut lezen) of de uitgebreide, met per onderwerp wat de fracties en het college zeiden.'},
-    {s:'.kort .zin, .ap .pt',t:'Tik voor de bron',x:'Tik op een zin of een fractie: je ziet het letterlijke citaat en een knop naar dat moment in de video.'},
-    {s:'.vkop [data-video]',t:'De hele vergadering',x:'Of bekijk de vergadering zelf, met de agenda en stukken in iBabs ernaast.'},
+    {s:'.kort .zin',t:'Tik voor de bron',x:'Tik op een zin: je ziet het letterlijke citaat en een knop naar dat moment in de video.'},
+    {s:'.ap .apmeta',doe:()=>document.querySelector('.schakel [data-m=uitgebreid][aria-pressed=false]')?.click(),t:'Per onderwerp',x:'Hoe laat en hoe lang een onderwerp besproken is. Met ▶ kijk je dat stuk van de vergadering terug.'},
+    {s:'.ap .pt',t:'Tik op een fractie',x:'Tik op een fractie of wethouder: je ziet wat er letterlijk is gezegd, met ▶ naar precies dat moment in de video.'},
+    {s:'.ap .dch',t:'Meer hierover',x:'Links naar het dossier over dit onderwerp: wat de raad er eerder over zei, besloot en beloofde.'},
+    {s:'.vkop .acties',t:'De hele vergadering',x:'Of bekijk de hele vergadering, de agenda en stukken in iBabs of de officiële besluitenlijst.'},
   ],
   ideeen:[{s:'#lijst',t:'Denk mee',x:'Stem op ideeën voor nieuwe functies (3 stemmen) of stel er zelf een voor.'}],
   akkoord:[{s:'#kern',t:'Het coalitieakkoord',x:'De kern van het akkoord, samengevat. Wijs een zin aan voor de letterlijke tekst en de pagina.'},{s:'#dom',t:'Per domein',x:'Wat het akkoord per domein van plan is, met een link naar het dossier.'}],
@@ -124,7 +127,8 @@ function stop(){if(!T)return;[T.laag,T.spot,T.tip].forEach(x=>x.remove());remove
 function toets(e){if(!T)return;if(e.key==='Escape')stop();else if(e.key==='ArrowRight')toon(T.i+1,1);else if(e.key==='ArrowLeft')toon(T.i-1,-1);}
 async function toon(i,richting){
   if(!T)return;if(i<0)i=0;if(i>=T.stappen.length){stop();LS.set('tour-'+PAG,'ja');return;}
-  const stap=T.stappen[i];const el=stap.s?await wacht(stap,richting>0?2500:800):null;
+  const stap=T.stappen[i];if(stap.doe&&richting>0)try{stap.doe();}catch(e){}
+  const el=stap.s?await wacht(stap,richting>0?2500:800):null;
   if(!T)return;
   if(stap.s&&!el){T.stappen.splice(i,1);return toon(i,richting);}   // element is er (nu) niet: stap overslaan
   T.i=i;T.el=el;
@@ -200,7 +204,10 @@ function hulpknop(){
   k.onclick=e=>{e.stopPropagation();const oud=document.querySelector('.rzt-menu');if(oud){oud.remove();return;}
     const m=Object.assign(document.createElement('div'),{className:'rzt-menu'});m.setAttribute('role','menu');
     m.innerHTML=`${pagina().length?`<button type="button" data-a="p">Uitleg van ${NAAM[PAG]||'deze pagina'}</button>`:''}<button type="button" data-a="s">Rondleiding door de site</button><a href="hulp.html#faq">Veelgestelde vragen</a><a href="hulp.html#woorden">Wat betekent… (woordenlijst)</a><a href="hulp.html#contact">Vraag of fout melden</a>`;
-    const r=k.getBoundingClientRect();m.style.top=(r.bottom+8)+'px';m.style.right=Math.max(8,innerWidth-r.right)+'px';document.body.appendChild(m);
+    const r=k.getBoundingClientRect();document.body.appendChild(m);
+    // onder de knop als daar plek is (kop), anders erboven (op mobiel staat de knop linksonder)
+    if(r.bottom+8+m.offsetHeight<innerHeight)m.style.top=(r.bottom+8)+'px';else m.style.top=Math.max(8,r.top-8-m.offsetHeight)+'px';
+    if(r.left<innerWidth/2)m.style.left=Math.max(8,r.left)+'px';else m.style.right=Math.max(8,innerWidth-r.right)+'px';
     m.onclick=ev=>{const a=ev.target.closest('[data-a]');if(!a)return;m.remove();a.dataset.a==='p'?tourPagina():tourSite();};
     setTimeout(()=>addEventListener('click',function sl(){m.remove();removeEventListener('click',sl);}),0);};
 }

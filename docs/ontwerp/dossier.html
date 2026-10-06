@@ -63,7 +63,7 @@ table.tafel .bar i{display:block;height:8px;background:var(--groen);border-radiu
   <div id="dossier"><p class="leeg" style="margin-top:24px">Laden…</p></div>
   <p class="voet">Gegevens: notulen en ondertiteling van de gemeenteraad, de registratie in iBabs (moties, toezeggingen, schriftelijke vragen, brieven), de Rekenkamer Rotterdam en de wijkraden, stand 2 oktober 2026. Domeinen volgen de indeling van de griffie (beleidsveld in iBabs), aangevuld met een woordmodel; een onderwerp is een vaste set zoekwoorden. Aantallen zijn een goede indicatie, geen exacte telling. Teksten met het label AI zijn automatisch gemaakt; elk punt heeft een letterlijk citaat dat een script woord voor woord met de bron heeft vergeleken. <a href="over.html">Meer over deze tool</a>.</p>
 </main>
-<script src="ontwerp.js?v=22"></script>
+<script src="ontwerp.js?v=23"></script>
 <script src="ai.js?v=1"></script>
 <script src="keten.js?v=7"></script>
 <script>
@@ -88,8 +88,15 @@ async function laad(s){const d=await (await fetch('d/'+s+'.json')).json();d.slug
   if(X){CUR=d;try{localStorage.setItem('rz-dossier',s);}catch(e){}document.querySelector('main.pagina>.vlak').hidden=true;
     let A=null;if(d.ai){try{A=await (await fetch('samenvattingen/'+s+'.json')).json();}catch(e){}}
     if(location.hash.slice(1).split('/')[0]!==s)history.replaceState(null,'','#'+s);
-    return toonKeten(d,X,A);}
-  KX=null;toon(d);}
+    await toonKeten(d,X,A);return vergBlok(s);}
+  KX=null;await toon(d);vergBlok(s);}
+/* recent besproken in vergaderingen (samenvattingen per agendapunt, verg/koppel.json) */
+let VK=null;
+async function vergBlok(s){
+  VK=VK||fetch('verg/koppel.json').then(r=>r.ok?r.json():{}).catch(()=>({}));const L=(await VK)[s];if(!L||!L.length)return;
+  const M=['jan','feb','mrt','apr','mei','jun','jul','aug','sep','okt','nov','dec'],dd=d=>`${+d.slice(8)} ${M[+d.slice(5,7)-1]}`;
+  const h=`<section class="vlak vergblok"><h3 style="margin:0 0 8px">Net besproken</h3>${L.slice(0,4).map(x=>`<div style="padding:6px 0;border-top:1px solid var(--grijs2);font-size:14px"><span class="sub">${dd(x[3])} · ${esc(x[4])}</span><br><a href="vergadering.html?id=${x[0]}#ap-${encodeURIComponent(x[1])}">${esc(x[2])}</a></div>`).join('')}<p class="sub" style="font-size:13px;margin:8px 0 0">Samengevat per vergadering. <a href="vergaderingen.html">Alle vergaderingen</a></p></section>`;
+  const as=document.querySelector('#dossier aside');if(as)as.insertAdjacentHTML('afterbegin',h);else (document.querySelector('#dossier .kop')||document.querySelector('#dossier>*'))?.insertAdjacentHTML('afterend',h);}
 
 window.naUitklap=()=>zetVast();
 document.addEventListener('click',e=>{
