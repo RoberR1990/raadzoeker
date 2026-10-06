@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Domeinen · raadzoeker</title>
-<link rel="stylesheet" href="stijl.css?v=17">
+<title>Dossiers · raadzoeker</title>
+<link rel="stylesheet" href="stijl.css?v=18">
 <style>
 .kast{width:100%;border-collapse:collapse;font-size:15px;background:var(--wit)}
 .kast th{text-align:left;font-weight:700;border-bottom:2px solid var(--zwart);padding:10px 8px;white-space:nowrap}
@@ -32,7 +32,7 @@
 </style></head><body>
 <header class="balk"></header>
 <main class="pagina">
-  <h1>Domeinen</h1>
+  <h1>Dossiers</h1>
   <p style="margin:12px 0 24px;max-width:72ch">Alles wat de raad bespreekt, ingedeeld in 13 domeinen zoals de griffie stukken indeelt (naar portefeuille). Klik op een domein voor het dossier: wat er speelt, wat er besloten en beloofd is, en waar in de stad.</p>
   <h2 style="margin:0 0 12px">Uitgelicht</h2>
   <div class="uit" id="uit"></div>
@@ -50,7 +50,7 @@
     <th class="n weg"><button data-k="totaal">Stukken en debatten sinds 2018</button></th></tr></thead><tbody id="rijen"><tr><td colspan="7">Laden…</td></tr></tbody></table></div>
   <p class="voet">'Open' en 'over de termijn' komen uit de registratie van de griffie in iBabs (stand <span id="stand"></span>). Een domein is het beleidsveld dat iBabs aan een stuk geeft; debatten en stukken zonder beleidsveld zijn automatisch ingedeeld (ongeveer 9 van de 10 goed). <a href="over.html">Meer over deze tool</a>.</p>
 </main>
-<script src="ontwerp.js?v=35"></script>
+<script src="ontwerp.js?v=36"></script>
 <script>
 kop('domeinen');
 let D=[],IX=[],SORT='open',OP=-1;
