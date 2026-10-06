@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Hulp · De Publieke Tribune</title>
-<link rel="stylesheet" href="stijl.css?v=10">
+<title>Hulp · raadzoeker</title>
+<link rel="stylesheet" href="stijl.css?v=11">
 <style>
 .kolom{max-width:900px;margin:0 auto}
 .lead{font-size:19px;line-height:1.5;max-width:65ch}
@@ -51,7 +51,7 @@ h2{margin:40px 0 4px}
   <h2 id="faq">Veelgestelde vragen</h2>
   <input id="zoekfaq" type="search" placeholder="Zoek in de vragen" aria-label="Zoek in de veelgestelde vragen">
   <div class="faq" id="faqlijst">
-    <details><summary>Wat is De Publieke Tribune?</summary><p>Een onofficieel hulpmiddel dat openbare informatie van de Rotterdamse gemeenteraad bij elkaar zet: wat er sinds 2018 in de raad en de commissies is gezegd, welke moties, toezeggingen en besluiten er zijn, en wat de wijkraden adviseren. Het is geen product van de gemeente of de griffie. Het officiële verslag staat altijd in de bron, die overal gelinkt is.</p></details>
+    <details><summary>Wat is de raadzoeker?</summary><p>Een onofficieel hulpmiddel dat openbare informatie van de Rotterdamse gemeenteraad bij elkaar zet: wat er sinds 2018 in de raad en de commissies is gezegd, welke moties, toezeggingen en besluiten er zijn, en wat de wijkraden adviseren. Het is geen product van de gemeente of de griffie. Het officiële verslag staat altijd in de bron, die overal gelinkt is.</p></details>
     <details><summary>Waar komen de gegevens vandaan?</summary><p>Uit openbare bronnen: het raadsinformatiesysteem (iBabs) van de gemeenteraad en de wijkraden, de notulen en ondertiteling van vergaderingen, het Gemeenteblad, de Rekenkamer en de Ombudsman, en open data van CBS, Kadaster en RDW. Zie <a href="over.html">Over</a> voor de volledige lijst.</p></details>
     <details><summary>Hoe actueel is het?</summary><p>De site werkt zichzelf bij: elke nacht alles, en op werkdagen om 9, 12, 15, 18 en 21 uur de nieuwe moties, toezeggingen en brieven. Rechtsboven zie je wanneer dat voor het laatst gebeurde. Nieuwe debatten en de AI-samenvattingen worden nog niet automatisch bijgewerkt.</p></details>
     <details><summary>Wat betekent ‘AI-samenvatting’? Kan ik die vertrouwen?</summary><p>Sommige dossiers en gebieden hebben een samenvatting die door AI is geschreven. Elke zin heeft een letterlijk citaat uit een bron; een script controleert of dat citaat woord voor woord in die bron staat, en schrapt alles wat niet klopt. Wijs een zin aan om het citaat en de bron te zien. Wat de controle niet vangt: een samenvatting die een echt citaat te ruim uitlegt. Gebruik het als startpunt, niet als eindoordeel.</p></details>
@@ -89,7 +89,7 @@ h2{margin:40px 0 4px}
   <p>Mis je iets, of klopt er iets niet? <button type="button" class="knop" onclick="rzFout('')">Fout melden</button> <button type="button" class="knop wit" onclick="rzFout('Vraag of idee')">Vraag of idee</button></p>
   <p class="voet"><a href="#" id="welkomweer">Toon het welkomstvenster opnieuw</a></p>
 </div></main>
-<script src="ontwerp.js?v=26"></script>
+<script src="ontwerp.js?v=27"></script>
 <script>
 kop('');
 document.getElementById('zoekfaq').oninput=e=>{const q=e.target.value.toLowerCase().trim();document.querySelectorAll('#faqlijst details').forEach(d=>{const hit=!q||d.textContent.toLowerCase().includes(q);d.hidden=!hit;if(q&&hit)d.open=true;});};

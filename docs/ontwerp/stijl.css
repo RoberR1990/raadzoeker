@@ -35,9 +35,8 @@ p{margin:0}
 .merk{display:flex;align-items:center;gap:10px;color:var(--wit);text-decoration:none}
 .merk:hover{text-decoration:none;opacity:.92}
 .merk svg{width:34px;height:20px;flex:none}
-.merk img{height:32px;width:auto;flex:none}
-.merk .wm{display:flex;flex-direction:column;line-height:1}.merk .wm span{font-size:12px;font-weight:400;letter-spacing:.01em}
-.merk b{font-weight:700;font-size:21px;letter-spacing:-.01em;line-height:1}
+.merk img{height:34px;width:auto;flex:none}
+.merk b{font-weight:700;font-size:20px;letter-spacing:-.01em}
 .merk small{font-size:14px;border-left:1px solid rgba(255,255,255,.6);padding-left:10px}
 .balk nav{display:flex;gap:4px;flex-wrap:wrap;align-items:center}
 .balk nav a{color:var(--wit);text-decoration:none;padding:10px 12px;border-radius:999px;font-size:16px;min-height:44px;display:inline-flex;align-items:center}

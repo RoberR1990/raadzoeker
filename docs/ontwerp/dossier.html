@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Dossier · De Publieke Tribune</title>
-<link rel="stylesheet" href="stijl.css?v=10">
+<title>Dossier · raadzoeker</title>
+<link rel="stylesheet" href="stijl.css?v=11">
 <link rel="stylesheet" href="keten.css?v=5">
 <style>
 .pagina.breed{max-width:1240px}
@@ -63,7 +63,7 @@ table.tafel .bar i{display:block;height:8px;background:var(--groen);border-radiu
   <div id="dossier"><p class="leeg" style="margin-top:24px">Laden…</p></div>
   <p class="voet">Gegevens: notulen en ondertiteling van de gemeenteraad, de registratie in iBabs (moties, toezeggingen, schriftelijke vragen, brieven), de Rekenkamer Rotterdam en de wijkraden, stand 2 oktober 2026. Domeinen volgen de indeling van de griffie (beleidsveld in iBabs), aangevuld met een woordmodel; een onderwerp is een vaste set zoekwoorden. Aantallen zijn een goede indicatie, geen exacte telling. Teksten met het label AI zijn automatisch gemaakt; elk punt heeft een letterlijk citaat dat een script woord voor woord met de bron heeft vergeleken. <a href="over.html">Meer over deze tool</a>.</p>
 </main>
-<script src="ontwerp.js?v=26"></script>
+<script src="ontwerp.js?v=27"></script>
 <script src="ai.js?v=1"></script>
 <script src="keten.js?v=7"></script>
 <script>
@@ -152,7 +152,7 @@ async function toon(d){
   CUR=d;SOORT='mot';FILTER='open';
   document.querySelector('main.pagina>.vlak').hidden=d.soort!=='domein';   // zoeken naar een ander dossier alleen op domeinniveautry{localStorage.setItem('rz-dossier',d.slug);}catch(e){}
   if(location.hash.slice(1)!==d.slug)history.replaceState(null,'','#'+d.slug);
-  document.title=d.naam+' · De Publieke Tribune';
+  document.title=d.naam+' · raadzoeker';
   let A=null;if(d.ai){try{A=await (await fetch('samenvattingen/'+d.slug+'.json')).json();}catch(e){}}
   CIT=[];verberg();
   const m=d.moties,t=d.toez,ts=d.tsum,j=d.jaren.length-1,ch=d.trend[j-1]?Math.round((d.trend[j]-d.trend[j-1])/d.trend[j-1]*100):0;

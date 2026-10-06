@@ -38,7 +38,7 @@ const st=document.createElement('style');st.textContent=css;document.head.append
 
 /* ---------- de stappen ---------- */
 const KOP=[
-  {s:'header .merk',t:'Welkom bij De Publieke Tribune',x:'Hier vind je wat de Rotterdamse gemeenteraad sinds 2018 zei, besloot en beloofde. Het logo brengt je altijd terug naar de startpagina.'},
+  {s:'header .merk',t:'Welkom bij raadzoeker',x:'Hier vind je wat de Rotterdamse gemeenteraad sinds 2018 zei, besloot en beloofde. Het logo brengt je altijd terug naar de startpagina.'},
   {s:'header nav a[href="zoek.html"]',t:'Zoeken',x:'Zoek in alles wat er in de raad en de commissies is gezegd en geschreven. Bij debatten spring je direct naar het moment in de video.'},
   {s:'header nav a[href="vergaderingen.html"]',t:'Vergaderingen',x:'Wat er in de raad en de commissies is besproken, samengevat in één minuut of uitgebreid, kort na de vergadering.'},
   {s:'header nav a[href="domeinen.html"]',t:'Domeinen',x:'Dossiers per beleidsveld en onderwerp: wat er is gezegd, besloten en beloofd, en wat ervan terechtkwam.'},
@@ -180,7 +180,7 @@ function tourSite(){start(KOP.concat(pagina()));}
 function welkom(){
   const laag=Object.assign(document.createElement('div'),{className:'rzt-laag'});laag.style.background='rgba(0,25,12,.62)';
   const w=Object.assign(document.createElement('div'),{className:'rzt-welkom'});w.setAttribute('role','dialog');w.setAttribute('aria-labelledby','rzt-wt');
-  w.innerHTML=`<h2 id="rzt-wt">Welkom bij De Publieke Tribune</h2>
+  w.innerHTML=`<h2 id="rzt-wt">Welkom bij raadzoeker</h2>
     <p>Alles wat de Rotterdamse gemeenteraad sinds 2018 zei, besloot en beloofde, op één plek:</p>
     <ul><li><b>Zoeken</b> in debatten en stukken, met het videomoment erbij</li><li><b>Dossiers</b> per onderwerp: van debat tot besluit en belofte</li><li><b>Gebieden</b>: wat speelt er in jouw wijk</li></ul>
     <p style="margin-bottom:18px">Zal ik je in een minuut laten zien hoe het werkt?</p>

@@ -11,7 +11,7 @@ async function toonKeten(d,X,A){
   if(!KAKK){try{const r=await fetch('akkoord.json');if(r.ok)KAKK=await r.json();}catch(e){}}
   KPK=null;try{const r=await fetch('d/'+d.slug+'-kaart.json');if(r.ok)KPK=await r.json();}catch(e){}
   const h=decodeURIComponent(location.hash.slice(1)).split('/');KOPEN=new Set(h[1]?[h[1]]:[]);
-  document.title=d.naam+' · De Publieke Tribune';
+  document.title=d.naam+' · raadzoeker';
   const crumb=(d.pad||[]).map(([t,u])=>`<a href="${u}">${esc(t)}</a>`).join(' › ')+' › '+esc(d.naam);
   const kinderen=ALLE.filter(x=>x.soort==='onderwerp'&&x.groep===d.naam),kr=d.soort==='domein'?ALLE.filter(x=>x.soort==='kruising'&&x.domein===d.slug):[];
   const verw=(X.verwant||[]).map(s=>ALLE.find(x=>x.slug===s)).filter(Boolean);

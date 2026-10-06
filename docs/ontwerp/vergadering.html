@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Vergadering · De Publieke Tribune</title>
-<link rel="stylesheet" href="stijl.css?v=10">
+<title>Vergadering · raadzoeker</title>
+<link rel="stylesheet" href="stijl.css?v=11">
 <link rel="stylesheet" href="keten.css?v=5">
 <style>
 .kolom{max-width:1080px;margin:0 auto}
@@ -60,7 +60,7 @@ details.st{margin-top:10px;font-size:14px}details.st summary{cursor:pointer;colo
 </style></head><body>
 <header class="balk"></header>
 <main class="pagina"><div class="kolom" id="v"><p class="leeg">Laden…</p></div></main>
-<script src="ontwerp.js?v=26"></script>
+<script src="ontwerp.js?v=27"></script>
 <script src="keten.js?v=7"></script>
 <script>
 kop('vergaderingen');
@@ -136,6 +136,6 @@ document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.matches('.z
 document.addEventListener('click',e=>{const v=e.target.closest('[data-video]');if(v)kVideo(v.dataset.video,+v.dataset.sec,v.dataset.titel);});
 function volgToc(){const L=[...document.querySelectorAll('.toc a')];const io=new IntersectionObserver(es=>{es.forEach(en=>{if(en.isIntersecting){L.forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+en.target.id));}});},{rootMargin:'-20% 0px -70% 0px'});document.querySelectorAll('.ap').forEach(s=>io.observe(s));
   if(location.hash.startsWith('#ap-'))setTimeout(()=>document.getElementById(decodeURIComponent(location.hash.slice(1)))?.scrollIntoView(),60);}
-Promise.all([fetch('verg/'+ID+'.json',{cache:'no-cache'}).then(r=>{if(!r.ok)throw 0;return r.json();}),fetch('verg/spoor.json',{cache:'no-cache'}).then(r=>r.ok?r.json():{}).catch(()=>({}))]).then(([d,sp])=>{V=d;SP=sp;document.title=V.naam+' '+dlang(V.datum)+' · De Publieke Tribune';teken();})
+Promise.all([fetch('verg/'+ID+'.json',{cache:'no-cache'}).then(r=>{if(!r.ok)throw 0;return r.json();}),fetch('verg/spoor.json',{cache:'no-cache'}).then(r=>r.ok?r.json():{}).catch(()=>({}))]).then(([d,sp])=>{V=d;SP=sp;document.title=V.naam+' '+dlang(V.datum)+' · raadzoeker';teken();})
   .catch(()=>{$('v').innerHTML='<h1>Hier ligt niks</h1><p>Deze vergadering is (nog) niet samengevat. <a href="vergaderingen.html">Naar alle vergaderingen</a>.</p>';});
 </script></body></html>

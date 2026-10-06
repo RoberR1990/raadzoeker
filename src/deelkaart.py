@@ -20,10 +20,9 @@ def logo(d,x,y,kleur):
     d.ellipse([x+21,y+21,x+31,y+31],fill=kleur)
 def kaart(dd,stand):
     W,H=1200,630; im=Image.new('RGB',(W,H),GRIJS); d=ImageDraw.Draw(im)
-    d.rectangle([0,0,W,96],fill=GROEN)
-    ic=Image.open(os.path.join(DOCS,'ontwerp','img','tribune-icoon-wit.png')); ic.thumbnail((80,64)); im.paste(ic,(40,(96-ic.size[1])//2),ic)
-    d.text((130,28),'De Publieke Tribune',font=font('arialbd.ttf',34),fill=(255,255,255))
-    d.text((470,40),'onofficieel · wat de Rotterdamse raad zegt, besluit en belooft',font=font('arial.ttf',22),fill=(255,255,255))
+    d.rectangle([0,0,W,96],fill=GROEN); logo(d,48,20,(255,255,255))
+    d.text((112,30),'raadzoeker',font=font('arialbd.ttf',34),fill=(255,255,255))
+    d.text((300,38),'onofficieel · wat de Rotterdamse raad zei en besloot',font=font('arial.ttf',22),fill=(255,255,255))
     d.rounded_rectangle([48,128,W-48,H-48],radius=16,fill=(255,255,255))
     d.text((88,160),dd['groep'],font=font('arial.ttf',26),fill=SUB)
     t=dd['naam']; fs=72 if len(t)<20 else 56 if len(t)<30 else 44
@@ -56,7 +55,7 @@ def main():
         titel=f"{dd['naam']} in de Rotterdamse raad"
         oms=f"{nf(dd['moties']['aangenomen'])} aangenomen moties sinds 2018, {dd['moties']['open']} in uitvoering, {dd['toez']['open']} toezeggingen open. Onofficieel overzicht uit openbare raadsinformatie."
         open(os.path.join(out,s+'.html'),'w',encoding='utf8').write(f'''<!doctype html><html lang="nl"><head><meta charset="utf-8"><meta name="robots" content="noindex">
-<title>{titel} · De Publieke Tribune</title><meta property="og:title" content="{titel}"><meta property="og:description" content="{oms}">
+<title>{titel} · raadzoeker</title><meta property="og:title" content="{titel}"><meta property="og:description" content="{oms}">
 <meta property="og:image" content="{SITE}deel/{s}.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
 <meta property="og:url" content="{SITE}deel/{s}.html"><meta name="twitter:card" content="summary_large_image">
 <meta http-equiv="refresh" content="0;url={doel}"></head><body><p><a href="{doel}">{titel}</a></p></body></html>''')
