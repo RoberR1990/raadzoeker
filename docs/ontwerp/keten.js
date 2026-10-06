@@ -17,7 +17,7 @@ async function toonKeten(d,X,A){
   const verw=(X.verwant||[]).map(s=>ALLE.find(x=>x.slug===s)).filter(Boolean);
   $('dossier').innerHTML=`<div class="crumb">${crumb}</div>
   <div class="kop"><h1>${esc(d.naam)}</h1>
-    <div class="kopacties">${volgKnop(d.slug,d.naam)}<a class="knop" href="briefing.html#${d.slug}">Maak een briefing (A4, pdf of Word)</a><span class="sub" id="deelrij"></span></div>
+    <div class="kopacties">${volgKnop(d.slug,d.naam)}<a class="knop" href="briefing.html#${d.slug}">Briefing<span class="lang"> maken (A4, pdf of Word)</span></a><span class="sub" id="deelrij"></span></div>
     ${kinderen.length||kr.length||verw.length?`<div class="kverw">${kinderen.length?`<span><b>Onderwerpen:</b> ${kinderen.map(x=>`<a href="#${x.slug}">${esc(x.naam)}</a>`).join(' · ')}</span>`:''}
       ${verw.length?`<span><b>Verwant:</b> ${verw.map(x=>`<a href="#${x.slug}">${esc(x.naam)}</a>`).join(' · ')}</span>`:''}
       ${kr.length?`<span><b>Per gebied:</b> ${kr.map(x=>`<a href="#${x.slug}">${esc(x.gebied)}</a>`).join(' · ')}</span>`:''}</div>`:''}</div>

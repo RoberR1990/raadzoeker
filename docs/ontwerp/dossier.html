@@ -8,7 +8,9 @@
 .crumb{font-size:14px;color:var(--sub);margin:32px 0 4px}
 .crumb a{color:var(--sub)}
 .kop h1{margin:0 0 8px}
-.kopacties{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;margin:4px 0 16px;font-size:14px}
+.kopacties{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;margin:4px 0 16px;font-size:14px}
+.kopacties .knop{padding:7px 16px;font-size:15px;min-height:0}.kopacties #deelrij{flex-basis:100%}
+@media (max-width:600px){.kopacties .lang{display:none}.kopacties .knop{padding:6px 14px;font-size:14px}}
 .verwant{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:14px}
 .verwant a{display:inline-flex;gap:8px;align-items:baseline;border:1px solid var(--lijn);border-radius:999px;padding:6px 12px;text-decoration:none;background:var(--wit)}
 .verwant a:hover{border-color:var(--zwart)}
@@ -65,7 +67,7 @@ table.tafel .bar i{display:block;height:8px;background:var(--groen);border-radiu
 </main>
 <script src="ontwerp.js?v=28"></script>
 <script src="ai.js?v=1"></script>
-<script src="keten.js?v=8"></script>
+<script src="keten.js?v=9"></script>
 <script>
 kop('domeinen');
 let DATA={stand:STAND},ALLE=[],KAART=null,CUR=null,SOORT='mot',FILTER='open';
@@ -231,7 +233,7 @@ async function toon(d){
   if(!isKr&&d.soort!=='gebied')side+=`<section class="vlak"><h3 style="margin:0 0 8px">In welke gebieden?</h3><div class="mini" id="mini"></div><p class="sub" id="minitxt" style="margin-top:8px"></p></section>`;
   const ver=d.verdieping.ver.filter(v=>ALLE.some(x=>x.slug===slug(v[0])));
   if(ver.length)side+=`<section class="vlak"><h3 style="margin:0 0 8px">Hangt samen met</h3><div class="verwant">${ver.map(([nm,p,l])=>`<a href="#${slug(nm)}" title="In ${p}% van de spreekbeurten hierover gaat het ook over ${esc(nm.toLowerCase())}">${esc(nm)} <span class="sub num">${String(l).replace('.',',')}×</span></a>`).join('')}</div></section>`;
-  const acties=`<div class="kopacties">${isKr?'':volgKnop(d.slug,d.naam)}<a class="knop" href="briefing.html#${d.slug}">Maak een briefing (A4, pdf of Word)</a><span class="sub" id="deelrij"></span>${isKr||d.soort==='gebied'?`<a class="sub" href="wijk.html#${slug(d.gebied)}">Naar de gebiedspagina met kaart en cijfers</a>`:''}</div>`;
+  const acties=`<div class="kopacties">${isKr?'':volgKnop(d.slug,d.naam)}<a class="knop" href="briefing.html#${d.slug}">Briefing<span class="lang"> maken (A4, pdf of Word)</span></a><span class="sub" id="deelrij"></span>${isKr||d.soort==='gebied'?`<a class="sub" href="wijk.html#${slug(d.gebied)}">Naar de gebiedspagina met kaart en cijfers</a>`:''}</div>`;
   $('dossier').innerHTML=`<div class="crumb">${crumb}</div><div class="kop"><h1>${esc(d.naam)}</h1>${acties}${verwant}</div><div class="C"><main>${main}</main><aside>${side}</aside></div>`;
   // mini-kaart
   const Wk=d.verdieping.wijk,wm=Math.max(.1,...Object.values(Wk));if($('mini')){
