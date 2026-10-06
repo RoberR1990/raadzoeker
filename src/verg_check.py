@@ -37,7 +37,7 @@ def main(ag,pad=None):
     os.makedirs(os.path.join(DOCS,'ontwerp','verg'),exist_ok=True)
     json.dump(out,open(os.path.join(DOCS,'ontwerp','verg',f'{k}.json'),'w',encoding='utf8'),ensure_ascii=False,separators=(',',':'))
     ix=os.path.join(DOCS,'ontwerp','verg','index.json'); L=json.load(open(ix,encoding='utf8')) if os.path.exists(ix) else []
-    L=[x for x in L if x['id']!=k]+[{'id':k,'agendaId':ag,'datum':V[0],'naam':V[2],'raad':V[1]==0,'kort':kort[0]['zin'] if kort else '','n':len(out['agendapunten'])}]
+    L=[x for x in L if x['id']!=k]+[{'id':k,'agendaId':ag,'datum':V[0],'naam':V[2],'raad':V[1]==0,'kort':kort[0]['zin'] if kort else '','n':len(out['agendapunten']),'ap':[x['titel'] for x in out['agendapunten'] if (x.get('wat') or '').strip()]}]
     json.dump(sorted(L,key=lambda x:(x['datum'],x['naam']),reverse=True),open(ix,'w',encoding='utf8'),ensure_ascii=False,indent=0)
     verg_koppel.indexen()
     print(k,'kort',len(kort),'punten',len(out['agendapunten']),'leestijd',out['leestijd'],'geschrapt',len(weg)); [print('  -',w) for w in weg[:15]]
