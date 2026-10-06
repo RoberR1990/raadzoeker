@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 92" role="img" aria-label="raadzoeker">
+  <!-- raadzaal (ring met zetels), spreekgestoelte met aanhalingstekens, vergrootglas; kleuren uit het logo van Robert -->
+  <g fill="none" stroke-linecap="round">
+    <!-- achterste zetels -->
+    <path d="M16 40 Q60 14 104 40" stroke="#41A85F" stroke-width="9"/>
+    <!-- ring -->
+    <ellipse cx="60" cy="56" rx="50" ry="17" stroke="#0E2A4D" stroke-width="7"/>
+    <path d="M10 56 v10 Q60 92 110 66 v-10" stroke="#0E2A4D" stroke-width="7"/>
+    <!-- voorste zetels -->
+    <path d="M26 54 Q60 66 94 54" stroke="#41A85F" stroke-width="6"/>
+  </g>
+  <!-- spreekgestoelte -->
+  <rect x="44" y="20" width="32" height="48" rx="2" fill="#0E2A4D" stroke="#fff" stroke-width="2.5"/>
+  <rect x="40" y="16" width="40" height="6" rx="2" fill="#0E2A4D"/>
+  <path d="M58 16 v-6 q0 -4 5 -6" stroke="#0E2A4D" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <circle cx="66" cy="4" r="3.2" fill="#0E2A4D"/>
+  <path d="M51 30 h6 v7 h-6 z M55 30 q-4 0 -4 4" fill="#fff"/>
+  <path d="M63 30 h6 v5 q0 5 -6 7 l0 -2 q3 -1 3 -4 h-3 z" fill="#41A85F"/>
+  <!-- vergrootglas -->
+  <circle cx="64" cy="68" r="11" fill="#fff"/>
+  <circle cx="64" cy="68" r="8" fill="none" stroke="#41A85F" stroke-width="4.5"/>
+  <path d="M70 74 l9 9" stroke="#41A85F" stroke-width="5" stroke-linecap="round"/>
+</svg>
