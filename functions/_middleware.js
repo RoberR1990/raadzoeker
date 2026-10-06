@@ -1,10 +1,9 @@
-// Domeinen: de site heet sinds 6-10-2026 De Publieke Tribune.
-// De site is openbaar (besluit Robert 6-10-2026); de oude link stuurt door naar de nieuwe.
-// (De oude link zit nog achter Cloudflare Access; wie daar inlogt, komt daarna op de nieuwe link.)
-const OUD = 'raadzoeker.pages.dev', NIEUW = 'publieke-tribune.pages.dev', BESCHERMD = true;
+// Domein: raadzoeker.nl is het hoofdadres (sinds 6-10-2026). Andere adressen sturen daarheen door, met behoud van pad en zoekopdracht.
+// (raadzoeker.pages.dev zit nog achter Cloudflare Access; wie daar inlogt, komt daarna op raadzoeker.nl.)
+const HOOFD = 'raadzoeker.nl';
+const OUD = new Set(['www.raadzoeker.nl', 'publieke-tribune.pages.dev', 'raadzoeker.pages.dev']);
 export async function onRequest(ctx) {
   const url = new URL(ctx.request.url);
-  if (!BESCHERMD && url.hostname === NIEUW) { url.hostname = OUD; return Response.redirect(url.toString(), 302); }
-  if (BESCHERMD && url.hostname === OUD) { url.hostname = NIEUW; return Response.redirect(url.toString(), 301); }
+  if (OUD.has(url.hostname)) { url.hostname = HOOFD; return Response.redirect(url.toString(), 301); }
   return ctx.next();
 }
