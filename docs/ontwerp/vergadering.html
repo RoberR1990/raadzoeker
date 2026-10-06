@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
+<html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Vergadering · De Publieke Tribune</title>
 <link rel="stylesheet" href="stijl.css?v=10">
 <link rel="stylesheet" href="keten.css?v=5">
@@ -32,6 +32,7 @@ details.st{margin-top:10px;font-size:14px}details.st summary{cursor:pointer;colo
 .kort p{font-size:19px;line-height:1.65;margin:0;max-width:70ch}
 .zin{cursor:pointer;border-radius:4px;transition:background .15s}
 .zin:hover,.zin.open{background:var(--groen-zacht)}
+.speel.fout{color:var(--sub);font-weight:400;text-decoration:underline}
 .speel{border:0;background:none;color:var(--groen);cursor:pointer;font:700 13px var(--font);padding:0 2px;vertical-align:1px}
 .cit{display:block;margin:8px 0 10px;padding:10px 14px;background:var(--grijs);border-left:3px solid var(--groen);border-radius:4px;font-size:15px;line-height:1.5}
 .cit .bron{display:block;color:var(--sub);font-size:13px;margin-top:4px}
@@ -75,7 +76,7 @@ const dkort=d=>{const [y,m,dd]=d.split('-');return `${+dd} ${MAAND[+m-1].slice(0
 try{MODUS=localStorage.getItem('rz-vmodus')||'kort';}catch(e){}
 if(location.hash.startsWith('#ap-')||location.hash==='#uitgebreid')MODUS='uitgebreid';
 const knopVideo=(x,label)=>V.video&&x.sec!=null?`<button type="button" class="speel" data-video="${esc(V.video)}" data-sec="${x.sec}" data-titel="${esc(V.naam+' · '+dlang(V.datum)+' · '+(x.wie_bron||''))}" title="Bekijk dit moment in de video (${tijd(x.sec)})">▶ ${label||tijd(x.sec)}</button>`:'';
-const citaat=x=>`<span class="cit">‘${esc(x.citaat)}’<span class="bron">${esc(x.wie_bron||'')} · ${knopVideo(x,'bekijk dit moment ('+tijd(x.sec)+')')}</span></span>`;
+const citaat=x=>`<span class="cit">‘${esc(x.citaat)}’<span class="bron">${esc(x.wie_bron||'')} · ${knopVideo(x,'bekijk dit moment ('+tijd(x.sec)+')')} · <button type="button" class="speel fout" data-fout="${esc((x.wie||x.wie_bron||'')+': '+(x.punt||x.zin||x.wat||''))}">klopt dit niet?</button></span></span>`;
 function teken(){
   const ap=V.agendapunten.filter(a=>(a.wat||'').trim());
   $('v').innerHTML=`<div class="crumb sub" style="margin:8px 0 4px"><a href="vergaderingen.html">Vergaderingen</a> › ${esc(dlang(V.datum))}</div>
@@ -125,6 +126,7 @@ function tekenUit(ap){
 document.addEventListener('click',e=>{
   const m2=e.target.closest('[data-m2]');if(m2){MODUS=m2.dataset.m2;try{localStorage.setItem('rz-vmodus',MODUS);}catch(_){}teken();scrollTo({top:0});return;}
   const l=e.target.closest('[data-link]');if(l){const u=location.href.split('#')[0]+'#ap-'+l.dataset.link;navigator.clipboard?.writeText(u);l.textContent='✓ gekopieerd';setTimeout(()=>l.textContent='kopieer link',1500);return;}
+  const fo=e.target.closest('[data-fout]');if(fo){rzFout(V.naam+' '+V.datum+' · '+fo.dataset.fout);return;}
   if(e.target.closest('[data-video],.cit,a'))return;
   const z=e.target.closest('.zin');if(z){const x=V.kort[+z.dataset.i];document.querySelectorAll('.zin.open').forEach(o=>o.classList.remove('open'));z.classList.add('open');$('kcit').innerHTML=citaat(x);return;}
   const pt=e.target.closest('.pt');if(pt){const sec=pt.closest('.ap'),nr=sec.id.slice(3),a=V.agendapunten.find(x=>x.nr===nr);const lijst=pt.classList.contains('coll')?a.college:a.fracties;

@@ -4,7 +4,7 @@
 import json,os,re,unicodedata
 from PIL import Image,ImageDraw,ImageFont
 from paden import DOCS
-SITE='https://raadzoeker.pages.dev/ontwerp/'
+SITE='https://publieke-tribune.pages.dev/ontwerp/'
 F=r'C:\Windows\Fonts'
 def font(n,s): return ImageFont.truetype(os.path.join(F,n),s)
 GROEN=(0,129,31); DGROEN=(0,76,49); ZACHT=(225,239,226); ZWART=(0,0,0); SUB=(62,75,80); GRIJS=(239,244,246); LAAT=(229,110,2)
@@ -44,7 +44,7 @@ def kaart(dd,stand):
         h=max(3,val/mx*hh); x=x0+i*(bw+6)
         d.rectangle([x,y0-h,x+bw,y0],fill=(153,204,160) if i==len(v)-1 else GROEN)
     d.text((x0,y0+8),'2018',font=font('arial.ttf',18),fill=SUB); d.text((x0+8*(bw+6)-18,y0+8),'2026',font=font('arial.ttf',18),fill=SUB)
-    d.text((88,H-100),f'Stand {stand} · raadzoeker.pages.dev',font=font('arial.ttf',21),fill=SUB)
+    d.text((88,H-100),f'Stand {stand} · publieke-tribune.pages.dev',font=font('arial.ttf',21),fill=SUB)
     return im
 def main():
     D=json.load(open(os.path.join(DOCS,'ontwerp','dossiers.json'),encoding='utf8')); out=os.path.join(DOCS,'ontwerp','deel'); os.makedirs(out,exist_ok=True)

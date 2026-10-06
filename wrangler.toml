@@ -1,0 +1,10 @@
+# Cloudflare Pages-configuratie (De Publieke Tribune). Koppelingen staan hier, niet in het dashboard.
+name = "publieke-tribune"
+pages_build_output_dir = "docs"
+compatibility_date = "2026-10-06"
+
+# D1 (EU): anonieme zoeklog, foutmeldingen en een eenvoudige limiet tegen misbruik. Schema: db/schema.sql
+[[d1_databases]]
+binding = "DB"
+database_name = "publieke-tribune"
+database_id = "4a8b1f5d-74ba-43d8-98b8-0110cf036334"
