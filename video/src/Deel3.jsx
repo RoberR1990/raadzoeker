@@ -1,11 +1,11 @@
-// Promovideo v4, deel 3 (18 s): pagina's. Domeinen → onderwerp Parkeren (kern, volgen, net besproken, beloftespoor, kaart met zones)
+// Promovideo v4, deel 3 (15 s): pagina's. Domeinen → onderwerp Parkeren (kern, volgen, net besproken, beloftespoor)
 // → Gebieden: Delfshaven met besluiten van de wijkraden. Echte data uit de site (src/d3.json).
 import React from 'react';
 import {AbsoluteFill, Sequence, useCurrentFrame} from 'remotion';
 import {C, F, ci, sp, inSchuif, Scene, Kop, Kaart, Cursor} from './stijl';
 import X from './d3.json';
 
-export const DUUR3 = 540;
+export const DUUR3 = 460;
 const MND = ['jan', 'feb', 'mrt', 'apr', 'mei', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'dec'];
 const dat = (s) => `${+s.slice(8, 10)} ${MND[+s.slice(5, 7) - 1]} ${s.slice(0, 4)}`;
 const punten = (d) => (d.match(/-?\d+(\.\d+)?/g) || []).map(Number);
@@ -45,10 +45,9 @@ const SPOOR = [
 ];
 const Parkeren = () => {
   const f = useCurrentFrame(), klik = 70, volg = f >= klik;
-  const kaartIn = 160, jr = Math.round(ci(f, kaartIn + 20, kaartIn + 75, 2016, 2026)), zichtbaar = f >= kaartIn;
   return (
-    <Scene dur={250}>
-      <div style={{opacity: ci(f, kaartIn, kaartIn + 12, 1, 0)}}>
+    <Scene dur={170}>
+      <div>
         <div style={{position: 'absolute', left: 90, top: 58, fontSize: 26, color: C.sub, ...inSchuif(f, 0, 20)}}>Domeinen › Mobiliteit › <b style={{color: '#000'}}>Parkeren</b></div>
         <div style={{position: 'absolute', left: 90, top: 100, fontSize: 76, fontWeight: 700, ...inSchuif(f, 4, 24)}}>Parkeren</div>
         <div style={{position: 'absolute', left: 90, top: 200, width: 1100, fontSize: 32, lineHeight: 1.35, ...inSchuif(f, 12, 20)}}>{X.kern}</div>
@@ -82,34 +81,7 @@ const Parkeren = () => {
         </Kaart>
         <Cursor f={f} klik={klik} x={ci(f, 30, klik, 1200, 1580) + ci(f, klik + 18, klik + 40, 0, 160)} y={ci(f, 30, klik, 700, 150) + ci(f, klik + 18, klik + 40, 0, 260)} />
       </div>
-      {zichtbaar && <ZoneKaart f={f - kaartIn} jr={jr} />}
     </Scene>
-  );
-};
-
-// betaald parkeren door de jaren: zones kleuren in, met tijdschuif
-const ZK = kader(X.zones.map((z) => z[0]));
-const ZoneKaart = ({f, jr}) => {
-  const [x0, y0, x1, y1] = ZK, m = 12, vw = x1 - x0 + 2 * m, vh = y1 - y0 + 2 * m;
-  return (
-    <AbsoluteFill style={{opacity: ci(f, 0, 12)}}>
-      <Kop f={f} tekst="In de stad: betaald parkeren" sub="Zones per jaar, uit RDW Open Data" />
-      <Kaart style={{left: 90, top: 270, width: 1740, height: 740, padding: 20}}>
-        <svg viewBox={`${x0 - m} ${y0 - m} ${vw} ${vh}`} width="1300" height="700" style={{position: 'absolute', left: 20, top: 20}}>
-          {X.geb.map(([n, d]) => <path key={n} d={d} fill={C.grijs} stroke="#fff" strokeWidth={0.6} />)}
-          {X.zones.map(([d, j], i) => <path key={i} d={d} fill={j && j <= jr ? C.groen : C.grijs2} fillOpacity={j && j <= jr ? 0.85 : 0.6} stroke="#fff" strokeWidth={0.3} />)}
-        </svg>
-        <div style={{position: 'absolute', left: 1360, top: 120}}>
-          <div style={{fontSize: 120, fontWeight: 700, color: C.groen, lineHeight: 1}}>{jr}</div>
-          <div style={{fontSize: 34, marginTop: 14}}><b>{X.stat[jr] || X.stat['2026']}</b> zones met betaald parkeren</div>
-          <div style={{width: 320, height: 10, background: C.grijs2, borderRadius: 5, marginTop: 40, position: 'relative'}}>
-            <div style={{width: `${((jr - 2016) / 10) * 100}%`, height: 10, background: C.groen, borderRadius: 5}} />
-            <div style={{position: 'absolute', top: -9, left: `calc(${((jr - 2016) / 10) * 100}% - 14px)`, width: 28, height: 28, borderRadius: '50%', background: '#fff', border: `4px solid ${C.groen}`, boxSizing: 'border-box'}} />
-          </div>
-          <div style={{display: 'flex', justifyContent: 'space-between', width: 320, fontSize: 22, color: C.sub, marginTop: 12}}><span>2016</span><span>2026</span></div>
-        </div>
-      </Kaart>
-    </AbsoluteFill>
   );
 };
 
@@ -155,7 +127,7 @@ const Gebieden = () => {
 export const Deel3 = () => (
   <AbsoluteFill style={{background: C.grijs, fontFamily: F}}>
     <Sequence from={0} durationInFrames={110}><Domeinen /></Sequence>
-    <Sequence from={110} durationInFrames={250}><Parkeren /></Sequence>
-    <Sequence from={360} durationInFrames={180}><Gebieden /></Sequence>
+    <Sequence from={110} durationInFrames={170}><Parkeren /></Sequence>
+    <Sequence from={280} durationInFrames={180}><Gebieden /></Sequence>
   </AbsoluteFill>
 );
