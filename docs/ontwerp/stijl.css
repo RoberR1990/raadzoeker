@@ -29,22 +29,39 @@ p{margin:0}
 .num{font-variant-numeric:tabular-nums}
 .sub{color:var(--sub);font-size:14px}
 
-/* kop: logo = home, hoofdmenu links, Lab en Over rechts */
-.balk{background:var(--groen);color:var(--wit)}
-.balk .in{max-width:1180px;margin:0 auto;padding:10px 24px;display:flex;align-items:center;gap:24px;flex-wrap:wrap}
-.merk{display:flex;align-items:center;gap:10px;color:var(--wit);text-decoration:none}
+/* kop: logo = home, hoofdmenu links, Verkenner/Inzichten/Over rechts; onder 1100px een Menu-knop met paneel */
+.balk{background:var(--groen);color:#fff;position:relative}
+.balk .in{max-width:1280px;margin:0 auto;padding:8px 24px;display:flex;align-items:center;gap:16px}
+.merk{display:flex;align-items:center;gap:10px;color:#fff;text-decoration:none;flex:none}
 .merk:hover{text-decoration:none;opacity:.92}
-.merk svg{width:34px;height:20px;flex:none}
-.merk img{height:34px;width:auto;flex:none}
-.merk b{font-weight:700;font-size:20px;letter-spacing:-.01em}
-.merk small{font-size:14px;border-left:1px solid rgba(255,255,255,.6);padding-left:10px}
-.balk nav{display:flex;gap:4px;flex-wrap:wrap;align-items:center}
-.balk nav a{color:var(--wit);text-decoration:none;padding:10px 12px;border-radius:999px;font-size:16px;min-height:44px;display:inline-flex;align-items:center}
+.merk img{height:40px;width:auto;flex:none}
+.merktekst{display:flex;flex-direction:column;line-height:1.1}
+.merk b{font-weight:700;font-size:22px;letter-spacing:-.01em}
+.merk small{font-size:12px}
+.menupaneel{display:flex;align-items:center;gap:8px;flex:1;min-width:0}
+.balk nav{display:flex;gap:2px;align-items:center}
+.balk nav a{color:#fff;text-decoration:none;padding:10px 10px;border-radius:999px;font-size:16px;min-height:44px;display:inline-flex;align-items:center;white-space:nowrap}
 .balk nav a:hover{text-decoration:underline}
-.balk nav a.on{background:var(--wit);color:var(--zwart)}
+.balk nav a.on{background:#fff;color:#000}
 .balk nav.rechts{margin-left:auto}
-.balk nav.rechts a{font-size:15px}
-.balk .bijgewerkt{font-size:13px;opacity:.9;margin-left:8px;white-space:nowrap;color:#fff;text-decoration:underline dotted}
+.balk nav a.bijgewerkt{font-size:13px;padding:4px 8px;min-height:44px;gap:5px;margin-left:4px}
+.balk .bijgewerkt .kopvol{display:none}
+.kopknoppen{display:flex;align-items:center;gap:6px;flex:none}
+.menuknop{display:none;font:700 16px var(--font);color:#fff;background:transparent;border:2px solid #fff;border-radius:999px;padding:0 18px;min-height:44px;cursor:pointer}
+.balk :focus-visible{outline:3px solid #fff;box-shadow:0 0 0 6px #000;outline-offset:2px}
+.balk nav a.on:focus-visible{outline-color:#000;box-shadow:0 0 0 6px #fff}
+@media (max-width:1099.98px){
+  .menuknop{display:inline-flex;align-items:center}
+  .menupaneel{display:none;position:absolute;left:0;right:0;top:100%;z-index:50;flex-direction:column;align-items:stretch;gap:0;background:var(--groen);padding:8px 16px 16px;border-top:1px solid rgba(255,255,255,.5);box-shadow:0 12px 24px rgba(0,0,0,.25)}
+  .balk.open .menupaneel{display:flex}
+  .balk nav{flex-direction:column;align-items:stretch;gap:0}
+  .balk nav a{min-height:48px;padding:12px 12px;font-size:17px;border-radius:8px}
+  .balk nav.rechts{margin:8px 0 0;padding-top:8px;border-top:1px solid rgba(255,255,255,.35)}
+  .balk nav a.bijgewerkt{font-size:14px;margin:4px 0 0}.balk .bijgewerkt .kopvol{display:inline}
+  .merk{margin-right:auto}
+  .merk small{display:block}
+}
+@media (max-width:700px){.balk .in{padding:8px 16px}.merk img{height:36px}.merk b{font-size:20px}}
 .tag{display:inline-block;font-size:12px;border:1px solid currentColor;border-radius:4px;padding:1px 5px;margin-left:6px}
 .pagina{max-width:1180px;margin:0 auto;padding:40px 24px 64px}
 .sectie{margin-top:64px}
@@ -99,7 +116,7 @@ mark{background:var(--groen-zacht);color:inherit;padding:0 2px;border-radius:2px
 .item .ctx b{font-weight:700}
 @media (max-width:700px){
   h1{font-size:30px}.pagina{padding:24px 16px 40px}.sectie{margin-top:40px}
-  .balk .in{padding:8px 16px;gap:4px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}.balk .in::-webkit-scrollbar{display:none}.merk small{display:none}.balk nav{flex-wrap:nowrap}.balk nav a{white-space:nowrap;padding:8px 10px;font-size:15px}.balk nav.rechts{margin-left:0}.tag{display:none}
+  .tag{display:none}
   .item summary .meta .wie{display:none}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
@@ -109,7 +126,6 @@ mark{background:var(--groen-zacht);color:inherit;padding:0 2px;border-radius:2px
 .balk2{display:grid;grid-template-columns:minmax(0,12em) 1fr 3.2em;gap:8px;align-items:center;font-size:14px}
 .balk2 i{display:block;height:10px;border-radius:2px;background:var(--groen-d)}
 .balk2 .v{text-align:right}
-@media (max-width:700px){.balk .bijgewerkt{display:none}.balk nav.rechts{margin-left:0}}
 [hidden]{display:none!important}
 
 /* AI-samenvatting: zinnen met citaat-ballon, uitklapblokken (dossier en gebied) */
@@ -141,4 +157,3 @@ section.deel h2{margin:0 0 12px}
 #bub{position:absolute;z-index:40;width:min(420px,calc(100vw - 32px));background:var(--zwart);color:var(--wit);padding:12px 14px;border-radius:6px;font:14px/1.45 var(--font);box-shadow:0 6px 20px rgba(0,0,0,.25)}
 #bub a{color:var(--wit)}#bub .b{display:block;margin-top:6px;font-size:13px;opacity:.85}#bub[hidden]{display:none}
 @media (max-width:900px){#bub{position:fixed;left:16px!important;right:16px;bottom:16px;top:auto!important;width:auto}}
-.balk nav a.bijgewerkt{padding:4px 6px;min-height:0;font-size:13px;border-radius:4px}

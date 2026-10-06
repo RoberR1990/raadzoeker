@@ -40,6 +40,7 @@ fi
 if [ "$MODUS" = "nacht" ] && [ "$(date +%u)" = "7" ]; then stap "verkenner" python src/verkenner.py; fi
 stap "dossierbestanden" python src/dossier_data.py
 stap "voorbeelddossiers" python src/showcase.py
+stap "deelkaarten" python src/deelkaart.py   # leest dossier_data en showcase; lettertype Liberation Sans (of RZ_FONTS)
 stap "Lab" python src/lab_data.py
 stap "vergaderingen koppelen" python src/verg_koppel.py
 stap "vooruitblik" python src/vooruit.py

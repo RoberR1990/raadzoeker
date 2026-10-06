@@ -2,7 +2,7 @@
 <html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>raadzoeker · wat zei en besloot de Rotterdamse raad?</title>
 <meta property="og:title" content="raadzoeker"><meta property="og:description" content="Wat de Rotterdamse gemeenteraad zei, besloot en beloofde, per domein en per gebied.">
-<link rel="stylesheet" href="stijl.css?v=11">
+<link rel="stylesheet" href="stijl.css?v=12">
 <style>
 .hero{background:var(--wit);border-radius:var(--r);padding:32px;display:grid;gap:16px}
 .hero h1{font-size:36px}
@@ -111,8 +111,10 @@ details.leg summary{cursor:pointer}
   </div>
   <p class="voet">Onofficieel hulpmiddel op openbare gegevens van de gemeenteraad (iBabs), de Rekenkamer, de wijkraden, het Gemeenteblad en CBS. <a href="over.html">Over deze tool</a>.</p>
 </main>
-<script src="ontwerp.js?v=28"></script>
+<script src="ontwerp.js?v=29"></script>
 <script>
+const tekstKl=al=>{const L=[0,129,31].map((c,i)=>{const v=(255-al*(255-c))/255;return v<=.04045?v/12.92:((v+.055)/1.055)**2.4;}),l=.2126*L[0]+.7152*L[1]+.0722*L[2];return l>.179?'#000':'#fff';};
+
 kop('');
 Promise.all(['d/overzicht.json','d/index.json','start.json'].map(f=>fetch(f).then(r=>r.json()))).then(([O,IX,S])=>{
   const ALLE=IX.d.filter(x=>x.soort!=='kruising').map(x=>Object.assign({sub:[],termen:''},x));
@@ -139,7 +141,7 @@ Promise.all(['d/overzicht.json','d/index.json','start.json'].map(f=>fetch(f).the
   $('mat').innerHTML=`<thead><tr><th></th>${G.map(g=>`<th><a href="wijk.html#${slug(g)}" title="Alles over ${esc(g)}"><span>${esc(g)}</span></a></th>`).join('')}</tr></thead><tbody>`+O.domeinen.map(d=>{
     const m=Math.max(1,...G.map(g=>d.kruising[g]||0));
     return `<tr><th class="rij"><a href="dossier.html#${d.slug}"><span class="lang">${esc(d.naam)}</span><span class="kort">${esc(KORT[d.slug]||d.naam)}</span></a></th>${G.map(g=>{const v=d.kruising[g]||0,a=v/m,s=d.slug+'--'+slug(g);
-      return heeft.has(s)?`<td style="background:rgba(0,129,31,${(0.08+0.85*a).toFixed(2)});color:${a>.55?'#fff':'#000'}"><a href="dossier.html#${s}" title="${esc(d.naam)} in ${esc(g)}: ${v} stukken en debatten">${nf(v)}</a></td>`:`<td class="leeg" title="Te weinig om te tonen">${v||''}</td>`;}).join('')}</tr>`;}).join('')+'</tbody>';
+      return heeft.has(s)?`<td style="background:rgba(0,129,31,${(0.08+0.85*a).toFixed(2)});color:${tekstKl(0.08+0.85*a)}"><a href="dossier.html#${s}" title="${esc(d.naam)} in ${esc(g)}: ${v} stukken en debatten">${nf(v)}</a></td>`:`<td class="leeg" title="Te weinig om te tonen">${v||''}</td>`;}).join('')}</tr>`;}).join('')+'</tbody>';
   $('kiesgeb').innerHTML=G.map(g=>`<a href="wijk.html#${slug(g)}">${esc(g)}</a>`).join('');
   $('kiesdom').innerHTML=O.domeinen.map(d=>`<a href="dossier.html#${d.slug}">${esc(d.naam)}</a>`).join('');
   // net besloten

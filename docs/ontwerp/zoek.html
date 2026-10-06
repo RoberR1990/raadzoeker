@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Zoeken · raadzoeker</title>
-<link rel="stylesheet" href="stijl.css?v=11">
+<link rel="stylesheet" href="stijl.css?v=12">
 <link rel="stylesheet" href="keten.css?v=4">
 <style>
 .kolom{max-width:1100px;margin:0 auto}
@@ -33,8 +33,8 @@
 .leegstaat button.lk{all:unset;cursor:pointer;color:var(--groen);text-decoration:underline}
 .res{border-top:1px solid var(--grijs2);padding:14px 0}
 .res:first-child{border-top:0}
-.res h3{font-size:17px;margin:0 0 4px;font-weight:700}
-.res h3 a{text-decoration:none;color:var(--zwart)}.res h3 a:hover{text-decoration:underline}
+.res h2,.res h3{font-size:17px;margin:0 0 4px;font-weight:700}
+.res h2 a,.res h3 a{text-decoration:none;color:var(--zwart)}.res h2 a:hover,.res h3 a:hover{text-decoration:underline}
 .res .m{font-size:14px;color:var(--sub);display:flex;flex-wrap:wrap;gap:4px 12px}
 .res .soort{background:var(--grijs);border-radius:4px;padding:1px 8px;color:var(--zwart)}
 .res .fr{margin:8px 0 0;font-size:15px;line-height:1.55;max-width:85ch}
@@ -98,8 +98,8 @@ body.zq h1{font-size:24px;margin-bottom:8px}
  </div>
 </main>
 <script src="fzstd.js"></script>
-<script src="ontwerp.js?v=28"></script>
-<script src="keten.js?v=9"></script>
+<script src="ontwerp.js?v=29"></script>
+<script src="keten.js?v=11"></script>
 <script>
 kop('zoeken');
 const JAREN=['2018','2019','2020','2021','2022','2023','2024','2025','2026'];
@@ -261,7 +261,7 @@ async function kaartD(id){
   const vid=v[4]&&seg[0]>=0?`<button type="button" class="knop klein" data-video="${esc(v[4])}" data-sec="${seg[0]}" data-titel="${esc(fd(v[0])+' · '+wie)}">▶ Bekijk dit moment</button>`:'';
   const id8=String(v[3]||'').slice(0,8),eigen=VI.has(id8),ib=v[3]?`https://gemeenteraad.rotterdam.nl/Agenda/Index/${esc(v[3])}`:'';
   const arch=eigen?`vergadering.html?id=${id8}#ap-${encodeURIComponent(a[1])}`:ib;
-  return `<article class="res"><h3>${arch?`<a href="${arch}"${eigen?'':' target="_blank" rel="noopener"'}>${esc(a[2]||v[2])}</a>`:esc(a[2]||v[2])}</h3>
+  return `<article class="res"><h2>${arch?`<a href="${arch}"${eigen?'':' target="_blank" rel="noopener"'}>${esc(a[2]||v[2])}</a>`:esc(a[2]||v[2])}</h2>
     <div class="m"><span class="soort">${v[1]?'Commissie':'Gemeenteraad'}</span><span>${fd(v[0])}</span><span><b>${esc(wie)}</b>${pa?' ('+esc(pa)+')':''}</span>${u[4]?'<span>automatische ondertiteling</span>':''}</div>
     <p class="fr">‘${fragment(seg[1])}’</p><div class="act">${vid}${eigen?`<a href="${arch}">Lees het hele debat</a><a href="${ib}" target="_blank" rel="noopener">Vergadering in iBabs</a>`:ib?`<a href="${ib}" target="_blank" rel="noopener">Hele vergadering (iBabs)</a>`:''}</div></article>`;
 }
@@ -270,7 +270,7 @@ async function kaartS(id){
   if(soort==='Schriftelijke vragen'){const [v,a]=t.split('\nANTWOORD VAN HET COLLEGE');
     fr+=`<p class="fr"><span class="lbl">Vraag</span>${fragment(v.replace(/^VRAGEN\n/,''))}</p>`+(a?`<p class="fr"><span class="lbl">Antwoord college</span>${fragment(a.replace(/^ \([\d-]+\)\n/,''))}</p>`:`<p class="fr"><span class="lbl">Antwoord college</span><span class="sub">nog niet beantwoord, of niet gekoppeld</span></p>`);}
   else fr=`<p class="fr">${fragment(t)}</p>`;
-  return `<article class="res"><h3><a href="${esc(d[4])}" target="_blank" rel="noopener">${esc(d[2]||soort)}</a></h3>
+  return `<article class="res"><h2><a href="${esc(d[4])}" target="_blank" rel="noopener">${esc(d[2]||soort)}</a></h2>
     <div class="m"><span class="soort">${esc(soort)}</span><span>${fd(d[1])}</span>${d[3]?`<span>${esc(d[3])}</span>`:''}</div>${fr}
     <details data-id="${id}"><summary>Lees de hele tekst</summary><div class="vol"></div></details></article>`;
 }

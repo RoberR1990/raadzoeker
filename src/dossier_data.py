@@ -168,7 +168,7 @@ def main():
         ds=TH.get(o['groep']);
         if not ds: print('geen domein voor',o['naam'],o['groep']); continue
         pad=[['Domeinen','domeinen.html'],[DN[ds],'#'+slug(DN[ds])]]+([['Parkeren','#parkeren']] if o['groep']=='Parkeren' else [])
-        sl=slug(o['naam']); o=dict(o,tsum=o.get('tsum') or THS.get(o['groep']),tsum_thema=o['groep']); x=dict(o,groep='Parkeren' if o['groep']=='Parkeren' else DN[ds],pad=pad,stand=STAND,ai=os.path.exists(os.path.join(DOCS,'ontwerp','samenvattingen',sl+'.json')))
+        sl=slug(o['naam']); o=dict(o,tsum=o.get('tsum'),tsum_thema=o['naam'] if o.get('tsum') else None)   # alleen een samenvatting die over dit onderwerp zelf gaat, niet die van het bredere thema (THS): dan toont de pagina 'nog geen samenvatting'; x=dict(o,groep='Parkeren' if o['groep']=='Parkeren' else DN[ds],pad=pad,stand=STAND,ai=os.path.exists(os.path.join(DOCS,'ontwerp','samenvattingen',sl+'.json')))
         schrijf(sl+'.json',x); index.append({'slug':sl,'naam':o['naam'],'groep':x['groep'],'soort':'onderwerp','domein':slug(DN[ds]),'ai':x['ai'],'sub':[],'termen':o['termen']})
     # thema's dwars door de organisatie (uit de 41 thema's, met hun korte samenvatting): eigen dossiers onder Domeinen
     for o in json.load(open(os.path.join(DOCS,'ontwerp','onderwerpen.json'),encoding='utf8')).get('dwars',[]):
@@ -184,6 +184,9 @@ def main():
     for o in dos:
         if o['groep']=='Wijken en gebieden' and o['naam'] in GNAAM.values(): wolk.append([o['naam'],'gebied',slug(o['naam']),o['trend'][-1],o['trend'][-2],bool(os.path.exists(os.path.join(DOCS,'ontwerp','samenvattingen',slug(o['naam'])+'.json')))])
     overzicht['wolk']=wolk
+    for e in index:   # voorbeelddossiers (showcase.py, parkeren_rdw.py): vlag, zodat de pagina geen bestanden opvraagt die er niet zijn
+        for k,f in(('extra','-extra'),('kaart','-kaart')):
+            if os.path.exists(os.path.join(OUT,e['slug']+f+'.json')): e[k]=1
     schrijf('index.json',{'stand':STAND,'d':index}); schrijf('overzicht.json',overzicht)
     # filters voor Zoeken: per document in de tekstindex het domein en de gebieden (bitmasker)
     import zstandard

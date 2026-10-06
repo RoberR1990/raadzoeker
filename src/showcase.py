@@ -120,6 +120,7 @@ def main(slug='parkeren'):
             else: x['toezegging']=kort(re.sub(r'\s+',' ',d.get('Omschrijving') or ''),260)
             spoor.append(x)
     spoor.sort(key=lambda x:x['datum'],reverse=True)
+    TEL={'aan':sum(1 for x in spoor if x['soort']=='motie'),'sinds':'2022'}   # aangenomen moties sinds 2022, geteld voor het afknippen (telregel: docs/ontwerp/tel.js)
     if CFG.get('label'):   # een heel domein: alles wat open is, plus de 200 nieuwste afgedane (anders wordt de pagina te zwaar)
         af=[x for x in spoor if not x['open']]; spoor=[x for x in spoor if x['open'] or x in af[:200]]
     # vastgesteld: Gemeenteblad
@@ -245,7 +246,7 @@ def main(slug='parkeren'):
                'sprekers':[n for n,_ in e['sprekers'].most_common(4)],'sub':[n for n,_ in e['sub'].most_common(2)]} for e in sorted(top,key=lambda e:e['datum'],reverse=True)]
     import akkoord
     akk={'titel':akkoord.TITEL,'url':akkoord.URL,'domein':CFG['domein'],'passages':akkoord.passages(CFG['rx'])}   # letterlijk uit het coalitieakkoord
-    uit={'naam':NAAM,'stand':STAND,'verwant':CFG['verwant'],'akkoord':akk,'sub':[n for n,_ in SUB],'spoor':spoor,'vastgesteld':vast,'komt':komt,'voorstellen':rv,'wijken':wijken,'stemmen':stemmen,'debatten':debatten,'projecten':projecten,
+    uit={'naam':NAAM,'stand':STAND,'verwant':CFG['verwant'],'akkoord':akk,'sub':[n for n,_ in SUB],'tel':TEL,'spoor':spoor,'vastgesteld':vast,'komt':komt,'voorstellen':rv,'wijken':wijken,'stemmen':stemmen,'debatten':debatten,'projecten':projecten,
          'lagen':([['n','In de raad en wijkraden','stukken en debatten over dit domein die de wijk noemen of uit de wijk komen']]+
                   ([['vg',CFG['vergunning'][2],CFG['vergunning'][3]]] if CFG.get('vergunning') else [])+
                   [[k,n,'CBS 2024, ter vergelijking'] for k,n in CFG.get('cbs',[])]) if (CFG.get('vergunning') or CFG.get('cbs')) else []}

@@ -9,7 +9,7 @@ async function toonKeten(d,X,A){
   KD=d;KX=X;KA=A;CIT=[];verberg();KLAAG='n';KJR='alle';PJR='2026';if(KSPEEL){clearInterval(KSPEEL);KSPEEL=null;}KSUB={};KBEL='open';
   if(!KWK){try{[KWK,KKAART]=await Promise.all(['wijken.json','kaart.json'].map(f=>fetch(f).then(r=>r.json())));}catch(e){}}
   if(!KAKK){try{const r=await fetch('akkoord.json');if(r.ok)KAKK=await r.json();}catch(e){}}
-  KPK=null;try{const r=await fetch('d/'+d.slug+'-kaart.json');if(r.ok)KPK=await r.json();}catch(e){}
+  KPK=null;if((ALLE.find(x=>x.slug===d.slug)||{}).kaart){try{const r=await fetch('d/'+d.slug+'-kaart.json');if(r.ok)KPK=await r.json();}catch(e){}}
   const h=decodeURIComponent(location.hash.slice(1)).split('/');KOPEN=new Set(h[1]?[h[1]]:[]);
   document.title=d.naam+' · raadzoeker';
   const crumb=(d.pad||[]).map(([t,u])=>`<a href="${u}">${esc(t)}</a>`).join(' › ')+' › '+esc(d.naam);
@@ -17,12 +17,12 @@ async function toonKeten(d,X,A){
   const verw=(X.verwant||[]).map(s=>ALLE.find(x=>x.slug===s)).filter(Boolean);
   $('dossier').innerHTML=`<div class="crumb">${crumb}</div>
   <div class="kop"><h1>${esc(d.naam)}</h1>
-    <div class="kopacties">${volgKnop(d.slug,d.naam)}<a class="knop" href="briefing.html#${d.slug}">Briefing<span class="lang"> maken (A4, pdf of Word)</span></a><span class="sub" id="deelrij"></span></div>
+    <div class="kopacties">${volgKnop(d.slug,d.naam)}<a class="knop" href="briefing.html#${d.slug}"><span>Briefing<span class="lang"> maken (A4, pdf of Word)</span></span></a><span class="sub" id="deelrij"></span></div>
     ${kinderen.length||kr.length||verw.length?`<div class="kverw">${kinderen.length?`<span><b>Onderwerpen:</b> ${kinderen.map(x=>`<a href="#${x.slug}">${esc(x.naam)}</a>`).join(' · ')}</span>`:''}
       ${verw.length?`<span><b>Verwant:</b> ${verw.map(x=>`<a href="#${x.slug}">${esc(x.naam)}</a>`).join(' · ')}</span>`:''}
       ${kr.length?`<span><b>Per gebied:</b> ${kr.map(x=>`<a href="#${x.slug}">${esc(x.gebied)}</a>`).join(' · ')}</span>`:''}</div>`:''}</div>
   <div id="kinh"></div>`;
-  deel($('deelrij'),d.naam+' in de Rotterdamse raad',new URL('dossier.html?d='+d.slug,location.href).href);
+  deel($('deelrij'),d.naam+' in de Rotterdamse raad',new URL('dossier.html?d='+d.slug,location.href).href,d.slug);
   kTeken();
   if(KOPEN.size){const s=$('k-'+[...KOPEN][0]);if(s)setTimeout(()=>s.scrollIntoView({block:'start'}),50);}else window.scrollTo({top:0});
 }
@@ -70,8 +70,8 @@ function kFilter(id,items){
   return `<div class="kfilter" role="group" aria-label="Toon over"><span class="sub">Toon over:</span><button type="button" data-ksub="${id}|" aria-pressed="${!KSUB[id]}">Alles (${items.length})</button>${subs.map(s=>`<button type="button" data-ksub="${id}|${esc(s)}" aria-pressed="${KSUB[id]===s}">${esc(s)} (${n[s]})</button>`).join('')}</div>`;
 }
 function kBlok(id,stap,titel,telling,regel,inhoud,{kleur='',open=KOPEN.has(id)}={}){
-  return `<section class="kblok ${kleur}${open?' open':''}" id="k-${id}"><button type="button" class="kkop" data-blok="${id}" aria-expanded="${open}" aria-controls="k-${id}i">
-    <span class="kt">${stap?`<span class="kstap">${stap}</span>`:''}${titel}</span><span class="kn">${telling}</span><span class="kpijl" aria-hidden="true">▾</span>${regel?`<span class="kr">${regel}</span>`:''}</button>
+  return `<section class="kblok ${kleur}${open?' open':''}" id="k-${id}"><h2 class="kh"><button type="button" class="kkop" data-blok="${id}" aria-expanded="${open}" aria-controls="k-${id}i">
+    <span class="kt">${stap?`<span class="kstap">${stap}</span>`:''}${titel}</span><span class="kn">${telling}</span><span class="kpijl" aria-hidden="true">▾</span>${regel?`<span class="kr">${regel}</span>`:''}</button></h2>
     <div class="kbody" id="k-${id}i">${inhoud(open)}</div></section>`;
 }
 /* lijst: dicht de eerste 3, open alles met filter erboven */
@@ -82,14 +82,13 @@ function kLijst(id,items,fn,leeg,open,n=3){
 }
 const kBinnen=h=>h.replace('class="vlak deel"','class="deel binnen"');
 function kTeken(){
-  const d=KD,X=KX,A=KA,L=kLijsten();CIT=[];
+  const d=KD,X=KX,A=KA,L=kLijsten(),TEL=telling(d,X),ts=eigenTsum(d);CIT=[];
   const k=A&&A.kern||[];
-  let h=`<section class="vlak kkort2"><div><h2>In het kort ${k.length?'<span class="ai">AI-samenvatting</span>':d.tsum?'<span class="ai">korte AI-samenvatting</span>':''}</h2>
-      <p class="kern">${k.length?alinea(k.slice(0,-1)):d.tsum?esc(d.tsum.kern):'<span class="sub">De samenvatting van dit dossier wordt nog gemaakt.</span>'}</p>
+  let h=`<section class="vlak kkort2"><div><h2>In het kort ${k.length?'<span class="ai">AI-samenvatting</span>':ts?'<span class="ai">korte AI-samenvatting</span>':''}</h2>
+      <p class="kern">${k.length?alinea(k.slice(0,-1)):ts?esc(ts.kern):`<span class="sub">${GEEN_SAMEN}</span>`}</p>
       ${A&&A.verdieping?`<p style="margin-top:8px"><a href="#${d.slug}/achtergrond" data-openen="achtergrond">Lees het hele verhaal</a> <span class="sub">· wijs een zin aan voor het citaat en de bron</span></p>`:''}</div>
     <div>${k.length?`<section class="stand"><div class="t">Stand van zaken · AI</div><p>${zin(k[k.length-1])}</p></section>`:''}
-      <div class="cijfers" style="margin-top:12px"><div class="cijfer"><span class="groot num">${nf(L.open.length)}</span>beloftes open<div class="sub">${L.laat.length?`<span class="stip laat"></span>${L.laat.length} over de termijn`:'geen over de termijn'}</div></div>
-      <div class="cijfer"><span class="groot num">${nf(X.debatten.length)}</span>debatten<div class="sub">sinds 2022</div></div></div></div></section>`;
+      <div class="cijfers" style="margin-top:12px">${telCijfers(TEL).map(([l,n,s])=>`<div class="cijfer"><span class="groot num">${nf(n)}</span>${l}<div class="sub">${s}</div></div>`).join('')}<div class="cijfer"><span class="groot num">${nf(X.debatten.length)}</span>debatten<div class="sub">sinds 2022</div></div></div></div></section>`;
   // komt eraan: altijd zichtbaar, kort
   const komt=[...X.voorstellen.map(v=>({...v,_rv:1})),...X.komt];
   const rv=v=>`<details class="item"><summary><span class="meta"><span class="d">${fd(v.datum)}</span><span><span class="stip open"></span>Raadsvoorstel${v.behandeling?' · '+esc(v.behandeling.slice(0,70)):''}</span></span><span class="t">${esc(v.titel)}</span><span class="pijl" aria-hidden="true">›</span></summary><div class="ctx"><div><a href="${esc(v.url)}" target="_blank" rel="noopener">Open in iBabs</a></div></div></details>`;
@@ -104,11 +103,11 @@ function kTeken(){
     o=>kLijst('gezegd',X.debatten,kDebat,'Geen debatten bij dit filter.',o)+(o&&F&&F.punten&&F.punten.length?kBinnen(blok('kf','Wat de fracties vinden',`<p class="intro">${alinea(F.intro||[])}</p>`,F.punten.map(f=>`<div class="pt"><b>${esc(f.fractie)}</b> ${f.standpunten.map(x=>`${esc(x.wat.replace(/\.$/,''))} ${bron(x)}${cl(x)}`).join('; ')}</div>`).join(''),`Toon ${F.punten.length} fracties`,true)):''));
   // 2 besloten
   const S=X.stemmen;
-  h+=kBlok('besloten','2','Besloten',`${nf(L.mot.length)} moties · ${nf(X.vastgesteld.length)} regels`,`Aangenomen moties, de stemming per fractie en de vastgestelde regels`,
+  h+=kBlok('besloten','2','Besloten',`${nf(TEL.aan)} moties aangenomen · ${nf(X.vastgesteld.length)} regels`,`Aangenomen moties sinds ${TEL.sinds}, de stemming per fractie en de vastgestelde regels`,
     o=>`<h3>Aangenomen moties</h3>`+kLijst('besloten',L.mot,kRij,'Geen aangenomen moties bij dit filter.',o)+(o?kStemtabel()+`<h3 style="margin-top:24px">Vastgesteld in het Gemeenteblad</h3><div class="lijst">${X.vastgesteld.filter(x=>kIn('besloten',x)).slice(0,12).map(v=>`<div class="pt kvast"><span class="sub">${fd(v.datum)} · ${esc(v.soort)}${v.n>1?` · ${v.n} versies`:''}</span><br><a href="${esc(v.url)}" target="_blank" rel="noopener">${esc(v.titel)}</a></div>`).join('')||'<p class="leeg">Niets bij dit filter.</p>'}</div>`:''));
   // 3 beloofd
   const C=A&&A.college,bl={open:L.open,laat:L.laat}[KBEL]||L.open;
-  h+=kBlok('beloofd','3','Beloofd',`${nf(L.open.length)} open${L.laat.length?`, ${nf(L.laat.length)} te laat`:''}`,'Toezeggingen en moties die nog uitgevoerd moeten worden, met het beloftespoor',
+  h+=kBlok('beloofd','3','Beloofd',`${nf(TEL.mo)} moties · ${nf(TEL.tz)} toezeggingen`,`Moties in uitvoering en toezeggingen die nog open staan${TEL.mo_laat+TEL.tz_laat?`, ${nf(TEL.mo_laat+TEL.tz_laat)} over de termijn`:''}, met het beloftespoor`,
     o=>(o?`<div class="kfilter" role="group" aria-label="Status"><span class="sub">Status:</span>${[['open','Open',L.open.length],['laat','Over de termijn',L.laat.length]].map(([k,t,n])=>`<button type="button" data-bel="${k}" aria-pressed="${k===KBEL}">${t} (${n})</button>`).join('')}</div>`:'')+
       kLijst('beloofd',bl,kRij,'Niets in deze lijst.',o)+(o&&C&&C.punten&&C.punten.length?kBinnen(blok('kc','Wat het college beloofde en deed',`<p class="intro">${alinea(C.intro||[])}</p>`,C.punten.map(x=>`<div class="pt">${rijAI(x)}</div>`).join(''),`Toon ${C.punten.length} punten`,true)):''));
   // 4 gedaan

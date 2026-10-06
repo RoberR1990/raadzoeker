@@ -19,13 +19,23 @@ function kop(actief){
   const m=[['zoeken','Zoeken','zoek.html'],['vergaderingen','Vergaderingen','vergaderingen.html'],['domeinen','Domeinen','domeinen.html'],['gebieden','Gebieden','wijk.html']];
   const r=[['verkenner','Verkenner','verkenner.html'],['lab','Inzichten','lab.html'],['over','Over','over.html']];
   const a=x=>`<a href="${x[2]}" class="${x[0]===actief?'on':''}"${x[0]===actief?' aria-current="page"':''}>${x[1]}</a>`;
-  document.querySelector('header.balk').innerHTML=`<div class="in"><a class="merk" href="startpagina.html" aria-label="raadzoeker, naar de startpagina"><img src="logo-wit.svg" alt="" width="46" height="35"><b>raadzoeker</b><small>onofficieel</small></a>
-    <nav aria-label="Hoofdmenu">${m.map(a).join('')}</nav><nav class="rechts" aria-label="Over en experimenten">${r.map(a).join('')}<a class="bijgewerkt" id="bijgewerkt" href="over.html#actueel" title="${esc(FREQ)}">gegevens t/m ${fd(STAND)}</a></nav></div>`;
+  const KLOK='<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="8" r="6.2"/><path d="M8 4.5V8l2.4 1.6"/></svg>';
+  document.querySelector('header.balk').innerHTML=`<div class="in"><a class="merk" href="startpagina.html" aria-label="raadzoeker, naar de startpagina"><img src="logo-wit.svg" alt="" width="53" height="40"><span class="merktekst"><b>raadzoeker</b><small>onofficieel</small></span></a>
+    <div class="menupaneel" id="menupaneel"><nav aria-label="Hoofdmenu">${m.map(a).join('')}</nav><nav class="rechts" aria-label="Over en experimenten">${r.map(a).join('')}<a class="bijgewerkt" id="bijgewerkt" href="over.html#actueel" title="${esc(FREQ)}" aria-label="Gegevens bijgewerkt tot ${fd(STAND)}. Meer over bijwerken">${KLOK}<span class="kopvol">bijgewerkt </span><span class="t">${fd(STAND).replace(/ \d{4}$/,'')}</span></a></nav></div>
+    <div class="kopknoppen"><button type="button" class="menuknop" id="menuknop" aria-expanded="false" aria-controls="menupaneel">Menu</button></div></div>`;
+  (()=>{const h=document.querySelector('header.balk'),kn=$('menuknop'),pa=$('menupaneel');
+    const zet=o=>{h.classList.toggle('open',o);kn.setAttribute('aria-expanded',o);kn.textContent=o?'Sluit':'Menu';};
+    const dicht=t=>{if(!h.classList.contains('open'))return;zet(false);if(t)kn.focus();};
+    kn.onclick=()=>{const o=!h.classList.contains('open');zet(o);if(o)pa.querySelector('a').focus();};
+    addEventListener('keydown',e=>{if(e.key==='Escape')dicht(true);});
+    addEventListener('click',e=>{if(!h.contains(e.target))dicht(false);});
+    pa.addEventListener('click',e=>{if(e.target.closest('a'))zet(false);});
+    matchMedia('(min-width:1100px)').addEventListener('change',e=>{if(e.matches)zet(false);});})();
   // laatste automatische update (status.json schrijft de NAS na elke geslaagde run)
   fetch('../data/status.json',{cache:'no-store'}).then(r=>r.ok?r.json():null).then(st=>{if(!st||!st.laatste)return;const el=document.getElementById('bijgewerkt');if(!el)return;
-    const d=new Date(st.laatste);el.textContent='bijgewerkt '+d.getDate()+' '+MND[d.getMonth()]+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');}).catch(()=>{});
+    const d=new Date(st.laatste),t=d.getDate()+' '+MND[d.getMonth()]+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');el.querySelector('.t').textContent=t;el.setAttribute('aria-label','Bijgewerkt '+t+'. Meer over bijwerken');}).catch(()=>{});
   // rondleiding, hulpknop en welkomstvenster (tour.js)
-  if(!document.getElementById('rz-tour')){const t=document.createElement('script');t.id='rz-tour';t.src='tour.js?v=8';document.body.appendChild(t);const w=document.createElement('script');w.src='woorden.js?v=3';document.body.appendChild(w);const r=document.createElement('script');r.src='stad.js?v=4';document.body.appendChild(r);}
+  if(!document.getElementById('rz-tour')){const t=document.createElement('script');t.id='rz-tour';t.src='tour.js?v=9';document.body.appendChild(t);const w=document.createElement('script');w.src='woorden.js?v=3';document.body.appendChild(w);const r=document.createElement('script');r.src='stad.js?v=4';document.body.appendChild(r);}
   const ic=document.createElement('link');ic.rel='icon';ic.type='image/svg+xml';ic.href='logo.svg';document.head.appendChild(ic);
 }
 /* zoeken in onderwerpen of gebieden; kiezen roept kies(d) aan */
@@ -78,10 +88,14 @@ function debatRij(x,termen){
     <div><a href="${archief}">Lees het debat</a> · <a href="https://gemeenteraad.rotterdam.nl/Agenda/Index/${esc(x[1])}" target="_blank" rel="noopener">Vergadering en video in iBabs</a></div></div></details>`;
 }
 /* deellinks: e-mail, Teams, WhatsApp en kopiëren */
-function deel(el,titel,url){
-  const u=encodeURIComponent(url),t=encodeURIComponent(titel);
-  el.innerHTML=`<span class="sub">Delen:</span> <a href="mailto:?subject=${t}&body=${t}%0A${u}">E-mail</a> · <a href="https://teams.microsoft.com/share?href=${u}&msgText=${t}" target="_blank" rel="noopener">Teams</a> · <a href="https://wa.me/?text=${t}%20${u}" target="_blank" rel="noopener">WhatsApp</a> · <button type="button" class="kopie" style="font:inherit;background:none;border:0;padding:0;text-decoration:underline;cursor:pointer">Kopieer link</button>`;
-  el.querySelector('.kopie').addEventListener('click',e=>{navigator.clipboard.writeText(url).then(()=>{e.target.textContent='Link gekopieerd';},()=>{prompt('Kopieer deze link',url);});});
+let DEELIX=null;   /* deel/index.json: slugs met een deelpagina (og-voorvertoning), geschreven door src/deelkaart.py */
+function deel(el,titel,url,slug){
+  const maak=url=>{const u=encodeURIComponent(url),t=encodeURIComponent(titel);
+    el.innerHTML=`<span class="sub">Delen:</span> <a href="mailto:?subject=${t}&body=${t}%0A${u}">E-mail</a> · <a href="https://teams.microsoft.com/share?href=${u}&msgText=${t}" target="_blank" rel="noopener">Teams</a> · <a href="https://wa.me/?text=${t}%20${u}" target="_blank" rel="noopener">WhatsApp</a> · <button type="button" class="kopie" style="font:inherit;background:none;border:0;padding:0;text-decoration:underline;cursor:pointer">Kopieer link</button>`;
+    el.querySelector('.kopie').addEventListener('click',e=>{navigator.clipboard.writeText(url).then(()=>{e.target.textContent='Link gekopieerd';},()=>{prompt('Kopieer deze link',url);});});};
+  maak(url);
+  if(slug){DEELIX=DEELIX||fetch('deel/index.json').then(r=>r.ok?r.json():[]).catch(()=>[]);
+    DEELIX.then(l=>{if(l.includes(slug)&&el.isConnected){maak('https://raadzoeker.nl/ontwerp/deel/'+slug+'.html');}});}
 }
 
 /* stemhalfrond: 45 zetels, voor groen, tegen grijs; s=[aangenomen,voor,tegen,zijde,fracties] uit de notulen */
@@ -151,11 +165,11 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-volg]');if
   if(RZV.volgt(s)){RZV.weg(s);}else{RZV.zet(s,b.dataset.naam);window.rzToast&&rzToast('Je volgt nu '+b.dataset.naam+'. Nieuws zie je bij ★ bovenaan.');}
   document.querySelectorAll(`[data-volg="${CSS.escape(s)}"]`).forEach(x=>{x.setAttribute('aria-pressed',RZV.volgt(s));x.textContent=RZV.volgt(s)?'★ Volgend':'☆ Volg';});volgBel();});
 // ster met aantal nieuwe items in de kop, alleen als je iets volgt
-async function volgBel(){const nav=document.querySelector('header .rechts');if(!nav)return;let a=nav.querySelector('.volgbel');
+async function volgBel(){const nav=document.querySelector('header .kopknoppen');if(!nav)return;let a=nav.querySelector('.volgbel');
   if(!Object.keys(RZV.lijst()).length){a&&a.remove();return;}
   if(!a){a=document.createElement('a');a.className='volgbel';a.href='volg.html';a.title='Wat je volgt';a.innerHTML='★<span class="n"></span>';nav.insertBefore(a,nav.firstChild);}
   const N=await RZV.nieuws(),n=Object.values(N).reduce((x,l)=>x+l.length,0);a.querySelector('.n').textContent=n?n:'';a.setAttribute('aria-label',n?`Wat je volgt: ${n} nieuw`:'Wat je volgt');}
-(()=>{const s=document.createElement('style');s.textContent=`.volgbel{position:relative;font-size:18px;text-decoration:none;color:var(--wit);padding:6px 10px}.volgbel .n:not(:empty){position:absolute;top:0;right:0;background:#E56E02;color:#fff;border-radius:999px;font-size:11px;font-weight:700;padding:1px 5px;line-height:1.3}
+(()=>{const s=document.createElement('style');s.textContent=`.volgbel{position:relative;font-size:20px;text-decoration:none;color:#fff;padding:6px 10px;min-height:44px;display:inline-flex;align-items:center}.volgbel .n:not(:empty){position:absolute;top:0;right:0;background:#E56E02;color:#fff;border-radius:999px;font-size:11px;font-weight:700;padding:1px 5px;line-height:1.3}
 .volgknop[aria-pressed=true]{background:var(--groen-zacht);border-color:var(--groen);color:var(--zwart)}`;document.head.appendChild(s);
   const m=document.createElement('link');m.rel='manifest';m.href='/manifest.webmanifest';document.head.appendChild(m);
   setTimeout(volgBel,300);})();
