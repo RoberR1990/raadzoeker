@@ -56,6 +56,7 @@ details.leg summary{cursor:pointer}
 .mat th.rij{position:sticky;left:0;background:var(--wit);z-index:1}
 .mat th.rij a .kort{display:none}
 @media (max-width:600px){
+  .wolk{gap:2px 9px;padding:4px 0;line-height:1}.wolk a{padding:1px 2px}
   .hero{padding:18px;gap:12px}.hero h1{font-size:26px}.hero .lead{font-size:16px}
   .tellers{grid-template-columns:repeat(2,minmax(0,1fr))}.tellers b{font-size:24px}
   .zoekrij{flex-wrap:nowrap}.zoekrij .zoekveld{min-width:0}.zoekrij input{font-size:16px;padding:12px 16px}.zoekrij button{padding:0 18px;min-height:48px}
@@ -115,10 +116,11 @@ Promise.all(['d/overzicht.json','d/index.json','start.json'].map(f=>fetch(f).the
   // woordwolk: grootte per soort geschaald (wortel), stijgers met pijl
   const W=O.wolk||[],sc={};['onderwerp','gebied'].forEach(t=>{const v=W.filter(x=>x[1]===t).map(x=>x[3]);sc[t]=[Math.min(...v),Math.max(...v)];});
   const volg=[];[...W].sort((a,b)=>b[3]/sc[b[1]][1]-a[3]/sc[a[1]][1]).forEach((x,i)=>i%2?volg.unshift(x):volg.push(x));
-  const N=innerWidth<600?18:32,grens=[...W].sort((a,b)=>b[3]/sc[b[1]][1]-a[3]/sc[a[1]][1]).slice(0,N);let alles=false;
+  const kortW=n=>({'Rotterdam The Hague Airport':'RTHA','Hillegersberg-Schiebroek':'Hillegersberg','Kralingen-Crooswijk':'Kralingen'})[n]||(n.length>14?n.split(/ en |, |\//)[0]:n);
+  const N=innerWidth<600?24:32,grens=[...W].sort((a,b)=>b[3]/sc[b[1]][1]-a[3]/sc[a[1]][1]).slice(0,N);let alles=false;
   const tekenWolk=()=>{const lijst=alles?volg:volg.filter(x=>grens.includes(x));
   $('wolk').innerHTML=lijst.map(([n,t,sl,nu,vo,ai])=>{const [lo,hi]=sc[t],f=Math.sqrt((nu-lo)/Math.max(1e-9,hi-lo)),stijg=vo>0&&nu/vo>=1.25&&nu>=lo+(hi-lo)*.1;
-    return `<a class="${t==='gebied'?'geb':''}" href="${t==='gebied'?'wijk.html?g='+sl:'dossier.html?d='+sl}" style="font-size:${((14+f*26)*(innerWidth<600?.8:1)).toFixed(0)}px;font-weight:${f>.5?700:400}" title="${esc(n)}: ${String(nu).replace('.',',')} per 100.000 woorden in 2026 (${String(vo).replace('.',',')} in 2025)">${esc(n)}${stijg?'<span class="st" aria-label="stijgt">▲</span>':''}${ai?'<span class="ai">AI</span>':''}</a>`;}).join('');};
+    return `<a class="${t==='gebied'?'geb':''}" href="${t==='gebied'?'wijk.html?g='+sl:'dossier.html?d='+sl}" style="font-size:${(innerWidth<600?10+f*9:14+f*26).toFixed(0)}px;font-weight:${f>.5?700:400}" title="${esc(n)}: ${String(nu).replace('.',',')} per 100.000 woorden in 2026 (${String(vo).replace('.',',')} in 2025)">${esc(innerWidth<600?kortW(n):n)}${stijg?'<span class="st" aria-label="stijgt">▲</span>':''}${ai?'<span class="ai">AI</span>':''}</a>`;}).join('');};
   tekenWolk();if(W.length<=N)$('meerwolk').hidden=true;$('meerwolk').onclick=()=>{alles=!alles;$('meerwolk').textContent=alles?'Toon minder':'Toon alle onderwerpen';tekenWolk();};
   // matrix domein x gebied (op de telefoon: korte namen en kleine vakjes, zodat alle gebieden passen)
   const KORT={'wonen-en-bouwen':'Wonen','buitenruimte':'Buitenruimte','mobiliteit':'Mobiliteit','economie-en-haven':'Economie','klimaat-en-energie':'Klimaat','veiligheid':'Veiligheid','zorg-welzijn-en-jeugd':'Zorg','onderwijs':'Onderwijs','werk-inkomen-en-armoede':'Werk','samenleven-en-participatie':'Samenleven','cultuur-en-sport':'Cultuur','bestuur-en-organisatie':'Bestuur','financien':'Financiën'};
