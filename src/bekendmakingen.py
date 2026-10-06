@@ -37,9 +37,7 @@ if __name__=='__main__':
         if os.path.exists(OUT):
             rij=[l for l in open(OUT,encoding='utf8') if l.strip() and json.loads(l).get('d','')[:7] not in opnieuw]
             tmp=OUT+'.tmp'; open(tmp,'w',encoding='utf8').writelines(rij); os.replace(tmp,OUT)
-        klaar-=opnieuw; open(KLAAR,'w').write('
-'.join(sorted(klaar))+'
-')
+        klaar-=opnieuw; open(KLAAR,'w').write(chr(10).join(sorted(klaar))+chr(10))
     with open(OUT,'a',encoding='utf8') as f:
         for j in range(2018,vandaag.year+1):
             for m in range(1,13):
