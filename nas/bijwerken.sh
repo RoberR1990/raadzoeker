@@ -39,6 +39,7 @@ if [ "$MODUS" = "nacht" ] && [ "$(date +%u)" = "7" ]; then stap "verkenner" pyth
 stap "dossierbestanden" python src/dossier_data.py
 stap "voorbeelddossiers" python src/showcase.py
 stap "Lab" python src/lab_data.py
+stap "vergaderingen koppelen" python src/verg_koppel.py
 printf '{"laatste":"%s","modus":"%s","ok":true,"stand":"%s"}\n' "$(date -Iseconds)" "$MODUS" "$RZ_STAND" | tee /werk/status.json > docs/data/status.json
 git add -A docs
 if git diff --cached --quiet; then echo "niets veranderd" >>"$LOG"; exit 0; fi

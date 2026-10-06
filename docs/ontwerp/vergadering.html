@@ -16,6 +16,12 @@
 .dch span{color:var(--sub)}
 .dch a{background:var(--groen-zacht);border-radius:999px;padding:4px 11px;text-decoration:none;color:var(--zwart)}
 .dch a:hover{text-decoration:underline}
+.spoor{margin:14px 0 0;padding:0;list-style:none;border-left:3px solid var(--grijs2);font-size:14px}
+.spoor li{position:relative;padding:3px 0 3px 16px;display:grid;grid-template-columns:52px minmax(0,1fr);gap:0 6px}.spoor li::before{content:'';position:absolute;left:-7px;top:9px;width:11px;height:11px;border-radius:50%;background:var(--wit);border:2px solid var(--groen-mid)}
+.spoor li.hier{font-weight:700}.spoor li.hier::before{background:var(--groen);border-color:var(--groen)}.spoor .dt{color:var(--sub);font-weight:400}.spoor .later::before{border-style:dashed}
+.mo{display:flex;gap:8px;align-items:baseline;padding:4px 0;font-size:15px}.mo .u{flex:none;font-size:12px;font-weight:700;border-radius:999px;padding:1px 8px;background:var(--grijs2)}
+.mo .u.ja{background:var(--groen);color:#fff}.mo .p{color:var(--sub);font-size:13px}
+details.st{margin-top:10px;font-size:14px}details.st summary{cursor:pointer;color:var(--sub)}details.st a{display:block;padding:3px 0}
 .toc .tt{display:block;font-size:12px;color:var(--sub);font-weight:400}
 .schakel{display:inline-flex;background:var(--grijs2);border-radius:999px;padding:4px;margin:20px 0 6px}
 .schakel button{border:0;background:none;border-radius:999px;padding:10px 18px;font:700 15px var(--font);cursor:pointer;color:var(--zwart)}
@@ -63,7 +69,9 @@ const dlang=d=>{const [y,m,dd]=d.split('-');return `${+dd} ${MAAND[+m-1]} ${y}`;
 const klok=s=>V.start?new Date(Date.parse(V.start)+s*1000).toLocaleTimeString('nl-NL',{hour:'2-digit',minute:'2-digit',timeZone:'Europe/Amsterdam'}):tijd(s);
 const DLINK=d=>(d.soort==='gebied'?'wijk.html?g=':'dossier.html?d=')+encodeURIComponent(d.slug);
 const tijd=s=>`${Math.floor(s/3600)}:${String(Math.floor(s/60)%60).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
-let V=null,MODUS='kort';
+let V=null,MODUS='kort',SP={};
+const IB='https://gemeenteraad.rotterdam.nl';
+const dkort=d=>{const [y,m,dd]=d.split('-');return `${+dd} ${MAAND[+m-1].slice(0,3)}${y!==V.datum.slice(0,4)?' '+y:''}`;};
 try{MODUS=localStorage.getItem('rz-vmodus')||'kort';}catch(e){}
 if(location.hash.startsWith('#ap-')||location.hash==='#uitgebreid')MODUS='uitgebreid';
 const knopVideo=(x,label)=>V.video&&x.sec!=null?`<button type="button" class="speel" data-video="${esc(V.video)}" data-sec="${x.sec}" data-titel="${esc(V.naam+' · '+dlang(V.datum)+' · '+(x.wie_bron||''))}" title="Bekijk dit moment in de video (${tijd(x.sec)})">▶ ${label||tijd(x.sec)}</button>`:'';
@@ -93,6 +101,13 @@ function tekenKort(){
   return `<div class="kort">${al.filter(Boolean).map(p=>`<p>${p.join(' ')}</p>`).join('')}<div id="kcit"></div>
     <p style="font-size:15px;margin-top:16px"><button type="button" class="knop wit" data-m2="uitgebreid">Lees de uitgebreide versie (${V.leestijd.uitgebreid} min) →</button></p></div>`;
 }
+function spoorHtml(a){const x=SP[ID+'|'+a.nr];if(!x)return '';let h='';
+  if(x.mo.length)h+=`<h3>Moties en amendementen</h3>${x.mo.map(([soort,t,p,u,id])=>`<div class="mo"><span class="u${/aangenomen/i.test(u)?' ja':''}">${esc(u||'nog geen uitslag')}</span><span><a href="${IB}/Reports/Item/${id}" target="_blank" rel="noopener">${esc(t)}</a>${p?` <span class="p">${esc(soort.toLowerCase())} · ${esc(p)}</span>`:''}</span></div>`).join('')}<p class="sub" style="font-size:12px;margin:4px 0 0">Uitslag volgens de griffie (iBabs).</p>`;
+  if(x.tl.length)h+=`<h3>Dit onderwerp in de raad en commissies</h3><ol class="spoor">${x.tl.map(([d,org,nr,t,id8,ag,hier])=>{const later=d>V.datum,naam=esc(org)+(later?' (gepland)':'');
+    const link=hier?`<span>${naam} · deze vergadering</span>`:id8?`<a href="vergadering.html?id=${id8}#ap-${encodeURIComponent(nr)}">${naam}</a> · samenvatting`:ag?`<a href="${IB}/Agenda/Index/${esc(ag)}" target="_blank" rel="noopener">${naam}</a>`:naam;
+    return `<li class="${hier?'hier':''}${later?' later':''}"><span class="dt">${dkort(d)}</span><span>${link}${hier?'':`<br><span class="sub">${esc(t)}</span>`}</span></li>`;}).join('')}</ol>`;
+  if(x.st.length)h+=`<details class="st"><summary>Stukken bij dit onderwerp (${x.st.length})</summary>${x.st.map(([soort,t,id])=>`<a href="${IB}/Reports/Item/${id}" target="_blank" rel="noopener">${esc(t)}</a>`).join('')}</details>`;
+  return h;}
 function tekenUit(ap){
   return `<div class="uitgebreid"><nav class="toc" aria-label="Onderwerpen">${ap.map(a=>`<a href="#ap-${esc(a.nr)}">${esc(a.titel)}${a.van!=null?`<span class="tt">${klok(a.van)} uur</span>`:''}</a>`).join('')}</nav><div>${ap.map(a=>`
     <section class="ap" id="ap-${esc(a.nr)}"><h2><span>${esc(a.titel)}</span><span class="nr">${esc(a.nr)}</span><button type="button" class="link" data-link="${esc(a.nr)}">kopieer link</button></h2>
@@ -102,6 +117,7 @@ function tekenUit(ap){
       ${a.college.length?`<h3>Het college</h3>${a.college.map(x=>`<div class="pt coll" tabindex="0"><span class="wie">${esc(x.wie)}</span><span class="wat2">${esc(x.punt)}</span></div>`).join('')}`:''}
       ${a.toezeggingen.length?`<h3>Toezeggingen</h3>${a.toezeggingen.map(x=>`<div class="tz">${esc(x.wat)} ${knopVideo(x)}</div>`).join('')}`:''}
       ${a.uitkomst?`<div class="uitk"><b>Uitkomst:</b> ${esc(a.uitkomst)}</div>`:''}
+      ${spoorHtml(a)}
       ${(a.dossiers||[]).length?`<div class="dch"><span>Meer hierover:</span>${a.dossiers.map(d=>`<a href="${DLINK(d)}">${esc(d.naam)}</a>`).join('')}</div>`:''}
     </section>`).join('')}</div></div>`;
 }
@@ -118,6 +134,6 @@ document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.matches('.z
 document.addEventListener('click',e=>{const v=e.target.closest('[data-video]');if(v)kVideo(v.dataset.video,+v.dataset.sec,v.dataset.titel);});
 function volgToc(){const L=[...document.querySelectorAll('.toc a')];const io=new IntersectionObserver(es=>{es.forEach(en=>{if(en.isIntersecting){L.forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+en.target.id));}});},{rootMargin:'-20% 0px -70% 0px'});document.querySelectorAll('.ap').forEach(s=>io.observe(s));
   if(location.hash.startsWith('#ap-'))setTimeout(()=>document.getElementById(decodeURIComponent(location.hash.slice(1)))?.scrollIntoView(),60);}
-fetch('verg/'+ID+'.json',{cache:'no-cache'}).then(r=>{if(!r.ok)throw 0;return r.json();}).then(d=>{V=d;document.title=V.naam+' '+dlang(V.datum)+' · raadzoeker';teken();})
+Promise.all([fetch('verg/'+ID+'.json',{cache:'no-cache'}).then(r=>{if(!r.ok)throw 0;return r.json();}),fetch('verg/spoor.json',{cache:'no-cache'}).then(r=>r.ok?r.json():{}).catch(()=>({}))]).then(([d,sp])=>{V=d;SP=sp;document.title=V.naam+' '+dlang(V.datum)+' · raadzoeker';teken();})
   .catch(()=>{$('v').innerHTML='<h1>Hier ligt niks</h1><p>Deze vergadering is (nog) niet samengevat. <a href="vergaderingen.html">Naar alle vergaderingen</a>.</p>';});
 </script></body></html>
