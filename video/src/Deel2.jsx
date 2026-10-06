@@ -1,70 +1,78 @@
-// Promovideo v4, deel 2 (16 s): Zoeken. 'Niet lullen, maar zoeken.' Echte resultaten uit de site (src/d2.json).
+// Promovideo v4, deel 2 (16 s): Zoeken. Diepte (één woord, alle soorten bronnen) en breedte (snel wisselende woorden).
+// Echte resultaten uit de zoekfunctie van de site (src/d2.json, src/d2b_ruw.json).
 import React from 'react';
 import {AbsoluteFill, Sequence, useCurrentFrame} from 'remotion';
-import {C, F, ci, sp, inSchuif, Scene, Kop, Kaart, Zoekbalk, getypt, Mark, zinnen} from './stijl';
+import {C, F, ci, sp, inSchuif, Scene, Kop, Kaart, Zoekbalk, getypt, Mark} from './stijl';
 import X from './d2.json';
+import B from './d2b_ruw.json';
 
 export const DUUR2 = 480;
-const W = X.woonfraude, FY = X.Feyenoord;
-const getal = (s, f, a, b) => Math.round(+s.replace(/\./g, '') * ci(f, a, b)).toLocaleString('nl-NL');
+const W = X.woonfraude;
+const getal = (s, f, a, b) => Math.round(+String(s).replace(/\./g, '') * ci(f, a, b)).toLocaleString('nl-NL');
 
-const Fragment = ({k, woord, f, d, style}) => (
-  <Kaart style={{padding: '26px 32px', ...style, ...inSchuif(f, d, 30)}}>
-    <div style={{fontSize: 22, color: C.sub}}>{k.waar} · {k.datum} · <b style={{color: '#000'}}>{k.wie}</b></div>
-    <div style={{fontSize: 22, color: C.sub, marginTop: 4, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'}}>{k.titel}</div>
-    <div style={{fontSize: 30, lineHeight: 1.45, marginTop: 12}}>‘<Mark tekst={zinnen(k.citaat, woord)} woord={woord} />’</div>
-    <div style={{fontSize: 22, color: C.groen, fontWeight: 700, marginTop: 10}}>▶ Bekijk dit moment</div>
-  </Kaart>
-);
-const Tellers = ({ng, ns, f, d}) => (
-  <div style={{position: 'absolute', left: 1130, top: 250, display: 'flex', gap: 14, ...inSchuif(f, d, 14)}}>
-    {[['Gezegd', ng], ['Stukken', ns]].map(([a, n], i) => (
-      <div key={a} style={{fontSize: 28, fontWeight: 700, background: i ? '#fff' : C.groen, color: i ? '#000' : '#fff', borderRadius: 999, padding: '12px 26px', boxShadow: '0 4px 14px rgba(0,0,0,.08)'}}>
-        {a} <span style={{fontWeight: 400, opacity: 0.85}}>{getal(n, f, d, d + 30)}</span></div>
-    ))}
-  </div>
-);
+// zes soorten bronnen bij 'woonfraude' (titels en data uit de zoekresultaten)
+const BRON = [
+  ['Vergaderverslag', C.groen, W.verslag[0][1], 'Gemeenteraad · 1 okt 2026', 'Het debat over malafide verhuurders en handhaving, samengevat'],
+  ['Debat', C.navy, 'Rashied Dahoe (DENK)', 'Commissie · 3 jul 2025', '‘De aanpak op woonfraude moet niet alleen gericht zijn op statushouders.’'],
+  ['Motie', '#8A5A00', 'Niet frauderen op Zuid', 'Leefbaar Rotterdam · 11 apr 2019', 'Het onderwerp woonfraude heeft recent veel aandacht'],
+  ['Vragen en antwoord', C.blauw, 'Onderverhuur sociale huur: wat gebeurt er echt?', 'Leefbaar Rotterdam · 8 jan 2026 · beantwoord 14 apr', 'Wat doet de gemeente concreet tegen illegale onderhuur en woonfraude?'],
+  ['Collegebrief', C.sub, 'Voortgang Goed Huren en Verhuren 2025', 'College · 12 feb 2026', 'Samen optrekken tegen overbewoning, woonfraude en onderhoudsproblemen'],
+  ['Wijkraad', C.mid, 'Uitvoeringsplan Integrale Aanpak Tarwewijk', 'Wijkraad Tarwewijk · 24 mrt 2026', 'Aanpak van woonoverlast, woonfraude, te hoge huren'],
+];
+const BREED = ['tramlijn 4', 'Tweebosbuurt', 'hittestress', 'deelscooters', 'Feyenoord'];
 
-// rood-witte confetti (zoals op de site bij 'Feyenoord')
-const STUK = Array.from({length: 140}, (_, i) => ({x: (i * 97) % 1920, v: 6 + ((i * 37) % 9), r: (i * 53) % 360, d: (i * 7) % 20, w: 14 + (i % 4) * 4, k: i % 2}));
-const Confetti = ({f, start}) => f < start ? null : (
-  <AbsoluteFill style={{pointerEvents: 'none'}}>
-    {STUK.map((s, i) => {const t = f - start - s.d; if (t < 0) return null; const y = -40 + t * s.v * 1.6, x = s.x + Math.sin((t + i) / 7) * 30;
-      return <div key={i} style={{position: 'absolute', left: x, top: y, width: s.w, height: s.w * 0.45, background: s.k ? C.rood : '#fff', border: s.k ? 'none' : `1px solid ${C.lijn}`, transform: `rotate(${s.r + t * 9}deg)`, opacity: ci(f, start + 70, start + 95, 1, 0)}} />;})}
-  </AbsoluteFill>
-);
-
-const Zoeken = () => {
+const Diepte = () => {
   const f = useCurrentFrame();
-  // 0–75: grote titel; 75–300: woonfraude; 300–480: Feyenoord
-  const omhoog = ci(f, 62, 84), fey = f >= 300;
-  const tekst = f < 300 ? getypt('woonfraude', f, 90) : getypt('Feyenoord', f, 312);
-  const titel = ci(f, 0, 14) * ci(f, 60, 74, 1, 0);
   return (
-    <Scene dur={DUUR2}>
-      <div style={{position: 'absolute', left: 0, right: 0, top: 330, textAlign: 'center', fontSize: 104, fontWeight: 700, color: C.navy, opacity: titel, transform: `scale(${0.92 + 0.08 * sp(f, 0)})`}}>Niet lullen, maar zoeken.</div>
-      <Kop f={f} d={84} uit={290} tekst="Zoek in alles wat de raad zei en schreef" sub="Debatten, moties, brieven en raadsvoorstellen, sinds 2018" />
-      <Kop f={f} d={312} tekst="Ook als het over Feyenoord gaat" sub="Elk zoekwoord, elk moment in de vergadering" />
-      <Zoekbalk x={ci(omhoog, 0, 1, 380, 90)} y={ci(omhoog, 0, 1, 560, 236)} w={ci(omhoog, 0, 1, 1160, 1000)} h={ci(omhoog, 0, 1, 112, 88)} tekst={tekst} f={f} />
-      {!fey && <>
-        <Tellers ng={W.ng} ns={W.ns} f={f} d={130} />
-        <Kaart style={{left: 90, top: 360, width: 1740, height: 220, borderTop: `8px solid ${C.groen}`, padding: '24px 34px', ...inSchuif(f, 140)}}>
-          <div style={{fontSize: 30, fontWeight: 700}}>Uit de vergaderverslagen</div>
-          <div style={{fontSize: 22, color: C.sub, marginTop: 10}}>{W.verslag[0][0]}</div>
-          <div style={{fontSize: 32, fontWeight: 700, color: C.groen, marginTop: 4}}>{W.verslag[0][1]}</div>
-          <div style={{fontSize: 24, color: C.sub, marginTop: 6, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'}}>{W.verslag[0][2]}</div>
-        </Kaart>
-        <Fragment k={W.kaarten[1]} woord="woonfraude" f={f} d={170} style={{left: 90, top: 610, width: 850, height: 420}} />
-        <Fragment k={W.kaarten[2]} woord="woonfraude" f={f} d={185} style={{left: 980, top: 610, width: 850, height: 420}} />
-      </>}
-      {fey && <>
-        <Tellers ng={FY.ng} ns={FY.ns} f={f} d={350} />
-        <Fragment k={FY.kaarten[0]} woord="Feyenoord" f={f} d={365} style={{left: 90, top: 360, width: 1740, height: 300}} />
-        <Fragment k={FY.kaarten[1]} woord="Feyenoord" f={f} d={380} style={{left: 90, top: 690, width: 1740, height: 300}} />
-        <Confetti f={f} start={346} />
-      </>}
+    <Scene dur={300}>
+      <Kop f={f} tekst="Zoek in alles wat de raad zei en schreef" sub="Debatten, verslagen, moties, vragen, brieven en wijkraden, sinds 2018" />
+      <Zoekbalk x={90} y={250} w={1000} h={88} tekst={getypt('woonfraude', f, 22)} f={f} />
+      <div style={{position: 'absolute', left: 1130, top: 264, display: 'flex', gap: 14, ...inSchuif(f, 58, 14)}}>
+        <div style={{fontSize: 28, fontWeight: 700, background: C.groen, color: '#fff', borderRadius: 999, padding: '12px 26px'}}>Gezegd <span style={{fontWeight: 400}}>{getal(W.ng, f, 58, 84)}</span></div>
+        <div style={{fontSize: 28, fontWeight: 700, background: '#fff', borderRadius: 999, padding: '12px 26px'}}>Stukken <span style={{fontWeight: 400}}>{getal(W.ns, f, 58, 84)}</span></div>
+      </div>
+      {BRON.map(([soort, kl, titel, waar, tekst], i) => {
+        const d = 76 + i * 16, s = sp(f, d, {damping: 15, stiffness: 120}), col = i % 3, rij = Math.floor(i / 3);
+        return (
+          <Kaart key={soort} style={{left: 90 + col * 590, top: 380 + rij * 330, width: 560, height: 300, padding: '26px 30px', borderTop: `7px solid ${kl}`,
+            opacity: Math.min(1, s), transform: `translateY(${(1 - s) * 60}px) scale(${0.94 + 0.06 * s})`}}>
+            <span style={{fontSize: 20, fontWeight: 700, color: '#fff', background: kl, borderRadius: 999, padding: '4px 14px'}}>{soort}</span>
+            <div style={{fontSize: 30, fontWeight: 700, lineHeight: 1.2, margin: '16px 0 6px'}}>{titel}</div>
+            <div style={{fontSize: 20, color: C.sub}}>{waar}</div>
+            <div style={{fontSize: 24, lineHeight: 1.4, marginTop: 12}}><Mark tekst={tekst} woord="woonfraude" /></div>
+          </Kaart>
+        );
+      })}
     </Scene>
   );
 };
 
-export const Deel2 = () => <AbsoluteFill style={{background: C.grijs, fontFamily: F}}><Sequence from={0} durationInFrames={DUUR2}><Zoeken /></Sequence></AbsoluteFill>;
+// kleine rood-witte knipoog bij Feyenoord, rond de zoekbalk
+const Knipoog = ({f, start}) => f < start ? null : (
+  <>{Array.from({length: 26}, (_, i) => {const t = f - start, a = (i / 26) * Math.PI * 2, r = t * (7 + (i % 5));
+    return <div key={i} style={{position: 'absolute', left: 960 + Math.cos(a) * r * 1.6, top: 470 + Math.sin(a) * r * 0.7 + t * t * 0.08, width: 14, height: 7, background: i % 2 ? C.rood : '#fff', border: i % 2 ? 'none' : `1px solid ${C.lijn}`, transform: `rotate(${t * 12 + i * 30}deg)`, opacity: ci(f, start + 18, start + 34, 1, 0)}} />;})}</>
+);
+const Breedte = () => {
+  const f = useCurrentFrame(), per = 34, i = Math.min(BREED.length - 1, Math.floor(Math.max(0, f - 14) / per)), q = BREED[i], t0 = 14 + i * per;
+  const [ng, ns] = B.breed[q];
+  return (
+    <Scene dur={180}>
+      <Kop f={f} tekst="Over elk onderwerp" sub="Van tramlijn tot Tweebosbuurt" />
+      <Zoekbalk x={380} y={420} w={1160} h={110} tekst={getypt(q, f, t0, 2)} f={f} />
+      <div style={{position: 'absolute', left: 0, right: 0, top: 590, textAlign: 'center', fontSize: 52, color: C.sub, opacity: ci(f, t0 + 12, t0 + 18)}}>
+        <b style={{color: C.groen}}>{getal(ng, f, t0 + 12, t0 + 24)}</b> keer gezegd · <b style={{color: '#000'}}>{getal(ns, f, t0 + 12, t0 + 24)}</b> stukken
+      </div>
+      <div style={{position: 'absolute', left: 0, right: 0, top: 700, display: 'flex', justifyContent: 'center', gap: 14}}>
+        {BREED.map((w, j) => <span key={w} style={{fontSize: 26, borderRadius: 999, padding: '8px 20px', background: j <= i ? C.zacht : '#fff', color: j <= i ? C.groenD : C.sub, fontWeight: j === i ? 700 : 400, ...inSchuif(f, 14 + j * per, 10)}}>{w}</span>)}
+      </div>
+      <Knipoog f={f} start={14 + 4 * per + 12} />
+    </Scene>
+  );
+};
+
+export const Deel2 = () => (
+  <AbsoluteFill style={{background: C.grijs, fontFamily: F}}>
+    <Sequence from={0} durationInFrames={300}><Diepte /></Sequence>
+    <Sequence from={300} durationInFrames={180}><Breedte /></Sequence>
+  </AbsoluteFill>
+);
