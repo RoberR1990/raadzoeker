@@ -2,7 +2,7 @@
 <html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>raadzoeker · deze week in de raad</title>
 <meta name="description" content="Schets van een nieuwe startpagina: een echt citaat uit de laatste vergadering, wat eraan komt, en dossiers in beweging.">
-<link rel="stylesheet" href="stijl.css?v=13">
+<link rel="stylesheet" href="stijl.css?v=15">
 <style>
 .schets{background:var(--grijs2);font-size:13px;text-align:center;padding:4px 16px;color:var(--zwart)}
 .band{background:#00811F;color:#fff}
@@ -16,11 +16,13 @@
 .cit footer{margin-top:16px;font-size:16px;line-height:1.45}
 .cit footer b{font-weight:700}
 .cit .ap{margin-top:2px}
-.acties{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;margin-top:20px}
-.band .witknop{display:inline-flex;align-items:center;gap:8px;background:#fff;color:#000;border:0;border-radius:999px;padding:12px 20px;min-height:44px;font:700 16px/1 var(--font);cursor:pointer;text-decoration:none}
-.band .witknop:hover{background:#E1EFE2}
-.band .rand{background:none;color:#fff;border:2px solid #fff;border-radius:999px;padding:0 18px;min-height:44px;font:700 16px var(--font);cursor:pointer}
-.band .rand:hover{background:#004C31}
+.acties{display:flex;flex-wrap:nowrap;gap:8px;align-items:center;margin-top:20px}
+/* drie gelijke knoppen: wit omlijnd; alleen de hoofdactie (het moment) is gevuld */
+.band .bknop{display:inline-flex;align-items:center;justify-content:center;gap:6px;flex:0 1 auto;min-width:0;height:44px;padding:0 18px;border:2px solid #fff;border-radius:999px;background:transparent;color:#fff;font:700 16px/1 var(--font);white-space:nowrap;cursor:pointer;text-decoration:none}
+.band .bknop:hover{background:#004C31;text-decoration:none}
+.band .bknop.hoofd{background:#fff;color:#00811F}
+.band .bknop.hoofd:hover{background:#E1EFE2}
+.band .bknop .kort{display:none}
 .komt{background:#004C31;border-radius:var(--r);padding:20px}
 .komt h2{font-size:20px;margin-bottom:12px;color:#fff}
 .komt ul{list-style:none;margin:0;padding:0;display:grid;gap:12px}
@@ -81,7 +83,8 @@
   .band .komt{display:none}.komt.mob{display:block;margin-top:24px;background:#004C31;color:#fff}
   .cit p{font-size:22px;line-height:1.3}
   .cit footer{font-size:15px;margin-top:12px}
-  .acties{margin-top:14px}
+  .acties{margin-top:14px;gap:6px}
+  .band .bknop{padding:0 11px;font-size:15px;gap:4px}.band .bknop .lang{display:none}.band .bknop .kort{display:inline}
   .zoekband{padding:20px 16px 4px}.zoekband input{font-size:16px;padding:14px 18px}.zoekband button{padding:0 20px;min-height:52px}
   .pagina{padding:8px 16px 48px}
   .raster{grid-template-columns:minmax(0,1fr)}
@@ -121,7 +124,7 @@
   <p class="wrapped">Terugkijken? Zie <a href="lab.html#k=wrapped">Raad Wrapped</a>: het jaar van de raad in woorden en cijfers.</p>
 </div>
 </main>
-<script src="ontwerp.js?v=32"></script>
+<script src="ontwerp.js?v=33"></script>
 <script>
 kop('');
 const J=(f,o)=>fetch(f,o).then(r=>{if(!r.ok)throw 0;return r.json();});
@@ -169,7 +172,7 @@ const kies=(V,id8)=>{ // vaste regel: niet-procedureel agendapunt met de langste
 function toonCitaat(c){
   $('cit').setAttribute('aria-busy','false');
   $('cit').innerHTML=`<blockquote style="margin:0"><p>‘${esc(c.t)}’</p></blockquote><footer><b>${esc(c.wie)}</b>, ${esc(c.fractie)}<div class="ap">${esc(c.naam)} · ${fdl(c.datum)} · ${esc(c.ap)}</div></footer>`;
-  $('acties').innerHTML=`${c.video?`<button type="button" class="witknop" data-video="${esc(c.video)}" data-sec="${c.sec}" data-titel="${esc(c.naam+' · '+fdl(c.datum)+' · '+c.wie)}">▶ Bekijk het moment</button>`:''}<a href="vergadering.html?id=${c.id8}#ap-${encodeURIComponent(c.nr)}">Hele vergadering</a><button type="button" class="rand" id="ander">Ander citaat</button>`;
+  $('acties').innerHTML=`${c.video?`<button type="button" class="bknop hoofd" data-video="${esc(c.video)}" data-sec="${c.sec}" data-titel="${esc(c.naam+' · '+fdl(c.datum)+' · '+c.wie)}">▶ <span class="lang">Bekijk het moment</span><span class="kort">Moment</span></button>`:''}<a class="bknop" href="vergadering.html?id=${c.id8}#ap-${encodeURIComponent(c.nr)}"><span class="lang">Hele vergadering</span><span class="kort">Vergadering</span></a><button type="button" class="bknop" id="ander">Ander citaat</button>`;
   $('ander').onclick=ander;}
 let POOL=null,HUIDIG=null,VORIG=[];
 async function ander(){
