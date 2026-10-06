@@ -1,38 +1,29 @@
-# Promovideo raadzoeker — draaiboek v3 (5-10-2026)
+# Promovideo raadzoeker — draaiboek v4 (6-10-2026)
 
-60 seconden, 16:9 (1920×1080). Geanimeerd met echte data van de site, geen schermopname. Tekst in beeld (werkt ook zonder geluid), voice-over via ElevenLabs (nieuwste model, nu Eleven v3), zachte muziek eronder. Open source: repository wordt openbaar met MIT-licentie (besluit Robert).
+Ca. 100 seconden, 16:9 (1920×1080). Zelfde stijl als v1/v3: rustige animaties, tekst in beeld (werkt zonder geluid), groen/wit, voice-over (ElevenLabs, stem 'Emma' uit Roberts Voices, nieuwste model) met zachte muziek eronder. Nieuw logo (raadzaal-ring met spreekgestoelte en vergrootglas).
+
+Kern (besluit Robert): **samenvattingen van vergaderingen**, **zoeken in alles**, **mooie pagina's per domein, onderwerp en gebied**. Verkenner en Inzichten zijn bonus: kort, vooral de Verkenner voor de wow. Rotterdamse knipoog: 'Niet lullen maar zoeken' en zoeken op Feyenoord (confetti).
 
 | Tijd | Beeld | Tekst in beeld | Voice-over |
 |---|---|---|---|
-| 0–3 s | Woordenwolk 2026 (echte woorden uit de raad) bouwt op, woorden vliegen naar het midden en worden één lege zoekbalk | — | (alleen muziek) |
-| 3–11 s | De vraag wordt getypt. Resultaten met gemarkeerde woorden, grafiek 'per jaar' groeit, klik op '▶ Bekijk dit moment' → videobeeld | Wat zei de raad over parkeren? | Wat zegt de Rotterdamse raad eigenlijk over parkeren? Zoek in alles wat er is gezegd en geschreven, en spring meteen naar het moment in de vergadering. |
-| 11–20 s | De zoekbalk wisselt snel van vraag (jeugdzorg, woningbouw, haven, overlast). Daarna de matrix domeinen × gebieden die vakje voor vakje oplicht, en een tijdlijn 2018 → 2026 | 13 domeinen · 14 gebieden · 8 jaar raad | En dat voor elk onderwerp: dertien domeinen, veertien gebieden, acht jaar debatten, moties en stukken. |
-| 20–30 s | Dossier Parkeren: de kern, een zin licht op en toont het letterlijke citaat met bron; daarna de punten uit het coalitieakkoord | Elke zin één klik van de bron | Elk dossier vertelt het hele verhaal: wat er is gezegd, wat er is besloten en wat het coalitieakkoord belooft. |
-| 30–37 s | Beloftespoor: toezeggingen en moties schuiven van 'open' naar 'afgedaan', stemtabel per fractie flitst langs | Volg de beloftes | En je ziet of die beloftes ook worden nagekomen. |
-| 37–50 s | Gebiedenkaart, klik op Delfshaven, inzoomen. Gebiedspagina: waar de raad over praat (per jaar), de wijken, wat de wijkraad adviseert, een paar wijkcijfers naast elkaar, één Lab-grafiek | Wat speelt er in jouw wijk? | Of kies je eigen gebied. Wat speelt er in Delfshaven, waar praat de raad over, en wat vraagt de wijkraad? |
-| 50–60 s | Alles schuift weg, logo, regels verschijnen, link | Elke bewering één klik van de bron · Elke paar uur bijgewerkt · Vibecode-experiment · open data · open source · Inloggen met je @rotterdam.nl-adres · [link] | Raadzoeker. Altijd actueel, elke paar uur bijgewerkt. Een open source experiment op open data. Log in met je Rotterdamse mailadres en probeer het zelf. |
+| 0–4 s | Woordenwolk van de raad bouwt op en trekt samen tot het nieuwe logo | raadzoeker | (muziek) |
+| 4–20 s | **Vergaderingen.** Overzicht: 'Laatste raadsvergadering', 'Komt eraan', 'Per commissie'. Klik → 1-minuut-samenvatting in alinea's. Tik op een fractie → citaat schuift open → ▶ springt naar het echte videobeeld van dat moment | Gisteren vergaderd? Lees het in één minuut | Wat besprak de raad gisteren? Raadzoeker vat elke vergadering samen: in één minuut, of uitgebreid per onderwerp. Tik op een fractie en je leest wat ze letterlijk zei, en kijkt dat moment zo terug. |
+| 20–30 s | Uitgebreid: per onderwerp de tijd (14:05–15:12 uur), moties met uitslag (aangenomen/verworpen), tijdlijn commissie → raad, 'Meer hierover' → dossier | Van commissie tot besluit | Je ziet hoe lang erover gepraat is, welke moties het haalden en waar het onderwerp eerder op tafel lag. |
+| 30–46 s | **Zoeken.** Zoekbalk; titel 'Niet lullen, maar zoeken.' Getypt: 'woonfraude' → bovenaan 'Uit de vergaderverslagen', dan alles wat gezegd is en alle stukken, grafiek per jaar. Daarna snel getypt: 'Feyenoord' → rood-witte confetti | Niet lullen, maar zoeken. | Niet lullen, maar zoeken. Zoek in alles wat de raad sinds 2018 zei en schreef: debatten, moties, brieven en raadsvoorstellen. Ook als het over Feyenoord gaat. |
+| 46–66 s | **Pagina's.** Domeinen (dossierkast) → onderwerp, bv. Discriminatie: kern, 'Net besproken', moties en toezeggingen met status. Dan Gebieden: kaart, klik Delfshaven → wat er speelt, wijken, besluiten van de wijkraden | Elk domein · elk onderwerp · elk gebied | Elk domein, onderwerp en gebied heeft een eigen pagina. Wat is er gezegd, besloten en beloofd? En wat speelt er in jouw wijk, tot aan de besluiten van de wijkraad. |
+| 66–82 s | **Bonus: Verkenner.** Hele kennisgraaf, rustig inzoomen op 'Feyenoord City en stadion', buren lichten op (Stadionpark, Feijenoord …), route naar 'Parkeren' tekent zich. Flits van één Inzichten-grafiek (2 s) | Ontdek de verbanden | En wie verder wil kijken: de Verkenner laat zien hoe alles met elkaar samenhangt. |
+| 82–100 s | Alles schuift weg, logo groot, regels verschijnen, link | Vind iedere uitspraak · bekijk de context · overzie het grotere plaatje · Elke paar uur bijgewerkt · raadzoeker.nl · Vragen? Robert Riteco | Raadzoeker. Vind iedere uitspraak, bekijk de context en zie het grotere plaatje. Elke paar uur bijgewerkt, open voor iedereen. Kijk op raadzoeker punt n l. |
 
-Ca. 125 woorden voice-over.
+Ca. 200 woorden voice-over (Nederlands, rustig tempo).
 
 ## Techniek
 
-- Remotion (React → mp4), lokaal op D:. Nagebouwde schermen in de stijl van de site, gevuld met de echte JSON.
-- Voice-over: ElevenLabs API, Nederlandse stem, per scène een los fragment.
-- Muziek: ElevenLabs Music of rechtenvrij nummer.
-- Eerst een stille proefversie (beeld + tekst), daarna stem en muziek.
+- Beeld: **echte opnames van de site** (Playwright, 1920×1080, met vooraf gescripte klikken, typen en inzoomen in de Verkenner), daarna in Remotion gemonteerd met tekst, overgangen, muziek en stem. Voordeel t.o.v. v1 (nagebouwde schermen): klopt altijd met de site, en de Verkenner-interactie is echt.
+- Voice-over: ElevenLabs API, stem 'Emma', per scène een los fragment zodat beeld en stem precies aansluiten. Nodig: `ELEVENLABS_API_KEY` in `D:\Raadzoeker\.env` (staat in .gitignore).
+- Muziek: rechtenvrij of ElevenLabs Music, zacht.
+- Eerst een stille proef (beeld + tekst), daarna stem en muziek.
 
-## Vóór publicatie
+## Niet meer van toepassing uit v3
 
-- Repository openbaar met MIT-licentie: eerst de git-geschiedenis nalopen op sleutels en persoonsgegevens.
-- Cloudflare Access: regel naar alle @rotterdam.nl-adressen.
-- Naam definitief (zie gesprek).
-
-## Feedback Robert op proef v1 (5-10-2026), te verwerken in v2
-
-- Totaal max. 90 seconden.
-- Woordenwolk 4 s.
-- Titel boven de zoekbalk: 'Wat zei de raad over …' (het woord parkeren staat al in de zoekbalk).
-- 'Bekijk dit moment': echt beeld van het debat erbij (videoframe van de vergadering), niet alleen een nagebouwde speler.
-- 'Elk onderwerp, elk gebied': rustiger, en duidelijker uitleggen wat de kolommen (gebieden) en rijen (domeinen) zijn.
-- Slot: geen 'elke bewering één klik van de bron' (te technisch), maar iets als 'Vind iedere uitspraak · bekijk de context · overzie het grotere plaatje'. Woord 'vibecode' weg. Klein: 'Vragen? Robert Riteco'.
-- Eventueel de samenhang-mindmap (samenhang.html) in de video.
+- Inloggen met @rotterdam.nl (site is openbaar sinds 6-10-2026).
+- 'Elke bewering één klik van de bron', 'vibecode', nagebouwde schermen, levende teller.

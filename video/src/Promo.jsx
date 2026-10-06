@@ -4,7 +4,7 @@ import {AbsoluteFill, Sequence, useCurrentFrame, interpolate, spring, Easing} fr
 import D from './data.json';
 
 export const NAAM = 'raadzoeker';
-const LINK = 'raadzoeker.pages.dev';
+const LINK = 'raadzoeker.nl';
 const C = {groen: '#00811F', groenD: '#004C31', zacht: '#E1EFE2', mid: '#4EB051', grijs: '#EFF4F6', grijs2: '#DBE7EA', lijn: '#CAD6DA', sub: '#3E4B50', water: '#D3E3EA'};
 const F = 'Arial, Helvetica, sans-serif';
 const FPS = 30;
