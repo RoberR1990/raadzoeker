@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
-<title>Wijken · raadzoeker</title>
-<link rel="stylesheet" href="stijl.css?v=9">
+<title>Wijken · De Publieke Tribune</title>
+<link rel="stylesheet" href="stijl.css?v=10">
 <style>
 .boven{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:24px;align-items:center}
 .minikaart svg{width:100%;height:auto;display:block}
@@ -67,7 +67,7 @@
   <div id="wijk"><p class="leeg" style="margin-top:24px">Laden…</p></div>
   <p class="voet">Gegevens: notulen en ondertiteling van de gemeenteraad; iBabs (moties, toezeggingen, wijkraden); wijkraad.rotterdam.nl; CBS Kerncijfers wijken en buurten 2022–2025; Wijkprofiel Rotterdam (cijfers: gemeente Rotterdam, OBI, Wijkprofiel 2014–2026); politie, geregistreerde misdrijven per buurt (via CBS); officiële bekendmakingen (Gemeenteblad). Cijfers uit verschillende bronnen staan ter informatie naast elkaar; ze zeggen niets over oorzaak of verband. <a href="over.html">Meer over deze tool</a>.</p>
 </main>
-<script src="ontwerp.js?v=24"></script>
+<script src="ontwerp.js?v=25"></script>
 <script src="ai.js?v=1"></script>
 <script>
 kop('gebieden');
@@ -132,7 +132,7 @@ function wpTabel(d){if(!d)return '';
   return '<div class="idx">'+['sociaal','fysiek','veiligheid'].map(k=>{const x=d[k];if(!x)return '';const ks=Object.keys(x.subjectief||{});
     return `<div><b>${k[0].toUpperCase()+k.slice(1)}: ${x.index}</b>${x.algemeen?`<div class="sub">${esc(x.algemeen[0])}: ${x.algemeen[1]}</div>`:''}<table><thead><tr><th></th><th>beleving</th><th>feitelijk</th></tr></thead><tbody>${ks.map(s=>`<tr><td>${esc(s)}</td><td>${x.subjectief[s]??'–'}</td><td>${(x.objectief||{})[s]??'–'}</td></tr>`).join('')}</tbody></table></div>`;}).join('')+'</div>';}
 function toonWijk(w){
-  CUR=null;document.title=w.naam+' · Wijken · raadzoeker';
+  CUR=null;document.title=w.naam+' · Wijken · De Publieke Tribune';
   document.querySelectorAll('#kaart path.g').forEach(p=>p.classList.toggle('sel',p.dataset.n===w.gebied));document.querySelectorAll('#kaart path.wkl').forEach(p=>p.classList.toggle('sel',p.dataset.s===w.slug));
   const jC=['2022','2023','2024','2025'],laatste=[...jC].reverse().find(j=>w.cbs[j]&&w.cbs[j].inw)||'2024',c=w.cbs[laatste]||{};
   const jr=WK.jaren,n=jr.map(j=>w.n[j]||0),nmx=Math.max(1,...n);
@@ -195,7 +195,7 @@ function onderwerpen(){
 }
 function toon(d){
   document.querySelectorAll('#kaart path.wkl').forEach(p=>p.classList.remove('sel'));
-  CUR=d;FILTER='open';document.title=d.naam+' · Wijken · raadzoeker';
+  CUR=d;FILTER='open';document.title=d.naam+' · Wijken · De Publieke Tribune';
   if(location.hash.slice(1)!==slug(d.naam))history.replaceState(null,'','#'+slug(d.naam));
   document.querySelectorAll('#kaart path.g').forEach(p=>p.classList.toggle('sel',p.dataset.n===d.naam));
   const m=d.moties,t=d.toez,ts=d.tsum,j=d.jaren.length-1,ch=d.trend[j-1]?Math.round((d.trend[j]-d.trend[j-1])/d.trend[j-1]*100):0;

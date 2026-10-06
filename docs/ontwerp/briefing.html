@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
-<title>Briefing · raadzoeker</title>
-<link rel="stylesheet" href="stijl.css?v=9">
+<title>Briefing · De Publieke Tribune</title>
+<link rel="stylesheet" href="stijl.css?v=10">
 <style>
 .bediening{display:flex;gap:16px;align-items:end;flex-wrap:wrap;margin-bottom:16px}
 .bediening label{display:block;margin-bottom:8px}
@@ -42,7 +42,7 @@ td .v{display:block;color:var(--sub);font-size:8.5pt;margin-top:1px}
   <article class="a4" id="a4"><p>Laden…</p></article>
   <p class="voet">Eén A4 om je voor te bereiden op een commissie, een raadsvoorstel of een gesprek met de wethouder. Samengesteld uit openbare raadsinformatie. <a href="over.html">Over deze tool</a>.</p>
 </main>
-<script src="ontwerp.js?v=24"></script>
+<script src="ontwerp.js?v=25"></script>
 <script>
 kop('domeinen');
 let DATA={stand:STAND},IX=[];
@@ -64,15 +64,15 @@ async function laad(s){const d=await (await fetch('d/'+s+'.json')).json();d.slug
 function maak(d,A){
   $('thema').value=d.slug;if(location.hash.slice(1)!==d.slug)history.replaceState(null,'','#'+d.slug);
   $('naar').href='dossier.html#'+d.slug;
-  document.title='Briefing '+d.naam+' · raadzoeker';
-  deel($('deel'),'Briefing '+d.naam+' (raadzoeker)',location.href.split('#')[0]+'#'+d.slug);
+  document.title='Briefing '+d.naam+' · De Publieke Tribune';
+  deel($('deel'),'Briefing '+d.naam+' (De Publieke Tribune)',location.href.split('#')[0]+'#'+d.slug);
   const m=d.moties,t=d.toez,ts=d.tsum,mx=Math.max(...d.trend,1);
   const tabel=(l,toez)=>l.length?`<table><thead><tr><th>Datum</th><th>${toez?'Toezegging':'Motie en verzoek'}</th><th>${toez?'Collegelid':'Indiener'}</th><th>Afdoening</th></tr></thead><tbody>${l.slice(0,6).map(r=>{const dl=iso((r[3].match(/verwacht ([\d-]+)/)||[])[1]),laat=dl&&dl<DATA.stand,c=r[6]||{};
       const v=toez?(c.o||''):(c.v||'');
-      return `<tr><td class="dt">${fd(r[0])}</td><td><a href="${esc(r[4])}">${esc(r[1])}</a>${v?`<span class="v">‘${esc(v.length>150?v.slice(0,150).replace(/\s\S*$/,'')+'…':v)}’</span>`:''}</td><td>${esc(r[2])}</td><td class="dt"><span class="stip ${laat?'laat':'open'}"></span>${dl?fd(dl):'onbekend'}${laat?'<br>over de termijn':''}</td></tr>`;}).join('')}</tbody></table>${l.length>6?`<p style="margin:4px 0 0;font-size:9pt">Plus ${(toez?t.open:m.open)-6} meer; zie het onderwerp in de raadzoeker.</p>`:''}`:'<p>Niets open.</p>';
+      return `<tr><td class="dt">${fd(r[0])}</td><td><a href="${esc(r[4])}">${esc(r[1])}</a>${v?`<span class="v">‘${esc(v.length>150?v.slice(0,150).replace(/\s\S*$/,'')+'…':v)}’</span>`:''}</td><td>${esc(r[2])}</td><td class="dt"><span class="stip ${laat?'laat':'open'}"></span>${dl?fd(dl):'onbekend'}${laat?'<br>over de termijn':''}</td></tr>`;}).join('')}</tbody></table>${l.length>6?`<p style="margin:4px 0 0;font-size:9pt">Plus ${(toez?t.open:m.open)-6} meer; zie het onderwerp in De Publieke Tribune.</p>`:''}`:'<p>Niets open.</p>';
   $('a4').innerHTML=`
   <header><div><div class="sub" style="font-size:9.5pt">Briefing · ${esc((d.pad||[]).slice(1).map(x=>x[0]).join(' › ')||d.groep)}</div><h1>${esc(d.naam)}</h1></div>
-    <div class="stand">Stand ${fdl(DATA.stand)}<br><span class="sub">raadzoeker · onofficieel</span></div></header>
+    <div class="stand">Stand ${fdl(DATA.stand)}<br><span class="sub">De Publieke Tribune · onofficieel</span></div></header>
   <div class="kpi">
     <div><b class="num">${nf(m.aangenomen)}</b>aangenomen moties sinds 2018, ${nf(m.afgedaan)} afgedaan</div>
     <div><b class="num">${nf(m.open)}</b><span class="stip open"></span>moties in uitvoering${m.te_laat?`, ${m.te_laat} over de termijn`:''}</div>
