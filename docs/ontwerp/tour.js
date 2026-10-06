@@ -94,7 +94,10 @@ const STAP={
     {s:'[data-kopieer]',t:'Kopieer als afbeelding',x:'Plak een grafiek direct in een presentatie of mail, met titel, filter, bron en link erbij.'},
     {s:'#g-wrapped',t:'Raad Wrapped',x:'Het jaar van de raad in deelbare kaarten.'},
   ],
-  vergaderingen:[{s:'#lijst',t:'Per week',x:'Alle samengevatte vergaderingen, nieuwste bovenaan. Klik op een vergadering voor de samenvatting.'}],
+  vergaderingen:[{s:'#hero',t:'De laatste raadsvergadering',x:'Wat de raad het laatst besprak, in één minuut. Klik door voor de uitgebreide versie met wat elke fractie zei.'},
+    {s:'#komt',t:'Komt eraan',x:'Wat er de komende weken op de agenda staat. Klap een vergadering open: per onderwerp zie je de dossiers en wanneer het eerder besproken is.'},
+    {s:'#cols',t:'Per commissie',x:'De laatste vergaderingen van elke commissie, met hun belangrijkste onderwerpen.'},
+    {s:'#mstrip',t:'Archief per maand',x:'Kies een maand: de raad, de commissies en de besluiten van de wijkraden per gebied.'}],
   vergadering:[
     {s:'.schakel',t:'Kort of uitgebreid',x:'Kies de korte versie (1 minuut lezen) of de uitgebreide, met per onderwerp wat de fracties en het college zeiden.'},
     {s:'.kort .zin',t:'Tik voor de bron',x:'Tik op een zin: je ziet het letterlijke citaat en een knop naar dat moment in de video.'},
