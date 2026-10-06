@@ -98,14 +98,14 @@ def ibabs():
             if m: I.append({'id':d['id'],'soort':naam,'titel':D.get('Titel') or L.get('title',''),'m':m,'uitslag':L.get('uitslag') or D.get('Uitslag') or '',
                             'partij':L.get('partij') or D.get('Partij') or ''})
     return I
-STOP={'over','debat','raad','voor','naar','door','met','het','van','de','een','raadsvoorstel','collegebrief','bespreking','betrekken','bij','aangevraagd'}
+STOP={'over','debat','raad','voor','naar','door','met','het','van','de','een','raadsvoorstel','collegebrief','bespreking','betrekken','bij','aangevraagd','technische','sessie','commissie','gemeente','rotterdam','rotterdamse','update','voortgang','vergadering','motie','moties','terugkoppeling','rapporteurs','verkenning','beleidskader','afdoeningsvoorstel','afdoeningsvoorstellen','debat'}
 def woordset(t): return {w for w in re.findall(r'[a-z0-9]{4,}',fold(t))}-STOP
 def spoor(V,a,I,VERG,GEDAAN):
     """Stukken bij dit agendapunt (moties met uitslag, voorstellen, brieven) en alle andere momenten waarop die stukken op de agenda stonden."""
     org=orgnorm(V['naam']); ws=woordset(a.get('titel_off',''))
     raad=V['raad'] if 'raad' in V else V['naam']=='Gemeenteraad'
     # raad: agendapuntnummers kloppen met iBabs; commissies hebben in de debatindex soms grovere nummers, dan op titel
-    def hier(mm): return mm[0]==V['datum'] and orgnorm(mm[1])==org and (mm[2]==a['nr'] or (not raad and ws and len(ws&woordset(mm[3]))/len(ws)>=.5))
+    def hier(mm): return mm[0]==V['datum'] and orgnorm(mm[1])==org and (mm[2]==a['nr'] or mm[2].startswith(a['nr']+'.') or (not raad and ws and len(ws&woordset(mm[3]))/len(ws)>=.5))
     stukken=[x for x in I if any(hier(mm) for mm in x['m'])]
     mo=[[x['soort'],x['titel'],x['partij'],x['uitslag'],x['id']] for x in stukken if x['soort'] in ('Motie','Amendement')]
     st=[[x['soort'],x['titel'],x['id']] for x in stukken if x['soort'] not in ('Motie','Amendement','Toezegging')]
