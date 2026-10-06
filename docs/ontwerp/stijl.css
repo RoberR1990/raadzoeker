@@ -157,3 +157,47 @@ section.deel h2{margin:0 0 12px}
 #bub{position:absolute;z-index:40;width:min(420px,calc(100vw - 32px));background:var(--zwart);color:var(--wit);padding:12px 14px;border-radius:6px;font:14px/1.45 var(--font);box-shadow:0 6px 20px rgba(0,0,0,.25)}
 #bub a{color:var(--wit)}#bub .b{display:block;margin-top:6px;font-size:13px;opacity:.85}#bub[hidden]{display:none}
 @media (max-width:900px){#bub{position:fixed;left:16px!important;right:16px;bottom:16px;top:auto!important;width:auto}}
+
+/* kopvariant B (?kop=b): zoekveld in de kop, 4 hoofditems, Over/Hulp/Verkenner in menu en voettekst */
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.keuze.geen li[aria-selected="true"]:not(:hover){background:none}
+.balk.kb .kopzoek{position:relative;flex:1 1 200px;max-width:420px;min-width:0}
+.balk.kb .kopzoek input{width:100%;height:44px;min-height:44px;font:400 16px var(--font);padding:0 40px 0 42px;border:2px solid #fff;border-radius:999px;background:var(--wit);color:var(--zwart)}
+.balk.kb .kopzoek input::placeholder{color:var(--sub);opacity:1}
+.balk.kb .kopzoek .lens{position:absolute;left:14px;top:12px;color:var(--zwart);display:flex;pointer-events:none}
+.balk.kb .kopzoek .slash{position:absolute;right:12px;top:10px;font:400 13px/22px var(--font);color:var(--sub);border:1px solid var(--lijn);border-radius:4px;padding:0 7px;pointer-events:none;background:var(--wit)}
+.balk.kb .kopzoek input:focus~.slash{display:none}
+.balk.kb .kopzoek .keuze{color:var(--zwart);top:calc(100% + 4px);border-top:2px solid var(--zwart);border-radius:var(--r);min-width:min(420px,100%);z-index:60}
+.balk.kb .menupaneel{flex:none}
+.balk.kb .kopknoppen{margin-left:auto}
+.balk.kb.zonderzoek .kopzoek{display:none}
+.balk.kb.zonderzoek .menupaneel{margin-left:auto}.balk.kb.zonderzoek .kopknoppen{margin-left:0}
+.balk.kb .zoekknop{display:none;align-items:center;justify-content:center;width:44px;height:44px;border:0;border-radius:50%;background:transparent;color:#fff;cursor:pointer;padding:0}
+.balk.kb .zoekknop[aria-expanded=true]{background:#fff;color:#000}
+.balk.kb.zonderzoek .zoekknop{display:none!important}
+.balk.kb .kopklok{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;color:#fff;border-radius:50%}
+.balk.kb .kopklok:hover{background:rgba(255,255,255,.18)}
+.balk.kb nav.extra{display:none}
+.balk.kb .menuknop{display:none}
+@media (max-width:1099.98px){
+  .balk.kb .menuknop{display:inline-flex;padding:0 14px}
+  .balk.kb .zoekknop{display:inline-flex}
+  .balk.kb .kopklok{display:none}
+  .balk.kb .kopzoek{display:none;position:absolute;left:0;right:0;top:100%;z-index:55;max-width:none;background:var(--groen);padding:8px 16px 12px;box-shadow:0 12px 24px rgba(0,0,0,.25)}
+  .balk.kb.zoekopen .kopzoek{display:block}
+  .balk.kb .kopzoek .lens{left:30px;top:20px}.balk.kb .kopzoek .slash{display:none}
+  .balk.kb .kopzoek input{padding-left:44px}
+  .balk.kb .kopzoek .keuze{left:16px;right:16px}
+  .balk.kb nav.extra{display:flex;margin:8px 0 0;padding-top:8px;border-top:1px solid rgba(255,255,255,.35)}
+  .balk.kb nav.extra a.bijgewerkt{gap:6px}
+  .balk.kb nav.extra a.terug{font-size:15px;text-decoration:underline}
+  .balk.kb .kopknoppen{margin-left:0;gap:2px}
+}
+.rz-voet{background:var(--grijs2);border-top:1px solid var(--lijn);margin-top:48px;font-size:14px}
+.rz-voet .in{max-width:1280px;margin:0 auto;padding:12px 24px}
+.rz-voet nav{display:flex;flex-wrap:wrap;gap:0 8px}
+.rz-voet a{color:var(--zwart);display:inline-flex;align-items:center;min-height:44px;padding:0 8px}
+@media (max-width:700px){.rz-voet .in{padding:8px 8px}}
+@media print{.rz-voet{display:none}}
+@media (min-width:1100px) and (max-width:1279.98px){.balk.kb .kopzoek .slash{display:none}.balk.kb .kopzoek input{padding-right:12px}.balk.kb nav a{padding:10px 8px}.balk.kb .in{gap:10px}}
+@media (max-width:1099.98px){.balk.kb .kopzoek .keuze{min-width:0}}

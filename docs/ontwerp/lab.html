@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Inzichten · raadzoeker</title>
-<link rel="stylesheet" href="stijl.css?v=12">
+<link rel="stylesheet" href="stijl.css?v=13">
 <style>
 .fbalk{position:sticky;top:0;z-index:20;background:var(--grijs);margin:0 -24px 24px;padding:10px 24px;border-bottom:1px solid var(--lijn);display:flex;gap:8px 16px;flex-wrap:wrap;align-items:end;font-size:14px}
 .fbalk label{display:grid;gap:2px}
@@ -25,12 +25,22 @@
 .wr{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
 .wk{color:#fff;border-radius:var(--r);padding:20px;display:grid;gap:6px;align-content:start;min-height:180px}
 .wk span:first-child{font-size:14px}.wk .w{font-size:28px;font-weight:700;line-height:1.1}
+.hub{display:none;margin:24px 0 8px;gap:16px;grid-template-columns:2fr 1fr}
+.kop-b .hub{display:grid}
+.hub .vlak{display:grid;gap:10px;align-content:start}
+.hub h2{margin:0}.hub p{margin:0;max-width:60ch}
+.hub .groot-tegel h2{font-size:30px}
+@media (max-width:900px){.hub{grid-template-columns:1fr}}
 @media (max-width:900px){.wr{grid-template-columns:repeat(2,minmax(0,1fr))}.fbalk{margin:0 -16px 16px;padding:8px 16px}.fbalk select{max-width:44vw}}
 </style></head><body>
 <header class="balk"></header>
 <main class="pagina">
   <h1>Inzichten</h1>
   <p style="margin:12px 0 0;max-width:72ch">Grafieken over wat de raad doet: welke onderwerpen spelen, wie samen moties indient, wat het college belooft en hoe snel dat gebeurt. Kies bovenaan een domein, gebied, fractie of periode: elke grafiek past zich aan, en de link onthoudt je keuze. Tellen, geen oordelen: fracties en collegeleden staan op alfabet.</p>
+  <div class="hub" aria-label="Begin hier">
+    <section class="vlak accent groot-tegel"><h2>Verkenner: alles als één web</h2><p>Alle debatten en stukken als één web van onderwerpen, plekken en begrippen. Zoom in, volg een verband en ontdek wat samen wordt genoemd.</p><div><a class="knop" href="verkenner.html">Open de Verkenner</a></div></section>
+    <section class="vlak accent"><h2>Raad Wrapped</h2><p>Het jaar van de raad in een paar kaarten.</p><div><a class="knop wit" href="#g-wrapped" onclick="event.preventDefault();document.getElementById('g-wrapped').scrollIntoView({behavior:'smooth'})">Naar Raad Wrapped</a></div></section>
+  </div>
   <nav class="toc" aria-label="Grafieken" id="toc"></nav>
   <div class="fbalk" role="group" aria-label="Filters">
     <label>Domein <select id="fd"><option value="">alle domeinen</option></select></label>
@@ -44,7 +54,7 @@
     <p class="uitleg">Het jaar van de raad in vier kaarten. Kies een jaar.</p><div class="jr" id="wjr"></div><div class="wr" id="wkaarten"></div></section>
   <p class="voet">Gegevens: iBabs (moties, toezeggingen, schriftelijke vragen), notulen en ondertiteling van de gemeenteraad, stand <span id="stand"></span>. Domeinen volgen het beleidsveld in iBabs; gebieden zijn herkend op wijk- en straatnamen (ongeveer 9 van de 10 goed). <a href="over.html">Meer over deze tool</a>.</p>
 </main>
-<script src="ontwerp.js?v=29"></script>
+<script src="ontwerp.js?v=32"></script>
 <script>
 kop('lab');
 let L=null,F={d:'',g:'',f:'',van:'2022',tot:'2026'};

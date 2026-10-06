@@ -41,7 +41,7 @@ const KOP=[
   {s:'header .merk',t:'Welkom bij raadzoeker',x:'Hier vind je wat de Rotterdamse gemeenteraad sinds 2018 zei, besloot en beloofde. Het logo brengt je altijd terug naar de startpagina.'},
   {s:'header nav a[href="zoek.html"]',t:'Zoeken',x:'Zoek in alles wat er in de raad en de commissies is gezegd en geschreven. Bij debatten spring je direct naar het moment in de video.'},
   {s:'header nav a[href="vergaderingen.html"]',t:'Vergaderingen',x:'Wat er in de raad en de commissies is besproken, samengevat in één minuut of uitgebreid, kort na de vergadering.'},
-  {s:'header nav a[href="domeinen.html"]',t:'Domeinen',x:'Dossiers per beleidsveld en onderwerp: wat er is gezegd, besloten en beloofd, en wat ervan terechtkwam.'},
+  {s:'header nav a[href="domeinen.html"]',t:document.documentElement.classList.contains('kop-b')?'Dossiers':'Domeinen',x:'Dossiers per beleidsveld en onderwerp: wat er is gezegd, besloten en beloofd, en wat ervan terechtkwam.'},
   {s:'header nav a[href="wijk.html"]',t:'Gebieden',x:'Kies een gebied of wijk: waar praat de raad over, wat vraagt de wijkraad, en een paar cijfers.'},
   {s:'header nav a[href="lab.html"]',t:'Inzichten',x:'Grafieken over wat de raad doet, om te kopiëren in je eigen presentatie.'},
   {s:'header nav a[href="verkenner.html"]',t:'Verkenner',x:'Alles als één web van begrippen. Om rond te dwalen en verbanden te ontdekken.'},

@@ -15,28 +15,72 @@ const dagen=(a,b)=>Math.round((new Date(b)-new Date(a))/864e5);
 /* logo: halfrond van negen zetels (de raadzaal), één groen gemarkeerd; woordmerk in kleine letters */
 const LOGO=(kleur='#fff',accent='#fff')=>{let s='';const n=9;for(let i=0;i<n;i++){const a=Math.PI*(1-i/(n-1)),x=17+13*Math.cos(a),y=18-13*Math.sin(a);s+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="2.6" fill="${i===6?accent:kleur}" ${i===6?'':'opacity=".75"'}/>`;}
   return `<svg viewBox="0 0 34 20" aria-hidden="true">${s}<circle cx="17" cy="17" r="3.2" fill="${kleur}"/></svg>`;};
+/* kopvariant: A (standaard) of B (zoekveld in de kop); ?kop=a|b zet de keuze, onthouden in localStorage rz-kop */
+const KOPV=(()=>{let q=null;try{q=new URLSearchParams(location.search).get('kop');}catch(e){}
+  try{if(q==='a'||q==='b')localStorage.setItem('rz-kop',q);return localStorage.getItem('rz-kop')==='b'?'b':'a';}catch(e){return q==='b'?'b':'a';}})();
+const kopTerug=()=>{try{const u=new URL(location.href);u.searchParams.set('kop','a');return u.pathname.split('/').pop()+u.search+u.hash;}catch(e){return '?kop=a';}};
 function kop(actief){
+  const B=KOPV==='b';
   const m=[['zoeken','Zoeken','zoek.html'],['vergaderingen','Vergaderingen','vergaderingen.html'],['domeinen','Domeinen','domeinen.html'],['gebieden','Gebieden','wijk.html']];
   const r=[['verkenner','Verkenner','verkenner.html'],['lab','Inzichten','lab.html'],['over','Over','over.html']];
   const a=x=>`<a href="${x[2]}" class="${x[0]===actief?'on':''}"${x[0]===actief?' aria-current="page"':''}>${x[1]}</a>`;
   const KLOK='<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="8" r="6.2"/><path d="M8 4.5V8l2.4 1.6"/></svg>';
-  document.querySelector('header.balk').innerHTML=`<div class="in"><a class="merk" href="startpagina.html" aria-label="raadzoeker, naar de startpagina"><img src="logo-wit.svg" alt="" width="53" height="40"><span class="merktekst"><b>raadzoeker</b><small>onofficieel</small></span></a>
-    <div class="menupaneel" id="menupaneel"><nav aria-label="Hoofdmenu">${m.map(a).join('')}</nav><nav class="rechts" aria-label="Over en experimenten">${r.map(a).join('')}<a class="bijgewerkt" id="bijgewerkt" href="over.html#actueel" title="${esc(FREQ)}" aria-label="Gegevens bijgewerkt tot ${fd(STAND)}. Meer over bijwerken">${KLOK}<span class="kopvol">bijgewerkt </span><span class="t">${fd(STAND).replace(/ \d{4}$/,'')}</span></a></nav></div>
+  const kortStand=fd(STAND).replace(/ \d{4}$/,'');
+  const merk=`<a class="merk" href="startpagina.html" aria-label="raadzoeker, naar de startpagina"><img src="logo-wit.svg" alt="" width="53" height="40"><span class="merktekst"><b>raadzoeker</b><small>onofficieel</small></span></a>`;
+  if(!B)document.querySelector('header.balk').innerHTML=`<div class="in">${merk}
+    <div class="menupaneel" id="menupaneel"><nav aria-label="Hoofdmenu">${m.map(a).join('')}</nav><nav class="rechts" aria-label="Over en experimenten">${r.map(a).join('')}<a class="bijgewerkt" id="bijgewerkt" href="over.html#actueel" title="${esc(FREQ)}" aria-label="Gegevens bijgewerkt tot ${fd(STAND)}. Meer over bijwerken">${KLOK}<span class="kopvol">bijgewerkt </span><span class="t">${kortStand}</span></a></nav></div>
     <div class="kopknoppen"><button type="button" class="menuknop" id="menuknop" aria-expanded="false" aria-controls="menupaneel">Menu</button></div></div>`;
-  (()=>{const h=document.querySelector('header.balk'),kn=$('menuknop'),pa=$('menupaneel');
-    const zet=o=>{h.classList.toggle('open',o);kn.setAttribute('aria-expanded',o);kn.textContent=o?'Sluit':'Menu';};
+  else{
+    const hb=[['domeinen','Dossiers','domeinen.html'],['gebieden','Gebieden','wijk.html'],['vergaderingen','Vergaderingen','vergaderingen.html'],['lab','Inzichten','lab.html']];
+    const act=actief==='verkenner'?'lab':actief,ab=x=>`<a href="${x[2]}" class="${x[0]===act?'on':''}"${x[0]===act?' aria-current="page"':''}>${x[1]}</a>`;
+    const LENS='<svg viewBox="0 0 20 20" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8.5" cy="8.5" r="5.5"/><path d="M13 13l5 5"/></svg>';
+    document.documentElement.classList.add('kop-b');
+    const h=document.querySelector('header.balk');h.classList.add('kb');if(actief==='zoeken'||document.querySelector('.zoekrij #zoek'))h.classList.add('zonderzoek');
+    h.innerHTML=`<div class="in">${merk}
+    <form class="zoekveld kopzoek" id="kopzoekvorm" role="search" autocomplete="off"><span class="lens">${LENS}</span><input id="kopzoek" type="search" role="combobox" aria-expanded="false" aria-controls="kopkeuze" aria-autocomplete="list" aria-label="Zoek in raad, stukken, dossiers" placeholder="Zoek in raad, stukken, dossiers…" enterkeyhint="search"><kbd class="slash" aria-hidden="true">/</kbd><ul class="keuze" id="kopkeuze" role="listbox" aria-label="Suggesties"></ul></form>
+    <div class="menupaneel" id="menupaneel"><nav aria-label="Hoofdmenu">${hb.map(ab).join('')}</nav><nav class="extra" aria-label="Meer">${a(['verkenner','Verkenner','verkenner.html'])}${a(['over','Over','over.html'])}<a href="hulp.html">Hulp</a><a class="bijgewerkt" href="over.html#actueel">${KLOK}<span>bijgewerkt <span class="t">${kortStand}</span></span></a><a class="terug" href="${esc(kopTerug())}">Terug naar huidige kop</a></nav></div>
+    <div class="kopknoppen"><button type="button" class="zoekknop" id="zoekknop" aria-expanded="false" aria-controls="kopzoekvorm" aria-label="Zoeken">${LENS}</button><a class="kopklok" id="bijgewerkt" href="over.html#actueel" title="${esc(FREQ)}" aria-label="Gegevens bijgewerkt tot ${fd(STAND)}. Meer over bijwerken">${KLOK}<span class="sr t">${kortStand}</span></a><button type="button" class="menuknop" id="menuknop" aria-expanded="false" aria-controls="menupaneel">Menu</button></div></div>`;
+  }
+  (()=>{const h=document.querySelector('header.balk'),kn=$('menuknop'),pa=$('menupaneel'),zk=$('zoekknop');
+    const zet=o=>{h.classList.toggle('open',o);kn.setAttribute('aria-expanded',o);kn.textContent=o?'Sluit':'Menu';if(o&&zk)zetZoek(false);};
+    const zetZoek=o=>{h.classList.toggle('zoekopen',o);zk.setAttribute('aria-expanded',o);if(o){zet(false);$('kopzoek').focus();}};
     const dicht=t=>{if(!h.classList.contains('open'))return;zet(false);if(t)kn.focus();};
     kn.onclick=()=>{const o=!h.classList.contains('open');zet(o);if(o)pa.querySelector('a').focus();};
-    addEventListener('keydown',e=>{if(e.key==='Escape')dicht(true);});
-    addEventListener('click',e=>{if(!h.contains(e.target))dicht(false);});
+    if(zk)zk.onclick=()=>zetZoek(!h.classList.contains('zoekopen'));
+    addEventListener('keydown',e=>{if(e.key!=='Escape')return;dicht(true);if(zk&&h.classList.contains('zoekopen')){zetZoek(false);zk.focus();}});
+    addEventListener('click',e=>{if(!h.contains(e.target)){dicht(false);if(zk&&h.classList.contains('zoekopen')&&!$('kopzoek').value)zetZoek(false);}});
     pa.addEventListener('click',e=>{if(e.target.closest('a'))zet(false);});
-    matchMedia('(min-width:1100px)').addEventListener('change',e=>{if(e.matches)zet(false);});})();
+    matchMedia('(min-width:1100px)').addEventListener('change',e=>{if(e.matches){zet(false);if(zk)zetZoek(false);}});})();
+  if(B)kopZoekB(actief);
   // laatste automatische update (status.json schrijft de NAS na elke geslaagde run)
   fetch('../data/status.json',{cache:'no-store'}).then(r=>r.ok?r.json():null).then(st=>{if(!st||!st.laatste)return;const el=document.getElementById('bijgewerkt');if(!el)return;
-    const d=new Date(st.laatste),t=d.getDate()+' '+MND[d.getMonth()]+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');el.querySelector('.t').textContent=t;el.setAttribute('aria-label','Bijgewerkt '+t+'. Meer over bijwerken');}).catch(()=>{});
+    const d=new Date(st.laatste),t=d.getDate()+' '+MND[d.getMonth()]+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+    document.querySelectorAll('#bijgewerkt .t,.voetbij .t,.kb .bijgewerkt .t').forEach(x=>x.textContent=t);el.setAttribute('aria-label','Bijgewerkt '+t+'. Meer over bijwerken');}).catch(()=>{});
+  if(B)voetB();
   // rondleiding, hulpknop en welkomstvenster (tour.js)
-  if(!document.getElementById('rz-tour')){const t=document.createElement('script');t.id='rz-tour';t.src='tour.js?v=9';document.body.appendChild(t);const w=document.createElement('script');w.src='woorden.js?v=3';document.body.appendChild(w);const r=document.createElement('script');r.src='stad.js?v=4';document.body.appendChild(r);}
+  if(!document.getElementById('rz-tour')){const t=document.createElement('script');t.id='rz-tour';t.src='tour.js?v=10';document.body.appendChild(t);const w=document.createElement('script');w.src='woorden.js?v=3';document.body.appendChild(w);const r=document.createElement('script');r.src='stad.js?v=4';document.body.appendChild(r);}
   const ic=document.createElement('link');ic.rel='icon';ic.type='image/svg+xml';ic.href='logo.svg';document.head.appendChild(ic);
+}
+/* variant B: zoekveld in de kop; lijst met dossiers en gebieden pas bij focus; Enter zoekt altijd, een gekozen suggestie opent dossier of gebied */
+function kopZoekB(actief){
+  const inv=$('kopzoek'),vorm=$('kopzoekvorm');let ALLE=[],laden=false,gekozen=false;
+  const haal=()=>{if(laden)return;laden=true;fetch('d/index.json').then(r=>r.json()).then(IX=>{ALLE=IX.d.filter(x=>x.soort!=='kruising').map(x=>Object.assign({sub:[],termen:''},x));}).catch(()=>{laden=false;});};
+  inv.addEventListener('focus',haal);
+  inv.addEventListener('input',()=>{gekozen=false;$('kopkeuze').classList.add('geen');});
+  inv.addEventListener('keydown',e=>{if(e.key==='ArrowDown'||e.key==='ArrowUp'){if(!gekozen&&$('kopkeuze').classList.contains('on')){e.preventDefault();e.stopImmediatePropagation();}gekozen=true;$('kopkeuze').classList.remove('geen');}
+    else if(e.key==='Enter'&&!gekozen){e.preventDefault();e.stopImmediatePropagation();const q=inv.value.trim();if(q)location.href='zoek.html?q='+encodeURIComponent(q);}});
+  zoeklijst(inv,$('kopkeuze'),()=>ALLE,x=>{location.href=(x.soort==='gebied'?'wijk.html#':'dossier.html#')+x.slug;});
+  vorm.addEventListener('submit',e=>{e.preventDefault();const q=inv.value.trim();if(q)location.href='zoek.html?q='+encodeURIComponent(q);});
+  // '/' zet de cursor in het kopveld (op zoek.html zorgt de pagina zelf); op een telefoon opent het veld eerst
+  addEventListener('keydown',e=>{if(e.key!=='/'||e.ctrlKey||e.metaKey||e.altKey||actief==='zoeken'||/input|textarea|select/i.test(document.activeElement.tagName)||document.activeElement.isContentEditable)return;
+    e.preventDefault();e.stopImmediatePropagation();const zk=$('zoekknop');if(zk&&getComputedStyle(zk).display!=='none'){if(!zk.closest('header').classList.contains('zoekopen'))zk.click();else inv.focus();}else inv.focus();},true);
+}
+/* variant B: voettekst met Over, Hulp, Privacy, Verkenner en de stand van de gegevens (alleen als de pagina er nog geen heeft) */
+function voetB(){
+  if(document.querySelector('footer.rz-voet')||document.querySelector('body>footer'))return;
+  const f=document.createElement('footer');f.className='rz-voet';
+  f.innerHTML=`<div class="in"><nav aria-label="Over deze site"><a href="over.html">Over</a><a href="hulp.html">Hulp</a><a href="over.html#privacy">Privacy</a><a href="verkenner.html">Verkenner</a><a class="voetbij" href="over.html#actueel" title="${esc(FREQ)}">bijgewerkt <span class="t">${fd(STAND).replace(/ \d{4}$/,'')}</span></a><a href="${esc(kopTerug())}">Terug naar huidige kop</a></nav></div>`;
+  document.body.appendChild(f);
 }
 /* zoeken in onderwerpen of gebieden; kiezen roept kies(d) aan */
 /* bewerkingsafstand (Levenshtein), voor 'bedoel je…' bij tikfouten */
