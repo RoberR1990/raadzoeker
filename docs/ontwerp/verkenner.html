@@ -47,6 +47,14 @@ html,body{height:100%;overflow:hidden}body{display:flex;flex-direction:column;ba
 #filters .kn{all:unset;box-sizing:border-box;cursor:pointer;flex:1;text-align:center;background:#22343B;border-radius:8px;padding:7px 9px;font-size:13px;color:#fff}#filters .kn:hover{background:#2E4750}
 .sectie{margin-top:10px;font-size:13px}.sectie summary{cursor:pointer;color:#fff}
 #jaarbord{position:absolute;left:50%;bottom:24px;transform:translateX(-50%);font:700 64px var(--font);color:#fff;opacity:.85;z-index:4;pointer-events:none;text-shadow:0 0 20px #0E171B}
+.vv{border-top:1px solid #22343B;padding:2px 0}.vv summary{list-style:none;cursor:pointer;padding:9px 2px;display:flex;flex-direction:column;gap:3px}.vv summary::-webkit-details-marker{display:none}
+.vv summary:hover .vv-paar{text-decoration:underline}.vv[open] summary{padding-bottom:4px}
+.vv-paar{font-size:15px}.vv-plus{color:var(--zacht);margin:0 2px}.vv-dom{font-size:11.5px;color:var(--zacht)}.vv-uitleg{font-size:13.5px;line-height:1.45;color:var(--tekst)}
+.vv-body{padding:0 2px 10px;font-size:13.5px;line-height:1.5}.vv-body p{margin:6px 0}
+.vv-cit{margin:10px 0 6px;border-left:3px solid #8FE0A0}.vv-cit footer{margin-top:6px;font-size:12px;color:var(--zacht);line-height:1.45}
+.vv-kop{font-size:12px;margin-top:8px}.vv-ook{margin:4px 0 0;padding-left:16px;font-size:12px;color:var(--zacht);line-height:1.45}.vv-ook li{margin-bottom:5px}
+.vv-intro{font-size:13.5px;line-height:1.45;margin:4px 0 8px}.vv-noot{font-size:12px;line-height:1.45;margin-top:12px}
+a.kn2{text-decoration:none}.vv-terug{all:unset;cursor:pointer;color:#8FE0A0;font-size:13px;display:block;margin-bottom:4px}
 .hop{display:flex;gap:8px;align-items:flex-start;padding:6px 0;border-top:1px solid #22343B}.hop b{color:#fff}
 #tel{font-size:12.5px;color:var(--zacht);margin-top:8px;line-height:1.4}
 #klap{display:none}
@@ -263,7 +271,7 @@ el('speel').onclick=()=>{if(SPEEL){stopSpeel();return;}const o={v:F.v,t:F.t};let
 function stopSpeel(o){clearInterval(SPEEL);SPEEL=null;el('speel').textContent='▶ Speel 2018 → 2026';el('jaarbord').textContent='';if(o){F.v=o.v;F.t=o.t;}else{F.v=0;F.t=8;}el('fv').value=F.v;el('ft').value=F.t;herweeg();}
 /* ---- C: route van X naar Y (kortste weg over sterke verbanden) ---- */
 const zoekKnoop=q=>{q=(q||'').trim().toLowerCase();if(!q)return -1;let i=DATA.knopen.findIndex(k=>k.l.toLowerCase()===q);if(i<0)i=DATA.knopen.findIndex(k=>k.l.toLowerCase().startsWith(q));if(i<0)i=DATA.knopen.findIndex(k=>k.l.toLowerCase().includes(q));return i;};
-el('route').onclick=()=>{const a=zoekKnoop(el('rv').value),b=zoekKnoop(el('rn').value);if(a<0||b<0){alert('Kies twee begrippen uit de lijst.');return;}
+function routeTussen(a,b){if(a<0||b<0){alert('Kies twee begrippen uit de lijst.');return;}
   const dist=new Map([[a,0]]),van=new Map(),open=new Set([a]),klaar=new Set();
   while(open.size){let u=-1,du=Infinity;open.forEach(x=>{if(dist.get(x)<du){du=dist.get(x);u=x;}});open.delete(u);if(u===b)break;klaar.add(u);
     (BUREN[u]||[]).forEach(([v,w])=>{if(klaar.has(v))return;const nd=du+(1/(w+0.05))*(DATA.knopen[v].s==='p'&&v!==b?4:1);if(nd<(dist.get(v)??Infinity)){dist.set(v,nd);van.set(v,u);open.add(v);}});}
@@ -273,13 +281,14 @@ el('route').onclick=()=>{const a=zoekKnoop(el('rv').value),b=zoekKnoop(el('rn').
   pad.forEach(i=>G.setNodeAttribute(String(i),'hidden',false));
   SEL=null;const P=el('info');P.style.display='block';
   const kort=l=>l.split(/,| en /)[0];
-  P.innerHTML=`<button class="sluit" aria-label="Sluiten" onclick="PAD=null;paneel(null)">×</button><div class="sub">Route in ${pad.length-1} stappen</div><h2>${esc(DATA.knopen[a].l)} → ${esc(DATA.knopen[b].l)}</h2>
+  P.innerHTML=`<button class="sluit" aria-label="Sluiten" onclick="PAD=null;paneel(null)">×</button><div class="sub">Route in ${pad.length-1} stap${pad.length>2?'pen':''}</div><h2>${esc(DATA.knopen[a].l)} → ${esc(DATA.knopen[b].l)}</h2>
     ${pad.slice(1).map((j,i)=>{const p=pad[i],c=(BUREN[p].find(x=>x[0]===j)||[0,0,0])[2];return `<div class="hop"><span>${i+1}.</span><div><b>${esc(DATA.knopen[p].l)}</b> + <b>${esc(DATA.knopen[j].l)}</b><br><span class="sub">${nl(c)} keer samen genoemd</span> · <a href="zoek.html?q=${encodeURIComponent(kort(DATA.knopen[p].l)+' '+kort(DATA.knopen[j].l))}">lees waar →</a></div></div>`;}).join('')}
     <p class="sub" style="font-size:12.5px">De route volgt de sterkste verbanden. Hij laat zien hoe onderwerpen in de praktijk samen besproken worden, niet dat het een het ander veroorzaakt.</p>`;
   const xs=pad.map(i=>R.getNodeDisplayData(String(i))).filter(Boolean);const cx=xs.reduce((s,d)=>s+d.x,0)/xs.length,cy=xs.reduce((s,d)=>s+d.y,0)/xs.length;
-  R.getCamera().animate({x:cx,y:cy,ratio:0.8},{duration:600});R.refresh();};
+  R.getCamera().animate({x:cx,y:cy,ratio:0.8},{duration:600});R.refresh();}
+el('route').onclick=()=>routeTussen(zoekKnoop(el('rv').value),zoekKnoop(el('rn').value));
 /* ---- C: verrassende verbanden: sterk samen, maar uit verschillende domeinen ---- */
-el('verr').onclick=()=>{PAD=null;const K=DATA.knopen;
+function verrStat(){PAD=null;const K=DATA.knopen;
   // uit verschillende domeinen, allebei geen plek, vaak genoeg, geen vaste woordcombinatie (niet bijna altijd samen) en geen variant van hetzelfde woord
   const L=DATA.e.filter(([a,b,w,c])=>c>=30&&K[a].dom!==K[b].dom&&K[a].s!=='p'&&K[b].s!=='p'&&K[a].n>=150&&K[b].n>=150&&c/Math.min(K[a].n,K[b].n)<0.25
       &&K[a].l.slice(0,6).toLowerCase()!==K[b].l.slice(0,6).toLowerCase()&&!G.getNodeAttribute(String(a),'hidden')&&!G.getNodeAttribute(String(b),'hidden'))
@@ -287,7 +296,37 @@ el('verr').onclick=()=>{PAD=null;const K=DATA.knopen;
   const P=el('info');P.style.display='block';SEL=null;R.refresh();
   P.innerHTML=`<button class="sluit" aria-label="Sluiten" onclick="paneel(null)">×</button><div class="sub">Begrippen uit verschillende domeinen die opvallend vaak samen vallen</div><h2>Verrassende verbanden</h2>
     ${L.map(([a,b,w,c])=>{const A=DATA.knopen[a],B=DATA.knopen[b];return `<div class="hop"><div><button class="lk" data-a="${a}" data-b="${b}" style="all:unset;cursor:pointer"><b style="color:${KL[A.dom]}">${esc(A.l)}</b> + <b style="color:${KL[B.dom]}">${esc(B.l)}</b></button><br><span class="sub">${esc(DATA.dom[A.dom][1])} × ${esc(DATA.dom[B.dom][1])} · ${nl(c)} keer</span> · <a href="zoek.html?q=${encodeURIComponent(A.l+' '+B.l)}">lees waar →</a></div></div>`;}).join('')}`;
-  P.querySelectorAll('.lk').forEach(x=>x.onclick=()=>{el('rv').value=DATA.knopen[x.dataset.a].l;el('rn').value=DATA.knopen[x.dataset.b].l;el('route').click();});};
+  P.querySelectorAll('.lk').forEach(x=>x.onclick=()=>{el('rv').value=DATA.knopen[x.dataset.a].l;el('rn').value=DATA.knopen[x.dataset.b].l;el('route').click();});}
+/* redactioneel gekozen verrassende verbanden (verrassend.json, gemaakt met src/verrassend_in.py + _check.py); zonder dat bestand de statistische lijst */
+let VERR;
+const laadVerr=()=>VERR!==undefined?Promise.resolve(VERR):fetch('verrassend.json').then(r=>r.ok?r.json():null).catch(()=>null).then(j=>(VERR=j&&j.paren&&j.paren.length?j:null));
+function bronHtml(b,kort){const wie=b.soort==='debat'?`${esc(b.wie)} · ${esc(b.verg)}`:esc(b.soort[0].toUpperCase()+b.soort.slice(1));
+  return `${wie} · ${fd(b.datum)}<br>${b.url?`<a href="${esc(b.url)}" target="_blank" rel="noopener">${esc(b.titel)} ↗</a>`:esc(b.titel)}`;}
+function verrassend(open){PAD=null;SEL=null;
+  const P=el('info'),idx=id=>DATA.knopen.findIndex(k=>k.id===id);
+  const L=VERR.paren.map((v,i)=>({...v,i,ia:idx(v.a),ib:idx(v.b)})).filter(v=>v.ia>=0&&v.ib>=0);
+  const kl=i=>KL[DATA.knopen[i].dom];
+  P.innerHTML=`<button class="sluit" aria-label="Sluiten" onclick="paneel(null)">×</button><div class="sub">${L.length} verbanden, met de hand gekozen</div><h2>Verrassende verbanden</h2>
+    <p class="vv-intro">Begrippen uit heel verschillende hoeken die in de raad en in de stukken toch samen opduiken. Tik op een verband voor de uitleg en de bronnen.</p>
+    <button class="kn2 vv-gok" style="display:block;width:100%;margin:2px 0 6px">🎲 Verras me met een verband</button>
+    ${L.map(v=>`<details class="vv" data-i="${v.i}"${v.i===open?' open':''}><summary><span class="vv-paar"><b style="color:${kl(v.ia)}">${esc(v.la)}</b> <span class="vv-plus">+</span> <b style="color:${kl(v.ib)}">${esc(v.lb)}</b></span>
+        <span class="vv-dom">${esc(v.da)} × ${esc(v.db)}</span><span class="vv-uitleg">${esc(v.uitleg)}</span></summary>
+      <div class="vv-body"><p>${esc(v.toelichting)}</p>
+        <blockquote class="frag vv-cit">‘${esc(v.citaat)}’<footer>${bronHtml(v.bron)}</footer></blockquote>
+        ${v.ook.length?`<div class="sub vv-kop">Ook samen genoemd in</div><ul class="vv-ook">${v.ook.map(b=>`<li>${bronHtml(b)}</li>`).join('')}</ul>`:''}
+        <div class="rij2" style="margin-top:10px"><button class="kn2" data-r="${v.i}">Toon in het web</button><a class="kn2" href="zoek.html?q=${encodeURIComponent(v.la+' '+v.lb)}">Lees waar →</a></div></div></details>`).join('')}
+    <p class="sub vv-noot">Keuze en toelichting zijn redactioneel, gemaakt met hulp van AI. Elk citaat is woordelijk teruggezocht in de bron. Dat begrippen samen voorkomen, zegt niets over oorzaak en gevolg.</p>`;
+  P.style.display='block';el('graaf').classList.add('open');document.body.classList.add('vk-open');pasAan();R.refresh();
+  if(open!=null){const d=P.querySelector(`.vv[data-i="${open}"]`);if(d)setTimeout(()=>d.scrollIntoView({block:'nearest'}),30);}else P.scrollTop=0;
+  P.querySelector('.vv-gok').onclick=()=>{const ds=[...P.querySelectorAll('.vv')];ds.forEach(d=>d.open=false);const d=ds[Math.floor(Math.random()*ds.length)];d.open=true;d.scrollIntoView({block:'start',behavior:'smooth'});};
+  P.querySelectorAll('[data-r]').forEach(x=>x.onclick=()=>{const v=L.find(y=>y.i===+x.dataset.r);
+    [v.ia,v.ib].forEach(i=>G.setNodeAttribute(String(i),'hidden',false));
+    el('rv').value=v.la;el('rn').value=v.lb;routeTussen(v.ia,v.ib);
+    P.querySelector('.sluit').insertAdjacentHTML('afterend',`<button class="vv-terug">← Alle verrassende verbanden</button>`);
+    P.insertAdjacentHTML('beforeend',`<div class="wist" style="margin-top:12px"><b>${esc(v.uitleg)}</b><br><span style="font-size:13px">‘${esc(v.citaat)}’ <span class="sub">(${fd(v.bron.datum)})</span></span></div>`);
+    P.querySelector('.vv-terug').onclick=()=>verrassend(v.i);});
+}
+el('verr').onclick=()=>laadVerr().then(j=>j?verrassend():verrStat());
 /* ---- C: vergelijk twee gebieden: kleur van groen (meer in A) naar oranje (meer in B) ---- */
 el('verg').onclick=()=>{const a=+el('ca').value,b=+el('cb').value;if(a===b){VERG=null;herweeg();return;}
   const sa=[],sb=[];let ta=0,tb=0;DATA.knopen.forEach((k,i)=>{const x=DATA.jg[i].reduce((s,[y,g,c])=>s+(y>=F.v&&y<=F.t&&g===a?c:0),0),z=DATA.jg[i].reduce((s,[y,g,c])=>s+(y>=F.v&&y<=F.t&&g===b?c:0),0);sa[i]=x;sb[i]=z;ta+=x;tb+=z;});
