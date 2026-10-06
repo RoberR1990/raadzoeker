@@ -1,5 +1,5 @@
-# Cloudflare Pages-configuratie (De Publieke Tribune). Koppelingen staan hier, niet in het dashboard.
-name = "publieke-tribune"
+# Cloudflare Pages-configuratie (raadzoeker). Koppelingen staan hier, niet in het dashboard.
+name = "raadzoeker"
 pages_build_output_dir = "docs"
 compatibility_date = "2026-10-06"
 
