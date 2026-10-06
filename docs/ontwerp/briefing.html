@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Briefing · raadzoeker</title>
-<link rel="stylesheet" href="stijl.css?v=11">
+<link rel="stylesheet" href="stijl.css?v=13">
 <style>
 .bediening{display:flex;gap:16px;align-items:end;flex-wrap:wrap;margin-bottom:16px}
 .bediening label{display:block;margin-bottom:8px}
@@ -26,7 +26,7 @@ td .v{display:block;color:var(--sub);font-size:8.5pt;margin-top:1px}
 .trend{display:flex;align-items:flex-end;gap:3px;height:30px;margin-top:4px}
 .trend i{flex:1;background:var(--groen);border-radius:2px 2px 0 0}
 .trend i:last-child{background:#99CCA0}
-@media (max-width:700px){.a4{padding:20px}.kpi{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:700px){.a4{padding:20px 16px}.kpi{grid-template-columns:repeat(2,1fr)}.a4 header{flex-direction:column;gap:8px}.a4 .stand{text-align:left}.a4 h1{font-size:20pt}td,th{overflow-wrap:anywhere}td.dt{width:auto;min-width:4.5em}table{font-size:9pt}}
 @media print{@page{size:A4;margin:0}html,body{background:#fff}.bediening,.deel,.voet{display:none!important}.pagina{padding:0;max-width:none}.a4{box-shadow:none;width:210mm}a{text-decoration:none}}
 </style></head>
 <body>
@@ -42,7 +42,8 @@ td .v{display:block;color:var(--sub);font-size:8.5pt;margin-top:1px}
   <article class="a4" id="a4"><p>Laden…</p></article>
   <p class="voet">Eén A4 om je voor te bereiden op een commissie, een raadsvoorstel of een gesprek met de wethouder. Samengesteld uit openbare raadsinformatie. <a href="over.html">Over deze tool</a>.</p>
 </main>
-<script src="ontwerp.js?v=28"></script>
+<script src="ontwerp.js?v=32"></script>
+<script src="tel.js?v=1"></script>
 <script>
 kop('domeinen');
 let DATA={stand:STAND},IX=[];
@@ -60,29 +61,36 @@ $('word').addEventListener('click',()=>{   // Word opent html met deze kop als d
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+html],{type:'application/msword'}));a.download='briefing-'+location.hash.slice(1)+'.doc';a.click();});
 async function laad(s){const d=await (await fetch('d/'+s+'.json')).json();d.slug=s;
   let A=null;if(d.ai){try{A=await (await fetch('samenvattingen/'+s+'.json')).json();}catch(e){}}
-  maak(d,A);}
-function maak(d,A){
+  let X=null;if((IX.find(x=>x.slug===s)||{}).extra){try{const r=await fetch('d/'+s+'-extra.json');if(r.ok)X=await r.json();}catch(e){}}
+  maak(d,A,X);}
+/* open moties en toezeggingen: uit het beloftespoor als dat er is (zelfde telling als het dossier), anders uit d/<slug>.json */
+function openLijst(d,X,soort){
+  if(!X||!X.spoor)return soort==='motie'?d.moties.lijst:d.toez.lijst;
+  const laat=x=>{const l=x.stappen.slice(-1)[0];return l&&l[1]==='verwacht'&&l[0]<DATA.stand;};
+  return X.spoor.filter(x=>x.open&&x.soort===soort).sort((a,b)=>(laat(b)-laat(a))||b.datum.localeCompare(a.datum)).map(x=>{const l=x.stappen.slice(-1)[0];
+    return [x.datum,x.titel,x.wie,l&&l[1]==='verwacht'?'verwacht '+l[0]:'',x.url,'',{v:x.verzoek||'',o:x.toezegging||''}];});
+}
+function maak(d,A,X){
   $('thema').value=d.slug;if(location.hash.slice(1)!==d.slug)history.replaceState(null,'','#'+d.slug);
   $('naar').href='dossier.html#'+d.slug;
   document.title='Briefing '+d.naam+' · raadzoeker';
   deel($('deel'),'Briefing '+d.naam+' (raadzoeker)',location.href.split('#')[0]+'#'+d.slug);
-  const m=d.moties,t=d.toez,ts=d.tsum,mx=Math.max(...d.trend,1);
+  const T=telling(d,X,DATA.stand),ts=eigenTsum(d),ml=openLijst(d,X,'motie'),tl=openLijst(d,X,'toezegging'),mx=Math.max(...d.trend,1),c3=telCijfers(T);
   const tabel=(l,toez)=>l.length?`<table><thead><tr><th>Datum</th><th>${toez?'Toezegging':'Motie en verzoek'}</th><th>${toez?'Collegelid':'Indiener'}</th><th>Afdoening</th></tr></thead><tbody>${l.slice(0,6).map(r=>{const dl=iso((r[3].match(/verwacht ([\d-]+)/)||[])[1]),laat=dl&&dl<DATA.stand,c=r[6]||{};
       const v=toez?(c.o||''):(c.v||'');
-      return `<tr><td class="dt">${fd(r[0])}</td><td><a href="${esc(r[4])}">${esc(r[1])}</a>${v?`<span class="v">‘${esc(v.length>150?v.slice(0,150).replace(/\s\S*$/,'')+'…':v)}’</span>`:''}</td><td>${esc(r[2])}</td><td class="dt"><span class="stip ${laat?'laat':'open'}"></span>${dl?fd(dl):'onbekend'}${laat?'<br>over de termijn':''}</td></tr>`;}).join('')}</tbody></table>${l.length>6?`<p style="margin:4px 0 0;font-size:9pt">Plus ${(toez?t.open:m.open)-6} meer; zie het onderwerp in de raadzoeker.</p>`:''}`:'<p>Niets open.</p>';
+      return `<tr><td class="dt">${fd(r[0])}</td><td><a href="${esc(r[4])}">${esc(r[1])}</a>${v?`<span class="v">‘${esc(v.length>150?v.slice(0,150).replace(/\s\S*$/,'')+'…':v)}’</span>`:''}</td><td>${esc(r[2])}</td><td class="dt"><span class="stip ${laat?'laat':'open'}"></span>${dl?fd(dl):'onbekend'}${laat?'<br>over de termijn':''}</td></tr>`;}).join('')}</tbody></table>${l.length>6?`<p style="margin:4px 0 0;font-size:9pt">Plus ${(toez?T.tz:T.mo)-6} meer; zie het onderwerp in de raadzoeker.</p>`:''}`:'<p>Niets open.</p>';
   $('a4').innerHTML=`
   <header><div><div class="sub" style="font-size:9.5pt">Briefing · ${esc((d.pad||[]).slice(1).map(x=>x[0]).join(' › ')||d.groep)}</div><h1>${esc(d.naam)}</h1></div>
     <div class="stand">Stand ${fdl(DATA.stand)}<br><span class="sub">raadzoeker · onofficieel</span></div></header>
   <div class="kpi">
-    <div><b class="num">${nf(m.aangenomen)}</b>aangenomen moties sinds 2018, ${nf(m.afgedaan)} afgedaan</div>
-    <div><b class="num">${nf(m.open)}</b><span class="stip open"></span>moties in uitvoering${m.te_laat?`, ${m.te_laat} over de termijn`:''}</div>
-    <div><b class="num">${nf(t.open)}</b><span class="stip open"></span>toezeggingen open${t.te_laat?`, ${t.te_laat} over de termijn`:''}</div>
+    ${c3.map(([l,n,s])=>`<div><b class="num">${nf(n)}</b>${l}<br><span class="sub">${s}</span></div>`).join('')}
     <div>Aandacht in de raad 2018–2026<div class="trend" aria-hidden="true">${d.trend.map(v=>`<i style="height:${Math.max(4,v/mx*100)}%"></i>`).join('')}</div></div>
   </div>
+  ${!(A&&A.kern&&A.kern.length)&&!ts&&(d.soort==='onderwerp'||d.soort==='thema')?`<p class="sub">${GEEN_SAMEN}</p>`:''}
   ${A&&A.kern&&A.kern.length?`<h2>Kern <span class="ai">AI-samenvatting, controleer in de bron</span></h2><p>${A.kern.map(z=>esc(z.zin)).join(' ')}</p>`:ts?`<h2>Kern <span class="ai">AI-samenvatting, controleer in de bron</span></h2><p>${esc(ts.kern)}</p>`:''}
   ${ts&&ts.standpunten&&ts.standpunten.length?`<h2>Standpunten in de raad</h2><div class="stand"><ul>${ts.standpunten.slice(0,6).map(s=>`<li>${esc(s.wie)}: ${esc(s.punt)}${s.citaat?`<span class="cit"> ‘${esc(s.citaat)}’</span>`:''}</li>`).join('')}</ul></div>`:''}
-  <h2>Moties in uitvoering</h2>${tabel(m.lijst,false)}
-  <h2>Openstaande toezeggingen</h2>${tabel(t.lijst,true)}
+  <h2>Moties in uitvoering</h2>${tabel(ml,false)}
+  <h2>Openstaande toezeggingen</h2>${tabel(tl,true)}
   <h2>Recente debatten</h2><table><tbody>${d.debatten.slice(0,5).map(x=>`<tr><td class="dt">${fd(x[0])}</td><td><a href="https://gemeenteraad.rotterdam.nl/Agenda/Index/${esc(x[1])}">${esc(x[2]||'Raadsvergadering')}</a>${x[7]&&x[7].length?`<span class="v">${esc(x[7].join(', '))}</span>`:''}</td><td class="dt num">${nf(x[3])}×</td></tr>`).join('')}</tbody></table>
   ${(d.wijkstukken||[]).length?`<h2>Signalen uit de wijken</h2><table><tbody>${d.wijkstukken.slice(0,4).map(w=>`<tr><td class="dt">${fd(w[0])}</td><td>${w[3]?`<a href="${esc(w[3])}">${esc(w[1])}</a>`:esc(w[1])}<span class="v">${esc(w[2])}</span></td></tr>`).join('')}</tbody></table>`:''}
   ${d.rekenkamer.lijst.length?`<h2>Rekenkamer</h2><table><tbody>${d.rekenkamer.lijst.slice(0,3).map(r=>`<tr><td class="dt">${fd(r[0])}</td><td><a href="${esc(r[4])}">${esc(r[1])}</a></td></tr>`).join('')}</tbody></table>`:''}

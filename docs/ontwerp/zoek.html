@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Zoeken · raadzoeker</title>
-<link rel="stylesheet" href="stijl.css?v=11">
+<link rel="stylesheet" href="stijl.css?v=13">
 <link rel="stylesheet" href="keten.css?v=4">
 <style>
 .kolom{max-width:1100px;margin:0 auto}
@@ -33,8 +33,8 @@
 .leegstaat button.lk{all:unset;cursor:pointer;color:var(--groen);text-decoration:underline}
 .res{border-top:1px solid var(--grijs2);padding:14px 0}
 .res:first-child{border-top:0}
-.res h3{font-size:17px;margin:0 0 4px;font-weight:700}
-.res h3 a{text-decoration:none;color:var(--zwart)}.res h3 a:hover{text-decoration:underline}
+.res h2,.res h3{font-size:17px;margin:0 0 4px;font-weight:700}
+.res h2 a,.res h3 a{text-decoration:none;color:var(--zwart)}.res h2 a:hover,.res h3 a:hover{text-decoration:underline}
 .res .m{font-size:14px;color:var(--sub);display:flex;flex-wrap:wrap;gap:4px 12px}
 .res .soort{background:var(--grijs);border-radius:4px;padding:1px 8px;color:var(--zwart)}
 .res .fr{margin:8px 0 0;font-size:15px;line-height:1.55;max-width:85ch}
@@ -48,6 +48,17 @@
 .vv{display:block;padding:10px 0;border-top:1px solid var(--grijs2);text-decoration:none;color:inherit}.vv:first-child{border-top:0}
 .vv b{display:block;font-size:17px;color:var(--groen)}.vv .w{font-size:13px;color:var(--sub)}.vv p{margin:3px 0 0;font-size:15px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .vv:hover b{text-decoration:underline}
+.fknoprij{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px}
+.fknop{font:700 15px var(--font);background:var(--wit);border:2px solid var(--zwart);border-radius:999px;padding:0 16px;min-height:44px;cursor:pointer}
+.fknop[aria-expanded="true"]{background:var(--grijs)}
+.fchips{display:flex;flex-wrap:wrap;gap:6px}
+.fchips button{font:14px var(--font);background:var(--groen-zacht);border:0;border-radius:999px;padding:4px 12px;min-height:32px;cursor:pointer}
+.dosregel{margin:10px 0 0;font-size:15px}.dosregel a{margin-right:10px}
+.extra{border:1px solid var(--lijn);border-radius:8px;padding:10px 14px;margin:12px 0;background:var(--wit)}.extra summary{cursor:pointer}
+.extra .analyse{margin-top:12px}
+body.zq .lead,body.zq .tip{display:none}
+body.zq h1{font-size:24px;margin-bottom:8px}
+@media (max-width:600px){.vlak{padding:14px}.tabs{margin-top:12px}.telling{margin:10px 0 4px}.zoekrij{flex-wrap:nowrap}.zoekrij input{font-size:16px;padding:10px 16px;min-width:0}.zoekrij button{min-height:46px}}
 </style></head>
 <body>
 <header class="balk"></header>
@@ -58,33 +69,37 @@
     <p class="lead">Zoek op elk woord dat sinds 2018 in de raad (woordelijke notulen) en sinds 2022 in de commissies (ondertiteling) is gezegd, en in 44.500 stukken. Je ziet meteen wanneer, door wie en waar in de stad het speelt, en welke dossiers erbij horen.</p>
     <form class="zoekrij" id="zf" role="search"><label for="q" style="position:absolute;left:-9999px">Zoek</label><input id="q" type="search" autocomplete="off" placeholder="bijvoorbeeld: deelscooters, &quot;betaald parkeren&quot; of dakloos | nachtopvang"><button type="submit">Zoek</button></form>
     <p class="tip">Alle woorden moeten voorkomen; woordvormen tellen mee (woning vindt ook woningen). Zet woorden tussen aanhalingstekens voor een exacte zin.</p>
+    <div class="fknoprij"><button type="button" class="fknop" id="fknop" aria-expanded="false" aria-controls="fpan">Filters</button><span class="fchips" id="fchips"></span></div>
+    <div id="fpan" hidden>
     <div class="rij2">
       <label>Van <select id="van"></select></label><label>Tot en met <select id="tot"></select></label>
       <label>Domein <select id="fdom"><option value="">alle domeinen</option></select></label>
       <label>Gebied <select id="fgeb"><option value="">heel Rotterdam</option></select></label>
-      <label>Volgorde <select id="orde"><option value="r">best passend</option><option value="d">nieuwste eerst</option></select></label>
+      <label>Volgorde <select id="orde"><option value="r">best passend</option><option value="d">nieuwste eerst</option></select></label></div>
+    <div class="rij2" id="fgez"><label>Fractie <select id="ffr"><option value="">alle fracties</option></select></label><label>Spreker <select id="fsp"><option value="">alle sprekers</option></select></label>
+    <label>Vergadering <select id="fbr"><option value="">raad en commissies</option><option value="0">gemeenteraad</option><option value="1">commissies</option></select></label></div>
     </div>
+    <p class="dosregel" id="dosregel" hidden></p>
   </div>
-  <section class="vlak" id="vverslag" hidden style="margin-top:16px;border-top:5px solid var(--groen)" aria-labelledby="hv"><h2 id="hv" style="font-size:20px;margin:0 0 4px">Uit de vergaderverslagen</h2>
-    <p class="sub" style="margin:0 0 10px;font-size:14px">Wat er besproken is, kort samengevat per onderwerp, met wat elke fractie zei. <a href="vergaderingen.html">Alle vergaderingen</a></p><div id="vlijst"></div></section>
-  <section class="vlak" id="analyse" hidden style="margin-top:16px" aria-labelledby="ha"><h2 id="ha" style="font-size:20px">In één oogopslag</h2>
-    <div class="analyse"><div><h3>Per jaar</h3><div id="ajaar"></div></div><div><h3>Wie zei het? <span class="sub">(debatten, op alfabet)</span></h3><div class="bars" id="afr"></div></div><div><h3>Waar in de stad?</h3><div class="bars geb" id="ageb"></div></div></div>
-    <div id="adoss"></div></section>
   <div class="tabs" role="tablist" id="tabs">
     <button type="button" role="tab" data-tab="gezegd" aria-selected="true">Gezegd<span class="n" id="ng"></span></button>
     <button type="button" role="tab" data-tab="stukken" aria-selected="false">Stukken<span class="n" id="ns"></span></button></div>
-  <div class="rij2" id="fgez"><label>Fractie <select id="ffr"><option value="">alle fracties</option></select></label><label>Spreker <select id="fsp"><option value="">alle sprekers</option></select></label>
-    <label>Vergadering <select id="fbr"><option value="">raad en commissies</option><option value="0">gemeenteraad</option><option value="1">commissies</option></select></label></div>
   <div class="chips" id="soorten" role="group" aria-label="Soort stuk" hidden style="margin-top:14px"></div>
   <p class="telling" id="telling" aria-live="polite">De zoekindex wordt geladen…</p>
   <div class="vlak leegstaat" id="leeg" hidden></div>
   <div class="vlak" id="uit" hidden></div>
   <div class="meer" id="meerv" hidden><button class="knop wit" id="meer" type="button">Meer resultaten</button></div>
+  <div id="holder">
+  <details class="extra" id="vverslag" hidden><summary><b>Uit de vergaderverslagen</b> <span class="sub" id="nvv"></span></summary>
+    <p class="sub" style="margin:8px 0 6px;font-size:14px">Wat er besproken is, kort samengevat per onderwerp, met wat elke fractie zei. <a href="vergaderingen.html">Alle vergaderingen</a></p><div id="vlijst"></div></details>
+  <details class="extra" id="analyse" hidden><summary><b>In één oogopslag</b> <span class="sub">per jaar, fractie en gebied</span></summary>
+    <div class="analyse"><div><h3>Per jaar</h3><div id="ajaar"></div></div><div><h3>Wie zei het? <span class="sub">(debatten, op alfabet)</span></h3><div class="bars" id="afr"></div></div><div><h3>Waar in de stad?</h3><div class="bars geb" id="ageb"></div></div></div></details>
+  </div>
  </div>
 </main>
 <script src="fzstd.js"></script>
-<script src="ontwerp.js?v=28"></script>
-<script src="keten.js?v=9"></script>
+<script src="ontwerp.js?v=32"></script>
+<script src="keten.js?v=11"></script>
 <script>
 kop('zoeken');
 const JAREN=['2018','2019','2020','2021','2022','2023','2024','2025','2026'];
@@ -112,7 +127,7 @@ const V=id=>$(id).value;
 function jaarOk(d){const y=d.slice(0,4);return y>=V('van')&&y<=V('tot');}
 /* ---------- zoeken in beide bronnen ---------- */
 async function zoek(){
-  const q=$('q').value.trim();zetHash();
+  const q=$('q').value.trim();zetHash();document.body.classList.toggle('zq',!!q);
   if(!q){$('analyse').hidden=true;$('vverslag').hidden=true;$('uit').hidden=true;$('meerv').hidden=true;$('ng').textContent='';$('ns').textContent='';$('telling').textContent='Typ een woord of zin.';return;}
   // 'of': woorden gescheiden door | of OF; per alternatief moeten alle woorden voorkomen, de beste score telt
   const alts=q.split(/\s*\|\s*|\s+OF\s+/).map(x=>x.trim()).filter(Boolean),delen=alts.map(leesQ).filter(x=>x.termen.length);if(!delen.length)return;
@@ -134,16 +149,18 @@ async function zoek(){
 }
 /* vergaderverslagen: samenvattingen per agendapunt (verg/zoek.json), bovenaan omdat ze het prettigst lezen */
 let VZ=null;
+/* alleen tonen als een zoekwoord (stam of exacte zin) echt in de getoonde tekst staat */
+function getoond(x){const t=x[2]+' '+x[5],w=new Set(woorden(t));if(ZOEK.termen.some(k=>w.has(k)))return true;const f=fold(t).replace(/\s+/g,' ');return ZOEK.zinnen.some(z=>f.includes(z));}
 async function verslagen(delen){
   if(!VZ)VZ=fetch('verg/zoek.json').then(r=>r.ok?r.json():[]).then(L=>L.map(x=>({x,t:new Set(woorden(x[2])),w:woorden(x[6]+' '+x[2])}))).catch(()=>[]);
   const L=await VZ,uit=[];
   for(const v of L){if(!jaarOk(v.x[3]))continue;let best=0;
     for(const {termen} of delen){const set=new Set(v.w);if(!termen.every(t=>set.has(t)))continue;const sc=termen.reduce((a,t)=>a+(v.t.has(t)?5:0)+v.w.filter(w=>w===t).length,0);best=Math.max(best,sc);}
-    if(best)uit.push([best,v.x]);}
+    if(best&&getoond(v.x))uit.push([best,v.x]);}
   uit.sort((a,b)=>b[0]-a[0]||b[1][3].localeCompare(a[1][3]));
   const M=['jan','feb','mrt','apr','mei','jun','jul','aug','sep','okt','nov','dec'],dd=d=>`${+d.slice(8)} ${M[+d.slice(5,7)-1]} ${d.slice(0,4)}`;
   const kaart=x=>`<a class="vv" href="vergadering.html?id=${x[0]}#ap-${encodeURIComponent(x[1])}"><span class="w">${esc(x[4])} · ${dd(x[3])}</span><b>${esc(x[2])}</b><p>${esc(x[5])}</p></a>`;
-  $('vverslag').hidden=!uit.length;
+  $('vverslag').hidden=!uit.length;$('nvv').textContent=uit.length?`(${uit.length})`:'';
   $('vlijst').innerHTML=uit.slice(0,3).map(([,x])=>kaart(x)).join('')+(uit.length>3?`<details><summary class="sub" style="cursor:pointer;margin-top:8px">Nog ${uit.length-3} onderwerpen uit vergaderingen</summary>${uit.slice(3).map(([,x])=>kaart(x)).join('')}</details>`:'');
 }
 function sprekers(){   // sprekers en fracties die in de resultaten voorkomen
@@ -168,7 +185,7 @@ function analyse(){
   const gl=LB.geb.map((x,i)=>[x,gb[i]]).filter(x=>x[1]).sort((a,b)=>b[1]-a[1]).slice(0,8),gm=Math.max(1,...gl.map(x=>x[1]));
   $('ageb').innerHTML=gl.length?gl.map(([x,n])=>`<div><a href="wijk.html?g=${slug(x)}">${esc(x)}</a><i style="width:${n/gm*100}%"></i><span class="v">${n}</span></div>`).join('')+'<p class="sub" style="font-size:12px">Stukken en debatten die het gebied noemen.</p>':'<p class="sub">Geen gebied herkend.</p>';
   const q=fold(ZOEK.q),dl=IX.filter(x=>x.soort!=='kruising'&&(fold(x.naam).includes(q)||(x.termen||'').split('|').some(t=>t.trim()&&(q.includes(fold(t.trim()))||fold(t.trim()).includes(q)))));
-  $('adoss').innerHTML=dl.length?`<h3 style="font-size:15px;margin:16px 0 0">Dossiers hierover</h3><div class="dossiers">${dl.slice(0,8).map(x=>`<a href="${x.soort==='gebied'?'wijk.html?g=':'dossier.html?d='}${x.slug}">${esc(x.naam)}${x.ai?' <span class="ai">AI</span>':''}</a>`).join('')}</div>`:'';
+  const dh=dl.slice(0,3);$('dosregel').hidden=!dh.length;$('dosregel').innerHTML=dh.length?`${dh.length>1?'Dossiers':'Dossier'}: `+dh.map(x=>`<a href="${x.soort==='gebied'?'wijk.html#':'dossier.html#'}${x.slug}">${esc(x.naam)} ›</a>`).join(''):'';
 }
 /* ---------- lijsten ---------- */
 async function toepassen(){
@@ -182,7 +199,7 @@ async function toepassen(){
   if(ZOEK.zinnen.length){const ok=[];for(const r of LIJST.slice(0,300)){const t=fold(await tekstVan(r[0])).replace(/\s+/g,' ');if(ZOEK.zinnen.every(z=>t.includes(z)))ok.push(r);}LIJST=ok;}
   $('ng').textContent=nf(rd.length);$('ns').textContent=nf(rs.length);
   chips(RS);$('soorten').hidden=TAB!=='stukken';$('fgez').hidden=TAB!=='gezegd';
-  TOON=0;$('uit').innerHTML='';$('uit').hidden=!LIJST.length;
+  TOON=0;$('holder').append($('vverslag'),$('analyse'));$('uit').innerHTML='';$('uit').hidden=!LIJST.length;filterChips();
   $('telling').textContent=LIJST.length?(TAB==='gezegd'?`${nf(LIJST.length)} keer gezegd in debatten`:`${nf(LIJST.length)} stukken gevonden`)+(ZOEK.zinnen.length?' (exacte zin, eerste 300 gecontroleerd)':''):'Niets gevonden met deze filters. Probeer minder woorden of een langere periode.';
   await meer();
   leegStaat(rd.length,rs.length);
@@ -218,7 +235,20 @@ $('leeg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)
   else if(b.dataset.a==='wis'){['fdom','fgeb','ffr','fsp','fbr'].forEach(id=>{const el=$(id);if(el)el.value='';});$('van').value='2018';$('tot').value='2026';zoek();}});
 async function tekstVan(id){if(TAB==='gezegd'){const segs=await DB.tekst(id);return segs.map(s=>s[1]).join('\n');}return ST.tekst(id);}
 async function meer(){const deel=LIJST.slice(TOON,TOON+15);TOON+=deel.length;const html=await Promise.all(deel.map(([id])=>TAB==='gezegd'?kaartD(id):kaartS(id)));
-  $('uit').insertAdjacentHTML('beforeend',html.join(''));$('meerv').hidden=TOON>=LIJST.length;}
+  const eerste=TOON===deel.length;$('uit').insertAdjacentHTML('beforeend',eerste?html.slice(0,5).join('')+'<div id="slot"></div>'+html.slice(5).join(''):html.join(''));
+  if(eerste&&$('slot')){$('slot').append($('vverslag'),$('analyse'));}$('meerv').hidden=TOON>=LIJST.length;}
+/* filters achter een knop, actieve filters als chips met × */
+function filterChips(){const L=[];const add=(txt,wis)=>L.push([txt,wis]);
+  if(V('van')!=='2018')add('Van '+V('van'),()=>{$('van').value='2018';zoek();});if(V('tot')!=='2026')add('Tot en met '+V('tot'),()=>{$('tot').value='2026';zoek();});
+  if(V('fdom')!=='')add($('fdom').selectedOptions[0].text,()=>{$('fdom').value='';zoek();});if(V('fgeb')!=='')add($('fgeb').selectedOptions[0].text,()=>{$('fgeb').value='';zoek();});
+  if(V('orde')==='d')add('nieuwste eerst',()=>{$('orde').value='r';toepassen();zetHash();});
+  if(TAB==='gezegd'){if(V('ffr')!=='')add($('ffr').selectedOptions[0].text.replace(/ \(\d+\)$/,''),()=>{$('ffr').value='';toepassen();zetHash();});
+    if(V('fsp')!=='')add($('fsp').selectedOptions[0].text.replace(/ \(\d+\)$/,''),()=>{$('fsp').value='';toepassen();zetHash();});
+    if(V('fbr')!=='')add($('fbr').selectedOptions[0].text,()=>{$('fbr').value='';toepassen();zetHash();});}
+  $('fknop').textContent='Filters'+(L.length?` (${L.length})`:'');
+  $('fchips').innerHTML=L.map((x,i)=>`<button type="button" data-i="${i}" aria-label="Filter ${esc(x[0])} wissen">${esc(x[0])} ×</button>`).join('');
+  $('fchips').onclick=e=>{const b=e.target.closest('button');if(b)L[+b.dataset.i][1]();};}
+$('fknop').addEventListener('click',()=>{const o=$('fpan').hidden;$('fpan').hidden=!o;$('fknop').setAttribute('aria-expanded',o);});
 function posities(t){const re=/[A-Za-zÀ-ÿ0-9]+/g;let m;const pos=[];while((m=re.exec(t))){if(ZOEK.termen.includes(stam(fold(m[0]))))pos.push([m.index,m[0].length]);}return pos;}
 function markeer(t,a,b,pos){let s='',i=a;for(const [p,l] of pos){if(p<a||p+l>b)continue;s+=esc(t.slice(i,p))+'<mark>'+esc(t.substr(p,l))+'</mark>';i=p+l;}s+=esc(t.slice(i,b));return (a?'…':'')+s.replace(/\s+/g,' ').trim()+(b<t.length?'…':'');}
 function fragment(t,breed=200){const pos=posities(t);if(!pos.length)return esc(t.slice(0,breed*2))+(t.length>breed*2?'…':'');
@@ -229,17 +259,18 @@ async function kaartD(id){
   let seg=segs.find(s=>posities(s[1]).length)||segs[0];
   const wie=u[1]>=0?M.spk[u[1]]:'Onbekende spreker',pa=u[2]>=0?M.par[u[2]]:'';
   const vid=v[4]&&seg[0]>=0?`<button type="button" class="knop klein" data-video="${esc(v[4])}" data-sec="${seg[0]}" data-titel="${esc(fd(v[0])+' · '+wie)}">▶ Bekijk dit moment</button>`:'';
-  const arch=`../${v[1]?'commissiezoeker':'raadzoeker'}.html#q=${encodeURIComponent(ZOEK.q)}&fd1=${v[0]}&fd2=${v[0]}`;
-  return `<article class="res"><h3><a href="${arch}">${esc(a[2]||v[2])}</a></h3>
+  const id8=String(v[3]||'').slice(0,8),eigen=VI.has(id8),ib=v[3]?`https://gemeenteraad.rotterdam.nl/Agenda/Index/${esc(v[3])}`:'';
+  const arch=eigen?`vergadering.html?id=${id8}#ap-${encodeURIComponent(a[1])}`:ib;
+  return `<article class="res"><h2>${arch?`<a href="${arch}"${eigen?'':' target="_blank" rel="noopener"'}>${esc(a[2]||v[2])}</a>`:esc(a[2]||v[2])}</h2>
     <div class="m"><span class="soort">${v[1]?'Commissie':'Gemeenteraad'}</span><span>${fd(v[0])}</span><span><b>${esc(wie)}</b>${pa?' ('+esc(pa)+')':''}</span>${u[4]?'<span>automatische ondertiteling</span>':''}</div>
-    <p class="fr">‘${fragment(seg[1])}’</p><div class="act">${vid}<a href="${arch}">Lees het hele debat</a>${v[3]?`<a href="https://gemeenteraad.rotterdam.nl/Agenda/Index/${esc(v[3])}" target="_blank" rel="noopener">Vergadering in iBabs</a>`:''}</div></article>`;
+    <p class="fr">‘${fragment(seg[1])}’</p><div class="act">${vid}${eigen?`<a href="${arch}">Lees het hele debat</a><a href="${ib}" target="_blank" rel="noopener">Vergadering in iBabs</a>`:ib?`<a href="${ib}" target="_blank" rel="noopener">Hele vergadering (iBabs)</a>`:''}</div></article>`;
 }
 async function kaartS(id){
   const d=ST.M.d[id],soort=ST.M.soorten[d[0]],t=await ST.tekst(id);let fr='';
   if(soort==='Schriftelijke vragen'){const [v,a]=t.split('\nANTWOORD VAN HET COLLEGE');
     fr+=`<p class="fr"><span class="lbl">Vraag</span>${fragment(v.replace(/^VRAGEN\n/,''))}</p>`+(a?`<p class="fr"><span class="lbl">Antwoord college</span>${fragment(a.replace(/^ \([\d-]+\)\n/,''))}</p>`:`<p class="fr"><span class="lbl">Antwoord college</span><span class="sub">nog niet beantwoord, of niet gekoppeld</span></p>`);}
   else fr=`<p class="fr">${fragment(t)}</p>`;
-  return `<article class="res"><h3><a href="${esc(d[4])}" target="_blank" rel="noopener">${esc(d[2]||soort)}</a></h3>
+  return `<article class="res"><h2><a href="${esc(d[4])}" target="_blank" rel="noopener">${esc(d[2]||soort)}</a></h2>
     <div class="m"><span class="soort">${esc(soort)}</span><span>${fd(d[1])}</span>${d[3]?`<span>${esc(d[3])}</span>`:''}</div>${fr}
     <details data-id="${id}"><summary>Lees de hele tekst</summary><div class="vol"></div></details></article>`;
 }
@@ -261,9 +292,11 @@ function zetHash(){const p=new URLSearchParams();const q=$('q').value.trim();if(
   history.replaceState(null,'','#'+p.toString());}
 function logZoek(q,n){clearTimeout(logZoek.t);logZoek.t=setTimeout(()=>{if(!q||q===LOGQ)return;LOGQ=q;try{navigator.sendBeacon('/api/log',new Blob([JSON.stringify({q,n,pagina:'zoek'})],{type:'application/json'}));}catch(e){}},3000);}
 window.addEventListener('hashchange',()=>location.reload());
-let IX=[];
+let IX=[],VI=new Set();
 (async()=>{
+  const vip=fetch('verg/index.json').then(r=>r.ok?r.json():[]).then(L=>{VI=new Set(L.map(x=>String(x.id||x.agendaId).slice(0,8)));}).catch(()=>{});
   [ST.M,LB,DB.M,IX]=await Promise.all([lees('../data/tekst/meta.zst'),lees('../data/tekst/labels.zst'),lees('../data/debat/meta.zst'),fetch('d/index.json').then(r=>r.json()).then(x=>x.d)]);
+  await vip;
   {const L=ST.M.d.filter(Boolean);ST.avg=L.reduce((s,d)=>s+d[5],0)/L.length;DB.avg=DB.M.u.reduce((s,u)=>s+u[3],0)/DB.M.u.length;}
   $('van').innerHTML=JAREN.map(j=>`<option>${j}</option>`).join('');$('tot').innerHTML=$('van').innerHTML;$('van').value='2018';$('tot').value='2026';
   $('fdom').insertAdjacentHTML('beforeend',LB.dom.map(([s,n],i)=>`<option value="${i}">${esc(n)}</option>`).join(''));

@@ -2,7 +2,7 @@
 <html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>raadzoeker · wat zei en besloot de Rotterdamse raad?</title>
 <meta property="og:title" content="raadzoeker"><meta property="og:description" content="Wat de Rotterdamse gemeenteraad zei, besloot en beloofde, per domein en per gebied.">
-<link rel="stylesheet" href="stijl.css?v=11">
+<link rel="stylesheet" href="stijl.css?v=13">
 <style>
 .hero{background:var(--wit);border-radius:var(--r);padding:32px;display:grid;gap:16px}
 .hero h1{font-size:36px}
@@ -12,6 +12,7 @@
 .zoekrij button{font:700 16px var(--font);background:var(--groen);color:var(--wit);border:0;border-radius:999px;padding:0 24px;min-height:52px;cursor:pointer}
 .hero .sub a{color:var(--sub)}
 .hero .lead{font-size:18px;line-height:1.55;max-width:78ch;margin:0}
+.keuze.geen li[aria-selected="true"]:not(:hover){background:none}
 .zoekrij button.wit{background:var(--wit);color:var(--groen-d);border:2px solid var(--groen)}
 .waarom{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
 .waarom a{display:grid;gap:4px;text-decoration:none;border:1px solid var(--lijn);border-radius:8px;padding:12px 14px;background:var(--grijs)}
@@ -55,7 +56,11 @@
 details.leg summary{cursor:pointer}
 .mat th.rij{position:sticky;left:0;background:var(--wit);z-index:1}
 .mat th.rij a .kort{display:none}
+.matmob{display:none}.matmob h3{font-size:16px;margin:16px 0 8px}
+.kieslijst{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.kieslijst a{display:flex;align-items:center;min-height:44px;padding:6px 12px;background:var(--grijs);border-radius:8px;font-size:15px;line-height:1.2}
 @media (max-width:600px){
+  .matvlak,.matuitleg{display:none}.matmob{display:block}.mat-leg{display:none}
   .wolk{gap:2px 9px;padding:4px 0;line-height:1}.wolk a{padding:1px 2px}
   .hero{padding:18px;gap:12px}.hero h1{font-size:26px}.hero .lead{font-size:16px}
   .tellers{grid-template-columns:repeat(2,minmax(0,1fr))}.tellers b{font-size:24px}
@@ -93,9 +98,10 @@ details.leg summary{cursor:pointer}
   <div class="twee">
     <section class="vlak">
       <h2>Waar speelt wat?</h2>
-      <p style="margin:6px 0 12px;max-width:72ch">Rijen zijn domeinen, kolommen gebieden. Hoe donkerder, hoe vaker. Tik op een vakje, bijvoorbeeld mobiliteit in Feijenoord.</p>
+      <p class="matuitleg" style="margin:6px 0 12px;max-width:72ch">Rijen zijn domeinen, kolommen gebieden. Hoe donkerder, hoe vaker. Tik op een vakje, bijvoorbeeld mobiliteit in Feijenoord.</p>
       <div class="matvlak"><table class="mat" id="mat"></table></div>
-      <details class="leg"><summary>Hoe is dit geteld?</summary>Donkerder = vaker, vergeleken met de andere gebieden in dezelfde rij. Stukken die vijf of meer gebieden noemen tellen als stadsbreed en staan hier niet in. 'Genoemd in' is automatisch herkend op wijk- en straatnamen en klopt in ongeveer 9 van de 10 gevallen.</details>
+      <div class="matmob"><h3>Kies een gebied</h3><div class="kieslijst" id="kiesgeb"></div><h3>Kies een domein</h3><div class="kieslijst" id="kiesdom"></div></div>
+      <details class="leg mat-leg"><summary>Hoe is dit geteld?</summary>Donkerder = vaker, vergeleken met de andere gebieden in dezelfde rij. Stukken die vijf of meer gebieden noemen tellen als stadsbreed en staan hier niet in. 'Genoemd in' is automatisch herkend op wijk- en straatnamen en klopt in ongeveer 9 van de 10 gevallen.</details>
     </section>
     <div class="drie">
       <section class="vlak"><h2>Net besloten</h2><p class="sub" id="nbsub" style="margin-top:4px"></p><div class="lijst" id="recent" style="margin-top:8px"></div></section>
@@ -105,12 +111,19 @@ details.leg summary{cursor:pointer}
   </div>
   <p class="voet">Onofficieel hulpmiddel op openbare gegevens van de gemeenteraad (iBabs), de Rekenkamer, de wijkraden, het Gemeenteblad en CBS. <a href="over.html">Over deze tool</a>.</p>
 </main>
-<script src="ontwerp.js?v=28"></script>
+<script src="ontwerp.js?v=32"></script>
 <script>
+const tekstKl=al=>{const L=[0,129,31].map((c,i)=>{const v=(255-al*(255-c))/255;return v<=.04045?v/12.92:((v+.055)/1.055)**2.4;}),l=.2126*L[0]+.7152*L[1]+.0722*L[2];return l>.179?'#000':'#fff';};
+
 kop('');
 Promise.all(['d/overzicht.json','d/index.json','start.json'].map(f=>fetch(f).then(r=>r.json()))).then(([O,IX,S])=>{
   const ALLE=IX.d.filter(x=>x.soort!=='kruising').map(x=>Object.assign({sub:[],termen:''},x));
-  zoeklijst($('zoek'),$('keuze'),()=>ALLE,x=>{location.href='dossier.html#'+x.slug;});
+  // Enter zoekt altijd; alleen een expliciet gekozen suggestie (klik, of pijltje + Enter) opent het dossier of gebied
+  let gekozen=false;const zv=$('zoek');
+  zv.addEventListener('input',()=>{gekozen=false;$('keuze').classList.add('geen');});
+  zv.addEventListener('keydown',e=>{if(e.key==='ArrowDown'||e.key==='ArrowUp'){if(!gekozen&&$('keuze').classList.contains('on')){e.preventDefault();e.stopImmediatePropagation();}gekozen=true;$('keuze').classList.remove('geen');}
+    else if(e.key==='Enter'&&!gekozen){e.preventDefault();e.stopImmediatePropagation();const q=zv.value.trim();if(q)location.href='zoek.html?q='+encodeURIComponent(q);}});
+  zoeklijst(zv,$('keuze'),()=>ALLE,x=>{location.href=(x.soort==='gebied'?'wijk.html#':'dossier.html#')+x.slug;});
   $('zf').addEventListener('submit',e=>{e.preventDefault();const q=$('zoek').value.trim();if(!q)return;
     location.href='zoek.html?q='+encodeURIComponent(q);});
   // woordwolk: grootte per soort geschaald (wortel), stijgers met pijl
@@ -125,10 +138,12 @@ Promise.all(['d/overzicht.json','d/index.json','start.json'].map(f=>fetch(f).the
   // matrix domein x gebied (op de telefoon: korte namen en kleine vakjes, zodat alle gebieden passen)
   const KORT={'wonen-en-bouwen':'Wonen','buitenruimte':'Buitenruimte','mobiliteit':'Mobiliteit','economie-en-haven':'Economie','klimaat-en-energie':'Klimaat','veiligheid':'Veiligheid','zorg-welzijn-en-jeugd':'Zorg','onderwijs':'Onderwijs','werk-inkomen-en-armoede':'Werk','samenleven-en-participatie':'Samenleven','cultuur-en-sport':'Cultuur','bestuur-en-organisatie':'Bestuur','financien':'Financiën'};
   const G=O.gebieden,heeft=new Set(IX.d.filter(x=>x.soort==='kruising').map(x=>x.slug));
-  $('mat').innerHTML=`<thead><tr><th></th>${G.map(g=>`<th><span>${esc(g)}</span></th>`).join('')}</tr></thead><tbody>`+O.domeinen.map(d=>{
+  $('mat').innerHTML=`<thead><tr><th></th>${G.map(g=>`<th><a href="wijk.html#${slug(g)}" title="Alles over ${esc(g)}"><span>${esc(g)}</span></a></th>`).join('')}</tr></thead><tbody>`+O.domeinen.map(d=>{
     const m=Math.max(1,...G.map(g=>d.kruising[g]||0));
     return `<tr><th class="rij"><a href="dossier.html#${d.slug}"><span class="lang">${esc(d.naam)}</span><span class="kort">${esc(KORT[d.slug]||d.naam)}</span></a></th>${G.map(g=>{const v=d.kruising[g]||0,a=v/m,s=d.slug+'--'+slug(g);
-      return heeft.has(s)?`<td style="background:rgba(0,129,31,${(0.08+0.85*a).toFixed(2)});color:${a>.55?'#fff':'#000'}"><a href="dossier.html#${s}" title="${esc(d.naam)} in ${esc(g)}: ${v} stukken en debatten">${nf(v)}</a></td>`:`<td class="leeg" title="Te weinig om te tonen">${v||''}</td>`;}).join('')}</tr>`;}).join('')+'</tbody>';
+      return heeft.has(s)?`<td style="background:rgba(0,129,31,${(0.08+0.85*a).toFixed(2)});color:${tekstKl(0.08+0.85*a)}"><a href="dossier.html#${s}" title="${esc(d.naam)} in ${esc(g)}: ${v} stukken en debatten">${nf(v)}</a></td>`:`<td class="leeg" title="Te weinig om te tonen">${v||''}</td>`;}).join('')}</tr>`;}).join('')+'</tbody>';
+  $('kiesgeb').innerHTML=G.map(g=>`<a href="wijk.html#${slug(g)}">${esc(g)}</a>`).join('');
+  $('kiesdom').innerHTML=O.domeinen.map(d=>`<a href="dossier.html#${d.slug}">${esc(d.naam)}</a>`).join('');
   // net besloten
   $('nbsub').textContent=`Aangenomen moties uit de raadsvergadering van ${fdl(S.laatst)} (${S.aantal_aangenomen} in totaal).`;
   $('recent').innerHTML=S.recent.slice(0,3).map(r=>rij([r[0],r[1],r[2],r[3],r[4],'',r[5]],'motie',S.stand)).join('');

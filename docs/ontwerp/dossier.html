@@ -1,8 +1,8 @@
 <!doctype html>
 <html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Dossier · raadzoeker</title>
-<link rel="stylesheet" href="stijl.css?v=11">
-<link rel="stylesheet" href="keten.css?v=5">
+<link rel="stylesheet" href="stijl.css?v=13">
+<link rel="stylesheet" href="keten.css?v=6">
 <style>
 .pagina.breed{max-width:1240px}
 .crumb{font-size:14px;color:var(--sub);margin:32px 0 4px}
@@ -18,6 +18,7 @@
 .C{display:grid;grid-template-columns:minmax(0,2fr) minmax(300px,1fr);gap:24px;align-items:start;margin-top:24px}
 .C>main,.C>aside{display:grid;gap:24px;min-width:0}
 .C>aside.vast{position:sticky;top:16px}
+.C>main>*,.C>aside>*{min-width:0}
 .kern p{font-size:19px;line-height:1.6;margin:0;max-width:72ch}
 .cijfers{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 .cijfer{background:var(--grijs);border-radius:6px;padding:10px 12px;font-size:14px;line-height:1.3}
@@ -65,9 +66,10 @@ table.tafel .bar i{display:block;height:8px;background:var(--groen);border-radiu
   <div id="dossier"><p class="leeg" style="margin-top:24px">Laden…</p></div>
   <p class="voet">Gegevens: notulen en ondertiteling van de gemeenteraad, de registratie in iBabs (moties, toezeggingen, schriftelijke vragen, brieven), de Rekenkamer Rotterdam en de wijkraden, stand 2 oktober 2026. Domeinen volgen de indeling van de griffie (beleidsveld in iBabs), aangevuld met een woordmodel; een onderwerp is een vaste set zoekwoorden. Aantallen zijn een goede indicatie, geen exacte telling. Teksten met het label AI zijn automatisch gemaakt; elk punt heeft een letterlijk citaat dat een script woord voor woord met de bron heeft vergeleken. <a href="over.html">Meer over deze tool</a>.</p>
 </main>
-<script src="ontwerp.js?v=28"></script>
+<script src="ontwerp.js?v=32"></script>
 <script src="ai.js?v=1"></script>
-<script src="keten.js?v=9"></script>
+<script src="tel.js?v=1"></script>
+<script src="keten.js?v=11"></script>
 <script>
 kop('domeinen');
 let DATA={stand:STAND},ALLE=[],KAART=null,CUR=null,SOORT='mot',FILTER='open';
@@ -86,7 +88,7 @@ Promise.all(['d/index.json','kaart.json'].map(f=>fetch(f).then(r=>r.json()))).th
 window.addEventListener('hashchange',()=>{const h=decodeURIComponent(location.hash.slice(1)).split('/')[0];if(ALLE.some(x=>x.slug===h)&&(!CUR||CUR.slug!==h))laad(h);});
 async function laad(s){const d=await (await fetch('d/'+s+'.json')).json();d.slug=s;
   // voorbeelddossier langs de keten als er extra gegevens zijn
-  let X=null;try{const r=await fetch('d/'+s+'-extra.json');if(r.ok)X=await r.json();}catch(e){}
+  let X=null;if((ALLE.find(x=>x.slug===s)||{}).extra){try{const r=await fetch('d/'+s+'-extra.json');if(r.ok)X=await r.json();}catch(e){}}
   if(X){CUR=d;try{localStorage.setItem('rz-dossier',s);}catch(e){}document.querySelector('main.pagina>.vlak').hidden=true;
     let A=null;if(d.ai){try{A=await (await fetch('samenvattingen/'+s+'.json')).json();}catch(e){}}
     if(location.hash.slice(1).split('/')[0]!==s)history.replaceState(null,'','#'+s);
@@ -97,7 +99,7 @@ let VK=null;
 async function vergBlok(s){
   VK=VK||fetch('verg/koppel.json').then(r=>r.ok?r.json():{}).catch(()=>({}));const L=(await VK)[s];if(!L||!L.length)return;
   const M=['jan','feb','mrt','apr','mei','jun','jul','aug','sep','okt','nov','dec'],dd=d=>`${+d.slice(8)} ${M[+d.slice(5,7)-1]}`;
-  const h=`<section class="vlak vergblok"><h3 style="margin:0 0 8px">Net besproken</h3>${L.slice(0,4).map(x=>`<div style="padding:6px 0;border-top:1px solid var(--grijs2);font-size:14px"><span class="sub">${dd(x[3])} · ${esc(x[4])}</span><br><a href="vergadering.html?id=${x[0]}#ap-${encodeURIComponent(x[1])}">${esc(x[2])}</a></div>`).join('')}<p class="sub" style="font-size:13px;margin:8px 0 0">Samengevat per vergadering. <a href="vergaderingen.html">Alle vergaderingen</a></p></section>`;
+  const h=`<section class="vlak vergblok"><h2 style="margin:0 0 8px;font-size:18px">Net besproken</h2>${L.slice(0,4).map(x=>`<div style="padding:6px 0;border-top:1px solid var(--grijs2);font-size:14px"><span class="sub">${dd(x[3])} · ${esc(x[4])}</span><br><a href="vergadering.html?id=${x[0]}#ap-${encodeURIComponent(x[1])}">${esc(x[2])}</a></div>`).join('')}<p class="sub" style="font-size:13px;margin:8px 0 0">Samengevat per vergadering. <a href="vergaderingen.html">Alle vergaderingen</a></p></section>`;
   const as=document.querySelector('#dossier aside');if(as)as.insertAdjacentHTML('afterbegin',h);else (document.querySelector('#dossier .kop')||document.querySelector('#dossier>*'))?.insertAdjacentHTML('afterend',h);}
 
 window.naUitklap=()=>zetVast();
@@ -157,7 +159,7 @@ async function toon(d){
   document.title=d.naam+' · raadzoeker';
   let A=null;if(d.ai){try{A=await (await fetch('samenvattingen/'+d.slug+'.json')).json();}catch(e){}}
   CIT=[];verberg();
-  const m=d.moties,t=d.toez,ts=d.tsum,j=d.jaren.length-1,ch=d.trend[j-1]?Math.round((d.trend[j]-d.trend[j-1])/d.trend[j-1]*100):0;
+  const m=d.moties,t=d.toez,ts=eigenTsum(d),tl=telling(d,null),j=d.jaren.length-1,ch=d.trend[j-1]?Math.round((d.trend[j]-d.trend[j-1])/d.trend[j-1]*100):0;
   const pmx=Math.max(...d.partijen.map(p=>p[1]),1),cll=d.college.filter(p=>p[1]>0),cmx=Math.max(...cll.map(p=>p[1]),1);
   const isOnd=d.soort==='onderwerp'||d.soort==='thema',isDom=d.soort==='domein',isKr=d.soort==='kruising',pct=d.eenheid==='procent';
   // kop: kruimelpad, onderwerpen binnen het domein, gebieden (kruisingen)
@@ -171,10 +173,7 @@ async function toon(d){
     +(isKr?`<p class="sub" style="margin-top:8px;max-width:72ch">Stukken en debatten in dit domein die ${esc(d.gebied)} noemen of uit dat gebied komen (wijkraden). 'Genoemd in' is automatisch herkend op wijk- en straatnamen en klopt in ongeveer 9 van de 10 gevallen.</p>`:'');
   // stand van zaken: laatste kernzin van de AI-samenvatting, anders 'recent' uit de themasamenvatting
   const standTxt=A&&A.kern.length?zin(A.kern[A.kern.length-1]):ts&&ts.recent?esc(ts.recent):'';
-  const cijfers=`<div class="cijfers">
-    <div class="cijfer"><span class="groot num">${nf(m.aangenomen)}</span>moties aangenomen<div class="sub">sinds 2018 · ${nf(m.afgedaan)} afgedaan</div></div>
-    <div class="cijfer"><span class="groot num">${nf(m.open)}</span>moties in uitvoering<div class="sub">${m.te_laat?`<span class="stip laat"></span>${m.te_laat} over de termijn`:'geen over de termijn'}</div></div>
-    <div class="cijfer"><span class="groot num">${nf(t.open)}</span>toezeggingen open<div class="sub">${t.te_laat?`<span class="stip laat"></span>${t.te_laat} over de termijn`:'geen over de termijn'}</div></div>
+  const cijfers=`<div class="cijfers">${telCijfers(tl).map(([l,n,s])=>`<div class="cijfer"><span class="groot num">${nf(n)}</span>${l}<div class="sub">${s}</div></div>`).join('')}
     <div class="cijfer"><span class="groot num">${ch>0?'+':''}${ch}%</span>aandacht<div class="sub">2026 tot nu t.o.v. 2025</div></div></div>`;
   const wst=(d.wijkstukken||[]).length?`<section class="vlak"><h3 style="margin:0 0 8px">Signalen uit de wijken</h3><div class="lijst">${d.wijkstukken.slice(0,6).map(w=>`<div class="pt" style="font-size:14px"><span class="sub">${fd(w[0])} · ${esc(w[2])}</span><br>${w[3]?`<a href="${esc(w[3])}" target="_blank" rel="noopener">${esc(w[1])}</a>`:esc(w[1])}</div>`).join('')}</div></section>`:'';
   const T=A&&A.tijdlijn||{},F=A&&A.fracties||{},C=A&&A.college||{},W=A&&A.wijken||{},O=A&&A.open||{};
@@ -184,6 +183,7 @@ async function toon(d){
   if(A)main+=`<section class="vlak kern" aria-labelledby="kk"><h2 id="kk">In het kort <span class="ai">AI-samenvatting</span></h2><p>${alinea(A.kern.slice(0,-1))}</p>
       ${standTxt?`<section class="stand m"><div class="t">Stand van zaken · AI</div><p>${standTxt}</p></section>`:''}
       <p class="sub" style="font-size:13px;margin-top:12px">Wijs een zin aan of tik erop voor het letterlijke citaat en de bron.</p></section>`;
+  else if(!ts&&isOnd)main+=`<section class="vlak geensamen"><p class="sub" style="margin:0">${GEEN_SAMEN}</p></section>`;
   else if(ts)main+=`<section class="vlak samen" aria-labelledby="ik"><h2 id="ik">In het kort <span class="ai">korte AI-samenvatting, kan fouten bevatten</span></h2>${d.tsum_thema&&d.tsum_thema!==d.naam?`<p class="sub" style="margin:-4px 0 8px">Over het bredere thema ‘${esc(d.tsum_thema)}’. Gemaakt in oktober 2026 met een licht taalmodel; minder uitgebreid gecontroleerd dan de samenvattingen met citaten.</p>`:''}<p style="max-width:68ch">${esc(ts.kern)}</p>
       <details><summary>Standpunten per fractie en ontwikkeling</summary>
       ${ts.standpunten&&ts.standpunten.length?'<ul>'+ts.standpunten.map(s=>`<li>${esc(s.wie)}: ${esc(s.punt)}${s.citaat?`<span class="cit">‘${esc(s.citaat)}’</span>`:''}</li>`).join('')+'</ul>':''}
@@ -233,14 +233,14 @@ async function toon(d){
   if(!isKr&&d.soort!=='gebied')side+=`<section class="vlak"><h3 style="margin:0 0 8px">In welke gebieden?</h3><div class="mini" id="mini"></div><p class="sub" id="minitxt" style="margin-top:8px"></p></section>`;
   const ver=d.verdieping.ver.filter(v=>ALLE.some(x=>x.slug===slug(v[0])));
   if(ver.length)side+=`<section class="vlak"><h3 style="margin:0 0 8px">Hangt samen met</h3><div class="verwant">${ver.map(([nm,p,l])=>`<a href="#${slug(nm)}" title="In ${p}% van de spreekbeurten hierover gaat het ook over ${esc(nm.toLowerCase())}">${esc(nm)} <span class="sub num">${String(l).replace('.',',')}×</span></a>`).join('')}</div></section>`;
-  const acties=`<div class="kopacties">${isKr?'':volgKnop(d.slug,d.naam)}<a class="knop" href="briefing.html#${d.slug}">Briefing<span class="lang"> maken (A4, pdf of Word)</span></a><span class="sub" id="deelrij"></span>${isKr||d.soort==='gebied'?`<a class="sub" href="wijk.html#${slug(d.gebied)}">Naar de gebiedspagina met kaart en cijfers</a>`:''}</div>`;
+  const acties=`<div class="kopacties">${isKr?'':volgKnop(d.slug,d.naam)}<a class="knop" href="briefing.html#${d.slug}"><span>Briefing<span class="lang"> maken (A4, pdf of Word)</span></span></a><span class="sub" id="deelrij"></span>${isKr||d.soort==='gebied'?`<a class="sub" href="wijk.html#${slug(d.gebied)}">Naar de gebiedspagina met kaart en cijfers</a>`:''}</div>`;
   $('dossier').innerHTML=`<div class="crumb">${crumb}</div><div class="kop"><h1>${esc(d.naam)}</h1>${acties}${verwant}</div><div class="C"><main>${main}</main><aside>${side}</aside></div>`;
   // mini-kaart
   const Wk=d.verdieping.wijk,wm=Math.max(.1,...Object.values(Wk));if($('mini')){
   $('mini').innerHTML=`<svg viewBox="0 0 ${KAART.w} ${KAART.h}"><path class="h" d="${KAART.havens}"/>${KAART.gebieden.map(g=>{const v=Wk[g.naam]||0,f=v/wm;return `<a href="${isDom&&ALLE.some(x=>x.slug===d.slug+'--'+slug(g.naam))?'#'+d.slug+'--'+slug(g.naam):'wijk.html#'+slug(g.naam)}"><path class="g" d="${g.d}" fill="${f>.75?'#004C31':f>.5?'#00811F':f>.25?'#4EB051':f>.1?'#99CCA0':'#E1EFE2'}"><title>${esc(g.naam)}: in ${String(v).replace('.',',')}% van de spreekbeurten</title></path></a>`;}).join('')}<path class="w" d="${KAART.water}"/></svg>`;
   const t3=Object.entries(Wk).sort((a,b)=>b[1]-a[1]).slice(0,3);
   $('minitxt').textContent=t3.length&&t3[0][1]>0?`${pct?'Het vaakst genoemd':'Valt het vaakst samen met'}: ${t3.map(x=>x[0]).join(', ')}. Donkerder is vaker; klik op een gebied.`:'Geen duidelijke koppeling met gebieden.';}
-  deel($('deelrij'),d.naam+' in de Rotterdamse raad',new URL('dossier.html?d='+d.slug,location.href).href);
+  deel($('deelrij'),d.naam+' in de Rotterdamse raad',new URL('dossier.html?d='+d.slug,location.href).href,d.slug);
   lijst();zetVast();window.scrollTo({top:0});
 }
 </script>

@@ -41,7 +41,7 @@ const KOP=[
   {s:'header .merk',t:'Welkom bij raadzoeker',x:'Hier vind je wat de Rotterdamse gemeenteraad sinds 2018 zei, besloot en beloofde. Het logo brengt je altijd terug naar de startpagina.'},
   {s:'header nav a[href="zoek.html"]',t:'Zoeken',x:'Zoek in alles wat er in de raad en de commissies is gezegd en geschreven. Bij debatten spring je direct naar het moment in de video.'},
   {s:'header nav a[href="vergaderingen.html"]',t:'Vergaderingen',x:'Wat er in de raad en de commissies is besproken, samengevat in één minuut of uitgebreid, kort na de vergadering.'},
-  {s:'header nav a[href="domeinen.html"]',t:'Domeinen',x:'Dossiers per beleidsveld en onderwerp: wat er is gezegd, besloten en beloofd, en wat ervan terechtkwam.'},
+  {s:'header nav a[href="domeinen.html"]',t:document.documentElement.classList.contains('kop-b')?'Dossiers':'Domeinen',x:'Dossiers per beleidsveld en onderwerp: wat er is gezegd, besloten en beloofd, en wat ervan terechtkwam.'},
   {s:'header nav a[href="wijk.html"]',t:'Gebieden',x:'Kies een gebied of wijk: waar praat de raad over, wat vraagt de wijkraad, en een paar cijfers.'},
   {s:'header nav a[href="lab.html"]',t:'Inzichten',x:'Grafieken over wat de raad doet, om te kopiëren in je eigen presentatie.'},
   {s:'header nav a[href="verkenner.html"]',t:'Verkenner',x:'Alles als één web van begrippen. Om rond te dwalen en verbanden te ontdekken.'},
@@ -69,7 +69,7 @@ const STAP={
     {s:'#rijen',t:'Alles op een rij',x:'Per domein hoeveel moties en toezeggingen er open staan en hoeveel er over de termijn zijn.'},
   ],
   dossier:[
-    {s:'.kopacties .knop',alt:'#dossier h1',t:'Briefing in één klik',x:'Maak van dit dossier een A4 voor je wethouder of overleg, als pdf of Word.'},
+    {s:'.kopknoppen .knop',alt:'#dossier h1',t:'Briefing in één klik',x:'Maak van dit dossier een A4 voor je wethouder of overleg, als pdf of Word.'},
     {s:'.kverw',t:'Verder kijken',x:'De onderwerpen binnen dit dossier, verwante dossiers en hetzelfde dossier per gebied.'},
     {s:'#kinh .ai, #dossier .ai',t:'AI-samenvatting met bron',x:'Wijs een zin aan of tik erop: je ziet het letterlijke citaat en de bron. Elk citaat is woord voor woord gecontroleerd.'},
     {s:'#kinh .kblok',t:'Het verhaal in stappen',x:'Gezegd, besloten, beloofd, gedaan. Elk blok toont de 3 nieuwste punten; klik op de kop om het open te klappen.',vb:['Klap een blok open',()=>{const b=document.querySelector('#kinh .kblok:not(.open) .kkop');if(b)b.click();}]},
@@ -201,9 +201,9 @@ function balkje(){
   document.body.appendChild(b);setTimeout(()=>{if(b.isConnected)weg();},14000);
 }
 function hulpknop(){
-  const nav=document.querySelector('header .rechts');if(!nav||nav.querySelector('.rzt-hulp'))return;
+  const nav=document.querySelector('header .kopknoppen')||document.querySelector('header .rechts');if(!nav||nav.querySelector('.rzt-hulp'))return;
   const k=Object.assign(document.createElement('button'),{type:'button',className:'rzt-hulp',textContent:'?',title:'Hulp en uitleg'});k.setAttribute('aria-label','Hulp en uitleg');k.setAttribute('aria-haspopup','menu');
-  nav.appendChild(k);
+  nav.insertBefore(k,nav.querySelector('.menuknop'));
   k.onclick=e=>{e.stopPropagation();const oud=document.querySelector('.rzt-menu');if(oud){oud.remove();return;}
     const m=Object.assign(document.createElement('div'),{className:'rzt-menu'});m.setAttribute('role','menu');
     m.innerHTML=`${pagina().length?`<button type="button" data-a="p">Uitleg van ${NAAM[PAG]||'deze pagina'}</button>`:''}<button type="button" data-a="s">Rondleiding door de site</button><a href="hulp.html#faq">Veelgestelde vragen</a><a href="hulp.html#woorden">Wat betekent… (woordenlijst)</a><button type="button" data-a="f">Fout melden</button><a href="hulp.html#contact">Vraag stellen</a>`;

@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Wijken · raadzoeker</title>
-<link rel="stylesheet" href="stijl.css?v=11">
+<link rel="stylesheet" href="stijl.css?v=13">
 <style>
 .boven{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:24px;align-items:center}
 .minikaart svg{width:100%;height:auto;display:block}
@@ -34,7 +34,7 @@
 .let{background:var(--grijs);border-radius:6px;padding:12px 16px;font-size:14px;margin-top:16px;max-width:90ch}
 .kop{display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap;margin:40px 0 24px}
 .kop .acties{margin-left:auto;display:flex;gap:16px;align-items:center;flex-wrap:wrap}
-.cijfers{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.cijfers{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
 .cijfer{background:var(--wit);border-radius:var(--r);padding:10px 16px;font-size:15px;line-height:1.3}
 .cijfer .groot{font-size:26px;margin-right:6px}
 .cijfer .sub{font-size:13px;margin-top:2px}
@@ -67,8 +67,9 @@
   <div id="wijk"><p class="leeg" style="margin-top:24px">Laden…</p></div>
   <p class="voet">Gegevens: notulen en ondertiteling van de gemeenteraad; iBabs (moties, toezeggingen, wijkraden); wijkraad.rotterdam.nl; CBS Kerncijfers wijken en buurten 2022–2025; Wijkprofiel Rotterdam (cijfers: gemeente Rotterdam, OBI, Wijkprofiel 2014–2026); politie, geregistreerde misdrijven per buurt (via CBS); officiële bekendmakingen (Gemeenteblad). Cijfers uit verschillende bronnen staan ter informatie naast elkaar; ze zeggen niets over oorzaak of verband. <a href="over.html">Meer over deze tool</a>.</p>
 </main>
-<script src="ontwerp.js?v=28"></script>
+<script src="ontwerp.js?v=32"></script>
 <script src="ai.js?v=1"></script>
+<script src="tel.js?v=1"></script>
 <script>
 kop('gebieden');
 let DATA=null,K=null,WK=null,CUR=null,SOORT='mot',FILTER='open',JAAR='alle',OV=null,IX=[];
@@ -193,7 +194,12 @@ function onderwerpen(){
   $('jr').innerHTML=['alle',...CUR.jaren].map(y=>`<button type="button" class="${y===JAAR?'on':''}" data-j="${y}">${y==='alle'?'Alle jaren':y}</button>`).join('');
   $('ond').innerHTML=l.length?l.map(([n,c])=>`<a href="dossier.html#${slug(n)}"><span>${esc(n)}<i style="width:${c/mx*100}%"></i></span><span class="num sub" style="text-align:right">${c}</span></a>`).join(''):'<p class="leeg">Te weinig gegevens voor dit jaar.</p>';
 }
-function toon(d){
+/* moties en toezeggingen van een gebied komen uit d/<slug>.json, net als in de briefing en de deelkaart (telregel: tel.js) */
+async function toon(d){
+  if(!d.nieuw){d.nieuw=1;try{const n=await (await fetch('d/'+slug(d.naam)+'.json')).json();d.moties=n.moties;d.toez=n.toez;}catch(e){}}
+  toon2(d);
+}
+function toon2(d){
   document.querySelectorAll('#kaart path.wkl').forEach(p=>p.classList.remove('sel'));
   CUR=d;FILTER='open';document.title=d.naam+' · Wijken · raadzoeker';
   if(location.hash.slice(1)!==slug(d.naam))history.replaceState(null,'','#'+slug(d.naam));
@@ -204,8 +210,7 @@ function toon(d){
     <div class="acties"><a class="knop" href="briefing.html#${slug(d.naam)}">Maak een briefing (A4)</a><span class="sub" id="deelrij"></span><a class="sub" href="deel/${slug(d.naam)}.png" target="_blank" rel="noopener">Deelkaart als afbeelding</a></div></div>
   <div class="cijfers">
     <div class="cijfer"><span class="groot num">${nf(d.inw)}</span><span>inwoners</span><div class="sub">CBS, 2024</div></div>
-    <div class="cijfer"><span class="groot num">${nf(m.aangenomen)}</span><span>moties aangenomen</span><div class="sub">${nf(m.open)} in uitvoering</div></div>
-    <div class="cijfer"><span class="groot num">${nf(t.open)}</span><span>toezeggingen open</span><div class="sub">${t.te_laat?`<span class="stip laat"></span>${t.te_laat} over de termijn`:'geen over de termijn'}</div></div>
+    ${telCijfers(telling(d,null)).map(([l,n,s])=>`<div class="cijfer"><span class="groot num">${nf(n)}</span><span>${l}</span><div class="sub">${s}</div></div>`).join('')}
     <div class="cijfer"><span class="groot num">${ch>0?'+':''}${ch}%</span><span>aandacht</span><div class="sub">2026 tot nu t.o.v. 2025</div></div>
   </div>
   <div class="raster">
@@ -229,7 +234,7 @@ function toon(d){
       <section class="vlak" aria-labelledby="sv"><h2 id="sv">Schriftelijke vragen (${nf(d.sv.n)})</h2><div class="lijst">${d.sv.lijst.slice(0,5).map(r=>rij(r,'stuk',DATA.stand)).join('')}</div></section>
     </div>
   </div>`;
-  deel($('deelrij'),d.naam+' in de Rotterdamse raad',new URL('deel/'+slug(d.naam)+'.html',location.href).href);
+  deel($('deelrij'),d.naam+' in de Rotterdamse raad',new URL('wijk.html?g='+slug(d.naam),location.href).href,slug(d.naam));
   JAAR=d.jaren[d.jaren.length-1];   // standaard het lopende jaar
   onderwerpen();lijst();domeinBlok(d.naam);aiBlok(d.naam);window.scrollTo({top:0});
 }
