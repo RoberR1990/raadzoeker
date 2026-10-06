@@ -206,12 +206,12 @@ function hulpknop(){
   nav.appendChild(k);
   k.onclick=e=>{e.stopPropagation();const oud=document.querySelector('.rzt-menu');if(oud){oud.remove();return;}
     const m=Object.assign(document.createElement('div'),{className:'rzt-menu'});m.setAttribute('role','menu');
-    m.innerHTML=`${pagina().length?`<button type="button" data-a="p">Uitleg van ${NAAM[PAG]||'deze pagina'}</button>`:''}<button type="button" data-a="s">Rondleiding door de site</button><a href="hulp.html#faq">Veelgestelde vragen</a><a href="hulp.html#woorden">Wat betekent… (woordenlijst)</a><a href="hulp.html#contact">Vraag of fout melden</a>`;
+    m.innerHTML=`${pagina().length?`<button type="button" data-a="p">Uitleg van ${NAAM[PAG]||'deze pagina'}</button>`:''}<button type="button" data-a="s">Rondleiding door de site</button><a href="hulp.html#faq">Veelgestelde vragen</a><a href="hulp.html#woorden">Wat betekent… (woordenlijst)</a><button type="button" data-a="f">Fout melden</button><a href="hulp.html#contact">Vraag stellen</a>`;
     const r=k.getBoundingClientRect();document.body.appendChild(m);
     // onder de knop als daar plek is (kop), anders erboven (op mobiel staat de knop linksonder)
     if(r.bottom+8+m.offsetHeight<innerHeight)m.style.top=(r.bottom+8)+'px';else m.style.top=Math.max(8,r.top-8-m.offsetHeight)+'px';
     if(r.left<innerWidth/2)m.style.left=Math.max(8,r.left)+'px';else m.style.right=Math.max(8,innerWidth-r.right)+'px';
-    m.onclick=ev=>{const a=ev.target.closest('[data-a]');if(!a)return;m.remove();a.dataset.a==='p'?tourPagina():tourSite();};
+    m.onclick=ev=>{const a=ev.target.closest('[data-a]');if(!a)return;m.remove();a.dataset.a==='f'?window.rzFout&&rzFout(''):a.dataset.a==='p'?tourPagina():tourSite();};
     setTimeout(()=>addEventListener('click',function sl(){m.remove();removeEventListener('click',sl);}),0);};
 }
 /* '/' zet de cursor in de zoekbalk */

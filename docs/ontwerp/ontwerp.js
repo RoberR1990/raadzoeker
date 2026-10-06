@@ -93,3 +93,27 @@ function stemHTML(s){
   return `<div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap"><svg viewBox="0 0 120 62" width="132" height="68" role="img" aria-label="${voor} voor, ${tegen} tegen">${dots}</svg>
     <div><b>${aan?'Aangenomen':'Verworpen'}</b> met <span class="num">${voor}</span> stemmen voor en <span class="num">${tegen}</span> tegen.${fr?`<br><span class="sub">${zijde==='v'?'Voor':'Tegen'} stemden: ${esc(fr)}.</span>`:''}</div></div>`;
 }
+
+/* fout melden: venster met tekstvak, stuurt de pagina en waar het over gaat naar /api/fout (anoniem) */
+function rzFout(over){
+  document.getElementById('rz-fout')?.remove();
+  const d=document.createElement('div');d.id='rz-fout';d.setAttribute('role','dialog');d.setAttribute('aria-modal','true');d.setAttribute('aria-labelledby','rzf-t');
+  d.innerHTML=`<div class="rzf-laag"></div><form class="rzf"><h2 id="rzf-t">Fout melden</h2>
+    <p>Klopt er iets niet, bijvoorbeeld een samenvatting, citaat, naam of koppeling? Laat het weten; dan kijk ik ernaar.</p>
+    ${over?`<p class="rzf-over">Over: ${esc(over).slice(0,300)}</p>`:''}
+    <label for="rzf-x">Wat klopt er niet?</label><textarea id="rzf-x" rows="4" maxlength="2000" required></textarea>
+    <p class="rzf-klein">Je melding is anoniem: we bewaren alleen de pagina en je tekst. Wil je antwoord, zet dan zelf een e-mailadres in je bericht.</p>
+    <div class="rzf-rij"><button type="submit">Versturen</button><button type="button" class="wit" data-a="weg">Annuleren</button><span class="rzf-st" aria-live="polite"></span></div></form>`;
+  document.body.appendChild(d);const x=d.querySelector('textarea');x.focus();
+  const weg=()=>d.remove();d.querySelector('.rzf-laag').onclick=weg;d.querySelector('[data-a=weg]').onclick=weg;
+  d.addEventListener('keydown',e=>{if(e.key==='Escape')weg();});
+  d.querySelector('form').onsubmit=async e=>{e.preventDefault();const st=d.querySelector('.rzf-st');st.textContent='Versturen…';
+    try{const r=await fetch('/api/fout',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({pagina:location.href,over:over||'',tekst:x.value})});
+      if(!r.ok)throw 0;d.querySelector('form').innerHTML='<h2>Dank je!</h2><p>Je melding is ontvangen.</p><div class="rzf-rij"><button type="button">Sluiten</button></div>';d.querySelector('form button').onclick=weg;}
+    catch(_){st.textContent='Versturen lukte niet. Probeer het later nog eens.';}};
+}
+(()=>{const s=document.createElement('style');s.textContent=`#rz-fout{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;padding:16px}
+.rzf-laag{position:absolute;inset:0;background:rgba(0,25,12,.55)}.rzf{position:relative;background:var(--wit);color:var(--zwart);border-radius:10px;padding:22px 24px;max-width:480px;width:100%;box-shadow:0 10px 40px rgba(0,0,0,.3)}
+.rzf h2{margin:0 0 8px;font-size:21px}.rzf p{margin:0 0 10px;font-size:15px;line-height:1.5}.rzf label{font-weight:700;font-size:14px}.rzf textarea{width:100%;box-sizing:border-box;font:15px var(--font);padding:8px;border:1.5px solid var(--lijn);border-radius:6px;margin:4px 0 8px;background:var(--wit);color:var(--zwart)}
+.rzf-over{background:var(--grijs);border-radius:6px;padding:6px 10px;font-size:13px!important}.rzf-klein{font-size:12px!important;color:var(--sub)}
+.rzf-rij{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.rzf button{font:700 15px var(--font);border-radius:999px;padding:8px 18px;border:2px solid var(--groen);background:var(--groen);color:#fff;cursor:pointer}.rzf button.wit{background:var(--wit);color:var(--groen)}.rzf-st{font-size:13px;color:var(--sub)}`;document.head.appendChild(s);})();

@@ -6,6 +6,9 @@ CREATE TABLE IF NOT EXISTS ideeen (id INTEGER PRIMARY KEY, titel TEXT NOT NULL, 
 CREATE TABLE IF NOT EXISTS stemmen (idee_id INTEGER NOT NULL, gebruiker TEXT NOT NULL, moment TEXT NOT NULL, PRIMARY KEY (idee_id, gebruiker));
 CREATE TABLE IF NOT EXISTS zoeklog (id INTEGER PRIMARY KEY AUTOINCREMENT, q TEXT NOT NULL, n INTEGER, pagina TEXT, dag TEXT NOT NULL);
 CREATE INDEX IF NOT EXISTS zoeklog_dag ON zoeklog(dag);
+-- meldingen: 'fout melden' (anoniem: dag, pagina, waar het over gaat, tekst). limiet: tellers per gehasht IP-adres per dag tegen misbruik.
+CREATE TABLE IF NOT EXISTS meldingen (id INTEGER PRIMARY KEY AUTOINCREMENT, dag TEXT NOT NULL, pagina TEXT, over TEXT, tekst TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'nieuw');
+CREATE TABLE IF NOT EXISTS limiet (sleutel TEXT PRIMARY KEY, n INTEGER NOT NULL);
 
 INSERT OR IGNORE INTO ideeen (id, titel, toelichting, status, volgorde) VALUES
  (1, 'Meldingen bij nieuws in jouw dossier', 'Een mail of Teams-bericht als er een nieuwe motie, toezegging of brief binnenkomt over een onderwerp of wijk die je volgt.', 'idee', 1),
