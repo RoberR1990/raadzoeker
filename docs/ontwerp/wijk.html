@@ -1,9 +1,46 @@
 <!doctype html>
 <html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Wijken · raadzoeker</title>
-<link rel="stylesheet" href="stijl.css?v=15">
+<title>Gebieden · raadzoeker</title>
+<link rel="stylesheet" href="stijl.css?v=17">
 <style>
-.boven{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:24px;align-items:center}
+.boven{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;align-items:start}
+.boven h1{margin:0 0 8px}.boven .lead{font-size:17px;line-height:1.5;margin:0 0 16px;max-width:60ch}
+.zoekveld input{font-size:18px}
+.minikaart svg{max-height:280px;width:auto;max-width:100%;margin:0 auto}
+.kaartknop{display:none;font:700 16px var(--font);border:2px solid var(--zwart);background:var(--wit);border-radius:999px;padding:8px 18px;min-height:44px;cursor:pointer;margin-top:12px}
+.jouw{margin:24px 0 0}.jouw h2,.alle h2{font-size:20px;margin:0 0 12px}
+.gk{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.gk a{display:grid;gap:4px;align-content:start;min-height:44px;padding:14px 16px;background:var(--wit);border:1px solid var(--lijn);border-radius:var(--r);text-decoration:none;color:var(--zwart)}
+.gk a:hover,.gk a:focus-visible{border-color:var(--groen);box-shadow:0 0 0 2px var(--groen)}
+.gk .naam{font-size:18px;font-weight:700;text-decoration:underline;display:flex;justify-content:space-between;gap:8px;align-items:center}
+.gk .naam svg{width:64px;height:18px;flex:none}
+.gk .regel{font-size:14px;line-height:1.35}.gk .wij{font-size:13px;line-height:1.35;color:var(--sub)}
+.gk .eti{font-size:12px;color:var(--sub)}
+.gk.een{grid-template-columns:minmax(0,420px)}.gk.een a{background:var(--groen-zacht);border-color:var(--groen)}
+.alle{margin-top:24px}
+.krm{font-size:14px;margin-bottom:6px}.krm a{color:var(--zwart)}.krm [aria-current]{color:var(--sub)}
+.titelrij{display:flex;gap:16px;align-items:center;flex-wrap:wrap}.titelrij h1{margin:0}
+.kiezer select{font:16px var(--font);border:2px solid var(--zwart);border-radius:999px;background:var(--wit);color:var(--zwart);padding:8px 14px;min-height:44px;cursor:pointer;max-width:100%}
+.ank{margin:0 0 16px}.ank ul{display:flex;gap:8px;overflow-x:auto;list-style:none;padding:2px 2px 6px;margin:0;scrollbar-width:thin}
+.ank a{display:inline-flex;align-items:center;min-height:44px;padding:0 16px;border:1px solid var(--lijn);border-radius:999px;background:var(--wit);white-space:nowrap;text-decoration:none;color:var(--zwart);font-size:15px}
+.ank a:hover,.ank a:focus-visible{border-color:var(--groen);background:var(--groen-zacht)}
+#wijk section,#cb{scroll-margin-top:12px}
+.mat{border-collapse:collapse;font-size:13px}
+.mat th{font-weight:400;padding:4px 8px 4px 0;text-align:left;white-space:nowrap}
+.mat th a{color:var(--zwart)}
+.mat thead th{vertical-align:bottom;padding:0 0 6px}
+.mat thead th span{display:block;writing-mode:vertical-rl;transform:rotate(180deg);white-space:nowrap;height:128px;font-size:13px}
+.mat td{padding:0;border:2px solid var(--wit)}
+.mat td a{display:block;width:40px;height:30px;line-height:30px;text-align:center;text-decoration:none;font-variant-numeric:tabular-nums;color:inherit}
+.mat td a:hover,.mat td a:focus-visible{outline:2px solid var(--zwart);outline-offset:-2px}
+.mat td.leeg{background:var(--grijs);color:var(--sub);text-align:center}
+.mat th.rij{position:sticky;left:0;background:var(--wit);z-index:1}
+.matvlak{overflow-x:auto}.matmob{display:none}.matmob h3{font-size:16px;margin:16px 0 8px}
+.kieslijst{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.kieslijst a{display:flex;align-items:center;min-height:44px;padding:6px 12px;background:var(--grijs);border-radius:8px;font-size:15px;line-height:1.2}
+.leg{font-size:13px;color:var(--sub);margin-top:12px;max-width:72ch}details.leg summary{cursor:pointer}
+@media (max-width:600px){.matvlak,.mat-leg{display:none}.matmob{display:block}.gk{grid-template-columns:minmax(0,1fr)}.gk a{padding:10px 14px}.jouw{margin-top:16px}.pagina .boven{padding:16px}.boven h1{font-size:26px}.boven .lead{font-size:15px;margin-bottom:12px}}
+@media (max-width:900px){.kaartknop{display:inline-flex;align-items:center}.minikaart.dicht svg{display:none}.minikaart.dicht{margin-top:-8px}}
 .minikaart svg{width:100%;height:auto;display:block}
 .minikaart path.g{fill:var(--groen-zacht);stroke:#fff;stroke-width:1;cursor:pointer}
 .minikaart path.g:hover{fill:var(--groen-mid)}
@@ -55,19 +92,34 @@
 <body>
 <header class="balk"></header>
 <main class="pagina">
+  <div id="over" hidden>
   <div class="vlak boven">
-    <div class="zoekveld">
-      <label for="zoek">Over welke wijk of welk gebied wil je meer weten?</label>
-      <input id="zoek" type="text" placeholder="Bijvoorbeeld Tarwewijk, Nesselande, Charlois…" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="keuze" aria-autocomplete="list">
-      <ul class="keuze" id="keuze" role="listbox" aria-label="Wijken en gebieden"></ul>
-      <p class="sub" style="margin-top:12px">Of klik op een gebied op de kaart. Een wijk (71, indeling Wijkprofiel Rotterdam) vind je via het zoekveld of op de gebiedspagina.</p>
+    <div>
+      <h1>Gebieden</h1>
+      <p class="lead">Kies een gebied of zoek een wijk of straat: wat speelt er, wat is beloofd en wat vraagt de wijkraad.</p>
+      <div class="zoekveld">
+        <label for="zoek">Wijk, straat of gebied</label>
+        <input id="zoek" type="text" placeholder="Bijvoorbeeld Tarwewijk, Nesselande, Charlois…" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="keuze" aria-autocomplete="list">
+        <ul class="keuze" id="keuze" role="listbox" aria-label="Wijken en gebieden"></ul>
+      </div>
+      <button type="button" class="kaartknop" id="kaartknop" aria-expanded="false" aria-controls="kaart">Toon op kaart</button>
     </div>
-    <div class="minikaart" id="kaart" aria-label="Kaart: kies een gebied"></div>
+    <div class="minikaart dicht" id="kaart" role="group" aria-label="Kaart: kies een gebied"></div>
+  </div>
+  <section class="jouw" id="jouw" hidden aria-labelledby="jh"><h2 id="jh">Jouw gebied</h2><div class="gk een" id="jouwk"></div></section>
+  <section class="alle" aria-labelledby="ah"><h2 id="ah">Alle gebieden</h2><div class="gk" id="gk"><p class="leeg">Laden…</p></div></section>
+  <section class="vlak" style="margin-top:24px" aria-labelledby="wsh">
+    <h2 id="wsh">Waar speelt wat?</h2>
+    <p class="matuitleg matvlak" style="margin:6px 0 12px;max-width:72ch;overflow:visible">Rijen zijn domeinen, kolommen gebieden. Hoe donkerder, hoe vaker. Tik op een vakje, bijvoorbeeld mobiliteit in Feijenoord.</p>
+    <div class="matvlak"><table class="mat" id="mat"></table></div>
+    <div class="matmob"><p style="margin:0">Op een groter scherm staat hier een tabel van domeinen en gebieden. Kies hier een domein.</p><div class="kieslijst" id="kiesdom" style="margin-top:12px"></div></div>
+    <details class="leg mat-leg"><summary>Hoe is dit geteld?</summary>Donkerder = vaker, vergeleken met de andere gebieden in dezelfde rij. Stukken die vijf of meer gebieden noemen tellen als stadsbreed en staan hier niet in. 'Genoemd in' is automatisch herkend op wijk- en straatnamen en klopt in ongeveer 9 van de 10 gevallen.</details>
+  </section>
   </div>
   <div id="wijk"><p class="leeg" style="margin-top:24px">Laden…</p></div>
   <p class="voet">Gegevens: notulen en ondertiteling van de gemeenteraad; iBabs (moties, toezeggingen, wijkraden); wijkraad.rotterdam.nl; CBS Kerncijfers wijken en buurten 2022–2025; Wijkprofiel Rotterdam (cijfers: gemeente Rotterdam, OBI, Wijkprofiel 2014–2026); politie, geregistreerde misdrijven per buurt (via CBS); officiële bekendmakingen (Gemeenteblad). Cijfers uit verschillende bronnen staan ter informatie naast elkaar; ze zeggen niets over oorzaak of verband. <a href="over.html">Meer over deze tool</a>.</p>
 </main>
-<script src="ontwerp.js?v=33"></script>
+<script src="ontwerp.js?v=35"></script>
 <script src="ai.js?v=1"></script>
 <script src="tel.js?v=1"></script>
 <script>
@@ -76,18 +128,59 @@ let DATA=null,K=null,WK=null,CUR=null,SOORT='mot',FILTER='open',JAAR='alle',OV=n
 Promise.all(['dossiers.json','kaart.json','wijken.json','d/overzicht.json','d/index.json'].map(f=>fetch(f).then(r=>r.json()))).then(([d,k,w,ov,ix])=>{DATA=d;K=k;WK=w;OV=ov;IX=ix.d;
   const G=()=>DATA.dossiers.filter(x=>x.groep==='Wijken en gebieden'&&x.inw!==undefined);
   const W=WK.wijken.map(x=>({...x,groep:'wijk in '+x.gebied,sub:[],termen:(x.zoek||[]).join(' ')+' '+x.gebied}));
-  // kaart per gebied (14); de wijkgrenzen staan er dun in ter oriëntatie. Een wijk kies je via de zoeklijst of de lijst op de gebiedspagina.
+  // kaart per gebied (14); de wijkgrenzen staan er dun in ter oriëntatie. Alleen op het overzicht; op een gebiedspagina is hij weg (was alleen navigatie).
   $('kaart').innerHTML=`<svg viewBox="0 0 ${K.w} ${K.h}"><path class="h" d="${K.havens}"/>${K.gebieden.map(g=>`<path class="g" data-n="${esc(g.naam)}" d="${g.d}" tabindex="0" role="button" aria-label="${esc(g.naam)}"><title>${esc(g.naam)}</title></path>`).join('')}${W.map(x=>`<path class="wkl" data-s="${x.slug}" d="${x.d}"/>`).join('')}<path class="w" d="${K.water}"/></svg>`;
-  const kies=s=>{location.hash='w-'+s;};
   $('kaart').addEventListener('click',e=>{const p=e.target.closest('path.g');if(p)location.hash=slug(p.dataset.n);});
   $('kaart').addEventListener('keydown',e=>{const p=e.target.closest('path.g');if(p&&(e.key==='Enter'||e.key===' ')){e.preventDefault();location.hash=slug(p.dataset.n);}});
+  $('kaartknop').onclick=()=>{const o=$('kaart').classList.toggle('dicht')===false;$('kaartknop').setAttribute('aria-expanded',o);$('kaartknop').textContent=o?'Verberg kaart':'Toon op kaart';};
   zoeklijst($('zoek'),$('keuze'),()=>[...G(),...W],x=>{location.hash=x.slug&&x.d?'w-'+x.slug:slug(x.naam);});
+  bouwOverzicht(G(),W);
   const qg=new URLSearchParams(location.search).get('g');if(qg)history.replaceState(null,'',location.pathname+'#'+qg);   // ?g= overleeft het inloggen
   const route=()=>{const h=decodeURIComponent(location.hash.slice(1));
-    if(h.startsWith('w-')){const x=W.find(o=>o.slug===h.slice(2));if(x)return toonWijk(x);}
-    toon(uitHash(G())||G().find(x=>x.naam==='Charlois'));};
+    if(h.startsWith('w-')){const x=W.find(o=>o.slug===h.slice(2));if(x){zetOverzicht(false);return toonWijk(x);}}
+    const g=h&&h!=='gebieden'?uitHash(G()):null;
+    if(g){zetOverzicht(false);return toon(g);}
+    zetOverzicht(true);};
   route();window.addEventListener('hashchange',route);
 });
+/* ---------- overzicht: gebiedskaarten, jouw gebied, matrix domein x gebied ---------- */
+const tekstKl=al=>{const L=[0,129,31].map((c,i)=>{const v=(255-al*(255-c))/255;return v<=.04045?v/12.92:((v+.055)/1.055)**2.4;}),l=.2126*L[0]+.7152*L[1]+.0722*L[2];return l>.179?'#000':'#fff';};
+function laatsteGebied(s){try{if(s)localStorage.setItem('rz-laatste-gebied',s);else return localStorage.getItem('rz-laatste-gebied');}catch(e){}return null;}
+function zetOverzicht(o){
+  $('over').hidden=!o;$('wijk').hidden=o;
+  const h=document.querySelector('header.balk.kb');if(h)h.classList.toggle('zonderzoek',o);   // kop B: het grote zoekveld is er dan al
+  if(o){document.title='Gebieden · raadzoeker';CUR=null;toonJouw();window.scrollTo({top:0});}
+}
+function gebiedKaart(g,eti){
+  const t=telling(g,null),w=WK.wijken.filter(o=>o.gebied===g.naam).sort((a,b)=>((b.cbs['2025']||b.cbs['2024']||{}).inw||0)-((a.cbs['2025']||a.cbs['2024']||{}).inw||0)).slice(0,3).map(o=>o.naam.replace(/ \(wijk\)$/,''));
+  return `<a href="#${slug(g.naam)}">${eti?`<span class="eti">${eti}</span>`:''}<span class="naam"><span>${esc(g.naam)}</span>${spark(g.trend)}</span>
+    <span class="regel">${nf(g.inw)} inwoners · ${nf(t.mo)} ${t.mo===1?'motie':'moties'} en ${nf(t.tz)} ${t.tz===1?'toezegging':'toezeggingen'} open</span>
+    <span class="wij">${esc(w.join(', '))}${WK.wijken.filter(o=>o.gebied===g.naam).length>3?'…':''}</span></a>`;
+}
+let GL=[];
+function toonJouw(){
+  const L=RZV.lijst(),vk=GL.find(g=>L[slug(g.naam)]),ls=laatsteGebied(),lg=GL.find(g=>slug(g.naam)===ls),j=vk||lg;
+  $('jouw').hidden=!j;if(j)$('jouwk').innerHTML=gebiedKaart(j,vk?'Je volgt dit gebied':'Laatst bekeken');
+}
+function bouwOverzicht(G,W){
+  GL=[...G].sort((a,b)=>a.naam.localeCompare(b.naam,'nl'));
+  $('gk').innerHTML=GL.map(g=>gebiedKaart(g)).join('');
+  const O=OV,G14=O.gebieden,heeft=new Set(IX.filter(x=>x.soort==='kruising').map(x=>x.slug));
+  $('mat').innerHTML=`<thead><tr><th></th>${G14.map(g=>`<th><a href="wijk.html#${slug(g)}" title="Alles over ${esc(g)}"><span>${esc(g)}</span></a></th>`).join('')}</tr></thead><tbody>`+O.domeinen.map(d=>{
+    const m=Math.max(1,...G14.map(g=>d.kruising[g]||0));
+    return `<tr><th class="rij"><a href="dossier.html#${d.slug}">${esc(d.naam)}</a></th>${G14.map(g=>{const v=d.kruising[g]||0,a=v/m,s=d.slug+'--'+slug(g);
+      return heeft.has(s)?`<td style="background:rgba(0,129,31,${(0.08+0.85*a).toFixed(2)});color:${tekstKl(0.08+0.85*a)}"><a href="dossier.html#${s}" title="${esc(d.naam)} in ${esc(g)}: ${v} stukken en debatten">${nf(v)}</a></td>`:`<td class="leeg" title="Te weinig om te tonen">${v||''}</td>`;}).join('')}</tr>`;}).join('')+'</tbody>';
+  $('kiesdom').innerHTML=O.domeinen.map(d=>`<a href="dossier.html#${d.slug}">${esc(d.naam)}</a>`).join('');
+}
+/* ---------- kruimelpad, gebiedskiezer en ankerbalk (gebieds- en wijkpagina) ---------- */
+function kiezer(){return `<label class="kiezer"><span class="sr">Ander gebied</span><select id="gkies" aria-label="Ander gebied"><option value="">Ander gebied ▾</option>${GL.map(g=>`<option value="${slug(g.naam)}">${esc(g.naam)}</option>`).join('')}</select></label>`;}
+function kruimel(gebied,wijk){return `<nav class="krm" aria-label="Kruimelpad"><a href="#gebieden">Gebieden</a> › ${wijk?`<a href="#${slug(gebied)}">${esc(gebied)}</a> › <span aria-current="page">${esc(wijk)}</span>`:`<span aria-current="page">${esc(gebied)}</span>`}</nav>`;}
+const ANK_G=[['ak','In het kort'],['pd','Per domein'],['ow','Onderwerpen'],['mt','Moties'],['db','Debatten'],['wig','Wijken'],['wr','Wijkraden'],['sv','Vragen']];
+const ANK_W=[['pd','Per domein'],['ir','In de raad'],['ms','Moties'],['wr','Wijkraad'],['bmk','Bekendmakingen'],['cb','Cijfers']];
+function ankers(l){const n=$('ank');if(!n)return;const a=l.filter(([id])=>$(id));n.hidden=a.length<2;n.innerHTML='<ul>'+a.map(([id,t])=>`<li><a href="#${id}" data-ank="${id}">${t}</a></li>`).join('')+'</ul>';}
+document.addEventListener('click',e=>{const a=e.target.closest('[data-ank]');if(!a)return;e.preventDefault();const el=$(a.dataset.ank);if(!el)return;
+  el.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});});
+document.addEventListener('change',e=>{if(e.target.id==='gkies'&&e.target.value)location.hash=e.target.value;});
 /* ---------- AI-samenvatting van het gebied, verweven met de pagina: kern en diepgang bovenaan, de rest voor de moties ---------- */
 async function aiBlok(g){
   let A=null;try{const r=await fetch('samenvattingen/'+slug(g)+'.json');if(r.ok)A=await r.json();}catch(e){}
@@ -102,6 +195,7 @@ async function aiBlok(g){
   const kern=kol.firstElementChild,diep=tmp.querySelector('#av');if(diep)kern.after(diep);
   const mt=document.getElementById('mt'),voor=mt?mt.closest('section'):null;
   [...tmp.children].forEach(x=>{if(voor)voor.before(x);else kol.append(x);});
+  ankers(ANK_G);
 }
 /* ---------- per domein in dit gebied: links naar de dossiers domein x gebied ---------- */
 function domeinBlok(g,wijk){
@@ -133,14 +227,15 @@ function wpTabel(d){if(!d)return '';
   return '<div class="idx">'+['sociaal','fysiek','veiligheid'].map(k=>{const x=d[k];if(!x)return '';const ks=Object.keys(x.subjectief||{});
     return `<div><b>${k[0].toUpperCase()+k.slice(1)}: ${x.index}</b>${x.algemeen?`<div class="sub">${esc(x.algemeen[0])}: ${x.algemeen[1]}</div>`:''}<table><thead><tr><th></th><th>beleving</th><th>feitelijk</th></tr></thead><tbody>${ks.map(s=>`<tr><td>${esc(s)}</td><td>${x.subjectief[s]??'–'}</td><td>${(x.objectief||{})[s]??'–'}</td></tr>`).join('')}</tbody></table></div>`;}).join('')+'</div>';}
 function toonWijk(w){
-  CUR=null;document.title=w.naam+' · Wijken · raadzoeker';
-  document.querySelectorAll('#kaart path.g').forEach(p=>p.classList.toggle('sel',p.dataset.n===w.gebied));document.querySelectorAll('#kaart path.wkl').forEach(p=>p.classList.toggle('sel',p.dataset.s===w.slug));
+  CUR=null;document.title=w.naam+' · Gebieden · raadzoeker';
+  laatsteGebied(slug(w.gebied));
   const jC=['2022','2023','2024','2025'],laatste=[...jC].reverse().find(j=>w.cbs[j]&&w.cbs[j].inw)||'2024',c=w.cbs[laatste]||{};
   const jr=WK.jaren,n=jr.map(j=>w.n[j]||0),nmx=Math.max(1,...n);
   const pol=w.politie||{},pj=['2018','2019','2020','2021','2022','2023','2024','2025'];
   $('wijk').innerHTML=`
-  <div class="kop"><div><div class="sub">Wijk in <a href="#${slug(w.gebied)}">${esc(w.gebied)}</a></div><h1>${esc(w.naam)}</h1></div>
+  <div class="kop"><div>${kruimel(w.gebied,w.naam)}<div class="titelrij"><h1>${esc(w.naam)}</h1>${kiezer()}</div></div>
     <div class="acties"><a href="#${slug(w.gebied)}">Bekijk het hele gebied ${esc(w.gebied)}</a></div></div>
+  <nav class="ank" id="ank" aria-label="Op deze pagina" hidden></nav>
   <div class="raster">
     <div class="kol">
       <section class="vlak" aria-labelledby="ir"><h2 id="ir">In de raad</h2>
@@ -164,7 +259,7 @@ function toonWijk(w){
 
     </div>
   </div>
-  <details class="cijferblok" style="margin-top:24px"><summary><b>Cijfers over ${esc(w.naam)}</b> <span class="sub">CBS, Wijkprofiel en politie; uitgebreider op <a href="https://wijkprofiel.rotterdam.nl/" target="_blank" rel="noopener">wijkprofiel.rotterdam.nl</a> en <a href="https://www.cbs.nl/nl-nl/visualisaties/kerncijfers-wijken-en-buurten" target="_blank" rel="noopener">cbs.nl</a></span></summary>
+  <details class="cijferblok" id="cb" style="margin-top:24px"><summary><b>Cijfers over ${esc(w.naam)}</b> <span class="sub">CBS, Wijkprofiel en politie; uitgebreider op <a href="https://wijkprofiel.rotterdam.nl/" target="_blank" rel="noopener">wijkprofiel.rotterdam.nl</a> en <a href="https://www.cbs.nl/nl-nl/visualisaties/kerncijfers-wijken-en-buurten" target="_blank" rel="noopener">cbs.nl</a></span></summary>
   <section class="vlak" aria-labelledby="kc"><h2 id="kc">Kerncijfers</h2>
     <div class="kc">${Object.keys(CBSL).map(k=>{const j=[...jC].reverse().find(j=>(w.cbs[j]||{})[k]!=null);if(!j)return '';const r=k==='inw'||k==='bijst'?null:stadGem(k,j);
       return `<div>${esc(CBSL[k][0])}<b class="num">${fmt(k,w.cbs[j][k])}</b><span class="ref">${j}${r!=null?' · Rotterdam '+fmt(k,r):''}</span>${spark(jC.map(x=>(w.cbs[x]||{})[k]??null))}</div>`;}).join('')}</div>
@@ -179,7 +274,7 @@ function toonWijk(w){
         <p class="sub" style="margin-top:8px">Bron: politie, geregistreerde misdrijven per buurt (via CBS). Het gaat om aangiftes en registraties, niet om alle voorvallen.</p></section>
   </details>
   <p class="let">Deze pagina zet cijfers uit verschillende bronnen naast elkaar, ter informatie. Ze zijn verschillend gemeten en niet bedoeld om conclusies te trekken over oorzaak, verband of hoeveel aandacht een wijk zou moeten krijgen.</p>`;
-  domeinBlok(w.gebied,w.naam);window.scrollTo({top:0});
+  domeinBlok(w.gebied,w.naam);ankers(ANK_W);window.scrollTo({top:0});
 }
 function lijst(){
   const d=CUR,bron=SOORT==='mot'?d.moties:d.toez;let l=FILTER==='af'?bron.af:bron.lijst;
@@ -200,14 +295,13 @@ async function toon(d){
   toon2(d);
 }
 function toon2(d){
-  document.querySelectorAll('#kaart path.wkl').forEach(p=>p.classList.remove('sel'));
-  CUR=d;FILTER='open';document.title=d.naam+' · Wijken · raadzoeker';
+  CUR=d;laatsteGebied(slug(d.naam));FILTER='open';document.title=d.naam+' · Gebieden · raadzoeker';
   if(location.hash.slice(1)!==slug(d.naam))history.replaceState(null,'','#'+slug(d.naam));
-  document.querySelectorAll('#kaart path.g').forEach(p=>p.classList.toggle('sel',p.dataset.n===d.naam));
   const m=d.moties,t=d.toez,ts=d.tsum,j=d.jaren.length-1,ch=d.trend[j-1]?Math.round((d.trend[j]-d.trend[j-1])/d.trend[j-1]*100):0;
   $('wijk').innerHTML=`
-  <div class="kop"><div><div class="sub">Gebied</div><h1>${esc(d.naam)}</h1><div style="margin:6px 0 0">${volgKnop(slug(d.naam),d.naam)}</div>${d.sub.length?`<div class="sub" style="margin-top:8px">Met o.a. ${esc(d.termen.split('|').map(s=>s.trim().replace(/"/g,'')).filter(s=>s.toLowerCase()!==d.naam.toLowerCase()).slice(0,6).join(', '))}</div>`:''}</div>
+  <div class="kop"><div>${kruimel(d.naam)}<div class="titelrij"><h1>${esc(d.naam)}</h1>${kiezer()}</div><div style="margin:6px 0 0">${volgKnop(slug(d.naam),d.naam)}</div>${d.sub.length?`<div class="sub" style="margin-top:8px">Met o.a. ${esc(d.termen.split('|').map(s=>s.trim().replace(/"/g,'')).filter(s=>s.toLowerCase()!==d.naam.toLowerCase()).slice(0,6).join(', '))}</div>`:''}</div>
     <div class="acties"><a class="knop" href="briefing.html#${slug(d.naam)}">Maak een briefing (A4)</a><span class="sub" id="deelrij"></span><a class="sub" href="deel/${slug(d.naam)}.png" target="_blank" rel="noopener">Deelkaart als afbeelding</a></div></div>
+  <nav class="ank" id="ank" aria-label="Op deze pagina" hidden></nav>
   <div class="cijfers">
     <div class="cijfer"><span class="groot num">${nf(d.inw)}</span><span>inwoners</span><div class="sub">CBS, 2024</div></div>
     ${telCijfers(telling(d,null)).map(([l,n,s])=>`<div class="cijfer"><span class="groot num">${nf(n)}</span><span>${l}</span><div class="sub">${s}</div></div>`).join('')}
@@ -236,7 +330,7 @@ function toon2(d){
   </div>`;
   deel($('deelrij'),d.naam+' in de Rotterdamse raad',new URL('wijk.html?g='+slug(d.naam),location.href).href,slug(d.naam));
   JAAR=d.jaren[d.jaren.length-1];   // standaard het lopende jaar
-  onderwerpen();lijst();domeinBlok(d.naam);aiBlok(d.naam);window.scrollTo({top:0});
+  onderwerpen();lijst();domeinBlok(d.naam);ankers(ANK_G);aiBlok(d.naam);window.scrollTo({top:0});
 }
 document.addEventListener('click',e=>{const s=e.target.closest('[data-soort]'),f=e.target.closest('[data-f]'),j=e.target.closest('[data-j]');
   if(s){SOORT=s.dataset.soort;FILTER='open';lijst();}if(f){FILTER=f.dataset.f;lijst();}if(j){JAAR=j.dataset.j;onderwerpen();}});

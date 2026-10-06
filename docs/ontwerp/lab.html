@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Inzichten · raadzoeker</title>
-<link rel="stylesheet" href="stijl.css?v=15">
+<link rel="stylesheet" href="stijl.css?v=17">
 <style>
 .fbalk{position:sticky;top:0;z-index:20;background:var(--grijs);margin:0 -24px 24px;padding:10px 24px;border-bottom:1px solid var(--lijn);display:flex;gap:8px 16px;flex-wrap:wrap;align-items:end;font-size:14px}
 .fbalk label{display:grid;gap:2px}
@@ -25,11 +25,21 @@
 .wr{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
 .wk{color:#fff;border-radius:var(--r);padding:20px;display:grid;gap:6px;align-content:start;min-height:180px}
 .wk span:first-child{font-size:14px}.wk .w{font-size:28px;font-weight:700;line-height:1.1}
-.hub{display:none;margin:24px 0 8px;gap:16px;grid-template-columns:2fr 1fr}
-.kop-b .hub{display:grid}
+.hub{display:grid;margin:24px 0 8px;gap:16px;grid-template-columns:2fr 1fr}
 .hub .vlak{display:grid;gap:10px;align-content:start}
 .hub h2{margin:0}.hub p{margin:0;max-width:60ch}
 .hub .groot-tegel h2{font-size:30px}
+.wolk{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;justify-content:center;padding:8px 0}
+.wolk a{text-decoration:none;line-height:1.1;color:var(--groen-d);padding:2px 4px;border-radius:4px}
+.wolk a.geb{color:var(--blauw)}
+.wolk a:hover{background:var(--groen-zacht);text-decoration:underline}
+.wolk a .st{font-size:.6em;vertical-align:super;color:var(--laat)}
+.meerwolk{font:14px var(--font);background:none;border:1px solid var(--lijn);border-radius:999px;padding:6px 14px;cursor:pointer;min-height:36px}
+.woorden{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 32px}
+.woorden a{display:flex;justify-content:space-between;gap:8px;padding:6px 0;border-bottom:1px solid var(--grijs2);text-decoration:none}
+.woorden a:hover span:first-child{text-decoration:underline}
+.woorden svg{width:80px;height:22px;flex:none}
+@media (max-width:600px){.woorden{grid-template-columns:minmax(0,1fr)}.wolk{gap:2px 9px;padding:4px 0;line-height:1}.wolk a{padding:1px 2px}}
 @media (max-width:900px){.hub{grid-template-columns:1fr}}
 @media (max-width:900px){.wr{grid-template-columns:repeat(2,minmax(0,1fr))}.fbalk{margin:0 -16px 16px;padding:8px 16px}.fbalk select{max-width:44vw}}
 </style></head><body>
@@ -41,6 +51,10 @@
     <section class="vlak accent groot-tegel"><h2>Verkenner: alles als één web</h2><p>Alle debatten en stukken als één web van onderwerpen, plekken en begrippen. Zoom in, volg een verband en ontdek wat samen wordt genoemd.</p><div><a class="knop" href="verkenner.html">Open de Verkenner</a></div></section>
     <section class="vlak accent"><h2>Raad Wrapped</h2><p>Het jaar van de raad in een paar kaarten.</p><div><a class="knop wit" href="#g-wrapped" onclick="event.preventDefault();document.getElementById('g-wrapped').scrollIntoView({behavior:'smooth'})">Naar Raad Wrapped</a></div></section>
   </div>
+  <section class="vlak graf" id="g-wolk" aria-labelledby="h-wolk" style="margin-top:8px"><h2 id="h-wolk">Waar praat de raad over in 2026?</h2>
+    <p class="geldt">Groter = vaker besproken · ▲ = stijgt · <span style="color:var(--blauw)">blauw</span> = gebied</p>
+    <div class="wolk" id="wolk"><span class="sub">Laden…</span></div><p style="text-align:center;margin:4px 0 0"><button type="button" class="meerwolk" id="meerwolk">Toon alle onderwerpen</button></p>
+    <h3 style="margin:20px 0 4px;font-size:18px">Opkomende woorden</h3><div class="woorden" id="woorden"></div></section>
   <nav class="toc" aria-label="Grafieken" id="toc"></nav>
   <div class="fbalk" role="group" aria-label="Filters">
     <label>Domein <select id="fd"><option value="">alle domeinen</option></select></label>
@@ -54,7 +68,7 @@
     <p class="uitleg">Het jaar van de raad in vier kaarten. Kies een jaar.</p><div class="jr" id="wjr"></div><div class="wr" id="wkaarten"></div></section>
   <p class="voet">Gegevens: iBabs (moties, toezeggingen, schriftelijke vragen), notulen en ondertiteling van de gemeenteraad, stand <span id="stand"></span>. Domeinen volgen het beleidsveld in iBabs; gebieden zijn herkend op wijk- en straatnamen (ongeveer 9 van de 10 goed). <a href="over.html">Meer over deze tool</a>.</p>
 </main>
-<script src="ontwerp.js?v=33"></script>
+<script src="ontwerp.js?v=35"></script>
 <script>
 kop('lab');
 let L=null,F={d:'',g:'',f:'',van:'2022',tot:'2026'};
@@ -229,4 +243,18 @@ Promise.all(['lab2.json','lab.json'].map(f=>fetch(f).then(r=>r.json()))).then(([
     ${w.stijger?`<div class="wk" style="background:#006E32"><span>Grootste stijger</span><span class="w">${esc(w.stijger[0])}</span><span>${String(w.stijger[1]).replace('.',',')} keer zo vaak genoemd als het jaar ervoor.</span></div>`:`<div class="wk" style="background:#006E32"><span>Grootste stijger</span><span class="w">–</span><span>Het eerste jaar; geen vergelijking.</span></div>`}`;};
   $('wjr').addEventListener('click',e=>{const b=e.target.closest('[data-y]');if(b){wy=b.dataset.y;wt();}});wt();
 });
+
+/* woordwolk en opkomende woorden (verhuisd van de startpagina) */
+Promise.all(['d/overzicht.json','start.json'].map(f=>fetch(f).then(r=>r.json()))).then(([O,S])=>{
+  const W=O.wolk||[],sc={};['onderwerp','gebied'].forEach(t=>{const v=W.filter(x=>x[1]===t).map(x=>x[3]);sc[t]=[Math.min(...v),Math.max(...v)];});
+  const volg=[];[...W].sort((a,b)=>b[3]/sc[b[1]][1]-a[3]/sc[a[1]][1]).forEach((x,i)=>i%2?volg.unshift(x):volg.push(x));
+  const kortW=n=>({'Rotterdam The Hague Airport':'RTHA','Hillegersberg-Schiebroek':'Hillegersberg','Kralingen-Crooswijk':'Kralingen'})[n]||(n.length>14?n.split(/ en |, |\//)[0]:n);
+  const N=innerWidth<600?24:32,grens=[...W].sort((a,b)=>b[3]/sc[b[1]][1]-a[3]/sc[a[1]][1]).slice(0,N);let alles=false;
+  const teken=()=>{const lijst=alles?volg:volg.filter(x=>grens.includes(x));
+    $('wolk').innerHTML=lijst.map(([n,t,sl,nu,vo])=>{const [lo,hi]=sc[t],f=Math.sqrt((nu-lo)/Math.max(1e-9,hi-lo)),stijg=vo>0&&nu/vo>=1.25&&nu>=lo+(hi-lo)*.1;
+      return `<a class="${t==='gebied'?'geb':''}" href="${t==='gebied'?'wijk.html?g='+sl:'dossier.html?d='+sl}" style="font-size:${(innerWidth<600?10+f*9:14+f*26).toFixed(0)}px;font-weight:${f>.5?700:400}" title="${esc(n)}: ${String(nu).replace('.',',')} per 100.000 woorden in 2026 (${String(vo).replace('.',',')} in 2025)">${esc(innerWidth<600?kortW(n):n)}${stijg?'<span class="st" aria-label="stijgt">▲</span>':''}</a>`;}).join('');};
+  teken();if(W.length<=N)$('meerwolk').hidden=true;$('meerwolk').onclick=()=>{alles=!alles;$('meerwolk').textContent=alles?'Toon minder':'Toon alle onderwerpen';teken();};
+  $('woorden').innerHTML=(S.rise||[]).slice(0,6).map(w=>{const v=w[3],m=Math.max(...v),pts=v.map((x,i)=>`${(i/(v.length-1)*76+2).toFixed(1)},${(20-(x/m)*18).toFixed(1)}`).join(' ');
+    return `<a href="zoek.html?q=${encodeURIComponent(w[0])}"><span>${esc(w[0])} <span class="sub num">${w[1]}×</span></span><svg viewBox="0 0 80 22" aria-hidden="true"><polyline points="${pts}" fill="none" stroke="#00811F" stroke-width="2"/></svg></a>`;}).join('');
+}).catch(()=>{$('wolk').innerHTML='<span class="sub">Niet beschikbaar.</span>';});
 </script></body></html>
