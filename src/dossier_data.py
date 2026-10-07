@@ -168,7 +168,9 @@ def main():
         ds=TH.get(o['groep']);
         if not ds: print('geen domein voor',o['naam'],o['groep']); continue
         pad=[['Dossiers','domeinen.html'],[DN[ds],'#'+slug(DN[ds])]]+([['Parkeren','#parkeren']] if o['groep']=='Parkeren' else [])
-        sl=slug(o['naam']); o=dict(o,tsum=o.get('tsum'),tsum_thema=o['naam'] if o.get('tsum') else None)   # alleen een samenvatting die over dit onderwerp zelf gaat, niet die van het bredere thema (THS): dan toont de pagina 'nog geen samenvatting'; x=dict(o,groep='Parkeren' if o['groep']=='Parkeren' else DN[ds],pad=pad,stand=STAND,ai=os.path.exists(os.path.join(DOCS,'ontwerp','samenvattingen',sl+'.json')))
+        # alleen een samenvatting die over dit onderwerp zelf gaat, niet die van het bredere thema (THS): dan toont de pagina 'nog geen samenvatting'
+        sl=slug(o['naam']); o=dict(o,tsum=o.get('tsum'),tsum_thema=o['naam'] if o.get('tsum') else None)
+        x=dict(o,groep='Parkeren' if o['groep']=='Parkeren' else DN[ds],pad=pad,stand=STAND,ai=os.path.exists(os.path.join(DOCS,'ontwerp','samenvattingen',sl+'.json')))
         schrijf(sl+'.json',x); index.append({'slug':sl,'naam':o['naam'],'groep':x['groep'],'soort':'onderwerp','domein':slug(DN[ds]),'ai':x['ai'],'sub':[],'termen':o['termen']})
     # thema's dwars door de organisatie (uit de 41 thema's, met hun korte samenvatting): eigen dossiers onder Domeinen
     for o in json.load(open(os.path.join(DOCS,'ontwerp','onderwerpen.json'),encoding='utf8')).get('dwars',[]):
