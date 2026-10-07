@@ -68,7 +68,13 @@ const STAP={
     {s:'#ond',t:'Alle onderwerpen',x:'Per domein de onderwerpen. Een groen label betekent: er is een samenvatting (door AI gemaakt, met gecontroleerde citaten).'},
     {s:'#rijen',t:'Alles op een rij',x:'Per domein hoeveel moties en toezeggingen er open staan en hoeveel er over de termijn zijn.'},
   ],
+  beloofd:[
+    {s:'.tellen',t:'Wat staat er open?',x:'Vier tellers: open, over de termijn, binnenkort verwacht en net afgedaan. Tik erop om de lijst te filteren.'},
+    {s:'#jaren',t:'Hoe lang al?',x:'Per jaar van indiening hoeveel er nog openstaat. Tik op een jaar om alleen dat jaar te zien.'},
+    {s:'#lijst .item summary',t:'Het spoor van een belofte',x:'Klap een regel open: wat is er beloofd, welke brieven stuurde het college en wanneer wordt de afdoening verwacht.'},
+    {s:'#csv',t:'Meenemen',x:'Download je selectie voor Excel, kopieer de link naar deze lijst of zet hem klaar voor Copilot.'}],
   dossier:[
+    {s:'#k-tijdlijn, #lijnsec',t:'Tijdlijn',x:'Eén onderwerp als lijn door de tijd: links wat de raad zegt en vraagt, rechts wat het college belooft en afdoet. Klik op een motie of toezegging voor het spoor.'},
     {s:'.kopknoppen .knop',alt:'#dossier h1',t:'Briefing in één klik',x:'Maak van dit dossier een A4 voor je wethouder of overleg, als pdf of Word.'},
     {s:'.kverw',t:'Verder kijken',x:'De onderwerpen binnen dit dossier, verwante dossiers en hetzelfde dossier per gebied.'},
     {s:'#kinh .ai, #dossier .ai',t:'AI-samenvatting met bron',x:'Wijs een zin aan of tik erop: je ziet het letterlijke citaat en de bron. Elk citaat is woord voor woord gecontroleerd.'},
@@ -114,7 +120,7 @@ const STAP={
   akkoord:[{s:'#kern',t:'Het coalitieakkoord',x:'De kern van het akkoord, samengevat. Wijs een zin aan voor de letterlijke tekst en de pagina.'},{s:'#dom',t:'Per domein',x:'Wat het akkoord per domein van plan is, met een link naar het dossier.'}],
   briefing:[{s:'#a4',t:'Je briefing',x:'Een A4 met het belangrijkste uit het dossier.'},{s:'#print',t:'Exporteren',x:'Bewaar als pdf of open in Word en pas hem aan.'}],
 };
-const NAAM={vergaderingen:'Vergaderingen',vergadering:'deze vergadering',startpagina:'de startpagina',zoek:'Zoeken',domeinen:'Dossiers',dossier:'dit dossier',wijk:'Gebieden',verkenner:'de Verkenner',lab:'Inzichten',ideeen:'Ideeën',akkoord:'het akkoord',briefing:'de briefing'};
+const NAAM={beloofd:'Beloofd',vergaderingen:'Vergaderingen',vergadering:'deze vergadering',startpagina:'de startpagina',zoek:'Zoeken',domeinen:'Dossiers',dossier:'dit dossier',wijk:'Gebieden',verkenner:'de Verkenner',lab:'Inzichten',ideeen:'Ideeën',akkoord:'het akkoord',briefing:'de briefing'};
 
 /* ---------- rondleiding ---------- */
 let T=null;
