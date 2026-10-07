@@ -36,6 +36,16 @@
 .zoekband .zoekveld{flex:1;min-width:0;position:relative}
 .zoekband input{width:100%;font:20px var(--font);padding:16px 22px;border:2px solid var(--zwart);border-radius:999px;background:var(--wit);color:var(--zwart)}
 .zoekband button{font:700 16px var(--font);background:var(--groen);color:#fff;border:0;border-radius:999px;padding:0 28px;min-height:56px;cursor:pointer}
+.zoekband button.vidknop{display:inline-flex;width:fit-content;min-height:0;align-items:center;gap:12px;margin:12px 0 0;padding:6px 16px 6px 6px;border:1px solid var(--lijn);border-radius:999px;background:var(--wit);font:400 15px var(--font);color:var(--zwart);cursor:pointer}
+.zoekband button.vidknop:hover{border-color:var(--groen);background:var(--wit)}
+.vidknop .sub{color:var(--sub)}
+.vidknop img{width:72px;height:40px;object-fit:cover;border-radius:999px 6px 6px 999px;display:block}
+.vidknop .sp{width:28px;height:28px;border-radius:50%;background:var(--groen);color:var(--wit);display:grid;place-items:center;font-size:12px;flex:none}
+.vidknop .sub{font-size:13px}
+dialog.vid{border:0;padding:0;border-radius:12px;width:min(960px,calc(100vw - 32px));background:#000}
+dialog.vid::backdrop{background:rgba(0,0,0,.7)}
+dialog.vid video{display:block;width:100%;height:auto}
+dialog.vid .sluit{position:absolute;top:8px;right:8px;z-index:1;border:0;border-radius:50%;width:36px;height:36px;font:20px var(--font);background:rgba(255,255,255,.9);cursor:pointer}
 .zoekband .probeer{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center;margin-top:12px;font-size:15px}
 .zoekband .probeer a{background:var(--wit);border-radius:999px;padding:6px 14px;text-decoration:none;min-height:32px;display:inline-flex;align-items:center}
 .zoekband .probeer a:hover{background:var(--groen-zacht)}
@@ -110,6 +120,7 @@
     <button type="submit">Zoek</button></form>
   <div class="probeer"><span class="sub">Probeer:</span> <a href="zoek.html?q=parkeren">parkeren</a> <a href="zoek.html?q=Tweebosbuurt">Tweebosbuurt</a> <a href="zoek.html?q=jeugdzorg">jeugdzorg</a> <a href="zoek.html?q=deelscooters">deelscooters</a></div>
   <p class="sub uitleg" id="tellers">Alles wat de gemeenteraad en de commissies sinds 2018 zeiden, besloten en beloofden, tot op het moment in de video. Nu doorzoekbaar: 32 miljoen woorden en 44.500 stukken<span id="tbel"></span>.</p>
+  <button type="button" class="vidknop" id="vidknop" aria-haspopup="dialog"><img src="media/raadzoeker-knop.jpg" alt=""><span class="sp" aria-hidden="true">▶</span><span>Raadzoeker in 85 seconden <span class="sub">· video</span></span></button>
 </section>
 <div class="pagina">
   <section class="komt mob" aria-labelledby="hk2"><h2 id="hk2">Komt eraan</h2><div class="komtlijst"></div></section>
@@ -123,9 +134,16 @@
   <p class="wrapped">Terugkijken? Zie <a href="lab.html#k=wrapped">Raad Wrapped</a>: het jaar van de raad in woorden en cijfers.</p>
 </div>
 </main>
+<dialog class="vid" id="vid" aria-label="Video: raadzoeker in 85 seconden"><button type="button" class="sluit" id="vidsluit" aria-label="Sluiten">×</button>
+  <video id="vidv" controls playsinline preload="none" poster="media/raadzoeker-poster.jpg"><source src="media/raadzoeker.mp4" type="video/mp4"><track kind="captions" src="media/raadzoeker.vtt" srclang="nl" label="Nederlands"></video></dialog>
 <script src="ontwerp.js?v=37"></script>
 <script>
 kop('');
+{const d=document.getElementById('vid'),v=document.getElementById('vidv');
+ document.getElementById('vidknop').onclick=()=>{d.showModal();v.play().catch(()=>{});};
+ document.getElementById('vidsluit').onclick=()=>d.close();
+ d.addEventListener('click',e=>{if(e.target===d)d.close();});
+ d.addEventListener('close',()=>v.pause());}
 const J=(f,o)=>fetch(f,o).then(r=>{if(!r.ok)throw 0;return r.json();});
 const PROC=/vaststelling van de agenda|opening|mededeling|rondvraag|insprek|sluiting|ingekomen stukken|^agenda$/i;
 const IB='https://gemeenteraad.rotterdam.nl';
