@@ -4,7 +4,7 @@
    op subthema, direct boven de lijst die het filtert. Een open blok staat in de link (#parkeren/besloten). */
 let KX=null,KD=null,KA=null,KWK=null,KKAART=null,KBEL='open',KAKK=null,KPK=null;
 let KOPEN=new Set(),KSUB={},KDICHT=new Set();
-const KBLOKKEN=['komt','akkoord','gezegd','besloten','beloofd','gedaan','stad','achtergrond'];
+const KBLOKKEN=['komt','akkoord','tijdlijn','gezegd','besloten','beloofd','gedaan','stad','achtergrond'];
 const kslug=s=>slug(s);
 async function toonKeten(d,X,A){
   KD=d;KX=X;KA=A;CIT=[];verberg();KLAAG='n';KJR='alle';PJR='2026';if(KSPEEL){clearInterval(KSPEEL);KSPEEL=null;}KSUB={};KBEL='open';KDICHT=new Set();
@@ -12,13 +12,14 @@ async function toonKeten(d,X,A){
   if(!KAKK){try{const r=await fetch('akkoord.json');if(r.ok)KAKK=await r.json();}catch(e){}}
   KPK=null;if((ALLE.find(x=>x.slug===d.slug)||{}).kaart){try{const r=await fetch('d/'+d.slug+'-kaart.json');if(r.ok)KPK=await r.json();}catch(e){}}
   kLeesHash();
+  if(window.rzLijnIndex){await rzLijnIndex();if(KOPEN.has('tijdlijn')&&rzLijnAantal(d.slug)){try{await rzLijnLaad(d.slug);}catch(e){}}}   // lijn.js: tijdlijn alleen tonen als er een bestand is
   document.title=d.naam+' · raadzoeker';
   const crumb=(d.pad||[]).map(([t,u])=>`<a href="${u}">${esc(t)}</a>`).join(' › ')+' › '+esc(d.naam);
   const kinderen=ALLE.filter(x=>x.soort==='onderwerp'&&x.groep===d.naam),kr=d.soort==='domein'?ALLE.filter(x=>x.soort==='kruising'&&x.domein===d.slug):[];
   const verw=(X.verwant||[]).map(s=>ALLE.find(x=>x.slug===s)).filter(Boolean);
   $('dossier').innerHTML=`<div class="crumb">${crumb}</div>
   <div class="kop"><h1>${esc(d.naam)}</h1>
-    <div class="kopacties">${volgKnop(d.slug,d.naam)}<a class="knop" href="briefing.html#${d.slug}"><span>Briefing<span class="lang"> maken (A4, pdf of Word)</span></span></a><span class="sub" id="deelrij"></span></div>
+    <div class="kopacties">${volgKnop(d.slug,d.naam)}<a class="knop" href="briefing.html#${d.slug}"><span>Briefing<span class="lang"> maken (A4, pdf of Word)</span></span></a>${citKnoppen('ketenCop',{},{citaat:false,copilot:true})}<span class="sub" id="deelrij"></span></div>
     ${kinderen.length||kr.length||verw.length?`<div class="kverw">${kinderen.length?`<span><b>Onderwerpen:</b> ${kinderen.map(x=>`<a href="#${x.slug}">${esc(x.naam)}</a>`).join(' · ')}</span>`:''}
       ${verw.length?`<span><b>Verwant:</b> ${verw.map(x=>`<a href="#${x.slug}">${esc(x.naam)}</a>`).join(' · ')}</span>`:''}
       ${kr.length?`<span><b>Per gebied:</b> ${kr.map(x=>`<a href="#${x.slug}">${esc(x.gebied)}</a>`).join(' · ')}</span>`:''}</div>`:''}</div>
@@ -56,10 +57,31 @@ function kRij(x){
 }
 function kDebat(x){
   const vid=x.video?`<button type="button" class="knop klein" data-video="${esc(x.video)}" data-sec="${x.sec}" data-titel="${esc(fd(x.datum)+' · '+(x.wie||x.verg))}">▶ Bekijk dit moment (${hms(Math.max(0,x.sec-3))})</button>`:'';
+  // de gegevens hebben alleen de titel van het agendapunt, geen nummer: dus alleen 'Kopieer citaat' (met de link naar iBabs), geen vaste link naar het fragment
+  const kn=citKnoppen('ketenD',{i:KX.debatten.indexOf(x)},{naam:`van ${x.wie||x.verg}, ${fd(x.datum)}`});
   return `<details class="item"><summary><span class="meta"><span class="d">${fd(x.datum)}</span><span>${esc(x.verg)}</span><span>${nf(x.n)}× genoemd</span><span class="wie">${esc(x.sprekers.slice(0,3).join(', '))}</span></span><span class="t">${esc(x.punt)}</span><span class="pijl" aria-hidden="true">›</span></summary>
-    <div class="ctx"><div>‘${esc(x.fragment)}’<br><span class="sub">${esc(x.wie||'')}${x.partij?' ('+esc(x.partij)+')':''}${x.auto?' · automatische ondertiteling, kan fouten bevatten':''}</span></div>
-    <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center">${vid}<a href="https://gemeenteraad.rotterdam.nl/Agenda/Index/${esc(x.agenda)}" target="_blank" rel="noopener">Vergadering in iBabs</a></div></div></details>`;
+    <div class="ctx" data-rzbox><div data-rzfr>‘${esc(x.fragment)}’</div><div class="sub">${esc(x.wie||'')}${x.partij?' ('+esc(x.partij)+')':''}${x.auto?' · automatische ondertiteling, kan fouten bevatten':''}</div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center">${vid}${kn}<a href="https://gemeenteraad.rotterdam.nl/Agenda/Index/${esc(x.agenda)}" target="_blank" rel="noopener">Vergadering in iBabs</a></div></div></details>`;
 }
+/* citeren en Kopieer voor Copilot (citeer.js) */
+RZ_CIT.ketenD=ds=>{const x=KX.debatten[+ds.i];
+  return {tekst:x.fragment,spreker:x.wie||'',fractie:x.partij||'',orgaan:rzOrgaan(x.verg,!/^gemeenteraad/i.test(x.verg)),datum:x.datum,titel:x.punt,auto:!!x.auto,sec:x.sec,bron:'https://gemeenteraad.rotterdam.nl/Agenda/Index/'+x.agenda,link:''};};
+RZ_CIT.ketenCop=()=>{
+  const d=KD,X=KX,TEL=telling(d,X),open=X.spoor.filter(x=>x.open),laat=x=>{const l=x.stappen[x.stappen.length-1];return l[1]==='verwacht'&&kNu(l[0]);};
+  open.sort((a,b)=>(laat(b)-laat(a))||b.datum.localeCompare(a.datum));
+  const stat=x=>{const l=(x.stappen||[]).slice(-1)[0];if(!l)return '';
+    if(l[1]==='verwacht')return 'afdoening verwacht '+rzDatum(l[0])+(kNu(l[0])?` (${dagen(l[0],STAND)} dagen over de termijn)`:'');
+    return `${l[2].toLowerCase()} ${rzDatum(l[0])}`;};
+  const bl=[{sectie:'Open moties en toezeggingen'}];
+  open.slice(0,10).forEach(x=>bl.push({kop:`${x.soort==='motie'?'Motie':'Toezegging'} ‘${rzKort(x.titel,140)}’ · ${x.wie||'indiener onbekend'} · ${rzDatum(x.datum)} · ${stat(x)}`,
+    tekst:rzKort(x.verzoek||x.toezegging||'',160),bron:x.url}));
+  bl.push({sectie:'Debatten (letterlijke fragmenten)'});
+  X.debatten.slice(0,8).forEach(x=>bl.push({kop:[rzDatum(x.datum),(x.wie||'onbekende spreker')+(x.partij?` (${x.partij})`:''),rzOrgaan(x.verg,!/^gemeenteraad/i.test(x.verg)),`agendapunt ‘${rzKort(x.punt,120).replace(/\.$/,'')}’`,x.auto?'automatische ondertiteling':''].filter(Boolean).join(' · '),
+    tekst:rzKort(x.fragment,330),citaat:true,bron:'https://gemeenteraad.rotterdam.nl/Agenda/Index/'+x.agenda}));
+  return {opdracht:`Je krijgt hieronder gegevens over het dossier ${d.naam} uit de Rotterdamse gemeenteraad en raadscommissies. Maak een korte stand van zaken voor een beleidsmedewerker: wat speelt er, wat staat nog open, wat komt eraan. Gebruik alleen deze gegevens en noem de bron per punt.`,
+    intro:`Stand van de gegevens: ${rzDatum(STAND)}.\n${rzTelRegel(TEL)}${open.length>10?` Hieronder staan de ${Math.min(10,open.length)} belangrijkste van ${open.length} open punten.`:''}`,
+    blokken:bl,voet:rzVoet('Dossier',rzDossierLink(d.slug),'onderdelen')};
+};
 const hms=s=>{s=Math.round(s);const h=Math.floor(s/3600),m=Math.floor(s%3600/60),z=s%60;return (h?h+':':'')+String(m).padStart(h?2:1,'0')+':'+String(z).padStart(2,'0');};
 /* ---------- de blokken ---------- */
 function kLijsten(){
@@ -103,6 +125,9 @@ function kTeken(){
   const AK=X.akkoord,AP=KAKK&&KAKK.dossiers&&KAKK.dossiers[d.slug]||[],DP=AK&&KAKK&&KAKK.domeinen&&KAKK.domeinen[AK.domein]||[],PT=AP.length?AP:DP;
   if(AK&&PT.length)h+=kBlok('akkoord','','Coalitieakkoord 2026–2030',`${PT.length} punten`,esc(PT[0].wat),
     o=>`<ul class="kakk">${PT.slice(0,o?99:3).map(x=>`<li>${esc(x.wat)} <a class="sub" href="${esc(x.url)}" target="_blank" rel="noopener">blz. ${x.blz}</a>${cl(x)}</li>`).join('')}</ul>${o?`<p class="sub" style="font-size:13px;margin-top:8px">‘Vaart maken’ van PRO, D66, VVD, CDA en Volt (juli 2026). AI-samenvatting met bij elk punt het letterlijke citaat. <a href="akkoord.html">Het hele akkoord in het kort</a></p>`:`<button type="button" class="kmeer" data-blok="akkoord">Toon alle ${PT.length}</button>`}`,{kleur:'blauw'});
+  // tijdlijn (lijn.js): raad links, college rechts; dicht een voorproefje, open alles. Het subthemafilter geldt hier niet.
+  const LN=window.rzLijnAantal?rzLijnAantal(d.slug):0;
+  if(LN)h+=kBlok('tijdlijn','','Tijdlijn',`${nf(LN)} gebeurtenissen`,'Eén lijn door de tijd: links de raad, rechts het college',o=>`<div class="lijnhost"></div>`+(o?'':`<button type="button" class="kmeer" data-blok="tijdlijn">Toon de hele tijdlijn (${nf(LN)})</button>`));
   // 1 gezegd
   const F=A&&A.fracties,laatst=X.debatten[0];
   h+=kBlok('gezegd','1','Gezegd',`${nf(X.debatten.length)} debatten`,laatst?`Laatste: ${fd(laatst.datum)}, ${esc(laatst.punt.slice(0,80))}`:'',
@@ -126,14 +151,20 @@ function kTeken(){
       :`<button type="button" class="kmeer" data-blok="stad">Open de kaart</button>`);
   // achtergrond
   const T=A&&A.tijdlijn,O=A&&A.open;
-  h+=kBlok('achtergrond','','Achtergrond','het hele verhaal','Meer diepgang, tijdlijn, open eindjes en cijfers',o=>{if(!o)return `<button type="button" class="kmeer" data-blok="achtergrond">Lees het hele verhaal</button>`;let a='';
+  h+=kBlok('achtergrond','','Achtergrond','het hele verhaal','Meer diepgang, belangrijkste momenten, open eindjes en cijfers',o=>{if(!o)return `<button type="button" class="kmeer" data-blok="achtergrond">Lees het hele verhaal</button>`;let a='';
     if(A&&A.verdieping&&A.verdieping.length)a+=`<div class="verd">${A.verdieping.map(p=>`<p>${alinea(p)}</p>`).join('')}</div>`;
-    if(T&&T.punten&&T.punten.length)a+=kBinnen(blok('kt','Tijdlijn',`<p class="intro">${alinea(T.intro||[])}</p>`,`<div class="tlr">${T.punten.map(x=>`<div class="d">${fd(x.bron_datum)}</div><div class="pt">${rijAI(x)}</div>`).join('')}</div><div style="margin-top:16px">${tijdlijnSvg(d)}</div>`,`Toon ${T.punten.length} momenten en de grafiek`,true));
+    if(T&&T.punten&&T.punten.length)a+=kBinnen(blok('kt','Belangrijkste momenten',`<p class="intro">${alinea(T.intro||[])}</p>`,`<div class="tlr">${T.punten.map(x=>`<div class="d">${fd(x.bron_datum)}</div><div class="pt">${rijAI(x)}</div>`).join('')}</div><div style="margin-top:16px">${tijdlijnSvg(d)}</div>`,`Toon ${T.punten.length} momenten en de grafiek`,true));
     if(O&&O.punten&&O.punten.length)a+=kBinnen(blok('ko','Open eindjes',`<p class="intro">${alinea(O.intro||[])}</p>`,O.punten.map(x=>`<div class="pt">${rijAI(x)}</div>`).join(''),`Toon ${O.punten.length} punten`,true));
     a+=kBinnen(blok('kcij','Cijfers',`<p class="intro">Aandacht per jaar en wie erover praat.</p>`,`<div class="cijferblok" style="margin-top:16px"><section class="grafiek"><h3>Aandacht per jaar</h3>${trendSvg(d)}<p class="sub">${d.eenheid==='procent'?'Aandeel van alle gesproken woorden in de raad, in procenten.':'Keren genoemd per 100.000 gesproken woorden in de raad.'}</p></section><section><h3>Wie praat erover?</h3><div class="balken">${d.partijen.slice(0,8).map(p=>`<div class="balk2"><span>${esc(p[0])}</span><i style="width:${p[1]/Math.max(...d.partijen.map(q=>q[1]))*100}%"></i><span class="v num">${String(p[1]).replace('.',',')}</span></div>`).join('')}</div><p class="sub" style="margin-top:8px">Geen oordeel; alleen hoe vaak het onderwerp terugkomt.</p></section></div>`,'Toon cijfers'));
     return a;});
   $('kinh').innerHTML=h;
+  kLijnVul();
   if(KOPEN.has('stad')){kKaart();kPkTeken();}
+}
+/* tijdlijn: lijn.js tekent in het blok; een klik in het voorproefje opent het blok (en zet #slug/tijdlijn in de link) */
+function kLijnVul(){
+  const h=document.querySelector('#kinh .lijnhost');if(!h||!window.rzLijn)return;
+  rzLijn(h,KD.slug,{open:KOPEN.has('tijdlijn'),toggle:false,intro:false,onToggle:v=>{kZet('tijdlijn',v);kHerteken('tijdlijn');}});
 }
 function kStadInhoud(){
   const X=KX;

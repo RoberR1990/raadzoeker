@@ -7,6 +7,14 @@ const MNDL=['januari','februari','maart','april','mei','juni','juli','augustus',
 const fd=d=>{if(!d)return '';const [y,m,dd]=d.split('-');return +dd+' '+MND[+m-1]+' '+y;};
 const fdl=d=>{const [y,m,dd]=d.split('-');return +dd+' '+MNDL[+m-1]+' '+y;};
 const slug=s=>s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/&/g,' ').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+/* citeren en kopiëren (citeer.js): per pagina een functie in RZ_CIT[naam](dataset, knop) die de gegevens levert; knoppen maakt citKnoppen().
+   soort: citaat | link | verw | copilot. ds = extra data-attributen (data-id enzovoort). naam = korte beschrijving voor schermlezers. */
+window.RZ_CIT=window.RZ_CIT||{};window.rzCiteerKlaar=window.rzCiteerKlaar||Promise.resolve();
+function citKnoppen(b,ds,o={}){
+  const a=Object.entries(ds||{}).map(([k,v])=>` data-${k}="${esc(v)}"`).join(''),n=o.naam?' '+o.naam:'';
+  const bt=(s,t)=>`<button type="button" class="knop wit klein rzc" data-rzc="${s}" data-rzb="${b}"${a} aria-label="${t}${esc(n)}">${t}</button>`;
+  return (o.citaat!==false?bt('citaat','Kopieer citaat'):'')+(o.link?bt('link','Kopieer link'):'')+(o.verw?bt('verw','Kopieer verwijzing'):'')+(o.copilot?bt('copilot','Kopieer voor Copilot'):'');
+}
 const iso=s=>{const m=(s||'').match(/(\d\d)-(\d\d)-(\d{4})/);return m?`${m[3]}-${m[2]}-${m[1]}`:'';};
 // loopt het bijwerken achter? Vergelijk met de laatste geplande run (nas/crontab: elke nacht 02:30, werkdagen 9:15-21:15 om de 3 uur),
 // met 90 minuten speling voor de run zelf en het online zetten.
@@ -35,7 +43,7 @@ function kop(actief){
   const kortStand=fd(STAND).replace(/ \d{4}$/,'');
   const merk=`<a class="merk" href="startpagina.html" aria-label="raadzoeker, naar de startpagina"><img src="logo-wit.svg" alt="" width="53" height="40"><span class="merktekst"><b>raadzoeker</b><small>onofficieel</small></span></a>`;
   {
-    const hb=[['domeinen','Dossiers','domeinen.html'],['gebieden','Gebieden','wijk.html'],['vergaderingen','Vergaderingen','vergaderingen.html'],['lab','Inzichten','lab.html']];
+    const hb=[['domeinen','Dossiers','domeinen.html'],['gebieden','Gebieden','wijk.html'],['vergaderingen','Vergaderingen','vergaderingen.html'],['beloofd','Beloofd','beloofd.html'],['lab','Inzichten','lab.html']];
     const act=actief==='verkenner'?'lab':actief,ab=x=>`<a href="${x[2]}" class="${x[0]===act?'on':''}"${x[0]===act?' aria-current="page"':''}>${x[1]}</a>`;
     const LENS='<svg viewBox="0 0 20 20" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8.5" cy="8.5" r="5.5"/><path d="M13 13l5 5"/></svg>';
     document.documentElement.classList.add('kop-b');
@@ -55,7 +63,8 @@ function kop(actief){
       document.querySelectorAll('.voetbij .t,.meersheet .t').forEach(x=>x.textContent=t+' · loopt achter');el.setAttribute('aria-label',m);}}).catch(()=>{});
   voetB();
   // rondleiding, hulpknop en welkomstvenster (tour.js)
-  if(!document.getElementById('rz-tour')){const t=document.createElement('script');t.id='rz-tour';t.src='tour.js?v=13';document.body.appendChild(t);const w=document.createElement('script');w.src='woorden.js?v=3';document.body.appendChild(w);const r=document.createElement('script');r.src='stad.js?v=4';document.body.appendChild(r);}
+  if(!document.getElementById('rz-tour')){const t=document.createElement('script');t.id='rz-tour';t.src='tour.js?v=15';document.body.appendChild(t);const w=document.createElement('script');w.src='woorden.js?v=3';document.body.appendChild(w);const r=document.createElement('script');r.src='stad.js?v=4';document.body.appendChild(r);
+    const c=document.createElement('script');c.src='citeer.js?v=1';window.rzCiteerKlaar=new Promise(ok=>{c.onload=ok;c.onerror=ok;});document.body.appendChild(c);}
   const ic=document.createElement('link');ic.rel='icon';ic.type='image/svg+xml';ic.href='logo.svg';document.head.appendChild(ic);
 }
 /* zoekveld in de kop (vanaf 1100px) en dezelfde koppeling voor de zoeklaag op mobiel; Enter zoekt altijd, een gekozen suggestie opent dossier of gebied */
@@ -81,7 +90,7 @@ function kopZoekB(actief){
 function tabbalkB(actief){
   const ik=d=>`<svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
   const IK={zoek:ik('<circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/>'),dossiers:ik('<path d="M3 7a2 2 0 0 1 2-2h4l2 2.5h8a2 2 0 0 1 2 2V18a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>'),gebieden:ik('<path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/>'),verg:ik('<rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/>'),meer:ik('<circle cx="5.5" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="18.5" cy="12" r="1.2"/>'),x:ik('<path d="M6 6l12 12M18 6L6 18"/>')};
-  const MEER=['lab','verkenner','over','hulp','volg','nieuw','akkoord'],opMeer=MEER.includes(actief)||(!actief&&MEER.includes(location.pathname.split('/').pop().replace(/\.html$/,'')));
+  const MEER=['beloofd','lab','verkenner','over','hulp','volg','nieuw','akkoord'],opMeer=MEER.includes(actief)||(!actief&&MEER.includes(location.pathname.split('/').pop().replace(/\.html$/,'')));
   const act=actief==='dossier'?'domeinen':actief;
   const tab=(k,t,h,id)=>{const on=h&&act===k;return h?`<a href="${h}" class="tab${on?' on':''}"${on?' aria-current="page"':''}>${IK[id]}<span>${t}</span></a>`:'';};
   const nav=document.createElement('nav');nav.className='tabbalk';nav.setAttribute('aria-label','Hoofdnavigatie');
@@ -91,7 +100,7 @@ function tabbalkB(actief){
   laag.innerHTML=`<div class="zl-in"><form class="zoekveld zl-vorm" id="zlvorm" role="search" autocomplete="off"><span class="lens">${IK.zoek}</span><input id="zlzoek" type="search" role="combobox" aria-expanded="false" aria-controls="zlkeuze" aria-autocomplete="list" aria-label="Zoek in raad, stukken, dossiers" placeholder="Zoek in raad, stukken, dossiers…" enterkeyhint="search"></form><button type="button" class="zl-sluit" id="zlsluit" aria-label="Sluit zoeken">${IK.x}</button></div><ul class="keuze" id="zlkeuze" role="listbox" aria-label="Suggesties"></ul><p class="zl-hint">Typ een woord, een dossier of een gebied en druk op Enter om te zoeken in alles wat de raad zegt en schrijft.</p>`;
   const sheet=document.createElement('div');sheet.className='meersheet';sheet.id='meersheet';sheet.hidden=true;
   const ml=(h,t,extra='')=>`<a href="${h}"${extra}>${t}</a>`;
-  sheet.innerHTML=`<div class="ms-doek" data-sluit></div><div class="ms-vel" role="dialog" aria-modal="true" aria-label="Meer"><div class="ms-kop"><b>Meer</b><button type="button" class="zl-sluit" id="mssluit" aria-label="Sluit menu">${IK.x}</button></div><nav aria-label="Meer">${ml('lab.html','Inzichten')}${ml('verkenner.html','Verkenner')}${ml('volg.html','Volgen')}${ml('over.html','Over')}${ml('hulp.html','Hulp')}<a class="bijgewerkt" href="nieuw.html">Wat is nieuw <small>bijgewerkt <span class="t">${fd(STAND).replace(/ \d{4}$/,'')}</span></small></a></nav></div>`;
+  sheet.innerHTML=`<div class="ms-doek" data-sluit></div><div class="ms-vel" role="dialog" aria-modal="true" aria-label="Meer"><div class="ms-kop"><b>Meer</b><button type="button" class="zl-sluit" id="mssluit" aria-label="Sluit menu">${IK.x}</button></div><nav aria-label="Meer">${ml('beloofd.html','Beloofd')}${ml('lab.html','Inzichten')}${ml('verkenner.html','Verkenner')}${ml('volg.html','Volgen')}${ml('over.html','Over')}${ml('hulp.html','Hulp')}<a class="bijgewerkt" href="nieuw.html">Wat is nieuw <small>bijgewerkt <span class="t">${fd(STAND).replace(/ \d{4}$/,'')}</span></small></a></nav></div>`;
   [...sheet.querySelectorAll('nav a')].forEach(a=>{if((a.getAttribute('href')||'').startsWith(actief+'.html'))a.setAttribute('aria-current','page');});
   document.body.append(nav,laag,sheet);
   zoekKoppel($('zlzoek'),$('zlkeuze'),$('zlvorm'));
@@ -173,7 +182,7 @@ let DEELIX=null;   /* deel/index.json: slugs met een deelpagina (og-voorvertonin
 function deel(el,titel,url,slug){
   const maak=url=>{const u=encodeURIComponent(url),t=encodeURIComponent(titel);
     el.innerHTML=`<span class="sub">Delen:</span> <a href="mailto:?subject=${t}&body=${t}%0A${u}">E-mail</a> · <a href="https://teams.microsoft.com/share?href=${u}&msgText=${t}" target="_blank" rel="noopener">Teams</a> · <a href="https://wa.me/?text=${t}%20${u}" target="_blank" rel="noopener">WhatsApp</a> · <button type="button" class="kopie" style="font:inherit;background:none;border:0;padding:0;text-decoration:underline;cursor:pointer">Kopieer link</button>`;
-    el.querySelector('.kopie').addEventListener('click',e=>{navigator.clipboard.writeText(url).then(()=>{e.target.textContent='Link gekopieerd';},()=>{prompt('Kopieer deze link',url);});});};
+    el.querySelector('.kopie').addEventListener('click',e=>{const k=e.target;if(window.rzKopieer){rzKopieer(url,'Link gekopieerd').then(ok=>{if(ok)k.textContent='Link gekopieerd';});return;}navigator.clipboard.writeText(url).then(()=>{k.textContent='Link gekopieerd';},()=>{prompt('Kopieer deze link',url);});});};
   maak(url);
   if(slug){DEELIX=DEELIX||fetch('deel/index.json').then(r=>r.ok?r.json():[]).catch(()=>[]);
     DEELIX.then(l=>{if(l.includes(slug)&&el.isConnected){maak('https://raadzoeker.nl/ontwerp/deel/'+slug+'.html');}});}

@@ -48,6 +48,7 @@ stap "dossierbestanden" python src/dossier_data.py
 stap "voorbeelddossiers" python src/showcase.py
 stap "deelkaarten" python src/deelkaart.py   # leest dossier_data en showcase; lettertype Liberation Sans (of RZ_FONTS)
 stap "Lab" python src/lab_data.py
+python src/tracker.py >>"$LOG" 2>&1 || echo "tracker mislukt" >>"$LOG"
 stap "vergaderingen koppelen" python src/verg_koppel.py
 stap "vooruitblik" python src/vooruit.py
 stap "volgen" python src/volg_data.py

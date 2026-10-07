@@ -66,10 +66,11 @@ table.tafel .bar i{display:block;height:8px;background:var(--groen);border-radiu
   <div id="dossier"><p class="leeg" style="margin-top:24px">Laden…</p></div>
   <p class="voet">Gegevens: notulen en ondertiteling van de gemeenteraad, de registratie in iBabs (moties, toezeggingen, schriftelijke vragen, brieven), de Rekenkamer Rotterdam en de wijkraden, stand 2 oktober 2026. Domeinen volgen de indeling van de griffie (beleidsveld in iBabs), aangevuld met een woordmodel; een onderwerp is een vaste set zoekwoorden. Aantallen zijn een goede indicatie, geen exacte telling. Teksten met het label AI zijn automatisch gemaakt; elk punt heeft een letterlijk citaat dat een script woord voor woord met de bron heeft vergeleken. <a href="over.html">Meer over deze tool</a>.</p>
 </main>
-<script src="ontwerp.js?v=38"></script>
-<script src="ai.js?v=1"></script>
+<script src="ontwerp.js?v=40"></script>
+<script src="ai.js?v=2"></script>
 <script src="tel.js?v=1"></script>
-<script src="keten.js?v=12"></script>
+<script src="keten.js?v=14"></script>
+<script src="lijn.js?v=1"></script>
 <script>
 kop('domeinen');
 let DATA={stand:STAND},ALLE=[],KAART=null,CUR=null,SOORT='mot',FILTER='open';
@@ -92,6 +93,7 @@ function onbekend(h){const o=OUD[h.split('/')[0]];if(o){location.replace(o.inclu
   document.title='Dossier niet gevonden · raadzoeker';CUR=null;
   dd.innerHTML=`<div class="vlak" style="margin-top:24px"><h1 style="font-size:24px">Dit dossier bestaat niet (meer)</h1><p style="margin-top:8px">Er is geen dossier met de naam ‘${esc(h)}’.${tip.length?` Bedoel je ${tip.map(x=>`<a href="#${x.slug}">${esc(x.naam)}</a>`).join(', ')}?`:''}</p><p style="margin-top:8px"><a href="domeinen.html">Bekijk alle dossiers</a></p></div>`;}
 window.addEventListener('hashchange',()=>{if(!ALLE.length)return;const h=decodeURIComponent(location.hash.slice(1)).split('/')[0];if(h&&!ALLE.some(x=>x.slug===h))return onbekend(h);if(ALLE.some(x=>x.slug===h)&&(!CUR||CUR.slug!==h))laad(h);else if(KX&&CUR&&CUR.slug===h&&typeof kLeesHash==='function'){kLeesHash();kTeken();const e=KOPEN.size&&$('k-'+[...KOPEN][0]);if(e)e.scrollIntoView({block:'start'});}});
+window.addEventListener('hashchange',()=>{if(!CUR||KX||!window.rzLijnZet)return;const p=decodeURIComponent(location.hash.slice(1)).split('/');if(p[0]===CUR.slug)rzLijnZet(document.querySelector('#lijnsec .lijnhost'),p[1]==='tijdlijn',p[1]==='tijdlijn');});
 async function laad(s){const d=await (await fetch('d/'+s+'.json')).json();d.slug=s;
   // voorbeelddossier langs de keten als er extra gegevens zijn
   let X=null;if((ALLE.find(x=>x.slug===s)||{}).extra){try{const r=await fetch('d/'+s+'-extra.json');if(r.ok)X=await r.json();}catch(e){}}
@@ -132,7 +134,7 @@ function tijdlijnSvg(d){
   v.mot.forEach(([dt,s])=>{g+=`<rect x="${(x(dt)-1.5).toFixed(1)}" y="${rij.mot-14}" width="3" height="28" fill="${s==='a'?'#00811F':s==='v'?'#9DAFB6':'#DBE7EA'}"><title>${fd(dt)}: motie ${s==='a'?'aangenomen':s==='v'?'verworpen':'ingetrokken of aangehouden'}</title></rect>`;});
   v.toez.forEach(dt=>{g+=`<rect x="${(x(dt)-1.5).toFixed(1)}" y="${rij.toez-10}" width="3" height="20" fill="#00548F"><title>${fd(dt)}: toezegging</title></rect>`;});
   v.rk.forEach(([dt,ti])=>{const xx=x(dt);g+=`<path d="M${xx} ${rij.rk-9}L${xx+9} ${rij.rk}L${xx} ${rij.rk+9}L${xx-9} ${rij.rk}Z" fill="#EDB500" stroke="#6b5200"><title>${fd(dt)}: Rekenkamer, ${esc(ti)}</title></path>`;});
-  return `<div class="tl"><svg class="tls" viewBox="0 0 ${W} ${H}" role="img" aria-label="Tijdlijn 2018 tot 2026 van debatten, moties, toezeggingen en rekenkamerrapporten">${g}</svg>
+  return `<div class="tl"><svg class="tls" viewBox="0 0 ${W} ${H}" role="img" aria-label="Overzicht 2018 tot 2026 van debatten, moties, toezeggingen en rekenkamerrapporten">${g}</svg>
     <div class="leg"><span><svg width="14" height="14"><circle cx="7" cy="7" r="6" fill="#00811F" fill-opacity=".35" stroke="#00811F"/></svg>debat, groter is vaker genoemd</span><span><svg width="6" height="14"><rect width="3" height="14" fill="#00811F"/></svg>motie aangenomen</span><span><svg width="6" height="14"><rect width="3" height="14" fill="#9DAFB6"/></svg>verworpen</span><span><svg width="6" height="14"><rect width="3" height="14" fill="#00548F"/></svg>toezegging</span><span><svg width="14" height="14"><path d="M7 0L14 7L7 14L0 7Z" fill="#EDB500" stroke="#6b5200"/></svg>rekenkamerrapport</span></div></div>`;
 }
 function afhSvg(d){
@@ -158,10 +160,26 @@ function lijst(){
 function zetVast(){const a=document.querySelector('.C>aside');if(!a)return;a.classList.remove('vast');if(window.innerWidth>900&&a.offsetHeight<window.innerHeight-32)a.classList.add('vast');}
 window.addEventListener('resize',zetVast);
 
+/* Kopieer voor Copilot (citeer.js): naam, stand, telregel, open moties en toezeggingen en de debatfragmenten die op de pagina staan */
+RZ_CIT.dossierCop=()=>{
+  const d=CUR,tl=telling(d,null),bl=[{sectie:'Open moties en toezeggingen'}];
+  const maak=(r,soort)=>({kop:`${soort} ‘${rzKort(r[1],140)}’ · ${r[2]||'indiener onbekend'} · ${rzDatum(r[0])} · ${r[3]}`,tekst:rzKort(((r[6]||{}).v||(r[6]||{}).o||''),160),bron:r[4]});
+  const mo=d.moties.lijst.slice(0,6).map(r=>maak(r,'Motie')),tz=d.toez.lijst.slice(0,6).map(r=>maak(r,'Toezegging'));
+  const nOpen=d.moties.lijst.length+d.toez.lijst.length;
+  [...mo,...tz].forEach(b=>bl.push(b));
+  if(bl.length===1)bl.pop();
+  const deb=(d.debatten||[]).slice(0,8);
+  if(deb.length)bl.push({sectie:'Debatten (letterlijke fragmenten)'});
+  deb.forEach(x=>bl.push({kop:[rzDatum(x[0]),rzKort(x[2],140).replace(/\.$/,''),x[7]&&x[7].length?'sprekers: '+x[7].join(', '):'',x[8]===4?'automatische ondertiteling':''].filter(Boolean).join(' · '),
+    tekst:rzKort(x[4],330),citaat:true,bron:'https://gemeenteraad.rotterdam.nl/Agenda/Index/'+x[1]}));
+  return {opdracht:`Je krijgt hieronder gegevens over het dossier ${d.naam} uit de Rotterdamse gemeenteraad en raadscommissies. Maak een korte stand van zaken voor een beleidsmedewerker: wat speelt er, wat staat nog open, wat komt eraan. Gebruik alleen deze gegevens en noem de bron per punt.`,
+    intro:`Stand van de gegevens: ${rzDatum(STAND)}.\n${rzTelRegel(tl)}${nOpen>mo.length+tz.length?` Hieronder staan ${mo.length+tz.length} van ${nOpen} open punten.`:nOpen?'':' Er staan geen open moties of toezeggingen.'}`,
+    blokken:bl,voet:rzVoet('Dossier',rzDossierLink(d.slug),'onderdelen')};
+};
 async function toon(d){
   CUR=d;SOORT='mot';FILTER='open';
   document.querySelector('main.pagina>.vlak').hidden=d.soort!=='domein';   // zoeken naar een ander dossier alleen op domeinniveautry{localStorage.setItem('rz-dossier',d.slug);}catch(e){}
-  if(location.hash.slice(1)!==d.slug)history.replaceState(null,'','#'+d.slug);
+  if(location.hash.slice(1).split('/')[0]!==d.slug)history.replaceState(null,'','#'+d.slug);
   document.title=d.naam+' · raadzoeker';
   let A=null;if(d.ai){try{A=await (await fetch('samenvattingen/'+d.slug+'.json')).json();}catch(e){}}
   CIT=[];verberg();
@@ -197,12 +215,14 @@ async function toon(d){
   // 2 diepgang
   if(A&&A.verdieping&&A.verdieping.length)main+=blok('v','Meer diepgang',`<p class="intro">${alinea(A.verdieping[0])}</p>`,A.verdieping.length>1?`<div class="verd">${A.verdieping.slice(1).map(a=>`<p>${alinea(a)}</p>`).join('')}</div>`:'','Lees verder',true);
   // 3 tijdlijn: AI-verloop met de grafiek, of alleen de grafiek
-  if(A&&n(T.punten))main+=blok('t','Tijdlijn',`<p class="intro">${alinea(T.intro||[])}</p>`,`<div class="tlr">${T.punten.map(x=>`<div class="d">${fd(x.bron_datum)}</div><div class="pt">${rijAI(x)}</div>`).join('')}</div><div style="margin-top:16px">${tijdlijnSvg(d)}</div>`,`Toon ${n(T.punten)} momenten en de grafiek`,true);
-  else main+=`<section class="vlak" aria-labelledby="tlk"><h2 id="tlk">Tijdlijn</h2>${tijdlijnSvg(d)}</section>`;
+  if(A&&n(T.punten))main+=blok('t','Belangrijkste momenten',`<p class="intro">${alinea(T.intro||[])}</p>`,`<div class="tlr">${T.punten.map(x=>`<div class="d">${fd(x.bron_datum)}</div><div class="pt">${rijAI(x)}</div>`).join('')}</div><div style="margin-top:16px">${tijdlijnSvg(d)}</div>`,`Toon ${n(T.punten)} momenten en de grafiek`,true);
+  else main+=`<section class="vlak" aria-labelledby="tlk"><h2 id="tlk">Overzicht door de tijd</h2>${tijdlijnSvg(d)}</section>`;
   // 4 fracties
   if(A&&n(F.punten))main+=blok('f','Wat de fracties vinden',`<p class="intro">${alinea(F.intro||[])}</p>`,F.punten.map(f=>`<div class="pt"><b>${esc(f.fractie)}</b> ${f.standpunten.map(x=>`${esc(x.wat.replace(/\.$/,''))}${stand(x)} ${bron(x)}${cl(x)}`).join('; ')}</div>`).join(''),`Toon ${n(F.punten)} fracties`,true);
   // 5 college
   if(A&&n(C.punten))main+=blok('c','Wat het college beloofde en deed',`<p class="intro">${alinea(C.intro||[])}</p>`,C.punten.map(x=>`<div class="pt">${rijAI(x)}</div>`).join(''),`Toon ${n(C.punten)} punten`,true);
+  // 5b tijdlijn van het dossier (lijn.js): raad links, college rechts; verborgen tot lijn/index.json het dossier kent
+  main+=`<section class="vlak" id="lijnsec" aria-labelledby="ljk" hidden><h2 id="ljk">Tijdlijn</h2><div class="lijnhost"></div></section>`;
   // 6 moties en toezeggingen, debatten (bestaand)
   main+=`<section class="vlak accent" aria-labelledby="mtk"><h2 id="mtk">Moties en toezeggingen</h2>
       <div class="schakel" role="tablist"><button type="button" role="tab" data-soort="mot">Moties</button><button type="button" role="tab" data-soort="toez">Toezeggingen</button></div>
@@ -239,7 +259,7 @@ async function toon(d){
   if(!isKr&&d.soort!=='gebied')side+=`<section class="vlak"><h3 style="margin:0 0 8px">In welke gebieden?</h3><div class="mini" id="mini"></div><p class="sub" id="minitxt" style="margin-top:8px"></p></section>`;
   const ver=d.verdieping.ver.filter(v=>ALLE.some(x=>x.slug===slug(v[0])));
   if(ver.length)side+=`<section class="vlak"><h3 style="margin:0 0 8px">Hangt samen met</h3><div class="verwant">${ver.map(([nm,p,l])=>`<a href="#${slug(nm)}" title="In ${p}% van de spreekbeurten hierover gaat het ook over ${esc(nm.toLowerCase())}">${esc(nm)} <span class="sub num">${String(l).replace('.',',')}×</span></a>`).join('')}</div></section>`;
-  const acties=`<div class="kopacties">${isKr?'':volgKnop(d.slug,d.naam)}<a class="knop" href="briefing.html#${d.slug}"><span>Briefing<span class="lang"> maken (A4, pdf of Word)</span></span></a><span class="sub" id="deelrij"></span>${isKr||d.soort==='gebied'?`<a class="sub" href="wijk.html#${slug(d.gebied)}">Naar de gebiedspagina met kaart en cijfers</a>`:''}</div>`;
+  const acties=`<div class="kopacties">${isKr?'':volgKnop(d.slug,d.naam)}<a class="knop" href="briefing.html#${d.slug}"><span>Briefing<span class="lang"> maken (A4, pdf of Word)</span></span></a>${citKnoppen('dossierCop',{},{citaat:false,copilot:true})}<span class="sub" id="deelrij"></span>${isKr||d.soort==='gebied'?`<a class="sub" href="wijk.html#${slug(d.gebied)}">Naar de gebiedspagina met kaart en cijfers</a>`:''}</div>`;
   $('dossier').innerHTML=`<div class="crumb">${crumb}</div><div class="kop"><h1>${esc(d.naam)}</h1>${acties}${verwant}</div><div class="C"><main>${main}</main><aside>${side}</aside></div>`;
   // mini-kaart
   const Wk=d.verdieping.wijk,wm=Math.max(.1,...Object.values(Wk));if($('mini')){
@@ -248,6 +268,7 @@ async function toon(d){
   $('minitxt').textContent=t3.length&&t3[0][1]>0?`${pct?'Het vaakst genoemd':'Valt het vaakst samen met'}: ${t3.map(x=>x[0]).join(', ')}. Donkerder is vaker; klik op een gebied.`:'Geen duidelijke koppeling met gebieden.';}
   deel($('deelrij'),d.naam+' in de Rotterdamse raad',new URL('dossier.html?d='+d.slug,location.href).href,d.slug);
   lijst();zetVast();window.scrollTo({top:0});
+  if(window.rzLijn){const tl=decodeURIComponent(location.hash.slice(1)).split('/')[1]==='tijdlijn';rzLijn(document.querySelector('#lijnsec .lijnhost'),d.slug,{open:tl,scroll:tl,wrap:$('lijnsec'),onToggle:o=>history.replaceState(null,'','#'+d.slug+(o?'/tijdlijn':''))});}
 }
 </script>
 </body></html>

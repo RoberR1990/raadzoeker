@@ -1,0 +1,404 @@
+<!doctype html>
+<html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Beloofd · raadzoeker</title>
+<link rel="stylesheet" href="stijl.css?v=20">
+<link rel="stylesheet" href="keten.css?v=7">
+<style>
+.intro2{margin:12px 0 0;max-width:72ch}
+/* telblokken = snelfilter voor de status */
+.tellen{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:24px 0 16px}
+.tel{font:inherit;text-align:left;color:var(--zwart);background:var(--wit);border:2px solid var(--lijn);border-radius:var(--r);padding:12px 14px;cursor:pointer;display:grid;gap:2px;align-content:start;min-height:96px;position:relative}
+.tel:hover{border-color:var(--zwart)}
+.tel[aria-pressed="true"]{border-color:var(--zwart);box-shadow:inset 0 -5px 0 var(--groen)}
+.tel .n{font-size:32px;font-weight:700;line-height:1.1;font-variant-numeric:tabular-nums}
+.tel .l{font-size:15px;font-weight:700}
+.tel .s{font-size:13px;color:var(--sub)}
+.tel .vink{position:absolute;right:10px;top:8px;font-size:14px;display:none}
+.tel[aria-pressed="true"] .vink{display:block}
+/* filters */
+.zoekrij2{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.zoekrij2 input[type=search]{flex:1 1 260px;min-width:0;font:16px var(--font);padding:10px 14px;border:2px solid var(--zwart);border-radius:var(--r);background:var(--wit);color:var(--zwart);min-height:48px}
+.fknop{font:700 15px var(--font);background:var(--wit);color:var(--zwart);border:2px solid var(--zwart);border-radius:999px;padding:0 16px;min-height:44px;cursor:pointer;display:none}
+.fknop[aria-expanded="true"]{background:var(--grijs)}
+.seg{display:inline-flex;border:2px solid var(--zwart);border-radius:999px;overflow:hidden}
+.seg button{font:15px var(--font);background:var(--wit);color:var(--zwart);border:0;padding:0 14px;min-height:44px;cursor:pointer;border-right:1px solid var(--lijn)}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed="true"]{background:var(--zwart);color:var(--wit);font-weight:700}
+.seg button:focus-visible{outline-offset:-4px}
+.fpan{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px 16px;margin-top:14px}
+.fpan label{display:grid;gap:3px;font-size:14px;color:var(--sub)}
+.fpan select{font:15px var(--font);padding:6px 8px;border:1px solid var(--lijn);border-radius:6px;background:var(--wit);color:var(--zwart);min-height:44px;width:100%}
+.fpan .vol{grid-column:1/-1}
+.fchips{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;align-items:center}.fchips:empty{display:none}
+.fchips button{font:14px var(--font);background:var(--groen-zacht);color:var(--zwart);border:0;border-radius:999px;padding:4px 12px;min-height:36px;cursor:pointer}
+.fchips .alles{background:none;text-decoration:underline;padding:4px 6px}
+/* overzichtsbeeld */
+.strook h2{font-size:20px;margin:0 0 4px}
+.strook .sam{margin:0 0 4px;font-size:15px;max-width:72ch}
+.jaren{display:flex;gap:4px;align-items:flex-end}
+.jb{font:inherit;background:none;border:2px solid transparent;border-radius:6px;cursor:pointer;flex:1 1 0;min-width:0;display:grid;justify-items:center;gap:4px;padding:4px 0 2px;color:var(--zwart)}
+.jb:hover{border-color:var(--lijn)}
+.jb[aria-pressed="true"]{border-color:var(--zwart);background:var(--grijs)}
+.jb .bars{display:flex;gap:3px;align-items:flex-end;height:96px;padding-top:16px}
+.jb .b{position:relative;display:block;width:clamp(9px,2.2vw,22px);min-height:2px;border-radius:2px 2px 0 0}
+.jb .b i{position:absolute;left:50%;bottom:100%;transform:translateX(-50%);font:11px/14px var(--font);font-style:normal;color:var(--zwart);white-space:nowrap}
+.b.m,.lg .m{background:var(--blauw)}
+.b.t,.lg .t{background:repeating-linear-gradient(45deg,var(--groen) 0 3px,var(--wit) 3px 5px);outline:1.5px solid var(--groen);outline-offset:-1.5px}
+.jb .jl{font-size:12px}
+.lg{display:flex;gap:6px 18px;flex-wrap:wrap;font-size:14px;margin-top:8px;align-items:center}
+.lg span.k{display:inline-block;width:14px;height:14px;border-radius:2px;vertical-align:-2px;margin-right:6px}
+/* acties en lijst */
+.acties2{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;margin:24px 0 8px}
+.acties2 .knop.klein{font-weight:400}
+.acties2 select{font:15px var(--font);padding:6px 8px;border:1px solid var(--lijn);border-radius:6px;background:var(--wit);color:var(--zwart);min-height:40px}
+.telrij2{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between;margin:8px 0 12px}
+.telrij2 .ant{font-size:16px}
+.telrij2 label{font-size:14px;color:var(--sub);display:flex;gap:8px;align-items:center}
+.lijst .item summary .meta{flex-wrap:wrap;white-space:normal;overflow:visible;gap:0 12px}
+.lijst .item summary .t{font-weight:700}
+.lijst .item summary .pijl{grid-row:1/span 3}
+.lijst .item summary .ol{grid-column:1;font-size:13px;color:var(--sub)}
+.soort{display:inline-block;font-size:12px;line-height:18px;padding:0 7px;border:1px solid var(--zwart);color:var(--zwart)}
+.soort.m{border-radius:2px}
+.soort.t{border-radius:999px;background:var(--grijs);}
+.item .ctx .gr{display:grid;gap:4px}
+.item .ctx .spoor{margin-top:4px}
+.spoor li.z,.spoor li.z:hover{cursor:default;background:none!important;text-decoration:none!important;border-radius:0}
+.item .ctx .regels{display:flex;flex-wrap:wrap;gap:2px 16px;font-size:14px}
+.meer{display:flex;margin:16px auto 0;justify-content:center}
+.leegstaat{padding:24px;text-align:left}
+.leegstaat h2{font-size:20px;margin-bottom:8px}
+.leegstaat .kn{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.uitleg h2{font-size:22px;margin-bottom:12px}
+.uitleg h3{font-size:17px;margin:16px 0 4px}
+.uitleg p,.uitleg li{max-width:72ch}
+.uitleg ul{margin:6px 0 0;padding-left:20px}
+@media (max-width:900px){
+  .tellen{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .fknop{display:inline-flex;align-items:center}
+  .fpan:not(.open){display:none}
+  .fpan{grid-template-columns:minmax(0,1fr)}
+  .zoekrij2 input[type=search]{flex-basis:100%}
+}
+@media (max-width:600px){
+  .tel .n{font-size:28px}
+  .tel{padding:10px 12px;min-height:88px}
+  .seg button{padding:0 10px}
+  .lijst .item summary .meta .wie{display:inline}
+  .acties2 .knop{flex:1 1 auto;justify-content:center}
+  .jb .bars{height:84px}
+  .tel .s{display:none}
+  .tel{min-height:0}
+  .vlak{padding:16px}
+  .tellen{gap:8px;margin:16px 0 12px}
+}
+</style></head><body>
+<header class="balk"></header>
+<main class="pagina">
+  <h1>Beloofd</h1>
+  <p class="intro2">Wat het college heeft toegezegd en wat de raad per motie heeft gevraagd, en wat daarvan nog openstaat. Bron: de officiële lijsten van de griffie (iBabs), stand <span id="stand"></span>.</p>
+
+  <div class="tellen" role="group" aria-label="Kies een status">
+    <button type="button" class="tel" data-s="open" aria-pressed="false"><span class="vink" aria-hidden="true">✓</span><span class="n" id="n-open">…</span><span class="l"><span class="stip open"></span>Open</span><span class="s">nog niet afgedaan</span></button>
+    <button type="button" class="tel" data-s="laat" aria-pressed="false"><span class="vink" aria-hidden="true">✓</span><span class="n" id="n-laat">…</span><span class="l"><span class="stip laat"></span>Over de termijn</span><span class="s">verwachte datum is verstreken</span></button>
+    <button type="button" class="tel" data-s="30" aria-pressed="false"><span class="vink" aria-hidden="true">✓</span><span class="n" id="n-30">…</span><span class="l"><span class="stip open"></span>Verwacht binnen 30 dagen</span><span class="s">afdoening staat gepland</span></button>
+    <button type="button" class="tel" data-s="af30" aria-pressed="false"><span class="vink" aria-hidden="true">✓</span><span class="n" id="n-af30">…</span><span class="l"><span class="stip af"></span>Afgedaan</span><span class="s">in de laatste 30 dagen</span></button>
+  </div>
+
+  <section class="vlak" aria-label="Filters">
+    <div class="zoekrij2">
+      <input type="search" id="q" placeholder="Zoek op titel, tekst of bb-nummer" aria-label="Zoek op titel, tekst of bb-nummer" autocomplete="off" enterkeyhint="search">
+      <div class="seg" role="group" aria-label="Soort">
+        <button type="button" data-soort="" aria-pressed="true">Beide</button><button type="button" data-soort="moties" aria-pressed="false">Moties</button><button type="button" data-soort="toezeggingen" aria-pressed="false">Toezeggingen</button>
+      </div>
+      <button type="button" class="fknop" id="fknop" aria-expanded="false" aria-controls="fpan">Filters</button>
+    </div>
+    <div class="fpan" id="fpan">
+      <label>Status<select id="f-s">
+        <option value="open">Open</option><option value="laat">Over de termijn</option><option value="30">Verwacht binnen 30 dagen</option><option value="af30">Afgedaan, laatste 30 dagen</option><option value="af">Afgedaan, laatste 24 maanden</option></select></label>
+      <label>Domein<select id="f-dom"></select></label>
+      <label>Gebied<select id="f-geb"></select></label>
+      <label>Onderwerp<select id="f-ond"></select></label>
+      <label>Collegelid<select id="f-wie"></select></label>
+      <label>Fractie (moties)<select id="f-fr"></select></label>
+      <label>Commissie (toezeggingen)<select id="f-com"></select></label>
+      <label>Jaar van indiening<select id="f-jaar"></select></label>
+    </div>
+    <div class="fchips" id="fchips" aria-label="Actieve filters"></div>
+  </section>
+
+  <section class="vlak strook" style="margin-top:16px" aria-labelledby="h-strook">
+    <h2 id="h-strook">Hoe lang staat het open?</h2>
+    <p class="sam" id="sam"></p>
+    <div class="jaren" id="jaren" role="group" aria-label="Aantal per jaar van indiening; kies een jaar om te filteren"></div>
+    <div class="lg" aria-hidden="true"><span><span class="k m"></span>Motie</span><span><span class="k t"></span>Toezegging (gestreept)</span></div>
+  </section>
+
+  <div class="acties2">
+    <button type="button" class="knop wit klein" id="csv">Download als csv</button>
+    <button type="button" class="knop wit klein" id="linkkop">Kopieer link naar deze lijst</button>
+    <span id="copknop"></span>
+  </div>
+  <div class="telrij2"><span class="ant" id="ant" aria-live="polite"></span>
+    <label>Sorteer op <select id="sort"></select></label></div>
+  <div class="vlak"><div class="lijst" id="lijst"><p class="leeg">Laden…</p></div>
+    <div class="meer"><button type="button" class="knop wit" id="meer" hidden>Toon meer</button></div></div>
+
+  <section class="vlak uitleg" style="margin-top:32px" aria-labelledby="h-uitleg">
+    <h2 id="h-uitleg">Uitleg in gewone taal</h2>
+    <h3>Wat is een toezegging?</h3>
+    <p>Een collegelid zegt in een raads- of commissievergadering iets toe, bijvoorbeeld een brief, een onderzoek of een cijferoverzicht. De griffie houdt die toezeggingen bij in een lijst.</p>
+    <h3>Wat is een motie?</h3>
+    <p>Een motie is een verzoek van een of meer fracties aan het college. Is de motie aangenomen, dan moet het college haar uitvoeren. De pagina toont de moties uit de griffielijst die nog in uitvoering zijn.</p>
+    <h3>Wat betekent afgedaan?</h3>
+    <p>De griffie zet een toezegging of motie op ‘afgedaan’ als het college heeft laten weten dat het is uitgevoerd, meestal met een brief aan de raad. Over de termijn is een feit uit de lijst: de verwachte datum is verstreken en het stuk staat nog open. Het zegt niets over de reden.</p>
+    <h3>Waar komt de verwachte datum vandaan?</h3>
+    <p>Uit de status in de lijst van de griffie (‘verwacht dd-mm-jjjj’). Dat is de datum die het college zelf heeft opgegeven. Er is geen datum als die niet in de lijst staat.</p>
+    <h3>Waar moet je op letten</h3>
+    <ul>
+      <li>Het gebied is alleen bekend als een stuk één tot vier gebieden noemt. Anders staat het als stadsbreed of onbekend in de lijst.</li>
+      <li>De portefeuillehouder bij moties is afgeleid uit de afdoeningsbrief van het college. Die ontbreekt vaak, dus filteren op collegelid mist veel moties.</li>
+      <li>Afgedaan gaat 24 maanden terug. Oudere stukken staan hier niet.</li>
+      <li>De fracties, collegeleden en commissies staan op alfabet. De raadssite is leidend: controleer een stuk daar voor je het gebruikt.</li>
+    </ul>
+  </section>
+  <p class="voet">Gegevens: iBabs (lijsten van de griffie), stand <span id="stand2"></span>. <a href="over.html">Meer over deze tool</a>.</p>
+</main>
+<script src="ontwerp.js?v=40"></script>
+<script>
+kop('beloofd');
+/* ---------- gegevens ---------- */
+let B=null,AF=null,AFP=null,D=STAND,D30='',ALLE=[];
+const F={soort:'',s:'open',dom:'',geb:'',ond:'',wie:'',fr:'',com:'',jaar:'',q:'',sort:''};
+let TOON=40,HUIDIG=[],KEY=0;
+const SORT={lang:'Langst open',laat:'Meest over de termijn',verwacht:'Eerst verwacht',nieuw:'Nieuwste',afgedaan:'Laatst afgedaan'};
+const STATUS={open:'Open',laat:'Over de termijn',30:'Verwacht binnen 30 dagen',af30:'Afgedaan, laatste 30 dagen',af:'Afgedaan, laatste 24 maanden'};
+const isAf=s=>s==='af'||s==='af30';
+const fold=s=>String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+const achternaam=n=>n.replace(/^(?:[A-Z]\.)+\s*/,'');
+const kolom=(a,b)=>achternaam(a).localeCompare(achternaam(b),'nl');
+const plus=(d,n)=>new Date(Date.parse(d)+n*864e5).toISOString().slice(0,10);
+const eff=()=>F.sort&&(F.sort!=='afgedaan'||isAf(F.s))?F.sort:(isAf(F.s)?'afgedaan':'lang');
+
+function maak(d){
+  return d.r.map(r=>{const o={};d.kol.forEach((n,i)=>o[n]=r[i]);
+    if(o.soort===1&&String(o.wie).includes('·')){const p=o.wie.split('·').map(x=>x.trim());o.wie=p[0];if(!o.commissie)o.commissie=p[1]||'';}
+    o.frs=o.soort===0?String(o.wie||'').split('\n').map(x=>x.trim()).filter(Boolean):[];
+    o.wieT=o.soort===0?o.frs.join(', '):(o.wie||'');
+    o.col=o.soort===1?(o.wie||''):(o.ph||'');
+    o.open=o.status===4;o.laat=o.open&&!!o.verwacht&&o.verwacht<D;
+    o.bin30=o.open&&!!o.verwacht&&o.verwacht>=D&&o.verwacht<=plus(D,30);
+    o.dagen=dagen(o.datum,o.afgedaan||D);o.over=o.laat?dagen(o.verwacht,D):0;
+    o.jaar=o.datum.slice(0,4);o.k=KEY++;
+    o.zoek=fold([o.titel,o.tekst,o.bb,o.wieT].join(' '));
+    return o;});
+}
+async function laadB(){const d=await (await fetch('beloofd.json')).json();B=d;D=d.stand;D30=plus(D,-30);B.rij=maak(d);}
+function laadAF(){
+  if(AFP)return AFP;
+  AFP=fetch('beloofd-af.json').then(r=>{if(!r.ok)throw new Error(r.status);return r.json();}).then(d=>{AF=d.r?d:null;AF.rij=maak(d);
+    ALLE=B.rij.concat(AF.rij);bouwLijsten();render();}).catch(e=>{AF=null;AFP=null;console.warn('beloofd-af.json niet geladen',e);const el=$('n-af30');if(el)el.textContent='–';
+    if(isAf(F.s))$('lijst').innerHTML='<p class="leeg">De afgedane stukken konden niet worden geladen. Probeer het later opnieuw.</p>';});
+  return AFP;
+}
+/* ---------- filteren ---------- */
+const BITS=o=>B.geb.filter((n,i)=>o.geb&(1<<i));
+function pred(skip){
+  const di=F.dom?B.dom.findIndex(x=>x[0]===F.dom):-1,gi=F.geb?B.geb.findIndex(n=>slug(n)===F.geb):-1,oi=F.ond?B.ond.findIndex(x=>x[0]===F.ond):-1;
+  const so=F.soort==='moties'?0:F.soort==='toezeggingen'?1:-1,t=fold(F.q).split(/\s+/).filter(Boolean);
+  return o=>(so<0||o.soort===so)&&(!F.dom||o.dom===di)&&(!F.geb||(gi>=0&&(o.geb&(1<<gi))))&&(!F.ond||(oi>=0&&o.ond.includes(oi)))
+    &&(!F.wie||o.col===F.wie)&&(!F.fr||o.frs.includes(F.fr))&&(!F.com||o.commissie===F.com)&&(skip==='jaar'||!F.jaar||o.jaar===F.jaar)&&t.every(w=>o.zoek.includes(w));
+}
+const statOk=(o,s)=>s==='open'?o.open:s==='laat'?o.laat:s==='30'?o.bin30:s==='af30'?o.afgedaan>=D30:true;
+const poolVan=s=>isAf(s)?(AF?AF.rij:[]):B.rij;
+function sorteer(rijen){const m=eff(),c={
+  lang:(a,b)=>b.dagen-a.dagen||a.datum.localeCompare(b.datum),
+  laat:(a,b)=>b.over-a.over||b.dagen-a.dagen,
+  verwacht:(a,b)=>(a.verwacht||'9999').localeCompare(b.verwacht||'9999')||a.datum.localeCompare(b.datum),
+  nieuw:(a,b)=>b.datum.localeCompare(a.datum),
+  afgedaan:(a,b)=>(b.afgedaan||'').localeCompare(a.afgedaan||'')||b.datum.localeCompare(a.datum)}[m];
+  return rijen.slice().sort(c);}
+/* ---------- hash ---------- */
+function zetHash(){const p=new URLSearchParams();
+  if(F.soort)p.set('soort',F.soort);if(F.s!=='open')p.set('status',F.s);
+  for(const k of ['dom','geb','ond','wie','fr','com','jaar','q'])if(F[k])p.set(k,F[k]);
+  if(F.sort&&F.sort===eff()&&F.sort!==(isAf(F.s)?'afgedaan':'lang'))p.set('sort',F.sort);
+  const h=p.toString();history.replaceState(null,'',location.pathname+location.search+(h?'#'+h:''));}
+function leesHash(){const p=new URLSearchParams(location.hash.slice(1));
+  Object.assign(F,{soort:'',s:'open',dom:'',geb:'',ond:'',wie:'',fr:'',com:'',jaar:'',q:'',sort:''});
+  const so=p.get('soort');if(so==='moties'||so==='toezeggingen')F.soort=so;
+  const s=p.get('status');if(s&&STATUS[s])F.s=s;
+  const dm=p.get('dom');if(dm&&B.dom.some(x=>x[0]===dm))F.dom=dm;
+  const g=p.get('geb');if(g&&B.geb.some(n=>slug(n)===g))F.geb=g;
+  const on=p.get('ond');if(on&&B.ond.some(x=>x[0]===on))F.ond=on;
+  for(const k of ['wie','fr','com','q'])if(p.get(k))F[k]=p.get(k).slice(0,200);
+  const j=p.get('jaar');if(j&&/^\d{4}$/.test(j))F.jaar=j;
+  const so2=p.get('sort');if(so2&&SORT[so2])F.sort=so2;}
+/* ---------- keuzelijsten ---------- */
+function bouwLijsten(){
+  const uniek=f=>[...new Set(ALLE.flatMap(f).filter(Boolean))];
+  const sel=(id,eerste,opts,val)=>{const el=$(id);if(val&&!opts.some(x=>x[0]===val))opts=opts.concat([[val,val]]);
+    el.innerHTML=`<option value="">${eerste}</option>`+opts.map(x=>`<option value="${esc(x[0])}">${esc(x[1])}</option>`).join('');el.value=val||'';};
+  sel('f-dom','alle domeinen',B.dom,F.dom);
+  sel('f-geb','heel Rotterdam',B.geb.map(n=>[slug(n),n]),F.geb);
+  sel('f-ond','alle onderwerpen',B.ond,F.ond);
+  sel('f-wie','alle collegeleden',uniek(o=>[o.col]).sort(kolom).map(n=>[n,n]),F.wie);
+  sel('f-fr','alle fracties',uniek(o=>o.frs).sort((a,b)=>a.localeCompare(b,'nl')).map(n=>[n,n]),F.fr);
+  sel('f-com','alle commissies',uniek(o=>[o.commissie]).sort((a,b)=>a.localeCompare(b,'nl')).map(n=>[n,n]),F.com);
+  const j0=Math.min(...ALLE.map(o=>+o.jaar)),j1=+D.slice(0,4),jl=[];for(let j=j1;j>=j0;j--)jl.push([String(j),String(j)]);
+  sel('f-jaar','alle jaren',jl,F.jaar);
+}
+/* ---------- weergave ---------- */
+const dur=n=>nf(n)+(n===1?' dag':' dagen')+(n>=365?' (ruim '+(n/365.25).toFixed(1).replace('.',',')+' jaar)':'');
+function statusTekst(o){return !o.open?'Afgedaan op '+fd(o.afgedaan):o.laat?`${nf(o.over)} ${o.over===1?'dag':'dagen'} over de termijn`:o.verwacht?'Afdoening verwacht '+fd(o.verwacht):'Open, geen verwachte datum';}
+function rijHTML(o){
+  const st=`<span><span class="stip ${!o.open?'af':o.laat?'laat':'open'}"></span>${esc(statusTekst(o))}</span>`;
+  const ol=o.open?`Open sinds ${fd(o.datum)}: ${dur(o.dagen)}`:`${o.soort?'Toegezegd':'Ingediend'} ${fd(o.datum)}, afgedaan na ${dur(o.dagen)}`;
+  return `<details class="item" data-k="${o.k}"><summary><span class="meta"><span class="soort ${o.soort?'t':'m'}">${o.soort?'Toezegging':'Motie'}</span>${st}${o.wieT?`<span class="wie">${esc(o.wieT)}</span>`:''}</span><span class="t">${esc(o.titel)}</span><span class="ol">${esc(ol)}</span><span class="pijl" aria-hidden="true">›</span></summary><div class="ctx"></div></details>`;
+}
+const IB='https://gemeenteraad.rotterdam.nl/Reports/Item/';
+function spoorHTML(o){
+  const st=o.stappen||[];if(!st.length)return '';
+  return `<ol class="spoor">${st.map(s=>{const laat=s[1]==='verwacht'&&s[0]<D&&o.open;
+    const kl={ingediend:'z',stemming:'z',toegezegd:'z',tussenbericht:'m',commissieadvies:'m',afdoeningsvoorstel:'m',afgedaan:'k',verwacht:laat?'l':'o'}[s[1]]||'m';
+    const lab=s[3]?`<a href="${IB+esc(s[3])}" target="_blank" rel="noopener">${esc(s[2])}</a>`:esc(s[2]);
+    return `<li class="${kl}"><span class="dt">${fd(s[0])}</span><span>${lab}${laat?` <b>(${dagen(s[0],D)} dagen over de termijn)</b>`:''}</span></li>`;}).join('')}</ol>`;
+}
+function ctxHTML(o){
+  let h=`<div><b>${o.soort?'Dit is toegezegd':'Dit verzoekt de raad'}</b> ${o.tekst?'‘'+esc(o.tekst)+'’':'(geen tekst in de lijst)'}</div>`;
+  if(o.stem)h+=stemHTML(o.stem);
+  h+=`<div><b>Spoor</b>${spoorHTML(o)}</div>`;
+  const r=[];
+  r.push(`<span><b>Domein</b> ${o.dom>=0?esc(B.dom[o.dom][1]):'niet bepaald'}</span>`);
+  const g=BITS(o);r.push(`<span><b>Gebied</b> ${g.length?esc(g.join(', ')):'stadsbreed of onbekend'}</span>`);
+  if(o.soort===1&&o.commissie)r.push(`<span><b>Commissie</b> ${esc(o.commissie)}</span>`);
+  if(o.soort===1)r.push(`<span><b>Collegelid</b> ${o.wie?esc(o.wie):'niet vermeld'}</span>`);
+  else{r.push(`<span><b>Ingediend door</b> ${esc(o.wieT||'onbekend')}</span>`);r.push(`<span><b>Portefeuillehouder</b> ${o.ph?esc(o.ph)+' (afgeleid uit de afdoeningsbrief)':'niet bekend'}</span>`);}
+  r.push(`<span><b>bb-nummer</b> ${esc(o.bb||'onbekend')}</span>`);
+  h+=`<div class="regels">${r.join('')}</div>`;
+  if(o.ond.length)h+=`<div><b>Dossiers</b> ${o.ond.map(i=>`<a href="dossier.html#${esc(B.ond[i][0])}">${esc(B.ond[i][1])}</a>`).join(' · ')}</div>`;
+  h+=`<div><a href="${IB+esc(o.id)}" target="_blank" rel="noopener">Bekijk op de site van de raad (iBabs)</a></div>`;
+  return h;
+}
+function chipsEn(){const L=[];const add=(t,w)=>L.push([t,w]);
+  if(F.soort)add(F.soort==='moties'?'Moties':'Toezeggingen',()=>F.soort='');
+  if(F.s!=='open')add(STATUS[F.s],()=>F.s='open');
+  if(F.dom)add('Domein: '+B.dom.find(x=>x[0]===F.dom)[1],()=>F.dom='');
+  if(F.geb)add('Gebied: '+B.geb.find(n=>slug(n)===F.geb),()=>F.geb='');
+  if(F.ond)add('Onderwerp: '+B.ond.find(x=>x[0]===F.ond)[1],()=>F.ond='');
+  if(F.wie)add('Collegelid: '+F.wie,()=>F.wie='');
+  if(F.fr)add('Fractie: '+F.fr,()=>F.fr='');
+  if(F.com)add('Commissie: '+F.com,()=>F.com='');
+  if(F.jaar)add('Ingediend in '+F.jaar,()=>F.jaar='');
+  if(F.q)add('Zoekt: ‘'+F.q+'’',()=>{F.q='';$('q').value='';});
+  return L;}
+let CH=[];
+function render(){
+  if(!B)return;
+  const p=pred(),eigen=poolVan(F.s),klaarAF=!!AF;
+  // telblokken: alle filters behalve status
+  const open=B.rij.filter(p);
+  $('n-open').textContent=nf(open.length);$('n-laat').textContent=nf(open.filter(o=>o.laat).length);$('n-30').textContent=nf(open.filter(o=>o.bin30).length);
+  if(AF)$('n-af30').textContent=nf(AF.rij.filter(o=>p(o)&&o.afgedaan>=D30).length);
+  document.querySelectorAll('.tel').forEach(b=>b.setAttribute('aria-pressed',b.dataset.s===F.s));
+  // lijst
+  const basis=eigen.filter(o=>statOk(o,F.s)&&pred('jaar')(o));
+  const rijen=sorteer(basis.filter(o=>!F.jaar||o.jaar===F.jaar));
+  HUIDIG=rijen;
+  // controls
+  document.querySelectorAll('.seg button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.soort===F.soort));
+  $('f-s').value=F.s;for(const [k,id] of [['dom','f-dom'],['geb','f-geb'],['ond','f-ond'],['wie','f-wie'],['fr','f-fr'],['com','f-com'],['jaar','f-jaar']]){const el=$(id);if(el.value!==F[k])el.value=F[k];}
+  if($('q').value!==F.q&&document.activeElement!==$('q'))$('q').value=F.q;
+  const so=$('sort'),opt=Object.keys(SORT).filter(k=>k!=='afgedaan'||isAf(F.s));
+  if(so.dataset.af!==String(isAf(F.s))){so.innerHTML=opt.map(k=>`<option value="${k}">${SORT[k]}</option>`).join('');so.dataset.af=String(isAf(F.s));}
+  so.value=eff();
+  CH=chipsEn();
+  $('fknop').textContent='Filters'+(CH.length?` (${CH.length})`:'');
+  $('fchips').innerHTML=CH.map((x,i)=>`<button type="button" data-i="${i}" aria-label="Filter ${esc(x[0])} wissen">${esc(x[0])} ×</button>`).join('')+(CH.length?'<button type="button" class="alles" data-i="alles">Alles wissen</button>':'');
+  strook(eigen.filter(o=>statOk(o,F.s)&&pred('jaar')(o)),eigen);
+  // telling in woorden
+  const nm=rijen.filter(o=>!o.soort).length,nt=rijen.length-nm;
+  $('ant').innerHTML=isAf(F.s)&&!klaarAF?'Afgedane stukken laden…':`<b>${nf(rijen.length)}</b> ${rijen.length===1?'stuk':'stukken'} <span class="sub">(${nf(nm)} ${nm===1?'motie':'moties'}, ${nf(nt)} ${nt===1?'toezegging':'toezeggingen'})</span>`;
+  // rijen
+  if(isAf(F.s)&&!klaarAF){$('lijst').innerHTML='<p class="leeg">Afgedane stukken laden…</p>';$('meer').hidden=true;laadAF();return;}
+  if(!rijen.length){$('lijst').innerHTML=leegHTML();$('meer').hidden=true;return;}
+  $('lijst').innerHTML=rijen.slice(0,TOON).map(rijHTML).join('');
+  meerKnop();
+}
+function meerKnop(){const m=$('meer');m.hidden=TOON>=HUIDIG.length;m.textContent=`Toon meer (nog ${nf(Math.max(0,HUIDIG.length-TOON))})`;}
+function leegHTML(){
+  return `<div class="leegstaat"><h2>Geen stukken met deze filters</h2><p>Dat kan kloppen: niet elke combinatie komt voor in de lijst. Je kunt het zo proberen:</p><div class="kn">
+    ${CH.length?'<button type="button" class="knop wit klein" data-a="wis">Alle filters wissen</button>':''}${F.s!=='open'?'<button type="button" class="knop wit klein" data-a="open">Kijk naar alle open stukken</button>':''}${F.q?'<button type="button" class="knop wit klein" data-a="geenq">Zoek zonder zoekwoord</button>':''}${F.jaar?'<button type="button" class="knop wit klein" data-a="geenjaar">Alle jaren</button>':''}</div></div>`;
+}
+function strook(rijen,eigen){
+  const j1=+D.slice(0,4),j0=Math.min(...(eigen.length?eigen:B.rij).map(o=>+o.jaar)),J=[];for(let j=j0;j<=j1;j++)J.push(j);
+  const c={};rijen.forEach(o=>{const k=o.jaar;(c[k]=c[k]||[0,0])[o.soort]++;});
+  const mx=Math.max(1,...J.map(j=>Math.max(...(c[j]||[0,0]))));
+  const H=78,pr=n=>n?Math.max(3,Math.round(n/mx*H)):0;
+  $('h-strook').textContent=isAf(F.s)?'Hoe lang duurde het?':'Hoe lang staat het open?';
+  $('jaren').innerHTML=J.map(j=>{const [m,t]=c[j]||[0,0];
+    return `<button type="button" class="jb" data-j="${j}" aria-pressed="${F.jaar===String(j)}" aria-label="${j}: ${m} ${m===1?'motie':'moties'} en ${t} ${t===1?'toezegging':'toezeggingen'}${isAf(F.s)?' afgedaan':' open'}. ${F.jaar===String(j)?'Filter wissen':'Filter op dit jaar'}">
+      <span class="bars"><span class="b m" style="height:${pr(m)}px">${m?`<i>${m}</i>`:''}</span><span class="b t" style="height:${pr(t)}px">${t?`<i>${t}</i>`:''}</span></span><span class="jl">${j}</span></button>`;}).join('');
+  const tot=rijen.length,oud=rijen.filter(o=>o.dagen>365).length;
+  $('sam').textContent=!tot?'Niets om te tonen met deze filters.':isAf(F.s)?`Aantal afgedane stukken per jaar van indiening. Kies een jaar om de lijst te beperken.`
+    :`Van de ${nf(tot)} stukken staan er ${nf(oud)} langer dan een jaar open. Per jaar van indiening; kies een jaar om de lijst te beperken.`;
+}
+/* ---------- invoer ---------- */
+function wijzig(){TOON=40;zetHash();render();}
+$('q').addEventListener('input',()=>{clearTimeout($('q')._t);$('q')._t=setTimeout(()=>{F.q=$('q').value.trim();wijzig();},200);});
+document.querySelector('.seg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;F.soort=b.dataset.soort;wijzig();});
+document.querySelector('.tellen').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;F.s=b.dataset.s;wijzig();});
+for(const [k,id] of [['s','f-s'],['dom','f-dom'],['geb','f-geb'],['ond','f-ond'],['wie','f-wie'],['fr','f-fr'],['com','f-com'],['jaar','f-jaar']])$(id).addEventListener('change',e=>{F[k]=e.target.value;wijzig();});
+$('sort').addEventListener('change',e=>{F.sort=e.target.value;wijzig();});
+$('jaren').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;F.jaar=F.jaar===b.dataset.j?'':b.dataset.j;wijzig();});
+$('fchips').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+  if(b.dataset.i==='alles'){Object.assign(F,{soort:'',s:'open',dom:'',geb:'',ond:'',wie:'',fr:'',com:'',jaar:'',q:''});$('q').value='';}else CH[+b.dataset.i][1]();
+  wijzig();});
+$('lijst').addEventListener('click',e=>{const b=e.target.closest('button[data-a]');if(!b)return;
+  const a=b.dataset.a;if(a==='wis'){Object.assign(F,{soort:'',s:'open',dom:'',geb:'',ond:'',wie:'',fr:'',com:'',jaar:'',q:''});$('q').value='';}
+  else if(a==='open')F.s='open';else if(a==='geenq'){F.q='';$('q').value='';}else if(a==='geenjaar')F.jaar='';wijzig();});
+$('lijst').addEventListener('toggle',e=>{const d=e.target;if(!d.open||d.dataset.gevuld)return;
+  const o=ALLE.find(x=>x.k===+d.dataset.k);if(!o)return;d.querySelector('.ctx').innerHTML=ctxHTML(o);d.dataset.gevuld='1';},true);
+$('meer').addEventListener('click',()=>{const van=TOON;TOON+=40;$('lijst').insertAdjacentHTML('beforeend',HUIDIG.slice(van,TOON).map(rijHTML).join(''));meerKnop();
+  const eerste=$('lijst').querySelectorAll('.item')[van];if(eerste)eerste.querySelector('summary').focus();});
+$('fknop').addEventListener('click',()=>{const o=!$('fpan').classList.contains('open');$('fpan').classList.toggle('open',o);$('fknop').setAttribute('aria-expanded',o);});
+window.addEventListener('hashchange',()=>{leesHash();bouwLijsten();TOON=40;render();});
+/* ---------- acties ---------- */
+function klaar(){return isAf(F.s)&&!AF?laadAF().then(()=>HUIDIG):Promise.resolve(HUIDIG);}
+const csvCel=v=>{let s=String(v==null?'':v).replace(/[\r\n]+/g,' ').trim();if(/^[=+\-@]/.test(s))s="'"+s;return '"'+s.replace(/"/g,'""')+'"';};
+$('csv').addEventListener('click',async()=>{
+  const rijen=await klaar();
+  const kop=['soort','datum','titel','wie','portefeuillehouder','commissie','domein','gebieden','status','verwacht','afgedaan','dagen open','bb-nummer','link'];
+  const L=[kop.map(csvCel).join(';')];
+  rijen.forEach(o=>L.push([o.soort?'toezegging':'motie',o.datum,o.titel,o.wieT,o.ph,o.commissie,o.dom>=0?B.dom[o.dom][1]:'',BITS(o).join(', '),!o.open?'afgedaan':o.laat?'over de termijn':'open',o.verwacht,o.afgedaan,o.dagen,o.bb,IB+o.id].map(csvCel).join(';')));
+  const blob=new Blob(['﻿'+L.join('\r\n')+'\r\n'],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='beloofd-'+D+'.csv';document.body.appendChild(a);a.click();
+  setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1000);
+});
+const linkNu=()=>(window.rzBasis||'https://raadzoeker.nl/ontwerp/')+'beloofd.html'+location.hash;
+$('linkkop').addEventListener('click',async()=>{await window.rzCiteerKlaar;if(window.rzKopieer)rzKopieer(linkNu(),'Link gekopieerd');else navigator.clipboard.writeText(linkNu()).catch(()=>{});});
+function filtersInWoorden(){const t=[];
+  if(F.soort)t.push('alleen '+F.soort);if(F.s!=='open')t.push('status: '+STATUS[F.s].toLowerCase());
+  if(F.dom)t.push('domein '+B.dom.find(x=>x[0]===F.dom)[1]);if(F.geb)t.push('gebied '+B.geb.find(n=>slug(n)===F.geb));
+  if(F.ond)t.push('onderwerp '+B.ond.find(x=>x[0]===F.ond)[1]);if(F.wie)t.push('collegelid '+F.wie);if(F.fr)t.push('fractie '+F.fr);
+  if(F.com)t.push('commissie '+F.com);if(F.jaar)t.push('ingediend in '+F.jaar);if(F.q)t.push('zoekwoord ‘'+F.q+'’');
+  return t.join('; ');}
+window.RZ_CIT.beloofd=()=>klaar().then(rijen=>{
+  const f=filtersInWoorden(),af=isAf(F.s),laat=rijen.filter(o=>o.laat).length;
+  const bl=rijen.map(o=>({kop:`${o.soort?'Toezegging':'Motie'} ‘${rzKort(o.titel,140)}’ · ${o.wieT||'indiener onbekend'} · ${rzDatum(o.datum)} · ${statusTekst(o)} · bb-nummer ${o.bb||'onbekend'}`,tekst:rzKort(o.tekst,200),bron:IB+o.id}));
+  return {opdracht:`Je krijgt hieronder ${af?'afgedane':'openstaande'} moties en toezeggingen uit de Rotterdamse gemeenteraad${f?' ('+f+')':''}. Maak een overzicht voor een beleidsmedewerker: wat staat open, wat is over de termijn, en wat moet als eerste worden opgepakt. Gebruik alleen deze gegevens en noem per punt het bb-nummer.`,
+    intro:`Stand van de gegevens: ${rzDatum(D)}. In deze selectie: ${nf(rijen.length)} stukken${af?'':', waarvan '+nf(laat)+' over de termijn'}. Volgorde: ${SORT[eff()].toLowerCase()}.`,
+    blokken:bl,totaal:rijen.length,voet:rzVoet('Lijst',linkNu(),'punten')};
+});
+$('copknop').innerHTML=citKnoppen('beloofd',{},{citaat:false,copilot:true});
+/* ---------- start ---------- */
+$('stand').textContent=$('stand2').textContent=fdl(STAND);
+laadB().then(()=>{
+  $('stand').textContent=$('stand2').textContent=fdl(D);ALLE=B.rij.slice();leesHash();bouwLijsten();$('q').value=F.q;
+  if(window.innerWidth<=900&&CH.length===0){}
+  render();
+  const later=()=>laadAF();
+  (window.requestIdleCallback?requestIdleCallback(later,{timeout:2500}):setTimeout(later,1200));
+}).catch(e=>{console.error(e);$('lijst').innerHTML='<p class="leeg">De gegevens konden niet worden geladen. Probeer het later opnieuw.</p>';});
+</script>
+</body></html>

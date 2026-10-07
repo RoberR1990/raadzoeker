@@ -120,9 +120,10 @@
   <div id="wijk"><p class="leeg" style="margin-top:24px">Laden…</p></div>
   <p class="voet">Gegevens: notulen en ondertiteling van de gemeenteraad; iBabs (moties, toezeggingen, wijkraden); wijkraad.rotterdam.nl; CBS Kerncijfers wijken en buurten 2022–2025; Wijkprofiel Rotterdam (cijfers: gemeente Rotterdam, OBI, Wijkprofiel 2014–2026); politie, geregistreerde misdrijven per buurt (via CBS); officiële bekendmakingen (Gemeenteblad). Cijfers uit verschillende bronnen staan ter informatie naast elkaar; ze zeggen niets over oorzaak of verband. <a href="over.html">Meer over deze tool</a>.</p>
 </main>
-<script src="ontwerp.js?v=38"></script>
-<script src="ai.js?v=1"></script>
+<script src="ontwerp.js?v=40"></script>
+<script src="ai.js?v=2"></script>
 <script src="tel.js?v=1"></script>
+<script src="lijn.js?v=1"></script>
 <script>
 kop('gebieden');
 let DATA=null,K=null,WK=null,CUR=null,SOORT='mot',FILTER='open',JAAR='alle',OV=null,IX=[];
@@ -140,9 +141,9 @@ Promise.all(['dossiers.json','kaart.json','wijken.json','d/overzicht.json','d/in
   zoeklijst($('zoek'),$('keuze'),()=>[...G(),...W],x=>{location.hash=x.slug&&x.d?'w-'+x.slug:slug(x.naam);});
   bouwOverzicht(G(),W);
   const sp=new URLSearchParams(location.search),qg=sp.get('g');if(qg){sp.delete('g');const rest=sp.toString();history.replaceState(null,'',location.pathname+(rest?'?'+rest:'')+'#'+qg);}   // ?g= overleeft het inloggen
-  const route=()=>{const h=decodeURIComponent(location.hash.slice(1));
+  const route=()=>{const h=decodeURIComponent(location.hash.slice(1)).split('/')[0];   // #gebied/tijdlijn opent de tijdlijn
     if(h.startsWith('w-')){const x=W.find(o=>o.slug===h.slice(2));if(x){zetOverzicht(false);return toonWijk(x);}}
-    const g=h&&h!=='gebieden'?uitHash(G()):null;
+    const g=h&&h!=='gebieden'?(G().find(d=>slug(d.naam)===h)||uitHash(G())):null;
     if(g){zetOverzicht(false);return toon(g);}
     zetOverzicht(true);};
   route();window.addEventListener('hashchange',route);
@@ -181,7 +182,7 @@ function bouwOverzicht(G,W){
 /* ---------- kruimelpad, gebiedskiezer en ankerbalk (gebieds- en wijkpagina) ---------- */
 function kiezer(){return `<label class="kiezer"><span class="sr">Ander gebied</span><select id="gkies" aria-label="Ander gebied"><option value="">Ander gebied ▾</option>${GL.map(g=>`<option value="${slug(g.naam)}">${esc(g.naam)}</option>`).join('')}</select></label>`;}
 function kruimel(gebied,wijk){return `<nav class="krm" aria-label="Kruimelpad"><a href="#gebieden">Gebieden</a> › ${wijk?`<a href="#${slug(gebied)}">${esc(gebied)}</a> › <span aria-current="page">${esc(wijk)}</span>`:`<span aria-current="page">${esc(gebied)}</span>`}</nav>`;}
-const ANK_G=[['ak','In het kort'],['pd','Per domein'],['ow','Onderwerpen'],['mt','Moties'],['db','Debatten'],['wig','Wijken'],['wr','Wijkraden'],['sv','Vragen']];
+const ANK_G=[['ak','In het kort'],['pd','Per domein'],['ow','Onderwerpen'],['tl','Tijdlijn'],['mt','Moties'],['db','Debatten'],['wig','Wijken'],['wr','Wijkraden'],['sv','Vragen']];
 const ANK_W=[['pd','Per domein'],['ir','In de raad'],['ms','Moties'],['wr','Wijkraad'],['bmk','Bekendmakingen'],['cb','Cijfers']];
 function ankers(l){const n=$('ank');if(!n)return;const a=l.filter(([id])=>$(id));n.hidden=a.length<2;n.innerHTML='<ul>'+a.map(([id,t])=>`<li><a href="#${id}" data-ank="${id}">${t}</a></li>`).join('')+'</ul>';}
 document.addEventListener('click',e=>{const a=e.target.closest('[data-ank]');if(!a)return;e.preventDefault();const el=$(a.dataset.ank);if(!el)return;
@@ -201,7 +202,7 @@ async function aiBlok(g){
     <section class="stand" style="margin-top:12px"><div class="t">Stand van zaken · AI</div><p>${zin(laatste)}</p></section>
     <p class="sub" style="font-size:13px;margin-top:12px">Wijs een zin aan of tik erop voor het letterlijke citaat en de bron. Bijgewerkt t/m ${fd(STAND)}.</p></section>`);
   const kern=kol.firstElementChild,diep=tmp.querySelector('#av');if(diep)kern.after(diep);
-  const mt=document.getElementById('mt'),voor=mt?mt.closest('section'):null;
+  const mt=document.getElementById('tl')||document.getElementById('mt'),voor=mt?mt.closest('section'):null;   // de tijdlijn staat vlak voor de moties; AI-secties komen ervoor
   [...tmp.children].forEach(x=>{if(voor)voor.before(x);else kol.append(x);});
   ankers(ANK_G);
 }
@@ -304,7 +305,7 @@ async function toon(d){
 }
 function toon2(d){
   CUR=d;laatsteGebied(slug(d.naam));FILTER='open';document.title=d.naam+' · Gebieden · raadzoeker';
-  if(location.hash.slice(1)!==slug(d.naam))history.replaceState(null,'','#'+slug(d.naam));
+  if(location.hash.slice(1).split('/')[0]!==slug(d.naam))history.replaceState(null,'','#'+slug(d.naam));
   const m=d.moties,t=d.toez,ts=d.tsum,j=d.jaren.length-1,ch=d.trend[j-1]?Math.round((d.trend[j]-d.trend[j-1])/d.trend[j-1]*100):0;
   $('wijk').innerHTML=`
   <div class="kop"><div>${kruimel(d.naam)}<div class="titelrij"><h1>${esc(d.naam)}</h1>${kiezer()}</div><div style="margin:6px 0 0">${volgKnop(slug(d.naam),d.naam)}</div>${d.sub.length?`<div class="sub" style="margin-top:8px">Met o.a. ${esc(d.termen.split('|').map(s=>s.trim().replace(/"/g,'')).filter(s=>s.toLowerCase()!==d.naam.toLowerCase()).slice(0,6).join(', '))}</div>`:''}</div>
@@ -320,6 +321,7 @@ function toon2(d){
       <section class="vlak accent" aria-labelledby="ow"><h2 id="ow">Waar praat de raad over als het over ${esc(d.naam)} gaat?</h2>
         <p class="sub" style="margin-bottom:12px">Onderwerpen die in dezelfde spreekbeurten vallen als dit gebied. Klik door naar het onderwerp.</p>
         <div class="jr" id="jr"></div><div class="ond" id="ond"></div></section>
+      <section class="vlak" id="tl" aria-labelledby="tlh" hidden><h2 id="tlh">Tijdlijn</h2><div class="lijnhost"></div></section>
       <section class="vlak" aria-labelledby="mt"><h2 id="mt">Moties en toezeggingen</h2>
         <div class="schakel" role="tablist"><button type="button" role="tab" data-soort="mot">Moties</button><button type="button" role="tab" data-soort="toez">Toezeggingen</button></div>
         <div class="chips" id="filt" style="margin:0 0 16px"></div><div class="lijst" id="lijst"></div></section>
@@ -339,6 +341,7 @@ function toon2(d){
   deel($('deelrij'),d.naam+' in de Rotterdamse raad',new URL('wijk.html?g='+slug(d.naam),location.href).href,slug(d.naam));
   JAAR=d.jaren[d.jaren.length-1];   // standaard het lopende jaar
   onderwerpen();lijst();domeinBlok(d.naam);ankers(ANK_G);aiBlok(d.naam);window.scrollTo({top:0});
+  if(window.rzLijn){const tl=decodeURIComponent(location.hash.slice(1)).split('/')[1]==='tijdlijn',g=slug(d.naam);rzLijn(document.querySelector('#tl .lijnhost'),g,{open:tl,scroll:tl,wrap:$('tl'),onToggle:o=>history.replaceState(null,'','#'+g+(o?'/tijdlijn':''))});}
 }
 document.addEventListener('click',e=>{const s=e.target.closest('[data-soort]'),f=e.target.closest('[data-f]'),j=e.target.closest('[data-j]');
   if(s){SOORT=s.dataset.soort;FILTER='open';lijst();}if(f){FILTER=f.dataset.f;lijst();}if(j){JAAR=j.dataset.j;onderwerpen();}});

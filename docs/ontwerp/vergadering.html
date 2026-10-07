@@ -60,8 +60,8 @@ details.st{margin-top:10px;font-size:14px}details.st summary{cursor:pointer;colo
 </style></head><body>
 <header class="balk"></header>
 <main class="pagina"><div class="kolom" id="v"><p class="leeg">Laden…</p></div></main>
-<script src="ontwerp.js?v=38"></script>
-<script src="keten.js?v=12"></script>
+<script src="ontwerp.js?v=40"></script>
+<script src="keten.js?v=14"></script>
 <script>
 kop('vergaderingen');
 const P=new URLSearchParams(location.search),ID=(P.get('id')||'').slice(0,8);
@@ -76,7 +76,14 @@ const dkort=d=>{const [y,m,dd]=d.split('-');return `${+dd} ${MAAND[+m-1].slice(0
 try{MODUS=localStorage.getItem('rz-vmodus')||'kort';}catch(e){}
 if(location.hash.startsWith('#ap-')||location.hash==='#uitgebreid')MODUS='uitgebreid';
 const knopVideo=(x,label)=>V.video&&x.sec!=null?`<button type="button" class="speel" data-video="${esc(V.video)}" data-sec="${x.sec}" data-titel="${esc(V.naam+' · '+dlang(V.datum)+' · '+(x.wie_bron||''))}" title="Bekijk dit moment in de video (${tijd(x.sec)})">▶ ${label||tijd(x.sec)}</button>`:'';
-const citaat=x=>`<span class="cit">‘${esc(x.citaat)}’<span class="bron">${esc(x.wie_bron||'')} · ${knopVideo(x,'bekijk dit moment ('+tijd(x.sec)+')')} · <button type="button" class="speel fout" data-fout="${esc((x.wie||x.wie_bron||'')+': '+(x.punt||x.zin||x.wat||''))}">klopt dit niet?</button></span></span>`;
+let CX=[];   // geciteerde fragmenten van deze pagina, voor 'Kopieer citaat'
+const citaat=(x,nr,fr)=>{const i=CX.push([x,nr??x.ap??'',!!fr])-1;
+  return `<span class="cit" data-rzbox><span data-rzfr>‘${esc(x.citaat)}’</span><span class="bron">${esc(x.wie_bron||'')} · ${knopVideo(x,'bekijk dit moment ('+tijd(x.sec)+')')} · <button type="button" class="speel fout" data-fout="${esc((x.wie||x.wie_bron||'')+': '+(x.punt||x.zin||x.wat||''))}">klopt dit niet?</button></span>
+    <span class="rzrij">${citKnoppen('vergCit',{i},{link:true,naam:'van '+(x.wie_bron||'deze spreker')})}</span></span>`;};
+/* gegevens voor rzCiteer; de vaste link is de bestaande link naar het agendapunt */
+RZ_CIT.vergCit=ds=>{const [x,nr,fr]=CX[+ds.i],a=V.agendapunten.find(y=>y.nr===nr)||{};
+  return {tekst:x.citaat,spreker:x.wie_bron||'',fractie:fr?x.wie:'',orgaan:rzOrgaan(V.naam,!V.raad),datum:V.datum,punt:nr,titel:a.titel_off||a.titel||'',auto:true,sec:x.sec,
+    bron:IB+'/Agenda/Index/'+V.agendaId,link:nr!==''?rzBasis+'vergadering.html?id='+ID+'#ap-'+encodeURIComponent(nr):rzBasis+'vergadering.html?id='+ID};};
 function teken(){
   const ap=V.agendapunten.filter(a=>(a.wat||'').trim());
   $('v').innerHTML=`<div class="crumb sub" style="margin:8px 0 4px"><a href="vergaderingen.html">Vergaderingen</a> › ${esc(dlang(V.datum))}</div>
@@ -125,12 +132,12 @@ function tekenUit(ap){
 /* klik op een zin of punt: citaat en videomoment eronder */
 document.addEventListener('click',e=>{
   const m2=e.target.closest('[data-m2]');if(m2){MODUS=m2.dataset.m2;try{localStorage.setItem('rz-vmodus',MODUS);}catch(_){}teken();scrollTo({top:0});return;}
-  const l=e.target.closest('[data-link]');if(l){const u=location.href.split('#')[0]+'#ap-'+l.dataset.link;navigator.clipboard?.writeText(u);l.textContent='✓ gekopieerd';setTimeout(()=>l.textContent='kopieer link',1500);return;}
+  const l=e.target.closest('[data-link]');if(l){const u=location.href.split('#')[0]+'#ap-'+l.dataset.link;rzKopieer(u,'Link gekopieerd').then(ok=>{if(ok){l.textContent='✓ gekopieerd';setTimeout(()=>l.textContent='kopieer link',1500);}});return;}
   const fo=e.target.closest('[data-fout]');if(fo){rzFout(V.naam+' '+V.datum+' · '+fo.dataset.fout);return;}
   if(e.target.closest('[data-video],.cit,a'))return;
-  const z=e.target.closest('.zin');if(z){const x=V.kort[+z.dataset.i];document.querySelectorAll('.zin.open').forEach(o=>o.classList.remove('open'));z.classList.add('open');$('kcit').innerHTML=citaat(x);return;}
+  const z=e.target.closest('.zin');if(z){const x=V.kort[+z.dataset.i];document.querySelectorAll('.zin.open').forEach(o=>o.classList.remove('open'));z.classList.add('open');CX=[];$('kcit').innerHTML=citaat(x);return;}
   const pt=e.target.closest('.pt');if(pt){const sec=pt.closest('.ap'),nr=sec.id.slice(3),a=V.agendapunten.find(x=>x.nr===nr);const lijst=pt.classList.contains('coll')?a.college:a.fracties;
-    const i=[...pt.parentElement.querySelectorAll(pt.classList.contains('coll')?'.pt.coll':'.pt:not(.coll)')].indexOf(pt);const ex=pt.querySelector('.cit');if(ex){ex.remove();return;}pt.insertAdjacentHTML('beforeend',citaat(lijst[i]));}
+    const i=[...pt.parentElement.querySelectorAll(pt.classList.contains('coll')?'.pt.coll':'.pt:not(.coll)')].indexOf(pt);const ex=pt.querySelector('.cit');if(ex){ex.remove();return;}pt.insertAdjacentHTML('beforeend',citaat(lijst[i],nr,!pt.classList.contains('coll')));}
 });
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.matches('.zin,.pt'))e.target.click();});
 document.addEventListener('click',e=>{const v=e.target.closest('[data-video]');if(v)kVideo(v.dataset.video,+v.dataset.sec,v.dataset.titel);});

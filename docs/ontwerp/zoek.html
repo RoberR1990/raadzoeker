@@ -44,6 +44,16 @@
 .res details .vol{white-space:pre-wrap;background:var(--grijs);border-radius:6px;padding:12px 16px;margin-top:8px;max-height:480px;overflow:auto;font-size:14px;line-height:1.5}
 .res mark{background:#FFE58A;color:inherit;padding:0 1px}
 .meer{margin:20px 0}
+.telrij{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between;margin:16px 0 8px}.telrij .telling{margin:0}
+#fragplek:not(:empty){margin-bottom:16px}
+.frag{border-top:4px solid var(--groen)}
+.fragkop{display:flex;gap:12px;align-items:center;justify-content:space-between;margin-bottom:8px}.fragkop h2{font-size:20px;margin:0}
+.fragt{font-size:17px;margin:0 0 4px}
+.fragtekst{position:relative;margin-top:10px;max-height:420px;overflow:auto;background:var(--grijs);border-radius:6px;padding:4px 16px;font-size:15px;line-height:1.55}
+.fragtekst p{margin:10px 0;max-width:85ch}.fragtekst mark{display:block;background:var(--groen-zacht);border-left:4px solid var(--groen);padding:6px 10px;border-radius:2px}
+.frag .m{font-size:14px;color:var(--sub);display:flex;flex-wrap:wrap;gap:4px 12px}.frag .soort{background:var(--grijs);border-radius:4px;padding:1px 8px;color:var(--zwart)}
+.frag h3 a{color:var(--zwart)}
+.frag .act{display:flex;gap:8px 16px;flex-wrap:wrap;align-items:center;margin-top:12px;font-size:14px}
 @media (max-width:900px){.analyse{grid-template-columns:minmax(0,1fr)}.rij2 select{max-width:44vw}}
 .vv{display:block;padding:10px 0;border-top:1px solid var(--grijs2);text-decoration:none;color:inherit}.vv:first-child{border-top:0}
 .vv b{display:block;font-size:17px;color:var(--groen)}.vv .w{font-size:13px;color:var(--sub)}.vv p{margin:3px 0 0;font-size:15px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
@@ -64,6 +74,7 @@ body.zq h1{font-size:24px;margin-bottom:8px}
 <header class="balk"></header>
 <main class="pagina">
  <div class="kolom">
+  <div id="fragplek"></div>
   <div class="vlak">
     <h1>Zoeken</h1>
     <p class="lead">Zoek op elk woord dat sinds 2018 in de raad (woordelijke notulen) en sinds 2022 in de commissies (ondertiteling) is gezegd, en in 44.500 stukken. Je ziet meteen wanneer, door wie en waar in de stad het speelt, en welke dossiers erbij horen.</p>
@@ -85,7 +96,7 @@ body.zq h1{font-size:24px;margin-bottom:8px}
     <button type="button" role="tab" data-tab="gezegd" aria-selected="true">Gezegd<span class="n" id="ng"></span></button>
     <button type="button" role="tab" data-tab="stukken" aria-selected="false">Stukken<span class="n" id="ns"></span></button></div>
   <div class="chips" id="soorten" role="group" aria-label="Soort stuk" hidden style="margin-top:14px"></div>
-  <p class="telling" id="telling" aria-live="polite">De zoekindex wordt geladen…</p>
+  <div class="telrij"><p class="telling" id="telling" aria-live="polite">De zoekindex wordt geladen…</p><button type="button" class="knop wit klein rzc" id="copbtn" data-rzc="copilot" data-rzb="zoekCop" hidden title="Zet een kant-en-klare opdracht met de bovenste treffers op je klembord. Plak die in Copilot Chat.">Kopieer voor Copilot</button></div>
   <div class="vlak leegstaat" id="leeg" hidden></div>
   <div class="vlak" id="uit" hidden></div>
   <div class="meer" id="meerv" hidden><button class="knop wit" id="meer" type="button">Meer resultaten</button></div>
@@ -98,8 +109,8 @@ body.zq h1{font-size:24px;margin-bottom:8px}
  </div>
 </main>
 <script src="fzstd.js"></script>
-<script src="ontwerp.js?v=38"></script>
-<script src="keten.js?v=12"></script>
+<script src="ontwerp.js?v=40"></script>
+<script src="keten.js?v=14"></script>
 <script>
 kop('zoeken');
 const JAREN=['2018','2019','2020','2021','2022','2023','2024','2025','2026'];
@@ -130,6 +141,7 @@ const V=id=>$(id).value;
 function jaarOk(d){const y=d.slice(0,4);return y>=V('van')&&y<=V('tot');}
 /* ---------- zoeken in beide bronnen ---------- */
 async function zoek(){
+  $('copbtn').hidden=true;
   const q=$('q').value.trim();zetHash();document.body.classList.toggle('zq',!!q);
   if(!q){$('analyse').hidden=true;$('vverslag').hidden=true;$('uit').hidden=true;$('meerv').hidden=true;$('ng').textContent='';$('ns').textContent='';$('telling').textContent='Typ een woord of zin.';return;}
   // 'of': woorden gescheiden door | of OF; per alternatief moeten alle woorden voorkomen, de beste score telt
@@ -212,6 +224,7 @@ async function toepassen(){
   chips(RS);$('soorten').hidden=TAB!=='stukken';$('fgez').hidden=TAB!=='gezegd';
   TOON=0;$('holder').append($('vverslag'),$('analyse'));$('uit').innerHTML='';$('uit').hidden=!LIJST.length;filterChips();
   $('telling').textContent=LIJST.length?(TAB==='gezegd'?`${nf(LIJST.length)} keer gezegd in debatten`:`${nf(LIJST.length)} stukken gevonden`)+(ZOEK.zinnen.length?(ZOEK.af[TAB==='gezegd'?'d':'s']?' (exacte zin; van de beste 300 treffers gecontroleerd, er kunnen er meer zijn)':' (exacte zin)'):''):'Niets gevonden met deze filters. Probeer minder woorden of een langere periode.';
+  $('copbtn').hidden=!LIJST.length;
   await meer();
   leegStaat(rd.length,rs.length);
 }
@@ -265,17 +278,74 @@ function markeer(t,a,b,pos){let s='',i=a;for(const [p,l] of pos){if(p<a||p+l>b)c
 function fragment(t,breed=200){const pos=posities(t);if(!pos.length)return esc(t.slice(0,breed*2))+(t.length>breed*2?'…':'');
   let best=pos[0][0],bs=-1;for(const [p] of pos){const w=new Set(pos.filter(([q])=>q>=p-breed/2&&q<p+breed*1.5).map(([q,l])=>stam(fold(t.substr(q,l)))));if(w.size>bs){bs=w.size;best=p;}}
   const a=Math.max(0,best-breed/2),b=Math.min(t.length,a+breed*2);return markeer(t,a,b,pos);}
-async function kaartD(id){
-  const M=DB.M,u=M.u[id],a=M.ap[u[0]],v=M.verg[a[0]],segs=await DB.tekst(id);
-  let seg=segs.find(s=>posities(s[1]).length)||segs[0];
+/* ---------- citeren: gegevens van een beurt, vaste link, sleutelindex ---------- */
+let KEYIX=null,BKEY={};
+const IBABS='https://gemeenteraad.rotterdam.nl/Agenda/Index/';
+const keyVan=id=>{const M=DB.M,u=M.u[id],a=M.ap[u[0]],v=M.verg[a[0]];return {vk:rzVk(v[3],v[0],v[1]),nr:a[1],sp:u[1]>=0?M.spk[u[1]]:''};};
+/* sleutel (vk~nr~slug) -> alle beurten met die sleutel; zelden meer dan één (bij 'vervolg' van een agendapunt) */
+function keyIx(){if(KEYIX)return KEYIX;KEYIX=new Map();DB.M.u.forEach((u,id)=>{const k=keyVan(id),t=rzSleutelTekst(k.vk,k.nr,k.sp);let l=KEYIX.get(t);if(!l)KEYIX.set(t,l=[]);l.push(id);});return KEYIX;}
+function fragLink(id,seg,si){const k=keyVan(id),L=keyIx().get(rzSleutelTekst(k.vk,k.nr,k.sp))||[id];
+  return rzFragmentLink({vk:k.vk,nr:k.nr,spreker:k.sp,t:seg&&seg[0]>=0?seg[0]:null,s:si,n:L.indexOf(id)+1});}
+/* gegevens voor rzCiteer; si = nummer van het segment dat geciteerd wordt */
+async function debatObj(id,si){
+  const M=DB.M,u=M.u[id],a=M.ap[u[0]],v=M.verg[a[0]],segs=await DB.tekst(id),seg=segs[si]||segs[0];
+  return {tekst:seg[1],spreker:u[1]>=0?M.spk[u[1]]:'',fractie:u[2]>=0?M.par[u[2]]:'',orgaan:rzOrgaan(v[2],v[1]),datum:v[0],punt:a[1],titel:a[2]||(a[1]?'':v[2]),
+    auto:!!u[4],sec:seg[0]>=0?seg[0]:null,bron:v[3]?IBABS+v[3]:'',link:fragLink(id,seg,segs.indexOf(seg))};
+}
+RZ_CIT.zoekD=ds=>debatObj(+ds.id,+ds.s);
+RZ_CIT.zoekS=ds=>{const d=ST.M.d[+ds.id];return {soort:ST.M.soorten[d[0]],titel:d[2]||ST.M.soorten[d[0]],wie:d[3],datum:d[1],url:d[4]};};
+/* kop, meta en links van een debat-treffer, gedeeld door de gewone kaart en de kaart 'Dit fragment' */
+function debatDelen(id){
+  const M=DB.M,u=M.u[id],a=M.ap[u[0]],v=M.verg[a[0]];
   const wie=u[1]>=0?M.spk[u[1]]:'Onbekende spreker',pa=u[2]>=0?M.par[u[2]]:'';
-  const vid=v[4]&&seg[0]>=0?`<button type="button" class="knop klein" data-video="${esc(v[4])}" data-sec="${seg[0]}" data-titel="${esc(fd(v[0])+' · '+wie)}">▶ Bekijk dit moment</button>`:'';
   const id8=String(v[3]||'').slice(0,8),eigen=VI.has(id8),ib=v[3]?`https://gemeenteraad.rotterdam.nl/Agenda/Index/${esc(v[3])}`:'';
   const arch=eigen?`vergadering.html?id=${id8}#ap-${encodeURIComponent(a[1])}`:ib;
-  return `<article class="res"><h2>${arch?`<a href="${arch}"${eigen?'':' target="_blank" rel="noopener"'}>${esc(a[2]||v[2])}</a>`:esc(a[2]||v[2])}</h2>
-    <div class="m"><span class="soort">${v[1]?'Commissie':'Gemeenteraad'}</span><span>${fd(v[0])}</span><span><b>${esc(wie)}</b>${pa?' ('+esc(pa)+')':''}</span>${u[4]?'<span>automatische ondertiteling</span>':''}</div>
-    <p class="fr">‘${fragment(seg[1])}’</p><div class="act">${vid}${eigen?`<a href="${arch}">Lees het hele debat</a><a href="${ib}" target="_blank" rel="noopener">Vergadering in iBabs</a>`:ib?`<a href="${ib}" target="_blank" rel="noopener">Hele vergadering (iBabs)</a>`:''}</div></article>`;
+  return {u,a,v,wie,pa,eigen,ib,arch,
+    kop:arch?`<a href="${arch}"${eigen?'':' target="_blank" rel="noopener"'}>${esc(a[2]||v[2])}</a>`:esc(a[2]||v[2]),
+    meta:`<span class="soort">${v[1]?'Commissie':'Gemeenteraad'}</span><span>${fd(v[0])}</span><span><b>${esc(wie)}</b>${pa?' ('+esc(pa)+')':''}</span>${u[4]?'<span>automatische ondertiteling</span>':''}`,
+    links:eigen?`<a href="${arch}">Lees het hele debat</a><a href="${ib}" target="_blank" rel="noopener">Vergadering in iBabs</a>`:ib?`<a href="${ib}" target="_blank" rel="noopener">Hele vergadering (iBabs)</a>`:''};
 }
+const videoKnop=(v,sec,wie)=>v[4]&&sec>=0?`<button type="button" class="knop klein" data-video="${esc(v[4])}" data-sec="${sec}" data-titel="${esc(fd(v[0])+' · '+wie)}">▶ Bekijk dit moment</button>`:'';
+async function kaartD(id){
+  const segs=await DB.tekst(id),D=debatDelen(id),{u,v,wie}=D;
+  let seg=segs.find(s=>posities(s[1]).length)||segs[0];
+  const kn=citKnoppen('zoekD',{id,s:segs.indexOf(seg)},{link:true,naam:`van ${wie}, ${fd(v[0])}`});
+  return `<article class="res" data-rzbox><h2>${D.kop}</h2>
+    <div class="m">${D.meta}</div>
+    <p class="fr" data-rzfr>‘${fragment(seg[1])}’</p><div class="act">${videoKnop(v,seg[0],wie)}${kn}${D.links}</div></article>`;
+}
+/* ---------- kaart 'Dit fragment' (zoek.html#b=<sleutel>&t=<seconde>) ---------- */
+function fragHTML(id,segs,si){
+  const D=debatDelen(id),{v,wie}=D,k=si>=0?si:0;
+  const tekst=segs.map((x,i)=>i===si?`<p><mark class="fm">${esc(x[1])}</mark></p>`:`<p>${esc(x[1])}</p>`).join('');
+  return `<section class="vlak frag" id="frag" data-rzbox aria-labelledby="fragh"><div class="fragkop"><h2 id="fragh">Dit fragment</h2><button type="button" class="knop wit klein" id="fragsluit">Sluiten</button></div>
+    <h3 class="fragt">${D.kop}</h3><div class="m">${D.meta}</div>
+    <div class="fragtekst" data-rzfr tabindex="0" role="region" aria-label="De hele spreekbeurt">${tekst}</div>
+    <div class="act">${videoKnop(v,segs[k][0],wie)}${citKnoppen('zoekD',{id,s:k},{link:true,naam:`van ${wie}, ${fd(v[0])}`})}${D.links}</div></section>`;
+}
+function fragNiet(b){
+  const vk=b.split('~')[0],v=DB.M.verg.find(x=>rzVk(x[3],x[0],x[1])===vk);
+  return `<section class="vlak frag" id="frag" aria-labelledby="fragh"><div class="fragkop"><h2 id="fragh">Dit fragment is niet meer te vinden</h2><button type="button" class="knop wit klein" id="fragsluit">Sluiten</button></div>
+    <p>De gegevens zijn bijgewerkt sinds deze link is gemaakt, of de link is niet compleet.${v?` Het ging om een vergadering van ${esc(rzDatum(v[0]))}.`:''} Je kunt hieronder zoeken op een woord uit het fragment.</p>
+    ${v&&v[3]?`<p style="margin-top:8px"><a href="${IBABS}${esc(v[3])}" target="_blank" rel="noopener">Bekijk die vergadering in iBabs</a></p>`:''}</section>`;
+}
+async function fragmentUitHash(p){
+  const b=p.get('b');if(!b)return;
+  const num=x=>x!=null&&x!==''&&!isNaN(+x)?+x:null;
+  BKEY={b,t:num(p.get('t')),s:+p.get('s')||0,n:+p.get('n')||0};
+  await window.rzCiteerKlaar;
+  const plek=$('fragplek'),L=keyIx().get(b)||[];let id=null,segs=null;
+  if(L.length>1&&BKEY.t!=null){for(const c of L){const sg=await DB.tekst(c);if(sg.some(x=>x[0]===BKEY.t)){id=c;segs=sg;break;}}}
+  if(id==null&&L.length)id=L[Math.min(Math.max(BKEY.n,1),L.length)-1];
+  if(id==null){plek.innerHTML=fragNiet(b);return;}
+  segs=segs||await DB.tekst(id);
+  let si=-1;
+  if(BKEY.t!=null){si=segs.findIndex(x=>x[0]===BKEY.t);if(si<0)segs.forEach((x,i)=>{if(x[0]>=0&&x[0]<=BKEY.t)si=i;});}   // seconde komt niet exact voor: neem het segment ervoor
+  else if(BKEY.s&&segs[BKEY.s])si=BKEY.s;
+  plek.innerHTML=fragHTML(id,segs,si);
+  const box=plek.querySelector('.fragtekst'),on=box.querySelector('.fm');if(on)box.scrollTop=Math.max(0,on.offsetTop-box.clientHeight/3);   // gemarkeerd segment in beeld
+}
+document.addEventListener('click',e=>{if(e.target.id==='fragsluit'){$('fragplek').innerHTML='';BKEY={};zetHash();$('q').focus();}});
 async function kaartS(id){
   const d=ST.M.d[id],soort=ST.M.soorten[d[0]],t=await ST.tekst(id);let fr='';
   if(soort==='Schriftelijke vragen'){const [v,a]=t.split('\nANTWOORD VAN HET COLLEGE');
@@ -283,7 +353,8 @@ async function kaartS(id){
   else fr=`<p class="fr">${fragment(t)}</p>`;
   return `<article class="res"><h2><a href="${esc(d[4])}" target="_blank" rel="noopener">${esc(d[2]||soort)}</a></h2>
     <div class="m"><span class="soort">${esc(soort)}</span><span>${fd(d[1])}</span>${d[3]?`<span>${esc(d[3])}</span>`:''}</div>${fr}
-    <details data-id="${id}"><summary>Lees de hele tekst</summary><div class="vol"></div></details></article>`;
+    <details data-id="${id}"><summary>Lees de hele tekst</summary><div class="vol"></div></details>
+    <div class="act">${citKnoppen('zoekS',{id},{citaat:false,verw:true,naam:`van ${esc(d[2]||soort)}`})}</div></article>`;
 }
 $('uit').addEventListener('toggle',async e=>{const d=e.target;if(d.tagName!=='DETAILS'||!d.open)return;const v=d.querySelector('.vol');if(v.dataset.ok)return;v.dataset.ok=1;
   const t=await ST.tekst(+d.dataset.id);v.innerHTML=markeer(t,0,t.length,posities(t)).replace(/^…|…$/g,'');},true);
@@ -297,11 +368,61 @@ $('orde').addEventListener('change',()=>{if(ZOEK)toepassen();zetHash();});
 $('zf').addEventListener('submit',e=>{e.preventDefault();zoek();});
 $('meer').addEventListener('click',meer);
 document.addEventListener('click',e=>{const v=e.target.closest('[data-video]');if(v)kVideo(v.dataset.video,+v.dataset.sec,v.dataset.titel);});
-function zetHash(){const p=new URLSearchParams();const q=$('q').value.trim();if(q)p.set('q',q);if(TAB!=='gezegd')p.set('tab',TAB);
+function zetHash(){const p=new URLSearchParams();const q=$('q').value.trim();
+  if(BKEY.b){p.set('b',BKEY.b);if(BKEY.t!=null)p.set('t',BKEY.t);else if(BKEY.s)p.set('s',BKEY.s);if(BKEY.n>1)p.set('n',BKEY.n);}   // de kaart 'Dit fragment' blijft in de link staanif(q)p.set('q',q);if(TAB!=='gezegd')p.set('tab',TAB);
   if(V('fdom')!=='')p.set('d',LB.dom[+V('fdom')][0]);if(V('fgeb')!=='')p.set('g',LB.geb[+V('fgeb')]);if(V('van')!=='2018')p.set('van',V('van'));if(V('tot')!=='2026')p.set('tot',V('tot'));
   const wf=V('ffr')!==''?DB.M.par[+V('ffr')]:WACHT.f,ws=V('fsp')!==''?DB.M.spk[+V('fsp')]:WACHT.s;if(wf)p.set('f',wf);if(ws)p.set('s',ws);if(V('fbr')!=='')p.set('v',V('fbr'));if(groep)p.set('soort',groep);if(V('orde')==='d')p.set('orde','d');
   const sp=new URLSearchParams(location.search);sp.delete('q');const qs=sp.toString();history.replaceState(null,'',location.pathname+(qs?'?'+qs:'')+'#'+p.toString());}
 function logZoek(q,n){clearTimeout(logZoek.t);logZoek.t=setTimeout(()=>{if(!q||q===LOGQ)return;LOGQ=q;try{navigator.sendBeacon('/api/log',new Blob([JSON.stringify({q,n,pagina:'zoek'})],{type:'application/json'}));}catch(e){}},3000);}
+/* ---------- Kopieer voor Copilot: de bovenste treffers van de actieve tab als kant-en-klare opdracht (opbouw en limiet: rzCopilot in citeer.js) ---------- */
+const COP_BEURTEN=12,COP_BEURT_TEKENS=700,COP_STUKKEN=10,COP_STUK_TEKENS=500;
+const woordGrens=(t,i,naarVoren)=>{if(i<=0||i>=t.length)return Math.max(0,Math.min(t.length,i));const k=naarVoren?t.indexOf(' ',i):t.lastIndexOf(' ',i);return k<0?i:k;};
+/* stuk tekst van hoogstens max tekens rond positie pos, begin en eind op een woordgrens */
+function rondOm(t,pos,max){t=rzSchoon(t);if(t.length<=max)return t;
+  let a=Math.max(0,pos-Math.round(max*.3)),b=a+max;if(b>t.length){b=t.length;a=Math.max(0,b-max);}
+  if(a>0)a=woordGrens(t,a,true)+1;if(b<t.length)b=woordGrens(t,b,false);
+  return (a>0?'…':'')+t.slice(a,b).trim()+(b<t.length?'…':'');}
+/* het treffersegment plus het segment ervoor en erna, samen hoogstens max tekens */
+function venster(delen,hit,max){
+  const mid=rzSchoon(delen[hit]),vor=hit>0?rzSchoon(delen[hit-1]):'',na=hit<delen.length-1?rzSchoon(delen[hit+1]):'';
+  if(mid.length>=max){const p=posities(mid);return rondOm(mid,p.length?p[0][0]:0,max);}
+  let rest=max-mid.length-2,vr=Math.min(vor.length,Math.floor(rest/2)),nr=Math.min(na.length,rest-vr);vr=Math.min(vor.length,rest-nr);
+  const v=!vr?'':vr<vor.length?'…'+vor.slice(vor.length-vr).replace(/^\S*\s/,''):vor,n=!nr?'':nr<na.length?na.slice(0,nr).replace(/\s\S*$/,'')+'…':na;
+  return [v,mid,n].filter(Boolean).join(' ');}
+function filtersTekst(gez){
+  const f=[],txt=id=>$(id).selectedOptions[0].text.replace(/ \(\d+\)$/,'');
+  if(V('van')!=='2018'||V('tot')!=='2026')f.push(`periode ${V('van')} tot en met ${V('tot')}`);
+  if(V('fdom')!=='')f.push('domein '+txt('fdom'));if(V('fgeb')!=='')f.push('gebied '+txt('fgeb'));
+  if(gez){if(V('ffr')!=='')f.push('fractie '+txt('ffr'));if(V('fsp')!=='')f.push('spreker '+txt('fsp'));if(V('fbr')!=='')f.push(V('fbr')==='0'?'alleen de gemeenteraad':'alleen de commissies');}
+  else if(groep>0)f.push('soort stuk: '+GROEP[groep][0].toLowerCase());
+  return f.length?' ('+f.join('; ')+')':'';
+}
+async function copilotZoek(){
+  if(!ZOEK||!LIJST.length)throw new Error('leeg');
+  const gez=TAB==='gezegd',M=DB.M,hp=new URLSearchParams(location.hash.slice(1));['b','t','s','n'].forEach(k=>hp.delete(k));
+  const link=rzBasis+'zoek.html#'+hp.toString(),filt=filtersTekst(gez);
+  const vraag=ZOEK.q+filt+'.';
+  let blokken;
+  if(gez){
+    blokken=await Promise.all(LIJST.slice(0,COP_BEURTEN).map(async([id])=>{
+      const segs=await DB.tekst(id),u=M.u[id],a=M.ap[u[0]],v=M.verg[a[0]];
+      let hit=segs.findIndex(x=>posities(x[1]).length);if(hit<0)hit=0;
+      const wie=u[1]>=0?M.spk[u[1]]:'onbekende spreker',pa=u[2]>=0?M.par[u[2]]:'',titel=rzKort(a[2]||'',140);
+      const kop=[rzDatum(v[0]),wie+(pa?` (${pa})`:''),rzOrgaan(v[2],v[1]),(a[1]||titel)?('agendapunt'+(a[1]?' '+a[1]:'')+(titel?` ‘${titel.replace(/\.$/,'')}’`:'')):'',u[4]?'automatische ondertiteling':''].filter(Boolean).join(' · ');
+      return {kop,tekst:venster(segs.map(x=>x[1]),hit,COP_BEURT_TEKENS),citaat:true,bron:v[3]?IBABS+v[3]:fragLink(id,segs[hit],hit)};}));
+  }else{
+    blokken=(await Promise.all(LIJST.slice(0,COP_STUKKEN).map(async([id])=>{
+      const d=ST.M.d[id],soort=ST.M.soorten[d[0]],t=rzSchoon(await ST.tekst(id).catch(()=>'')),p=posities(t);
+      if(!t)return null;   // tekstblok ontbreekt: overslaan
+      const kop=[rzDatum(d[1]),`${soort} ‘${rzKort(d[2]||soort,160).replace(/\.$/,'')}’`,d[3]||''].filter(Boolean).join(' · ');
+      return {kop,tekst:rondOm(t,p.length?p[0][0]:0,COP_STUK_TEKENS),citaat:true,bron:/^https?:\/\//.test(d[4]||'')?d[4]:''};}))).filter(Boolean);
+  }
+  const opdracht=gez
+    ?`Je krijgt hieronder letterlijke fragmenten uit de Rotterdamse gemeenteraad en raadscommissies over: ${vraag}\nVat in gewone taal samen wat hierover is gezegd. Gebruik alleen deze fragmenten. Noem bij elk punt de spreker, de fractie en de datum. Zeg het erbij als iets niet uit de fragmenten blijkt. Sluit af met de drie belangrijkste punten voor een beleidsmedewerker.`
+    :`Je krijgt hieronder letterlijke fragmenten uit officiële stukken van de Rotterdamse gemeenteraad over: ${vraag}\nVat in gewone taal samen wat hierover in deze stukken staat. Gebruik alleen deze fragmenten. Noem bij elk punt het stuk en de datum. Zeg het erbij als iets niet uit de fragmenten blijkt. Sluit af met de drie belangrijkste punten voor een beleidsmedewerker.`;
+  return {opdracht,blokken,totaal:LIJST.length,voet:rzVoet('Zoekopdracht',link)};
+}
+RZ_CIT.zoekCop=()=>copilotZoek();
 window.addEventListener('hashchange',()=>location.reload());
 let IX=[],VI=new Set();
 (async()=>{
@@ -319,7 +440,8 @@ let IX=[],VI=new Set();
   if(p.get('van'))$('van').value=p.get('van')==='alle'?'2018':p.get('van');if(p.get('vanaf'))$('van').value=p.get('vanaf')==='alle'?'2018':p.get('vanaf');if(p.get('tot'))$('tot').value=p.get('tot');
   if(p.get('soort'))groep=+p.get('soort');if(p.get('orde'))$('orde').value=p.get('orde');if(p.get('v'))$('fbr').value=p.get('v');
   WACHT={f:p.get('f'),s:p.get('s')};
-  await zoek();
+  const fp=fragmentUitHash(p).catch(e=>{console.error(e);});
+  await zoek();await fp;
   if(!p.get('q')&&(p.get('d')||p.get('g'))){$('telling').textContent='Typ een zoekwoord; het filter op domein of gebied staat al aan.';}
 })().catch(e=>{$('telling').textContent='Dat ging mis: de zoekindex kwam niet aan. Ververs de pagina en probeer het nog eens.';console.error(e);});
 </script>
