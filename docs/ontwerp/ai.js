@@ -13,22 +13,29 @@ function blok(id,titel,intro,inh,knop,label){
     ${inh?`<button type="button" class="meerknop" aria-expanded="false" aria-controls="${id}i"><span class="tx">${knop}</span><span class="pijl" aria-hidden="true">▾</span></button><div class="inh" id="${id}i" hidden>${inh}</div>`:''}</section>`;
 }
 const BUB=document.createElement('div');BUB.id='bub';BUB.hidden=true;BUB.setAttribute('role','tooltip');document.body.appendChild(BUB);
-let bubEl=null,bubVast=false;
+let bubEl=null,bubVast=false,bubX=null;
+BUB.setAttribute('data-rzbox','');
+/* citeren (citeer.js): alleen 'Kopieer citaat', met herkomst, datum en de bronlink */
+window.RZ_CIT=window.RZ_CIT||{};
+RZ_CIT.aiBub=()=>{const x=bubX;return {tekst:x.citaat,herkomst:x.bron_label||x.bron||'',datum:x.bron_datum,auto:!!x.auto,bron:x.url,link:''};};
 function toonBub(el,vast){
   const x=CIT[+el.dataset.c];if(!x)return;
   if(bubEl)bubEl.classList.remove('aan');bubEl=el;bubVast=vast;el.classList.add('aan');
-  BUB.innerHTML=`‘${esc(x.citaat)}’<span class="b">${x.auto?'automatische ondertiteling · ':''}<a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(kort(x.bron_label||x.bron,90))}</a>, ${fd(x.bron_datum)}</span>`;
+  BUB.innerHTML=`<span data-rzfr>‘${esc(x.citaat)}’</span><span class="b">${x.auto?'automatische ondertiteling · ':''}<a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(kort(x.bron_label||x.bron,90))}</a>, ${fd(x.bron_datum)}</span>${typeof citKnoppen==='function'?`<span class="rzrij">${citKnoppen('aiBub',{},{naam:'van deze zin'})}</span>`:''}`;
+  bubX=x;
   BUB.hidden=false;const r=el.getBoundingClientRect(),w=BUB.offsetWidth;
   BUB.style.left=Math.max(16,Math.min(document.documentElement.clientWidth-w-16,r.left))+scrollX+'px';
   const boven=r.top-BUB.offsetHeight-8;BUB.style.top=(boven>8?boven:r.bottom+8)+scrollY+'px';
 }
 function verberg(){if(bubEl)bubEl.classList.remove('aan');bubEl=null;bubVast=false;BUB.hidden=true;}
+let bubTerug=null;
 document.addEventListener('mouseover',e=>{if(bubVast)return;const el=e.target.closest('[data-c]');if(el)toonBub(el,false);else if(!e.target.closest('#bub'))verberg();});
 document.addEventListener('focusin',e=>{const el=e.target.closest('[data-c]');if(el&&!bubVast)toonBub(el,false);});
-document.addEventListener('keydown',e=>{if(e.key==='Escape')verberg();});
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.matches&&e.target.matches('.z[data-c]')){e.preventDefault();toonBub(e.target,true);const kn=BUB.querySelector('button');if(kn){bubTerug=e.target;kn.focus();}return;}
+  if(e.key==='Escape'){const t=bubTerug&&BUB.contains(document.activeElement)?bubTerug:null;verberg();bubTerug=null;if(t&&t.isConnected)t.focus();}});
 document.addEventListener('click',e=>{
   const el=e.target.closest('[data-c]');
-  if(el){e.preventDefault();if(bubEl===el&&bubVast)verberg();else toonBub(el,true);return;}
+  if(el){e.preventDefault();if(bubEl===el&&bubVast)verberg();else{toonBub(el,true);if(e.detail===0){const kn=BUB.querySelector('button');if(kn){bubTerug=el;kn.focus();}}}return;}
   if(!e.target.closest('#bub'))verberg();
   const k=e.target.closest('.meerknop');
   if(k){const open=k.getAttribute('aria-expanded')==='true',inh=document.getElementById(k.getAttribute('aria-controls')),tx=k.querySelector('.tx');

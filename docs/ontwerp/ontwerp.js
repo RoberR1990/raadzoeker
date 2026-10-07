@@ -7,6 +7,14 @@ const MNDL=['januari','februari','maart','april','mei','juni','juli','augustus',
 const fd=d=>{if(!d)return '';const [y,m,dd]=d.split('-');return +dd+' '+MND[+m-1]+' '+y;};
 const fdl=d=>{const [y,m,dd]=d.split('-');return +dd+' '+MNDL[+m-1]+' '+y;};
 const slug=s=>s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/&/g,' ').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+/* citeren en kopiëren (citeer.js): per pagina een functie in RZ_CIT[naam](dataset, knop) die de gegevens levert; knoppen maakt citKnoppen().
+   soort: citaat | link | verw | copilot. ds = extra data-attributen (data-id enzovoort). naam = korte beschrijving voor schermlezers. */
+window.RZ_CIT=window.RZ_CIT||{};window.rzCiteerKlaar=window.rzCiteerKlaar||Promise.resolve();
+function citKnoppen(b,ds,o={}){
+  const a=Object.entries(ds||{}).map(([k,v])=>` data-${k}="${esc(v)}"`).join(''),n=o.naam?' '+o.naam:'';
+  const bt=(s,t)=>`<button type="button" class="knop wit klein rzc" data-rzc="${s}" data-rzb="${b}"${a} aria-label="${t}${esc(n)}">${t}</button>`;
+  return (o.citaat!==false?bt('citaat','Kopieer citaat'):'')+(o.link?bt('link','Kopieer link'):'')+(o.verw?bt('verw','Kopieer verwijzing'):'')+(o.copilot?bt('copilot','Kopieer voor Copilot'):'');
+}
 const iso=s=>{const m=(s||'').match(/(\d\d)-(\d\d)-(\d{4})/);return m?`${m[3]}-${m[2]}-${m[1]}`:'';};
 // loopt het bijwerken achter? Vergelijk met de laatste geplande run (nas/crontab: elke nacht 02:30, werkdagen 9:15-21:15 om de 3 uur),
 // met 90 minuten speling voor de run zelf en het online zetten.
@@ -55,7 +63,8 @@ function kop(actief){
       document.querySelectorAll('.voetbij .t,.meersheet .t').forEach(x=>x.textContent=t+' · loopt achter');el.setAttribute('aria-label',m);}}).catch(()=>{});
   voetB();
   // rondleiding, hulpknop en welkomstvenster (tour.js)
-  if(!document.getElementById('rz-tour')){const t=document.createElement('script');t.id='rz-tour';t.src='tour.js?v=13';document.body.appendChild(t);const w=document.createElement('script');w.src='woorden.js?v=3';document.body.appendChild(w);const r=document.createElement('script');r.src='stad.js?v=4';document.body.appendChild(r);}
+  if(!document.getElementById('rz-tour')){const t=document.createElement('script');t.id='rz-tour';t.src='tour.js?v=14';document.body.appendChild(t);const w=document.createElement('script');w.src='woorden.js?v=3';document.body.appendChild(w);const r=document.createElement('script');r.src='stad.js?v=4';document.body.appendChild(r);
+    const c=document.createElement('script');c.src='citeer.js?v=1';window.rzCiteerKlaar=new Promise(ok=>{c.onload=ok;c.onerror=ok;});document.body.appendChild(c);}
   const ic=document.createElement('link');ic.rel='icon';ic.type='image/svg+xml';ic.href='logo.svg';document.head.appendChild(ic);
 }
 /* zoekveld in de kop (vanaf 1100px) en dezelfde koppeling voor de zoeklaag op mobiel; Enter zoekt altijd, een gekozen suggestie opent dossier of gebied */
@@ -173,7 +182,7 @@ let DEELIX=null;   /* deel/index.json: slugs met een deelpagina (og-voorvertonin
 function deel(el,titel,url,slug){
   const maak=url=>{const u=encodeURIComponent(url),t=encodeURIComponent(titel);
     el.innerHTML=`<span class="sub">Delen:</span> <a href="mailto:?subject=${t}&body=${t}%0A${u}">E-mail</a> · <a href="https://teams.microsoft.com/share?href=${u}&msgText=${t}" target="_blank" rel="noopener">Teams</a> · <a href="https://wa.me/?text=${t}%20${u}" target="_blank" rel="noopener">WhatsApp</a> · <button type="button" class="kopie" style="font:inherit;background:none;border:0;padding:0;text-decoration:underline;cursor:pointer">Kopieer link</button>`;
-    el.querySelector('.kopie').addEventListener('click',e=>{navigator.clipboard.writeText(url).then(()=>{e.target.textContent='Link gekopieerd';},()=>{prompt('Kopieer deze link',url);});});};
+    el.querySelector('.kopie').addEventListener('click',e=>{const k=e.target;if(window.rzKopieer){rzKopieer(url,'Link gekopieerd').then(ok=>{if(ok)k.textContent='Link gekopieerd';});return;}navigator.clipboard.writeText(url).then(()=>{k.textContent='Link gekopieerd';},()=>{prompt('Kopieer deze link',url);});});};
   maak(url);
   if(slug){DEELIX=DEELIX||fetch('deel/index.json').then(r=>r.ok?r.json():[]).catch(()=>[]);
     DEELIX.then(l=>{if(l.includes(slug)&&el.isConnected){maak('https://raadzoeker.nl/ontwerp/deel/'+slug+'.html');}});}

@@ -61,6 +61,7 @@ const STAP={
     {s:'#analyse',t:'In één oogopslag',x:'Per jaar, per fractie, per gebied en de dossiers waar het over gaat. Fracties staan op alfabet.'},
     {s:'#tabs',t:'Gezegd of geschreven',x:'"Gezegd" zijn de debatten (met video), "Stukken" zijn moties, brieven, vragen en andere officiële documenten.'},
     {s:'#uit button[data-video]',alt:'#uit',t:'Bekijk het moment',x:'Met deze knop speelt de vergadering af vanaf het moment dat het werd gezegd. De tekst is soms automatisch ondertiteld; check bij twijfel de video.'},
+    {s:'#uit button[data-rzc]',alt:'#copbtn',t:'Citeren en Copilot',x:'Kopieer citaat zet de zin met spreker, datum en bronlink op je klembord (selecteer eerst een stuk tekst om alleen dat te citeren). Kopieer link geeft een vaste link naar precies dit fragment. Kopieer voor Copilot zet de beste treffers met een kant-en-klare opdracht klaar om in Copilot Chat te plakken.'},
   ],
   domeinen:[
     {s:'#uit',t:'Uitgelicht',x:'Voorbeelddossiers met het hele verhaal: van debat tot besluit, beloftes en wat er in de stad gebeurde.'},
