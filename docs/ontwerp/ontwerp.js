@@ -8,6 +8,19 @@ const fd=d=>{if(!d)return '';const [y,m,dd]=d.split('-');return +dd+' '+MND[+m-1
 const fdl=d=>{const [y,m,dd]=d.split('-');return +dd+' '+MNDL[+m-1]+' '+y;};
 const slug=s=>s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/&/g,' ').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 const iso=s=>{const m=(s||'').match(/(\d\d)-(\d\d)-(\d{4})/);return m?`${m[3]}-${m[2]}-${m[1]}`:'';};
+// loopt het bijwerken achter? Vergelijk met de laatste geplande run (nas/crontab: elke nacht 02:30, werkdagen 9:15-21:15 om de 3 uur),
+// met 90 minuten speling voor de run zelf en het online zetten.
+function rzAchter(laatste,nu){
+  const grens=new Date(nu.getTime()-90*60000);
+  for(let i=0;i<4;i++){   // zoek terug naar de laatste geplande starttijd vóór de grens
+    const dag=new Date(grens.getFullYear(),grens.getMonth(),grens.getDate()-i),wd=dag.getDay()>=1&&dag.getDay()<=5;
+    const tijden=[[2,30]].concat(wd?[[9,15],[12,15],[15,15],[18,15],[21,15]]:[]);
+    const voor=tijden.map(([u,m])=>new Date(dag.getFullYear(),dag.getMonth(),dag.getDate(),u,m)).filter(x=>x<=grens);
+    if(voor.length)return laatste<voor[voor.length-1];
+  }
+  return false;
+}
+window.rzAchter=rzAchter;
 const FREQ='Wordt automatisch bijgewerkt: elke nacht, en op werkdagen om 9, 12, 15, 18 en 21 uur.';
 const STAND='2026-10-07';   /* stand van de gegevens; ook in src/paden.py */
 const dagen=(a,b)=>Math.round((new Date(b)-new Date(a))/864e5);
@@ -36,7 +49,10 @@ function kop(actief){
   // laatste automatische update (status.json schrijft de NAS na elke geslaagde run)
   fetch('../data/status.json',{cache:'no-store'}).then(r=>r.ok?r.json():null).then(st=>{if(!st||!st.laatste)return;const el=document.getElementById('bijgewerkt');if(!el)return;
     const d=new Date(st.laatste),t=d.getDate()+' '+MND[d.getMonth()]+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
-    document.querySelectorAll('#bijgewerkt .t,.voetbij .t,.meersheet .t').forEach(x=>x.textContent=t);el.setAttribute('aria-label','Wat is er nieuw — bijgewerkt '+t);}).catch(()=>{});
+    document.querySelectorAll('#bijgewerkt .t,.voetbij .t,.meersheet .t').forEach(x=>x.textContent=t);el.setAttribute('aria-label','Wat is er nieuw — bijgewerkt '+t);
+    if(rzAchter(d,new Date())){const m='Bijwerken loopt achter: de laatste geslaagde update was '+t+'.';   // een geplande run is niet gelukt
+      document.querySelectorAll('#bijgewerkt,.voetbij,.meersheet .bijgewerkt').forEach(x=>{x.classList.add('achter');x.title=m;});
+      document.querySelectorAll('.voetbij .t,.meersheet .t').forEach(x=>x.textContent=t+' · loopt achter');el.setAttribute('aria-label',m);}}).catch(()=>{});
   voetB();
   // rondleiding, hulpknop en welkomstvenster (tour.js)
   if(!document.getElementById('rz-tour')){const t=document.createElement('script');t.id='rz-tour';t.src='tour.js?v=13';document.body.appendChild(t);const w=document.createElement('script');w.src='woorden.js?v=3';document.body.appendChild(w);const r=document.createElement('script');r.src='stad.js?v=4';document.body.appendChild(r);}
