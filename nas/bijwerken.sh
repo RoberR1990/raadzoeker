@@ -63,6 +63,7 @@ stap "git commit" git commit -q -m "Automatisch bijgewerkt ($MODUS, $(date '+%d-
 # Bij een conflict wint de verse versie van deze run (-X theirs; alle data hier wordt opnieuw gemaakt). Mislukt een poging, dan altijd de rebase afbreken,
 # zodat de repository nooit half in een rebase blijft staan.
 duw(){ for i in 1 2 3; do
+    git reset -q --hard HEAD   # losse, niet-vastgelegde wijzigingen buiten de commit zouden de rebase blokkeren
     git fetch -q origin && git rebase -q -X theirs origin/main && git push -q origin HEAD:main && return 0
     git rebase --abort >/dev/null 2>&1; sleep 20
   done; return 1; }
