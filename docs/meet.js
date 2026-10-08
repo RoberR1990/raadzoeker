@@ -10,11 +10,11 @@
 (function(){
 'use strict';
 const CONF={
-  host:'',                                   // bv. 'https://stats.raadzoeker.nl' of 'https://cloud.umami.is'; leeg = meetlaag uit
-  id:'',                                     // website-id uit Umami (Instellingen > Websites)
+  host:'https://cloud.umami.is',             // Umami Cloud (Hobby). Eigen server: bv. 'https://stats.raadzoeker.nl'. Leeg = meetlaag uit
+  id:'2f0e55cc-fc3a-4fcb-98fe-e584d5fec59d',  // website-id uit Umami (Instellingen > Websites); staat toch al in de paginabron van elke meetsite
   script:'script.js',                        // naam van het trackerbestand (alleen aanpassen als TRACKER_SCRIPT_NAME in Umami is gewijzigd)
   domeinen:'raadzoeker.nl',                  // alleen hier wordt gemeten (localhost en *.pages.dev tellen niet mee)
-  waar:'op een eigen server van de maker'    // zin in de privacytekst op Over; aanpassen als je een andere host kiest
+  waar:'via hun clouddienst Umami Cloud (servers in de EU en de VS)'    // zin in de privacytekst op Over; aanpassen als je een andere host kiest
 };
 const LS={get(k){try{return localStorage.getItem(k);}catch(e){return null;}},set(k,v){try{localStorage.setItem(k,v);}catch(e){}},del(k){try{localStorage.removeItem(k);}catch(e){}}};
 

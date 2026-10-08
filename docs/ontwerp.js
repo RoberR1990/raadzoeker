@@ -64,7 +64,7 @@ function kop(actief){
       document.querySelectorAll('.voetbij .t,.meersheet .t').forEach(x=>x.textContent=t+' · loopt achter');el.setAttribute('aria-label',m);}}).catch(()=>{});
   voetB();
   // meetlaag (meet.js): doet niets zolang host en website-id daar leeg zijn
-  if(!document.getElementById('rz-meet')){const m=document.createElement('script');m.id='rz-meet';m.src='meet.js?v=1';document.body.appendChild(m);}
+  if(!document.getElementById('rz-meet')){const m=document.createElement('script');m.id='rz-meet';m.src='meet.js?v=2';document.body.appendChild(m);}
   // rondleiding, hulpknop en welkomstvenster (tour.js)
   if(!document.getElementById('rz-tour')){const t=document.createElement('script');t.id='rz-tour';t.src='tour.js?v=16';document.body.appendChild(t);const w=document.createElement('script');w.src='woorden.js?v=3';document.body.appendChild(w);const r=document.createElement('script');r.src='stad.js?v=5';document.body.appendChild(r);
     const c=document.createElement('script');c.src='citeer.js?v=1';window.rzCiteerKlaar=new Promise(ok=>{c.onload=ok;c.onerror=ok;});document.body.appendChild(c);}

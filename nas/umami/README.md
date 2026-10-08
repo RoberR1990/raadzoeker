@@ -1,4 +1,6 @@
-# Umami op de NAS
+# Umami op de NAS (niet in gebruik)
+
+Sinds 8-10-2026 meet raadzoeker via Umami Cloud (Hobby); zie `ontwerp/meten.md`. Dit is de uitwijkroute als Hobby te krap blijkt (100.000 events per maand, 6 maanden bewaartijd) of als de data niet buiten de eigen server mag. Overstappen = onderaan `host` en `waar` in `docs/meet.js` aanpassen.
 
 Doel: zien hoe raadzoeker gebruikt wordt (pagina's en knoppen), zonder cookies en zonder namen. De site stuurt gebeurtenissen naar Umami via `docs/meet.js`; zolang daar geen host en id staan, gebeurt er niets. Wat er gemeten wordt en hoe je het leest: `ontwerp/meten.md`.
 
