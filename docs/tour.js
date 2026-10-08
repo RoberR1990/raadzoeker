@@ -128,7 +128,7 @@ function zichtbaar(el){if(!el)return false;const r=el.getBoundingClientRect();re
 function zoekEl(stap){for(const sel of [stap.s,stap.alt].filter(Boolean)){for(const el of document.querySelectorAll(sel)){const e=stap.p?el.parentElement:el;if(zichtbaar(e))return e;}}return null;}
 async function wacht(stap,ms=2500){const t0=Date.now();let el;while(!(el=zoekEl(stap))&&Date.now()-t0<ms)await new Promise(r=>setTimeout(r,150));return el;}
 function start(stappen){
-  stop();T={stappen,i:0};
+  stop();T={stappen,i:0};try{rzMeet('tour',{actie:'start',pagina:PAG});}catch(e){}
   T.laag=Object.assign(document.createElement('div'),{className:'rzt-laag'});T.laag.onclick=stop;
   T.spot=Object.assign(document.createElement('div'),{className:'rzt-spot leeg'});
   T.tip=Object.assign(document.createElement('div'),{className:'rzt-tip'});T.tip.setAttribute('role','dialog');T.tip.setAttribute('aria-live','polite');T.tip.tabIndex=-1;
@@ -136,10 +136,10 @@ function start(stappen){
   addEventListener('keydown',toets);addEventListener('resize',plaats);addEventListener('scroll',plaats,true);
   toon(0,1);
 }
-function stop(){if(!T)return;[T.laag,T.spot,T.tip].forEach(x=>x.remove());removeEventListener('keydown',toets);removeEventListener('resize',plaats);removeEventListener('scroll',plaats,true);T=null;}
+function stop(){if(!T)return;if(!T.klaar)try{rzMeet('tour',{actie:'stop',pagina:PAG,stap:T.i+1,van:T.stappen.length});}catch(e){}[T.laag,T.spot,T.tip].forEach(x=>x.remove());removeEventListener('keydown',toets);removeEventListener('resize',plaats);removeEventListener('scroll',plaats,true);T=null;}
 function toets(e){if(!T)return;if(e.key==='Escape')stop();else if(e.key==='ArrowRight')toon(T.i+1,1);else if(e.key==='ArrowLeft')toon(T.i-1,-1);}
 async function toon(i,richting){
-  if(!T)return;if(i<0)i=0;if(i>=T.stappen.length){stop();LS.set('tour-'+PAG,'ja');return;}
+  if(!T)return;if(i<0)i=0;if(i>=T.stappen.length){T.klaar=true;try{rzMeet('tour',{actie:'klaar',pagina:PAG,van:T.stappen.length});}catch(e){}stop();LS.set('tour-'+PAG,'ja');return;}
   const stap=T.stappen[i];if(stap.doe&&richting>0)try{stap.doe();}catch(e){}
   const el=stap.s?await wacht(stap,richting>0?2500:800):null;
   if(!T)return;
@@ -196,7 +196,7 @@ function welkom(){
     <p style="margin-bottom:18px">Zal ik je in een minuut laten zien hoe het werkt?</p>
     <div class="rzt-rij"><button type="button" data-a="ja">Ja, laat zien</button><button type="button" class="wit" data-a="later">Zelf rondkijken</button><button type="button" class="link" data-a="nee">Niet meer vragen</button></div>
     <p style="font-size:13px;color:#3E4B50;margin:14px 0 0">Je vindt de uitleg altijd terug onder het <b>?</b> rechtsboven.</p>`;
-  const dicht=(k)=>{LS.set('welkom',k);laag.remove();w.remove();};
+  const dicht=(k)=>{try{rzMeet('welkom',{keuze:k});}catch(e){}LS.set('welkom',k);laag.remove();w.remove();};
   w.querySelector('[data-a=ja]').onclick=()=>{dicht('ja');tourSite();};
   w.querySelector('[data-a=later]').onclick=()=>dicht('later');
   w.querySelector('[data-a=nee]').onclick=()=>dicht('nee');

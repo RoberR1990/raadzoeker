@@ -90,7 +90,7 @@ def main():
 <title>{titel} · raadzoeker</title><meta property="og:title" content="{titel}"><meta property="og:description" content="{oms}">
 <meta property="og:image" content="{SITE}deel/{s}.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
 <meta property="og:url" content="{SITE}deel/{s}.html"><meta name="twitter:card" content="summary_large_image">
-<meta http-equiv="refresh" content="0;url={doel}"></head><body><p><a href="{doel}">{titel}</a></p></body></html>''')
+<script>(function(){{var d="{doel}",s=location.search;if(s){{var i=d.indexOf("#");d=i<0?d+s:d.slice(0,i)+s+d.slice(i);}}location.replace(d);}})();</script><meta http-equiv="refresh" content="0;url={doel}"></head><body><p><a href="{doel}">{titel}</a></p></body></html>''')
         gedaan.append(s)
     json.dump(SIG,open(sigp,'w',encoding='utf8'),sort_keys=True,separators=(',',':'))
     json.dump(sorted(gedaan),open(os.path.join(out,'index.json'),'w',encoding='utf8'),separators=(',',':'))

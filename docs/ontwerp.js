@@ -1,4 +1,5 @@
 /* Gedeeld door de ontwerpschermen: kop, hulpfuncties, zoeklijst (combobox), uitklapbare rijen, deellinks. */
+window.rzMeet=window.rzMeet||function(n,d){const q=window.rzMeet.q=window.rzMeet.q||[];if(q.length<40)q.push([n,d]);};   /* meetlaag: wachtrij tot meet.js er is */
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const nf=n=>Number(n).toLocaleString('nl-NL');
@@ -62,8 +63,10 @@ function kop(actief){
       document.querySelectorAll('#bijgewerkt,.voetbij,.meersheet .bijgewerkt').forEach(x=>{x.classList.add('achter');x.title=m;});
       document.querySelectorAll('.voetbij .t,.meersheet .t').forEach(x=>x.textContent=t+' · loopt achter');el.setAttribute('aria-label',m);}}).catch(()=>{});
   voetB();
+  // meetlaag (meet.js): doet niets zolang host en website-id daar leeg zijn
+  if(!document.getElementById('rz-meet')){const m=document.createElement('script');m.id='rz-meet';m.src='meet.js?v=1';document.body.appendChild(m);}
   // rondleiding, hulpknop en welkomstvenster (tour.js)
-  if(!document.getElementById('rz-tour')){const t=document.createElement('script');t.id='rz-tour';t.src='tour.js?v=15';document.body.appendChild(t);const w=document.createElement('script');w.src='woorden.js?v=3';document.body.appendChild(w);const r=document.createElement('script');r.src='stad.js?v=4';document.body.appendChild(r);
+  if(!document.getElementById('rz-tour')){const t=document.createElement('script');t.id='rz-tour';t.src='tour.js?v=16';document.body.appendChild(t);const w=document.createElement('script');w.src='woorden.js?v=3';document.body.appendChild(w);const r=document.createElement('script');r.src='stad.js?v=5';document.body.appendChild(r);
     const c=document.createElement('script');c.src='citeer.js?v=1';window.rzCiteerKlaar=new Promise(ok=>{c.onload=ok;c.onerror=ok;});document.body.appendChild(c);}
   const ic=document.createElement('link');ic.rel='icon';ic.type='image/svg+xml';ic.href='logo.svg';document.head.appendChild(ic);
 }
@@ -179,9 +182,10 @@ function debatRij(x,termen){
 }
 /* deellinks: e-mail, Teams, WhatsApp en kopiëren */
 let DEELIX=null;   /* deel/index.json: slugs met een deelpagina (og-voorvertoning), geschreven door src/deelkaart.py */
+function metUtm(url,kanaal){const [a,h]=String(url).split('#');return a+(a.includes('?')?'&':'?')+'utm_source=deel&utm_medium='+kanaal+(h!==undefined?'#'+h:'');}
 function deel(el,titel,url,slug){
-  const maak=url=>{const u=encodeURIComponent(url),t=encodeURIComponent(titel);
-    el.innerHTML=`<span class="sub">Delen:</span> <a href="mailto:?subject=${t}&body=${t}%0A${u}">E-mail</a> · <a href="https://teams.microsoft.com/share?href=${u}&msgText=${t}" target="_blank" rel="noopener">Teams</a> · <a href="https://wa.me/?text=${t}%20${u}" target="_blank" rel="noopener">WhatsApp</a> · <button type="button" class="kopie" style="font:inherit;background:none;border:0;padding:0;text-decoration:underline;cursor:pointer">Kopieer link</button>`;
+  const maak=url=>{const uk=k=>encodeURIComponent(metUtm(url,k)),u=encodeURIComponent(url),t=encodeURIComponent(titel);
+    el.innerHTML=`<span class="sub">Delen:</span> <a href="mailto:?subject=${t}&body=${t}%0A${uk('mail')}">E-mail</a> · <a href="https://teams.microsoft.com/share?href=${uk('teams')}&msgText=${t}" target="_blank" rel="noopener">Teams</a> · <a href="https://wa.me/?text=${t}%20${uk('whatsapp')}" target="_blank" rel="noopener">WhatsApp</a> · <button type="button" class="kopie" style="font:inherit;background:none;border:0;padding:0;text-decoration:underline;cursor:pointer">Kopieer link</button>`;
     el.querySelector('.kopie').addEventListener('click',e=>{const k=e.target;if(window.rzKopieer){rzKopieer(url,'Link gekopieerd').then(ok=>{if(ok)k.textContent='Link gekopieerd';});return;}navigator.clipboard.writeText(url).then(()=>{k.textContent='Link gekopieerd';},()=>{prompt('Kopieer deze link',url);});});};
   maak(url);
   if(slug){DEELIX=DEELIX||fetch('deel/index.json').then(r=>r.ok?r.json():[]).catch(()=>[]);
@@ -200,7 +204,7 @@ function stemHTML(s){
 
 /* fout melden: venster met tekstvak, stuurt de pagina en waar het over gaat naar /api/fout (anoniem) */
 function rzFout(over){
-  document.getElementById('rz-fout')?.remove();
+  document.getElementById('rz-fout')?.remove();rzMeet('fout_open',{pagina:(location.pathname.split('/').pop()||'').replace('.html','')});
   const d=document.createElement('div');d.id='rz-fout';d.setAttribute('role','dialog');d.setAttribute('aria-modal','true');d.setAttribute('aria-labelledby','rzf-t');
   d.innerHTML=`<div class="rzf-laag"></div><form class="rzf"><h2 id="rzf-t">Fout melden</h2>
     <p>Klopt er iets niet, bijvoorbeeld een samenvatting, citaat, naam of koppeling? Laat het weten; dan kijk ik ernaar.</p>
@@ -213,7 +217,7 @@ function rzFout(over){
   d.addEventListener('keydown',e=>{if(e.key==='Escape')weg();});
   d.querySelector('form').onsubmit=async e=>{e.preventDefault();const st=d.querySelector('.rzf-st');st.textContent='Versturen…';
     try{const r=await fetch('/api/fout',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({pagina:location.href,over:over||'',tekst:x.value})});
-      if(!r.ok)throw 0;d.querySelector('form').innerHTML='<h2>Dank je!</h2><p>Je melding is ontvangen.</p><div class="rzf-rij"><button type="button">Sluiten</button></div>';d.querySelector('form button').onclick=weg;}
+      if(!r.ok)throw 0;rzMeet('fout_gemeld',{pagina:(location.pathname.split('/').pop()||'').replace('.html','')});d.querySelector('form').innerHTML='<h2>Dank je!</h2><p>Je melding is ontvangen.</p><div class="rzf-rij"><button type="button">Sluiten</button></div>';d.querySelector('form button').onclick=weg;}
     catch(_){st.textContent='Versturen lukte niet. Probeer het later nog eens.';}};
 }
 (()=>{const s=document.createElement('style');s.textContent=`#rz-fout{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;padding:16px}
