@@ -1,0 +1,46 @@
+# Umami voor raadzoeker: bezoekcijfers zonder cookies, op de NAS. Uitleg in README.md in deze map.
+# Container Manager -> Project -> Maken -> pad /volume1/docker/umami -> deze compose.yaml, naast een .env (kopie van .env.example).
+# Daarna: Bouwen, en dan Starten.
+services:
+  umami-db:
+    image: postgres:16-alpine
+    container_name: umami-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: umami
+      POSTGRES_USER: umami
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - /volume1/docker/umami/db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U umami -d umami"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+
+  umami:
+    image: docker.umami.is/umami-software/umami:latest   # na de eerste geslaagde start vastzetten op die versie (zie README)
+    container_name: umami
+    restart: unless-stopped
+    depends_on:
+      umami-db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://umami:${POSTGRES_PASSWORD}@umami-db:5432/umami
+      APP_SECRET: ${UMAMI_APP_SECRET}
+      DISABLE_TELEMETRY: "1"
+      CLIENT_IP_HEADER: cf-connecting-ip   # achter de tunnel komt het echte adres in deze header (alleen gebruikt voor land; niet bewaard)
+    ports:
+      - "3000:3000"                        # dashboard: alleen op je eigen netwerk. Via internet is alleen het meetpunt bereikbaar (zie tunnel)
+
+  # Meetpunt naar buiten: een Cloudflare Tunnel die ALLEEN script.js en /api/send doorlaat (zie cloudflared-config.yml.example).
+  # Het dashboard, de inlogpagina en de rest van de API zijn dus niet via internet bereikbaar.
+  tunnel:
+    image: cloudflare/cloudflared:latest
+    container_name: umami-tunnel
+    restart: unless-stopped
+    command: tunnel --no-autoupdate --config /etc/cloudflared/config.yml run
+    volumes:
+      - /volume1/docker/umami/tunnel:/etc/cloudflared:ro
+    depends_on:
+      - umami

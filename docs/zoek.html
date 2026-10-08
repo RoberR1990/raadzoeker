@@ -109,7 +109,7 @@ body.zq h1{font-size:24px;margin-bottom:8px}
  </div>
 </main>
 <script src="fzstd.js"></script>
-<script src="ontwerp.js?v=40"></script>
+<script src="ontwerp.js?v=41"></script>
 <script src="keten.js?v=14"></script>
 <script>
 kop('zoeken');
@@ -373,7 +373,7 @@ function zetHash(){const p=new URLSearchParams();const q=$('q').value.trim();
   if(V('fdom')!=='')p.set('d',LB.dom[+V('fdom')][0]);if(V('fgeb')!=='')p.set('g',LB.geb[+V('fgeb')]);if(V('van')!=='2018')p.set('van',V('van'));if(V('tot')!=='2026')p.set('tot',V('tot'));
   const wf=V('ffr')!==''?DB.M.par[+V('ffr')]:WACHT.f,ws=V('fsp')!==''?DB.M.spk[+V('fsp')]:WACHT.s;if(wf)p.set('f',wf);if(ws)p.set('s',ws);if(V('fbr')!=='')p.set('v',V('fbr'));if(groep)p.set('soort',groep);if(V('orde')==='d')p.set('orde','d');
   const sp=new URLSearchParams(location.search);sp.delete('q');const qs=sp.toString();history.replaceState(null,'',location.pathname+(qs?'?'+qs:'')+'#'+p.toString());}
-function logZoek(q,n){clearTimeout(logZoek.t);logZoek.t=setTimeout(()=>{if(!q||q===LOGQ)return;LOGQ=q;try{navigator.sendBeacon('/api/log',new Blob([JSON.stringify({q,n,pagina:'zoek'})],{type:'application/json'}));}catch(e){}},3000);}
+function logZoek(q,n){clearTimeout(logZoek.t);logZoek.t=setTimeout(()=>{if(!q||q===LOGQ)return;LOGQ=q;try{rzMeet('zoek',{n,leeg:n===0,woorden:q.split(/\s+/).length,exact:q.includes('"'),of:/\s(OF|\|)\s/.test(q),tab:TAB});}catch(e){}try{navigator.sendBeacon('/api/log',new Blob([JSON.stringify({q,n,pagina:'zoek'})],{type:'application/json'}));}catch(e){}},3000);}
 /* ---------- Kopieer voor Copilot: de bovenste treffers van de actieve tab als kant-en-klare opdracht (opbouw en limiet: rzCopilot in citeer.js) ---------- */
 const COP_BEURTEN=12,COP_BEURT_TEKENS=700,COP_STUKKEN=10,COP_STUK_TEKENS=500;
 const woordGrens=(t,i,naarVoren)=>{if(i<=0||i>=t.length)return Math.max(0,Math.min(t.length,i));const k=naarVoren?t.indexOf(' ',i):t.lastIndexOf(' ',i);return k<0?i:k;};

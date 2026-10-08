@@ -83,7 +83,7 @@ const EIEREN=[
   [/\bmaas\b/i,()=>{window.dispatchEvent(new CustomEvent('rz-ei',{detail:'maas'}));if(!document.getElementById('sg'))golf();toast('De Maas stroomt door alles heen. Ook door de raad.');}],
 ];
 let laatste='';
-window.rzEi=q=>{q=(q||'').trim();if(!q||q===laatste)return;laatste=q;for(const [rx,f] of EIEREN)if(rx.test(q)){f();break;}};
+window.rzEi=q=>{q=(q||'').trim();if(!q||q===laatste)return;laatste=q;for(const [rx,f] of EIEREN)if(rx.test(q)){f();if(window.rzMeet)rzMeet('ei',{naam:String(rx.source).slice(0,30)});break;}};
 window.rzToast=toast;
 
 function logoSpel(){
