@@ -1,6 +1,6 @@
 # Meten: wat, waarom en hoe lees je het
 
-Meetlaag: `docs/meet.js` (Umami). Installatie: `nas/umami/README.md`. Test: `node src/test_meet.js` (jsdom, zie kop van het bestand). Zolang `CONF.host` en `CONF.id` in `meet.js` leeg zijn, meet de site niets en blijft de privacytekst op Over verborgen.
+Meetlaag: `docs/meet.js` (Umami). Installatie: `nas/umami/README.md`. Test: `node src/test_meet.js` (jsdom, zie kop van het bestand). Aan sinds 8-10-2026 via Umami Cloud (Hobby: 100.000 events per maand, 1 website, 6 maanden bewaartijd, geen API). Zijn `CONF.host` of `CONF.id` in `meet.js` leeg, dan meet de site niets en blijft de privacytekst op Over verborgen.
 
 ## Wat Umami te zien krijgt (en wat niet)
 

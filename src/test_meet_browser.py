@@ -15,6 +15,13 @@ RUSTIG = ("try{localStorage.setItem('rz-welkom','nee');for(const k of ['startpag
           "'domeinen','verkenner','beloofd','over','hulp'])localStorage.setItem('rz-tour-'+k,'ja');}catch(e){}")
 RES = []
 FOUTEN = []
+PROD = open('docs/meet.js', encoding='utf8').read()
+
+
+def leeg(s):
+    """productieconfig -> lege config, zodat de test niet afhangt van host en id in meet.js"""
+    s = re.sub(r"(const CONF=\{[\s\S]*?)host:'[^']*'", r"\1host:''", s, count=1)
+    return re.sub(r"(const CONF=\{[\s\S]*?)\bid:'[^']*'", r"\1id:''", s, count=1)
 
 
 def uitslag(naam, ok, tekst=''):
@@ -55,6 +62,7 @@ def main():
         b = pw.chromium.launch()
         ctx = b.new_context(viewport={'width': 1280, 'height': 900})
         ctx.add_init_script(RUSTIG + "try{localStorage.setItem('rz-meetdebug','1');}catch(e){}")
+        ctx.route(re.compile(r'.*/meet\.js.*'), lambda r: r.fulfill(status=200, content_type='application/javascript', body=leeg(PROD)))
 
         p = pagina(ctx, 'start')
         p.goto(LOKAAL + 'index.html')
@@ -141,7 +149,7 @@ def main():
         b = pw.chromium.launch(args=['--host-resolver-rules=MAP raadzoeker.nl 127.0.0.1, MAP stats.test 127.0.0.1'])
         ctx = b.new_context(viewport={'width': 1280, 'height': 900})
         ctx.add_init_script(RUSTIG)
-        meet = open('docs/meet.js', encoding='utf8').read().replace("host:''", "host:'https://stats.test'").replace("id:''", "id:'site-123'")
+        meet = leeg(PROD).replace("host:''", "host:'https://stats.test'").replace("id:''", "id:'site-123'")
         ctx.route(re.compile(r'.*/meet\.js.*'), lambda r: r.fulfill(status=200, content_type='application/javascript', body=meet))
         ctx.route('https://stats.test/script.js', lambda r: r.fulfill(status=200, content_type='application/javascript', body=STUB))
 

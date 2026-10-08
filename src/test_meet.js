@@ -6,12 +6,15 @@
 const fs = require('fs'), path = require('path'), assert = require('assert');
 const { JSDOM } = require('jsdom');
 const ONT = path.join(__dirname, '..', 'docs');
-const MEET = fs.readFileSync(path.join(ONT, 'meet.js'), 'utf8');
+const PROD = fs.readFileSync(path.join(ONT, 'meet.js'), 'utf8');   // productieconfig
+const LEEG = s => s.replace(/(const CONF=\{[\s\S]*?)host:'[^']*'/, "$1host:''").replace(/(const CONF=\{[\s\S]*?)\bid:'[^']*'/, "$1id:''");
+const MEET = LEEG(PROD);   // alle tests gaan uit van een lege config, tenzij ze AAN gebruiken
 const ONTW = fs.readFileSync(path.join(ONT, 'ontwerp.js'), 'utf8');
 const STUB = ONTW.split('\n').find(l => l.startsWith('window.rzMeet=window.rzMeet||'));
 assert(STUB, 'stub in ontwerp.js ontbreekt');
 const AAN = MEET.replace("host:''", "host:'https://stats.test'").replace("id:''", "id:'site-123'");
 assert(AAN !== MEET, 'CONF niet gevonden in meet.js');
+assert(/host:''/.test(MEET) && /\bid:''/.test(MEET), 'LEEG() maakt de config niet leeg');
 
 let ok = 0, fout = 0;
 const t = (naam, f) => { try { f(); ok++; console.log('OK   ' + naam); } catch (e) { fout++; console.log('FOUT ' + naam + ' :: ' + e.message); } };
@@ -36,6 +39,15 @@ const namen = w => log(w).map(x => x[0]);
 const BASIS = 'https://raadzoeker.nl/';
 
 (async () => {
+  /* ---- productieconfig ---- */
+  t('productieconfig: Umami Cloud, geldig website-id, alleen raadzoeker.nl', () => {
+    const c = PROD.match(/const CONF=\{([\s\S]*?)\};/)[1];
+    assert(/host:'https:\/\/cloud\.umami\.is'/.test(c), 'host');
+    assert(/\bid:'[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'/.test(c), 'website-id is geen uuid');
+    assert(/domeinen:'raadzoeker\.nl'/.test(c), 'domeinen');
+    assert(/script:'script\.js'/.test(c), 'script');
+  });
+
   /* ---- uit zolang er geen host en id is ---- */
   t('zonder host/id: niets actief, rzMeet is een veilige no-op', () => {
     const w = pagina(BASIS + 'dossier.html#parkeren');
@@ -229,7 +241,7 @@ const BASIS = 'https://raadzoeker.nl/';
     await wacht(60);
     const li = aan.document.getElementById('meetpriv');
     assert.strictEqual(li.hidden, false);
-    assert(/Umami/.test(li.textContent) && /eigen server/.test(li.textContent));
+    assert(/Umami/.test(li.textContent) && /Umami Cloud/.test(li.textContent));
     assert.strictEqual(aan.document.getElementById('meetfaq').hidden, false);
     const kn = aan.document.getElementById('meetknop');
     assert.strictEqual(kn.textContent, 'Mijn bezoeken niet meetellen');
@@ -253,7 +265,7 @@ const BASIS = 'https://raadzoeker.nl/';
     assert(lees('stad.js').includes("rzMeet('ei'"), 'easter eggs');
     const tour = lees('tour.js');
     for (const x of ["actie:'start'", "actie:'klaar'", "actie:'stop'", "rzMeet('welkom'"]) assert(tour.includes(x), 'tour ' + x);
-    assert(ONTW.includes("m.src='meet.js?v=1'"), 'meet.js wordt geladen door kop()');
+    assert(/m\.src='meet\.js\?v=\d+'/.test(ONTW), 'meet.js wordt geladen door kop()');
     assert(lees('over.html').includes('id="meetpriv"') && lees('over.html').includes('id="meetfaq"'), 'over.html');
   });
   t('syntaxis: ontwerp.js, tour.js, stad.js, meet.js en de scripts in zoek.html/over.html', () => {
