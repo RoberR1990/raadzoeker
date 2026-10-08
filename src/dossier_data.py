@@ -1,5 +1,5 @@
 # Fase 3: één dossierbestand per domein, onderwerp en kruising (domein x gebied).
-#   python src/dossier_data.py  -> docs/ontwerp/d/<slug>.json, d/index.json (zoeklijst, kruimelpad) en d/overzicht.json (startpagina, Domeinen)
+#   python src/dossier_data.py  -> docs/d/<slug>.json, d/index.json (zoeklijst, kruimelpad) en d/overzicht.json (startpagina, Domeinen)
 # Bron: de domeinlabels (WERK/labels/domein.json, fase 1) en gebiedslabels (WERK/labels/gebied.json, fase 2).
 # Zelfde velden als de onderwerpdossiers uit ontwerp_data.py, zodat dossier.html ze op dezelfde manier toont.
 # Debatten: agendapunten van de gemeenteraad met dat domein (en bij een kruising: die het gebied noemen).
@@ -9,7 +9,7 @@ from paden import WERK,DOCS,STAND
 import domeinen as D
 from ontwerp_data import zload,iso,kort,motiekern
 
-OUT=os.path.join(DOCS,'ontwerp','d')
+OUT=os.path.join(DOCS,'d')
 def slug(s):   # gelijk aan slug() in ontwerp.js
     s=''.join(c for c in unicodedata.normalize('NFD',s.lower()) if unicodedata.category(c)!='Mn').replace('&',' ')
     return re.sub(r'[^a-z0-9]+','-',s).strip('-')
@@ -119,7 +119,7 @@ def main():
                         'ind':[[p,c,ok[p]] for p,c in ind.most_common(8)],'tz':[[w,c,tzo[w]] for w,c in tz.most_common(5)],
                         'nip':[rij(r) for r in nip[:6]],'ver':[],'wijk':{g:round(100*c/tg,1) for g,c in gebtel.items()}}}
 
-    THS={x['naam']:x.get('tsum') for x in json.load(open(os.path.join(DOCS,'ontwerp','dossiers.json'),encoding='utf8'))['dossiers']}
+    THS={x['naam']:x.get('tsum') for x in json.load(open(os.path.join(DOCS,'dossiers.json'),encoding='utf8'))['dossiers']}
     HOOFDTHEMA={'wonen':'Wonen','buitenruimte':'Buitenruimte & afval','mobiliteit':'Mobiliteit & verkeer','economie':'Economie & haven','klimaat':'Energie & klimaat',
         'veiligheid':'Veiligheid & handhaving','zorg':'Zorg, welzijn & jeugd','onderwijs':'Onderwijs','werk':'Werk & inkomen','samenleven':'Discriminatie & inclusie',
         'cultuur':'Cultuur, sport & evenementen','bestuur':'Dienstverlening & organisatie','financien':'Financiën & belastingen'}
@@ -133,7 +133,7 @@ def main():
         for a in aps: gebtel.update(a['geb'])
         ws=[x for x in wst if x[1]==ds]
         sl=slug(dn); obj=bouw(dn,'Domeinen','domein',[['Dossiers','domeinen.html']],rs,aps,gebtel,ws)
-        obj['gebieden']=dict(gebtel); obj['domein']=sl; obj['code']=ds; obj['tsum']=THS.get(HOOFDTHEMA[ds]); obj['tsum_thema']=HOOFDTHEMA[ds]; obj['ai']=os.path.exists(os.path.join(DOCS,'ontwerp','samenvattingen',sl+'.json')); schrijf(sl+'.json',obj)
+        obj['gebieden']=dict(gebtel); obj['domein']=sl; obj['code']=ds; obj['tsum']=THS.get(HOOFDTHEMA[ds]); obj['tsum_thema']=HOOFDTHEMA[ds]; obj['ai']=os.path.exists(os.path.join(DOCS,'samenvattingen',sl+'.json')); schrijf(sl+'.json',obj)
         index.append({'slug':sl,'naam':dn,'groep':'Domein','soort':'domein','domein':sl,'ai':obj['ai']})
         kr={}
         for gn in GNAAM.values():
@@ -151,18 +151,18 @@ def main():
     for gn in GNAAM.values():
         rg=[r for r,d,gg in stuk if gn in gg]; ag=[a for a in aps_all if gn in a['geb']]; wg=[x for x in wst if gn in x[2]]
         o=bouw(gn,'Gebieden','gebied',[['Gebieden','wijk.html']],rg,ag,{gn:1},wg); o['gebied']=gn
-        o['ai']=os.path.exists(os.path.join(DOCS,'ontwerp','samenvattingen',slug(gn)+'.json'))   # AI-samenvatting (gebied_in.py)
+        o['ai']=os.path.exists(os.path.join(DOCS,'samenvattingen',slug(gn)+'.json'))   # AI-samenvatting (gebied_in.py)
         o['tsum']=THS.get(gn); o['tsum_thema']=gn
         schrijf(slug(gn)+'.json',o); index.append({'slug':slug(gn),'naam':gn,'groep':'Gebied','soort':'gebied','gebied':gn,'ai':o['ai']})
     # onderwerpen (38) en het overkoepelende onderwerp Parkeren: bestaande dossiers, nu onder een domein
     TH={'Parkeren':'mobiliteit','Mobiliteit & verkeer':'mobiliteit','Buitenruimte & afval':'buitenruimte','Veiligheid & handhaving':'veiligheid','Economie & haven':'economie',
         'Cultuur, sport & evenementen':'cultuur','Werk & inkomen':'werk','Wonen':'wonen','Zorg, welzijn & jeugd':'zorg','Asiel & migratie':'samenleven','Energie & klimaat':'klimaat',
         'Onderwijs':'onderwijs','Bouwen & ruimte':'wonen','Financiën & belastingen':'financien','Dienstverlening & organisatie':'bestuur','Discriminatie & inclusie':'samenleven','Participatie & inspraak':'bestuur'}
-    ond=json.load(open(os.path.join(DOCS,'ontwerp','onderwerpen.json'),encoding='utf8'))['onderwerpen']
-    dos=json.load(open(os.path.join(DOCS,'ontwerp','dossiers.json'),encoding='utf8'))['dossiers']
+    ond=json.load(open(os.path.join(DOCS,'onderwerpen.json'),encoding='utf8'))['onderwerpen']
+    dos=json.load(open(os.path.join(DOCS,'dossiers.json'),encoding='utf8'))['dossiers']
     pk=next(x for x in dos if x['naam']=='Parkeren')
     pk=dict(pk,soort='onderwerp',groep=DN['mobiliteit'],pad=[['Dossiers','domeinen.html'],[DN['mobiliteit'],'#'+slug(DN['mobiliteit'])]],stand=STAND)
-    pk['ai']=os.path.exists(os.path.join(DOCS,'ontwerp','samenvattingen','parkeren.json'))
+    pk['ai']=os.path.exists(os.path.join(DOCS,'samenvattingen','parkeren.json'))
     schrijf('parkeren.json',pk); index.append({'slug':'parkeren','naam':'Parkeren','groep':DN['mobiliteit'],'soort':'onderwerp','domein':slug(DN['mobiliteit']),'sub':pk['sub'],'termen':pk['termen'],'ai':pk['ai']})
     for o in ond:
         ds=TH.get(o['groep']);
@@ -170,21 +170,21 @@ def main():
         pad=[['Dossiers','domeinen.html'],[DN[ds],'#'+slug(DN[ds])]]+([['Parkeren','#parkeren']] if o['groep']=='Parkeren' else [])
         # alleen een samenvatting die over dit onderwerp zelf gaat, niet die van het bredere thema (THS): dan toont de pagina 'nog geen samenvatting'
         sl=slug(o['naam']); o=dict(o,tsum=o.get('tsum'),tsum_thema=o['naam'] if o.get('tsum') else None)
-        x=dict(o,groep='Parkeren' if o['groep']=='Parkeren' else DN[ds],pad=pad,stand=STAND,ai=os.path.exists(os.path.join(DOCS,'ontwerp','samenvattingen',sl+'.json')))
+        x=dict(o,groep='Parkeren' if o['groep']=='Parkeren' else DN[ds],pad=pad,stand=STAND,ai=os.path.exists(os.path.join(DOCS,'samenvattingen',sl+'.json')))
         schrijf(sl+'.json',x); index.append({'slug':sl,'naam':o['naam'],'groep':x['groep'],'soort':'onderwerp','domein':slug(DN[ds]),'ai':x['ai'],'sub':[],'termen':o['termen']})
     # thema's dwars door de organisatie (uit de 41 thema's, met hun korte samenvatting): eigen dossiers onder Domeinen
-    for o in json.load(open(os.path.join(DOCS,'ontwerp','onderwerpen.json'),encoding='utf8')).get('dwars',[]):
+    for o in json.load(open(os.path.join(DOCS,'onderwerpen.json'),encoding='utf8')).get('dwars',[]):
         sl=slug(o['naam'])
         x=dict(o,soort='thema',groep='Dwars door de organisatie',pad=[['Dossiers','domeinen.html'],['Dwars door de organisatie','domeinen.html#dwars']],stand=STAND,tsum_thema=o['naam'],
-               ai=os.path.exists(os.path.join(DOCS,'ontwerp','samenvattingen',sl+'.json')))
+               ai=os.path.exists(os.path.join(DOCS,'samenvattingen',sl+'.json')))
         schrijf(sl+'.json',x); index.append({'slug':sl,'naam':o['naam'],'groep':'Dwars door de organisatie','soort':'thema','ai':x['ai'],'sub':[s[0] for s in o.get('sub',[])] if o.get('sub') and isinstance(o['sub'][0],list) else (o.get('sub') or []),'termen':o['termen'],
                       'kern':((o.get('tsum') or {}).get('kern') or '')[:220]})
     # woordwolk voor de startpagina: onderwerpen en gebieden, grootte = aandacht in de raad dit jaar (per 100.000 woorden)
     wolk=[]
     for o in ond+[pk]:
-        if len(o.get('trend',[]))>=2 and o['naam']!='Wijkraden en participatie': wolk.append([o['naam'],'onderwerp',slug(o['naam']),o['trend'][-1],o['trend'][-2],bool(os.path.exists(os.path.join(DOCS,'ontwerp','samenvattingen',slug(o['naam'])+'.json')))])
+        if len(o.get('trend',[]))>=2 and o['naam']!='Wijkraden en participatie': wolk.append([o['naam'],'onderwerp',slug(o['naam']),o['trend'][-1],o['trend'][-2],bool(os.path.exists(os.path.join(DOCS,'samenvattingen',slug(o['naam'])+'.json')))])
     for o in dos:
-        if o['groep']=='Wijken en gebieden' and o['naam'] in GNAAM.values(): wolk.append([o['naam'],'gebied',slug(o['naam']),o['trend'][-1],o['trend'][-2],bool(os.path.exists(os.path.join(DOCS,'ontwerp','samenvattingen',slug(o['naam'])+'.json')))])
+        if o['groep']=='Wijken en gebieden' and o['naam'] in GNAAM.values(): wolk.append([o['naam'],'gebied',slug(o['naam']),o['trend'][-1],o['trend'][-2],bool(os.path.exists(os.path.join(DOCS,'samenvattingen',slug(o['naam'])+'.json')))])
     overzicht['wolk']=wolk
     for e in index:   # voorbeelddossiers (showcase.py, parkeren_rdw.py): vlag, zodat de pagina geen bestanden opvraagt die er niet zijn
         for k,f in(('extra','-extra'),('kaart','-kaart')):
@@ -200,7 +200,7 @@ def main():
     raw=json.dumps({'dom':[[slug(DN[x]),DN[x]] for x in SL],'geb':GL,'d':dd,'g':gm},separators=(',',':')).encode()
     open(os.path.join(DOCS,'data','tekst','labels.zst'),'wb').write(zstandard.ZstdCompressor(level=19).compress(raw))
     # stand in de pagina's
-    js=os.path.join(DOCS,'ontwerp','ontwerp.js'); t=open(js,encoding='utf8').read()
+    js=os.path.join(DOCS,'ontwerp.js'); t=open(js,encoding='utf8').read()
     open(js,'w',encoding='utf8').write(re.sub(r"const STAND='[\d-]+';",f"const STAND='{STAND}';",t))
     print(len(index),'dossiers;',sum(os.path.getsize(os.path.join(OUT,f)) for f in os.listdir(OUT))//1000,'kB totaal')
 

@@ -1,5 +1,5 @@
 # Verkenner: kennisgraaf van alles wat de raad zei en schreef (proef 5-10-2026).
-#   python src/verkenner.py  -> docs/ontwerp/verkenner.json (graaf + filters) en verkenner-vb.json (voorbeeldfragmenten)
+#   python src/verkenner.py  -> docs/verkenner.json (graaf + filters) en verkenner-vb.json (voorbeeldfragmenten)
 # Eenheden: debatbeurten (spreker x agendapunt) en officiële stukken. Knopen: de onderwerpen (zoekpatronen uit onderwerpen.py),
 # de gebieden en wijken, en ca. 2.400 kenmerkende begrippen. Kenmerkend = komt in genoeg eenheden voor en is ongelijk verdeeld
 # over de domeinen of gebieden (algemene woorden zoals 'belangrijk' vallen zo vanzelf af). Namen van personen gaan eruit.
@@ -85,7 +85,7 @@ def grootste(d):
 
 def herindeel():
     """alleen de indeling opnieuw, op de bestaande verkenner.json"""
-    p=os.path.join(DOCS,'ontwerp','verkenner.json'); d=json.load(open(p,encoding='utf8'))
+    p=os.path.join(DOCS,'verkenner.json'); d=json.load(open(p,encoding='utf8'))
     d=grootste(d)
     e=np.array([[a,b,w] for a,b,w,c in d['e']],float)
     X=fa2(len(d['knopen']),e[:,0].astype(int),e[:,1].astype(int),e[:,2])
@@ -101,7 +101,7 @@ def main():
     for n in dm['spk']:
         for w in re.findall(r'[^\W\d_]+',n): pers.add(T.fold(w))
     pers|={T.fold(x) for x in GB.achternamen()}
-    wk=json.load(open(os.path.join(DOCS,'ontwerp','wijken.json'),encoding='utf8'))['wijken']
+    wk=json.load(open(os.path.join(DOCS,'wijken.json'),encoding='utf8'))['wijken']
     GENERIEK={T.stam(x) for x in ('nieuwe','nieuw','west','westen','oost','oosten','noord','zuid','groot','grote','oude','holland','hoek','centrum','stad','dorp','park','haven','polder','oever','kade','plein')}
     plek={T.stam(T.fold(w)) for g in GL+[x['naam'] for x in wk] for w in re.findall(r'[^\W\d_]+',g) if len(w)>=5}-GENERIEK
     ST=json.load(open(os.path.join(WERK,'gebied','straten.json'),encoding='utf8'))
@@ -251,9 +251,9 @@ def main():
     uit=grootste(uit)
     e=np.array([[a,b,w] for a,b,w,c in uit['e']],float); X=fa2(len(uit['knopen']),e[:,0].astype(int),e[:,1].astype(int),e[:,2])
     for k,(x,y) in zip(uit['knopen'],X.tolist()): k['x']=round(x,1); k['y']=round(y,1)
-    json.dump(uit,open(os.path.join(DOCS,'ontwerp','verkenner.json'),'w',encoding='utf8'),ensure_ascii=False,separators=(',',':'))
-    json.dump({knopen[o]['id']:vb[o][1] for o in houd if o in vb},open(os.path.join(DOCS,'ontwerp','verkenner-vb.json'),'w',encoding='utf8'),ensure_ascii=False,separators=(',',':'))
-    print(M,'knopen',len(uit['e']),'verbanden',os.path.getsize(os.path.join(DOCS,'ontwerp','verkenner.json'))//1000,'kB')
+    json.dump(uit,open(os.path.join(DOCS,'verkenner.json'),'w',encoding='utf8'),ensure_ascii=False,separators=(',',':'))
+    json.dump({knopen[o]['id']:vb[o][1] for o in houd if o in vb},open(os.path.join(DOCS,'verkenner-vb.json'),'w',encoding='utf8'),ensure_ascii=False,separators=(',',':'))
+    print(M,'knopen',len(uit['e']),'verbanden',os.path.getsize(os.path.join(DOCS,'verkenner.json'))//1000,'kB')
     print('voorbeeld:',[n['l'] for n in sorted(uit_n,key=lambda n:-n['n'])[:80]])
 if __name__=='__main__':
     import sys

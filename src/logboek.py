@@ -1,4 +1,4 @@
-# Logboek 'Wat is er nieuw' -> docs/data/logboek.json (pagina docs/ontwerp/nieuw.html, link achter 'bijgewerkt' in de kop).
+# Logboek 'Wat is er nieuw' -> docs/data/logboek.json (pagina docs/nieuw.html, link achter 'bijgewerkt' in de kop).
 #   python src/logboek.py voor   vóór de run: legt de huidige stand vast in WERK/logboek_voor.json
 #   python src/logboek.py na     na de run: vergelijkt, en voegt alleen bij verschil een regel toe
 # Bewaart de regels van de laatste 3 dagen, maximaal 50, maar altijd minstens de laatste 10.
@@ -23,9 +23,9 @@ def stand():
             k=r[7] or f'{r[0]}|{r[1]}|{r[2]}'
             st[k]=[S[r[0]],r[1],r[2],r[5] or '',r[7] if len(r[7] or '')==36 else '']
     except (OSError,ValueError,KeyError): pass
-    verg={v['id']:[v['datum'],v['naam'],v.get('kort','')] for v in lees(os.path.join(DOCS,'ontwerp','verg','index.json'),[])}
+    verg={v['id']:[v['datum'],v['naam'],v.get('kort','')] for v in lees(os.path.join(DOCS,'verg','index.json'),[])}
     vo={}
-    for v in lees(os.path.join(DOCS,'ontwerp','verg','vooruit.json'),{}).get('v',[]):
+    for v in lees(os.path.join(DOCS,'verg','vooruit.json'),{}).get('v',[]):
         vo[v.get('agendaId','')]=[v.get('datum',''),v.get('naam',''),len(v.get('punten',[]))]
     return {'stukken':st,'verg':verg,'vooruit':vo}
 

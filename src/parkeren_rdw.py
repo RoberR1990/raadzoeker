@@ -1,5 +1,5 @@
 # Betaald parkeren door de jaren, uit RDW Open Data Parkeren (gebiedsbeheerder 599 = Rotterdam).
-#   python src/parkeren_rdw.py  -> WERK/parkeren/*.json (ruw) en docs/ontwerp/d/parkeren-kaart.json
+#   python src/parkeren_rdw.py  -> WERK/parkeren/*.json (ruw) en docs/d/parkeren-kaart.json
 # Per parkeerzone (contour uit GEOMETRIE GEBIED) en per jaar (peildatum 1 juli; 2026: de stand van vandaag):
 # geldt er betaald parkeren (GEBIED REGELING, gebruik BETAALDP), en wat kost een uur op een woensdag om 12:00
 # (REGELING -> TIJDVAK -> TARIEFDEEL). Ook de regelingen die al in de toekomst ingaan (zoals uitbreidingen in 2026) worden meegenomen.
@@ -78,6 +78,6 @@ def main():
     out={'stand':STAND,'bron':'RDW Open Data Parkeren (gebiedsbeheerder Rotterdam), opgehaald '+datetime.date.today().isoformat(),'jaren':jaren,'zones':zones,'stat':stat,'wijken':wstat,
          'kader':{'tekst':"Volgens het Kader voor de invoering van betaald parkeren (raadsvoorstel, september 2026) en het coalitieakkoord komt er gefaseerd betaald parkeren in heel Rotterdam, behalve in de kleine kernen Hoek van Holland, Rozenburg, Pernis en Heijplaat.",
                   'url':'https://gemeenteraad.rotterdam.nl/Reports/Item/8e50c477-d4b0-4410-a0bc-9baa957af4f8'}}
-    json.dump(out,open(os.path.join(DOCS,'ontwerp','d','parkeren-kaart.json'),'w',encoding='utf8'),ensure_ascii=False,separators=(',',':'))
+    json.dump(out,open(os.path.join(DOCS,'d','parkeren-kaart.json'),'w',encoding='utf8'),ensure_ascii=False,separators=(',',':'))
     print(len(zones),'zones',{j:(s['zones'],s['mediaan']) for j,s in stat.items()},'gepland',sum(1 for z in zones if z['gepland']),collections.Counter(wstat.values()))
 if __name__=='__main__': main()

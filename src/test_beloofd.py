@@ -1,4 +1,4 @@
-"""Test de beloftemonitor (docs/ontwerp/beloofd.html).
+"""Test de beloftemonitor (docs/beloofd.html).
 Start eerst een server:  python3 -m http.server 8772 -d docs
 Draai:                   python3 src/test_beloofd.py
 """
@@ -6,7 +6,7 @@ import os, re, sys
 from playwright.sync_api import sync_playwright
 
 PORT = 8772
-BASE = f'http://localhost:{PORT}/ontwerp/'
+BASE = f'http://localhost:{PORT}/'
 SHOTS = '/tmp/claude-0/-home-claude/27462a42-c492-5a46-80c7-d7eb1ac7cf72/scratchpad/beloofd/'
 os.makedirs(SHOTS, exist_ok=True)
 RUSTIG = "try{localStorage.setItem('rz-welkom','nee');for(const k of ['startpagina','zoek','dossier','vergadering','wijk','lab','domeinen','verkenner','beloofd'])localStorage.setItem('rz-tour-'+k,'ja');}catch(e){}"

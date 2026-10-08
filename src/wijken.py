@@ -1,4 +1,4 @@
-# Wijken (71, indeling Wijkprofiel Rotterdam) -> docs/ontwerp/wijken.json en wijkkaart.json
+# Wijken (71, indeling Wijkprofiel Rotterdam) -> docs/wijken.json en wijkkaart.json
 # Per wijk: CBS-buurten (kaart, kerncijfers 2022-2025), Wijkprofiel-indexen 2014-2026, vermeldingen in de raad per jaar
 # (wijknamen herkend in spreekbeurten), onderwerpen in dezelfde spreekbeurten, moties/toezeggingen/vragen die de wijk noemen.
 # Bronnen in WERK: wijk/wijken.json (namen), wijk/wijkprofiel.json, kaart/buurten_JAAR.json (PDOK CBS).
@@ -202,7 +202,7 @@ def lmain():
             'bekend':{'n':dict(sorted(bm[w['slug']]['n'].items())),'soort':bm[w['slug']]['soort'].most_common(8),'recent':bm[w['slug']]['recent']},
             'wrv':{'n':wv[w['slug']]['n'],'raad':sorted(wv[w['slug']]['raad']),'recent':wv[w['slug']]['recent']}})
     json.dump({'jaren':jr,'bron_wp':'Cijfers: gemeente Rotterdam; OBI, Wijkprofiel 2014-2026','bron_cbs':'CBS Kerncijfers wijken en buurten 2022-2025, via PDOK','wijken':out},
-              open(os.path.join(DOCS,'ontwerp','wijken.json'),'w',encoding='utf8'),ensure_ascii=False,separators=(',',':'))
-    print(len(out),'wijken',os.path.getsize(os.path.join(DOCS,'ontwerp','wijken.json'))//1000,'kB')
+              open(os.path.join(DOCS,'wijken.json'),'w',encoding='utf8'),ensure_ascii=False,separators=(',',':'))
+    print(len(out),'wijken',os.path.getsize(os.path.join(DOCS,'wijken.json'))//1000,'kB')
     for w in sorted(out,key=lambda w:-sum(w['n'].values()))[:12]: print(w['naam'],sum(w['n'].values()),w['stukken'].get('Motie',0),w['cbs'].get('2024',{}).get('inw'),w['wp'].get('2026'))
 if __name__=='__main__': lmain()

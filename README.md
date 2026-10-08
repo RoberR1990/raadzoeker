@@ -9,7 +9,7 @@ Wat de Rotterdamse raad zegt, besluit en belooft, op één plek: **https://raadz
 
 ## Mappen
 
-- `docs/` — de site (statisch, Cloudflare Pages), met de data in `docs/data/` en `docs/ontwerp/`
+- `docs/` — de site (statisch, Cloudflare Pages), met de data in `docs/data/` en `docs/`
 - `functions/` — kleine serverfuncties (anonieme zoekteller, fout melden, meldingen)
 - `src/` — pijplijn: ophalen, verwerken, controleren
 - `data/` — samenvattingen
@@ -20,7 +20,7 @@ Zie `CLAUDE.md` voor opbouw, dataformaat, beperkingen en volgende stappen.
 
 ## Open data en privacy
 
-Alle informatie komt uit openbare bronnen: iBabs van de gemeenteraad en de wijkraden van Rotterdam, de openbare video en ondertiteling van de vergaderingen, officielebekendmakingen.nl, CBS, PDOK, RDW Open Data, Rekenkamer Rotterdam en Ombudsman Rotterdam-Rijnmond. Geen accounts, geen tracking, geen opgeslagen IP-adressen; namen van insprekers en bewoners worden niet getoond. Zie https://raadzoeker.nl/ontwerp/over.html#privacy.
+Alle informatie komt uit openbare bronnen: iBabs van de gemeenteraad en de wijkraden van Rotterdam, de openbare video en ondertiteling van de vergaderingen, officielebekendmakingen.nl, CBS, PDOK, RDW Open Data, Rekenkamer Rotterdam en Ombudsman Rotterdam-Rijnmond. Geen accounts, geen tracking, geen opgeslagen IP-adressen; namen van insprekers en bewoners worden niet getoond. Zie https://raadzoeker.nl/over.html#privacy.
 
 Onofficieel hulpmiddel van Robert Riteco; geen product van de gemeente Rotterdam of de griffie.
 

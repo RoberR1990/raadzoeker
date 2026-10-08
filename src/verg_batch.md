@@ -11,8 +11,8 @@ Werkmap: `D:\Raadzoeker` (Bash: `cd /d/Raadzoeker`, altijd `PYTHONUTF8=1`). Doel
    > (enz.)
    > Antwoord aan het eind alleen met de uitvoerpaden.
 5. **Wachten** tot alle 4 klaar zijn (meldingen komen vanzelf; niet pollen).
-6. **Controleren en publiceren**: `PYTHONUTF8=1 python src/verg_batch.py check` (citaatcontrole, schrapt wat niet letterlijk klopt, schrijft `docs/ontwerp/verg/`). Een FOUT bij één vergadering: noteren, verder gaan.
-7. **Online zetten**: `git add -A docs/ontwerp/verg && git commit -m "Vergaderingen: N vergaderingen samengevat (terugwerkend)" && git pull --rebase --autostash && git push`. Commit-bericht eindigen met `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`.
+6. **Controleren en publiceren**: `PYTHONUTF8=1 python src/verg_batch.py check` (citaatcontrole, schrapt wat niet letterlijk klopt, schrijft `docs/verg/`). Een FOUT bij één vergadering: noteren, verder gaan.
+7. **Online zetten**: `git add -A docs/verg && git commit -m "Vergaderingen: N vergaderingen samengevat (terugwerkend)" && git pull --rebase --autostash && git push`. Commit-bericht eindigen met `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`.
 8. Herhaal vanaf stap 1 zolang het aantal toegestane golven niet bereikt is.
 9. **Melden** (kort, Nederlands, bullets): hoeveel samengevat, hoeveel nog te doen, geschrapte beweringen, verbruik voor/na.
 

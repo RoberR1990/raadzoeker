@@ -1,13 +1,13 @@
 # Deelkaarten (1200x630) voor alle dossiers in d/index.json (domeinen, onderwerpen, thema's, gebieden; geen kruisingen)
-#   -> docs/ontwerp/deel/<slug>.png + <slug>.html + deel/index.json (lijst slugs; ontwerp.js linkt alleen naar een deelpagina die bestaat).
+#   -> docs/deel/<slug>.png + <slug>.html + deel/index.json (lijst slugs; ontwerp.js linkt alleen naar een deelpagina die bestaat).
 # De .html heeft og:-gegevens voor een voorvertoning in Teams/WhatsApp en stuurt door naar dossier.html#slug of wijk.html#slug.
-# Cijfers volgen de telregel van docs/ontwerp/tel.js (bron d/<slug>.json, of het beloftespoor in d/<slug>-extra.json als dat bestaat).
+# Cijfers volgen de telregel van docs/tel.js (bron d/<slug>.json, of het beloftespoor in d/<slug>-extra.json als dat bestaat).
 # Lettertype: map in env RZ_FONTS (met arial.ttf en arialbd.ttf); anders Windows-map, anders Liberation Sans, anders DejaVu Sans.
-# Let op: achter Cloudflare Access kan Teams de voorvertoning alleen ophalen als /ontwerp/deel/ buiten Access valt.
+# Let op: achter Cloudflare Access kan Teams de voorvertoning alleen ophalen als /deel/ buiten Access valt.
 import json,os,re,unicodedata,html
 from PIL import Image,ImageDraw,ImageFont
 from paden import DOCS
-SITE='https://raadzoeker.nl/ontwerp/'
+SITE='https://raadzoeker.nl/'
 ZOEK=[(os.environ.get('RZ_FONTS') or '',('arial.ttf','arialbd.ttf')),(r'C:\Windows\Fonts',('arial.ttf','arialbd.ttf')),
       ('/usr/share/fonts/truetype/liberation',('LiberationSans-Regular.ttf','LiberationSans-Bold.ttf')),('/usr/share/fonts/liberation',('LiberationSans-Regular.ttf','LiberationSans-Bold.ttf')),
       ('/usr/share/fonts/truetype/liberation2',('LiberationSans-Regular.ttf','LiberationSans-Bold.ttf')),('/usr/share/fonts/truetype/dejavu',('DejaVuSans.ttf','DejaVuSans-Bold.ttf'))]
@@ -30,7 +30,7 @@ def logo(d,x,y,kleur):
     d.ellipse([x+21,y+21,x+31,y+31],fill=kleur)
 LABEL={'domein':'Dossier','onderwerp':'Onderwerp','thema':'Thema','gebied':'Gebied'}
 def tel(d,X,stand):
-    """telregel, gelijk aan telling() in docs/ontwerp/tel.js"""
+    """telregel, gelijk aan telling() in docs/tel.js"""
     if X and X.get('spoor'):
         def laat(x):
             l=(x.get('stappen') or [None])[-1]; return bool(l) and l[1]=='verwacht' and l[0]<stand
@@ -71,7 +71,7 @@ def laad(p):
     try: return json.load(open(p,encoding='utf8'))
     except OSError: return None
 def main():
-    od=os.path.join(DOCS,'ontwerp'); ix=laad(os.path.join(od,'d','index.json')); out=os.path.join(od,'deel'); os.makedirs(out,exist_ok=True)
+    od=DOCS; ix=laad(os.path.join(od,'d','index.json')); out=os.path.join(od,'deel'); os.makedirs(out,exist_ok=True)
     stand_iso=ix['stand']; stand='-'.join(reversed(stand_iso.split('-'))); gedaan=[]
     sigp=os.path.join(out,'sig.json'); SIG=laad(sigp) or {}   # alleen opnieuw tekenen als de inhoud verandert (anders elke nacht 75 nieuwe png's in git)
     for x in ix['d']:

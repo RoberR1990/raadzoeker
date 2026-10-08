@@ -36,8 +36,8 @@ def kandidaten(d):
     uit.sort(reverse=True); return uit[:NPAAR]
 
 def main():
-    d=json.load(open(os.path.join(DOCS,'ontwerp','verkenner.json'),encoding='utf8')); K=d['knopen']
-    vb=json.load(open(os.path.join(DOCS,'ontwerp','verkenner-vb.json'),encoding='utf8'))
+    d=json.load(open(os.path.join(DOCS,'verkenner.json'),encoding='utf8')); K=d['knopen']
+    vb=json.load(open(os.path.join(DOCS,'verkenner-vb.json'),encoding='utf8'))
     kand=kandidaten(d); print(len(kand),'kandidaatparen')
     # herkenning per knoop: woordstam, of zoekpatroon bij een onderwerp
     OND={SLUG(n):pp for n,pp in OW.actief()}

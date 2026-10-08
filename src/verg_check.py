@@ -1,5 +1,5 @@
 # Citaatcontrole voor vergadersamenvattingen en publicatie.
-#   python src/verg_check.py <agendaId> [uitvoer.json]  -> docs/ontwerp/verg/<id8>.json (+ index.json)
+#   python src/verg_check.py <agendaId> [uitvoer.json]  -> docs/verg/<id8>.json (+ index.json)
 # Een zin/punt blijft alleen staan als het citaat letterlijk in de genoemde beurt (#U) staat (volledige tekst, niet het ingekorte
 # pakket) en, bij fracties, als die beurt van die fractie is; bij het college als de spreker die naam draagt.
 # Per citaat de seconde in de video (begin van het segment waarin het citaat begint).
@@ -34,9 +34,9 @@ def main(ag,pad=None):
     out={'agendaId':ag,'datum':V[0],'naam':V[2],'raad':V[1]==0,'video':V[4],'kort':kort,'agendapunten':d['agendapunten'],
          'leestijd':{'kort':max(1,round(wk/200)),'uitgebreid':max(1,round((wu+wk)/200))},'gemaakt':d.get('model','Claude Sonnet'),'geschrapt':len(weg)}
     import verg_koppel; verg_koppel.verrijk(out,B)
-    os.makedirs(os.path.join(DOCS,'ontwerp','verg'),exist_ok=True)
-    json.dump(out,open(os.path.join(DOCS,'ontwerp','verg',f'{k}.json'),'w',encoding='utf8'),ensure_ascii=False,separators=(',',':'))
-    ix=os.path.join(DOCS,'ontwerp','verg','index.json'); L=json.load(open(ix,encoding='utf8')) if os.path.exists(ix) else []
+    os.makedirs(os.path.join(DOCS,'verg'),exist_ok=True)
+    json.dump(out,open(os.path.join(DOCS,'verg',f'{k}.json'),'w',encoding='utf8'),ensure_ascii=False,separators=(',',':'))
+    ix=os.path.join(DOCS,'verg','index.json'); L=json.load(open(ix,encoding='utf8')) if os.path.exists(ix) else []
     L=[x for x in L if x['id']!=k]+[{'id':k,'agendaId':ag,'datum':V[0],'naam':V[2],'raad':V[1]==0,'kort':kort[0]['zin'] if kort else '','n':len(out['agendapunten']),'ap':[x['titel'] for x in out['agendapunten'] if (x.get('wat') or '').strip()]}]
     json.dump(sorted(L,key=lambda x:(x['datum'],x['naam']),reverse=True),open(ix,'w',encoding='utf8'),ensure_ascii=False,indent=0)
     verg_koppel.indexen()

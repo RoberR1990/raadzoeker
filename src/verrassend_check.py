@@ -1,5 +1,5 @@
 # Verrassende verbanden, stap 3 (zonder AI): mechanische controle van de redactionele keuze en publicatie.
-#   python src/verrassend_check.py  -> docs/ontwerp/verrassend.json
+#   python src/verrassend_check.py  -> docs/verrassend.json
 # Invoer: data/verrassend/keuze.json (per paar knoop-id's a/b, uitleg, toelichting, citaat met broncode, extra broncodes 'ook').
 # Broncode D<n> = beurt n in de debat-index, S<n> = stuk n in de tekst-index (zelfde codes als verrassend_in.py).
 # Geschrapt wordt: een paar waarvan een knoop niet (meer) in verkenner.json staat, of waarvan het citaat niet woordelijk
@@ -40,7 +40,7 @@ def heeft(t,k):
     return any(T.stam(T.fold(w))==k for w in re.findall(r'[^\W\d_]+',t))
 
 def main():
-    K=json.load(open(os.path.join(DOCS,'ontwerp','verkenner.json'),encoding='utf8'))
+    K=json.load(open(os.path.join(DOCS,'verkenner.json'),encoding='utf8'))
     idx={k['id']:i for i,k in enumerate(K['knopen'])}; dom=K['dom']
     keuze=json.load(open(os.path.join(DATA,'verrassend','keuze.json'),encoding='utf8'))
     B=Bron(); uit=[]; weg=0
@@ -56,7 +56,7 @@ def main():
         A,Bk=K['knopen'][idx[c['a']]],K['knopen'][idx[c['b']]]
         uit.append({'a':c['a'],'b':c['b'],'la':A['l'],'lb':Bk['l'],'da':dom[A['dom']][1],'db':dom[Bk['dom']][1],
                     'uitleg':c['uitleg'],'toelichting':c['toelichting'],'citaat':ws(c['citaat']),'bron':meta,'ook':ook})
-    json.dump({'stand':K['stand'],'paren':uit},open(os.path.join(DOCS,'ontwerp','verrassend.json'),'w',encoding='utf8'),ensure_ascii=False,separators=(',',':'))
+    json.dump({'stand':K['stand'],'paren':uit},open(os.path.join(DOCS,'verrassend.json'),'w',encoding='utf8'),ensure_ascii=False,separators=(',',':'))
     print(len(uit),'paren gepubliceerd,',weg,'geschrapt')
     return 0 if uit else 1
 if __name__=='__main__': sys.exit(main())

@@ -1,6 +1,6 @@
 # Vooruitblik: komende vergaderingen van raad en commissies (iBabs-kalender), met per agendapunt de dossiers en
 # wanneer het onderwerp eerder op de agenda stond (tijdlijn uit de iBabs-stukken, zoals verg_koppel.spoor).
-#   python src/vooruit.py [dagen=21]  -> docs/ontwerp/verg/vooruit.json
+#   python src/vooruit.py [dagen=21]  -> docs/verg/vooruit.json
 import json,os,re,sys,html,datetime
 import ibabs, verg_koppel as K
 from wijkraad_verg import lees

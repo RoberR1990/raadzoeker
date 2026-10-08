@@ -1,17 +1,17 @@
 # Vergadersamenvattingen verrijken en ontsluiten (geen AI): per agendapunt tijdvak in de video, links naar dossiers
 # (domein, onderwerp, thema, gebied), alinea's in de korte versie; daarna de zoek- en dossierbestanden voor de site.
-#   python src/verg_koppel.py   -> herbouwt docs/ontwerp/verg/zoek.json en koppel.json uit alle verg/<id8>.json
+#   python src/verg_koppel.py   -> herbouwt docs/verg/zoek.json en koppel.json uit alle verg/<id8>.json
 # verrijk(out, B) wordt aangeroepen door verg_check.py vóór het wegschrijven.
 import json,os,re,glob,unicodedata
 from paden import DOCS,WERK
 import onderwerpen as O
-VD=os.path.join(DOCS,'ontwerp','verg')
+VD=os.path.join(DOCS,'verg')
 def fold(s): return ''.join(c for c in unicodedata.normalize('NFD',(s or '').lower()) if unicodedata.category(c)!='Mn')
 _IX=None
 def ix():
     global _IX
     if _IX is None:
-        d=json.load(open(os.path.join(DOCS,'ontwerp','d','index.json'),encoding='utf8'))['d']
+        d=json.load(open(os.path.join(DOCS,'d','index.json'),encoding='utf8'))['d']
         naar={(x['soort'],x['naam']):x for x in d}
         dom=[x for x in d if x['soort']=='domein']; geb=[x for x in d if x['soort']=='gebied']
         ond=[(naar[('onderwerp',n)],O.rx(pp)) for n,pp in O.actief() if ('onderwerp',n) in naar]

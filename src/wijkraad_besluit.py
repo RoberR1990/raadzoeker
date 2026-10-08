@@ -1,5 +1,5 @@
 # Wijkraden zuinig (zonder AI): per vergadering de besluiten uit de besluitenlijst (bijlage in iBabs).
-#   python src/wijkraad_besluit.py [vanaf=JJJJ-MM-DD]  -> docs/ontwerp/verg/wijkraden.json
+#   python src/wijkraad_besluit.py [vanaf=JJJJ-MM-DD]  -> docs/verg/wijkraden.json
 # Procedurele punten en alles over insprekers vallen weg; bewonersinitiatieven worden samengevoegd tot één regel;
 # namen na 'de heer/mevrouw' en rond 'inspreken' worden weggelakt (teksten.anoniem).
 import json,os,re,sys,collections,datetime
@@ -53,7 +53,7 @@ def main(vanaf):
     for l in open(os.path.join(WERK,'wijk','wijkraadvergaderingen.jsonl'),encoding='utf8'):
         try: v=json.loads(l); V[v['id']]=v
         except Exception: pass
-    W=json.load(open(os.path.join(DOCS,'ontwerp','wijken.json'),encoding='utf8'))['wijken']
+    W=json.load(open(os.path.join(DOCS,'wijken.json'),encoding='utf8'))['wijken']
     gebied={w['naam'].lower():w['gebied'] for w in W}
     per={}
     for l in open(os.path.join(WERK,'wijk','wijkraad_bijlagen.jsonl'),encoding='utf8'):
@@ -75,7 +75,7 @@ def main(vanaf):
         g=sorted({gebied[x] for x in gebied if x in wnaam.lower() or wnaam.lower() in x})
         per[(raad,datum)]={'raad':raad,'datum':datum,'agendaId':ag,'gebied':g,'p':pt,'init':init}
     L=sorted(per.values(),key=lambda x:(x['datum'],x['raad']),reverse=True)
-    json.dump(L,open(os.path.join(DOCS,'ontwerp','verg','wijkraden.json'),'w',encoding='utf8'),ensure_ascii=False,separators=(',',':'))
+    json.dump(L,open(os.path.join(DOCS,'verg','wijkraden.json'),'w',encoding='utf8'),ensure_ascii=False,separators=(',',':'))
     print(len(L),'wijkraadvergaderingen,',sum(len(x['p']) for x in L),'besluiten,',sum(len(x['init']) for x in L),'bewonersinitiatieven;',
           collections.Counter(bool(x['gebied']) for x in L))
 if __name__=='__main__': main(sys.argv[1] if len(sys.argv)>1 else (datetime.date.today()-datetime.timedelta(days=730)).isoformat())
