@@ -3,18 +3,18 @@
 # Leest:  docs/data/ibabs/stukken.zst (alle iBabs-stukken), docs/data/tekst/{meta,labels}.zst (domein en gebieden per document, via de itemId in de url),
 #         docs/data/ibabs/moties.json + docs/data/raad/JAAR.zst (stemuitslag, raadsvergadering en agendapunt per motie/amendement),
 #         docs/data/debat/{meta.zst,b/*.zst} (alle agendapunten van raad en commissies, sprekers en videoseconde),
-#         docs/ontwerp/d/index.json (lijst van dossiers) en onderwerpen.py/themes.py (zoekpatronen per onderwerp/thema).
+#         docs/d/index.json (lijst van dossiers) en onderwerpen.py/themes.py (zoekpatronen per onderwerp/thema).
 #   STAND = env RZ_STAND, anders de nieuwste datum in stukken.zst (niet paden.STAND, dat is een vaste standaardwaarde).
 # Schrijft (alleen als de inhoud wijzigt, compact JSON):
-#   docs/ontwerp/beloofd.json     alle OPEN moties en toezeggingen (status 4)
-#   docs/ontwerp/beloofd-af.json  afgedaan (status 5) met afdoeningsdatum in de laatste 24 maanden voor STAND
+#   docs/beloofd.json     alle OPEN moties en toezeggingen (status 4)
+#   docs/beloofd-af.json  afgedaan (status 5) met afdoeningsdatum in de laatste 24 maanden voor STAND
 #     {"stand","dom":[[slug,naam]],"geb":[naam],"ond":[[slug,naam]],"kol":[...],"r":[rij,...]}  (r: nieuwste datum eerst)
 #     kol = soort (0 motie/1 toezegging), datum, titel, wie, commissie, dom (index of -1), geb (bitmasker op "geb"), status, verwacht, afgedaan, bb, id (itemId;
 #     iBabs: https://gemeenteraad.rotterdam.nl/Reports/Item/<id>), tekst, stappen [[datum,type,label,itemId|'']], stem [aangenomen,voor,tegen,zijde,fracties]|null,
 #     ond (indexen in "ond"), ph (portefeuillehouder, alleen moties, uit de gekoppelde afdoeningsvoorstel-/tussenberichtbrief)
-#   docs/ontwerp/lijn/<slug>.json  per dossier uit d/index.json een tijdlijn van gebeurtenissen (onderwerp/thema vanaf 2018, domein/gebied/kruising vanaf 2022, max 1.500)
+#   docs/lijn/<slug>.json  per dossier uit d/index.json een tijdlijn van gebeurtenissen (onderwerp/thema vanaf 2018, domein/gebied/kruising vanaf 2022, max 1.500)
 #     {"stand","naam","soort","sinds","tel":{...},"e":[[datum,type,kant,titel,sub,url,x],...],("afgekapt":true)}  (e: nieuwste eerst)
-#   docs/ontwerp/lijn/index.json  {slug: aantal gebeurtenissen}
+#   docs/lijn/index.json  {slug: aantal gebeurtenissen}
 # Een stuk hoort bij een onderwerp/thema als het patroon in de gevouwen titel staat of >= 3x in de eerste 6000 tekens tekst (zelfde regel als ontwerp_data.py);
 # een debat (agendapunt) als het patroon in de gevouwen titel staat of >= 3x in alle tekst van dat agendapunt; bij domein/gebied/kruising via de labels.
 import json,os,re,sys,glob,datetime,collections,unicodedata,zstandard
@@ -22,7 +22,7 @@ from paden import DOCS
 import themes,onderwerpen
 from ontwerp_data import rx as rx_thema,iso,kort,motiekern
 
-OUT=os.path.join(DOCS,'ontwerp'); LIJN=os.path.join(OUT,'lijn')
+OUT=DOCS; LIJN=os.path.join(OUT,'lijn')
 dz=zstandard.ZstdDecompressor()
 def zload(p): return json.loads(dz.decompress(open(p,'rb').read(),max_output_size=10**10))
 def jload(p): return json.load(open(p,encoding='utf8'))

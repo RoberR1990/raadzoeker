@@ -1,9 +1,9 @@
 # Volgen: per dossier (domein, onderwerp, thema, gebied) de nieuwste items van de laatste 60 dagen, voor 'nieuw sinds je vorige bezoek'
-# en voor pushmeldingen.  python src/volg_data.py  -> docs/ontwerp/volg.json  (draait op de NAS na dossier_data en verg_koppel)
+# en voor pushmeldingen.  python src/volg_data.py  -> docs/volg.json  (draait op de NAS na dossier_data en verg_koppel)
 # Item: [datum, soort, titel, link]; soort: vergadering | motie | toezegging | vragen | debat.
 import json,os,glob,datetime
 from paden import DOCS
-D=os.path.join(DOCS,'ontwerp')
+D=DOCS
 def main(dagen=60,maxn=12):
     vanaf=(datetime.date.today()-datetime.timedelta(days=dagen)).isoformat()
     K=json.load(open(os.path.join(D,'verg','koppel.json'),encoding='utf8')) if os.path.exists(os.path.join(D,'verg','koppel.json')) else {}

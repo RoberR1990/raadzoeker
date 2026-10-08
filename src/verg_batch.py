@@ -6,7 +6,7 @@ import os,sys,glob,io,contextlib
 from paden import DOCS,WERK
 from ontwerp_data import zload
 import verg_in,verg_check
-VD=os.path.join(DOCS,'ontwerp','verg'); WD=os.path.join(WERK,'verg')
+VD=os.path.join(DOCS,'verg'); WD=os.path.join(WERK,'verg')
 def gedaan(): return {os.path.basename(p)[:8] for p in glob.glob(os.path.join(VD,'*.json'))}
 def lijst(vanaf,n):
     m=zload(os.path.join(DOCS,'data','debat','meta.zst'))

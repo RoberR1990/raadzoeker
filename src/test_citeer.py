@@ -1,11 +1,11 @@
-"""Test citeren in één klik en 'Kopieer voor Copilot' (docs/ontwerp/citeer.js).
+"""Test citeren in één klik en 'Kopieer voor Copilot' (docs/citeer.js).
 Start eerst een server:  python3 -m http.server 8771 -d docs
 Draai:                   python3 src/test_citeer.py
 """
 import json, os, re, sys
 from playwright.sync_api import sync_playwright
 
-BASE = 'http://localhost:8771/ontwerp/'
+BASE = 'http://localhost:8771/'
 SHOTS = '/tmp/claude-0/-home-claude/27462a42-c492-5a46-80c7-d7eb1ac7cf72/scratchpad/citeer/'
 os.makedirs(SHOTS, exist_ok=True)
 # geen welkomstvenster of rondleidingsbalk tijdens de test
@@ -42,7 +42,7 @@ def schoon(t):
 CIT_RE = re.compile(
     r"^‘(?P<t>.+)’\n— (?P<wie>[^\n]+?), (?P<org>[^\n]+?) Rotterdam, (?P<d>\d{1,2} [a-z]+ \d{4})(?:, agendapunt(?: \S+)?(?: ‘[^\n]+’)?)?"
     r"(?:, automatische ondertiteling \(kan fouten bevatten\))?(?:, video ca\. \d:\d\d:\d\d)?\n"
-    r"(?:Bron: https://gemeenteraad\.rotterdam\.nl/Agenda/Index/[0-9a-f-]+\n)?Fragment: https://raadzoeker\.nl/ontwerp/zoek\.html#b=\S+$", re.S)
+    r"(?:Bron: https://gemeenteraad\.rotterdam\.nl/Agenda/Index/[0-9a-f-]+\n)?Fragment: https://raadzoeker\.nl/zoek\.html#b=\S+$", re.S)
 
 
 def kaart_info(p, i):
@@ -138,12 +138,12 @@ def main():
             a.locator('[data-rzc=link]').click()
             p.wait_for_timeout(400)
             link = klembord(p)
-            uitslag(f'b {naam}: link begint met https://raadzoeker.nl/ontwerp/zoek.html#b=', link.startswith('https://raadzoeker.nl/ontwerp/zoek.html#b='), link)
+            uitslag(f'b {naam}: link begint met https://raadzoeker.nl/zoek.html#b=', link.startswith('https://raadzoeker.nl/zoek.html#b='), link)
             a.locator('[data-rzc=citaat]').click()
             p.wait_for_timeout(300)
             cit = klembord(p)
             p.close()
-            lokaal = link.replace('https://raadzoeker.nl/ontwerp/', BASE)
+            lokaal = link.replace('https://raadzoeker.nl/', BASE)
             q = nieuwe_pagina(ctx, lokaal[len(BASE):], 'fragment-' + naam)
             q.wait_for_selector('#frag', timeout=60000)
             kop = q.locator('#frag .fragkop h2').inner_text()
@@ -212,7 +212,7 @@ def main():
             p.wait_for_timeout(1500)
             c = klembord(p)
             print(f'--- copilot dossier {slug} ({len(c)} tekens, ingekort) ---\n' + c[:1500] + '\n[...]\n' + c[-300:] + '\n---')
-            ok = len(c) <= 8000 and c.startswith('Je krijgt hieronder gegevens over het dossier') and 'Dossier: https://raadzoeker.nl/ontwerp/dossier.html?d=' + slug in c
+            ok = len(c) <= 8000 and c.startswith('Je krijgt hieronder gegevens over het dossier') and 'Dossier: https://raadzoeker.nl/dossier.html?d=' + slug in c
             bronnen = [b for b in re.findall(r'^Bron: (\S+)', c, re.M) if b != 'Raadzoeker']
             ok2 = all(b.startswith('https://') for b in bronnen) and len(bronnen) >= 2
             uitslag(f'd {slug} ({tag}): Copilot-tekst ≤ 8000 en opbouw', ok and ok2, f'{len(c)} tekens, {len(bronnen)} bronnen')
@@ -221,7 +221,7 @@ def main():
             p.close()
 
         # ---------- (e) vergadering ----------
-        idx = json.load(open(os.path.join(os.path.dirname(__file__), '..', 'docs', 'ontwerp', 'verg', 'index.json')))
+        idx = json.load(open(os.path.join(os.path.dirname(__file__), '..', 'docs', 'verg', 'index.json')))
         vid = idx[0]['id']
         p = nieuwe_pagina(ctx, 'vergadering.html?id=' + vid, 'vergadering')
         p.wait_for_selector('.kort .zin', timeout=30000)
@@ -231,10 +231,10 @@ def main():
         p.wait_for_timeout(400)
         c = klembord(p)
         print('--- citaat vergadering (kort) ---\n' + c + '\n---')
-        uitslag('e1 vergadering (kort): citaat gekopieerd', c.startswith('‘') and 'Bron: https://gemeenteraad.rotterdam.nl/Agenda/Index/' in c and 'Fragment: https://raadzoeker.nl/ontwerp/vergadering.html?id=' + vid in c)
+        uitslag('e1 vergadering (kort): citaat gekopieerd', c.startswith('‘') and 'Bron: https://gemeenteraad.rotterdam.nl/Agenda/Index/' in c and 'Fragment: https://raadzoeker.nl/vergadering.html?id=' + vid in c)
         p.locator('#kcit [data-rzc=link]').click()
         p.wait_for_timeout(300)
-        uitslag('e2 vergadering: link is vergadering.html?id=…#ap-…', klembord(p).startswith('https://raadzoeker.nl/ontwerp/vergadering.html?id=' + vid + '#ap-'))
+        uitslag('e2 vergadering: link is vergadering.html?id=…#ap-…', klembord(p).startswith('https://raadzoeker.nl/vergadering.html?id=' + vid + '#ap-'))
         p.locator('[data-m2=uitgebreid]').click()
         p.wait_for_selector('.ap .pt')
         p.locator('.ap .pt').first.click()
@@ -264,11 +264,11 @@ def main():
         p.locator('#uit article.res [data-rzc=citaat]').first.click()
         p.wait_for_timeout(500)
         k = p.evaluate('window.__kopie')
-        uitslag('h terugval zonder Clipboard API (execCommand) kopieert het citaat', k.startswith('‘') and 'Fragment: https://raadzoeker.nl/ontwerp/zoek.html#b=' in k)
+        uitslag('h terugval zonder Clipboard API (execCommand) kopieert het citaat', k.startswith('‘') and 'Fragment: https://raadzoeker.nl/zoek.html#b=' in k)
         p.close()
 
         # ---------- (f) regressie: geen console-fouten ----------
-        for url in ('startpagina.html', 'wijk.html', 'lab.html', 'zoek.html#q=parkeren', 'dossier.html#parkeren', 'dossier.html#cameratoezicht', 'vergadering.html?id=' + vid):
+        for url in ('', 'wijk.html', 'lab.html', 'zoek.html#q=parkeren', 'dossier.html#parkeren', 'dossier.html#cameratoezicht', 'vergadering.html?id=' + vid):
             p = nieuwe_pagina(ctx, url, 'regressie ' + url)
             p.wait_for_timeout(4000)
             p.close()
@@ -311,7 +311,7 @@ def copilot_check(c, naam, maxn):
     uitslag(f'{naam}: genummerde fragmenten 1..N', nums == [str(i) for i in range(1, len(nums) + 1)] and 1 <= len(nums) <= maxn, str(len(nums)))
     bronnen = [b for b in re.findall(r'^Bron: (\S+)', c, re.M) if b != 'Raadzoeker']
     uitslag(f'{naam}: elke bronlink begint met https://', bool(bronnen) and all(b.startswith('https://') for b in bronnen), f'{len(bronnen)} links')
-    uitslag(f'{naam}: opdracht bovenaan en voetregel', c.startswith('Je krijgt hieronder letterlijke fragmenten uit') and re.search(r'Bron: Raadzoeker \(raadzoeker\.nl\), onofficieel hulpmiddel op basis van openbare raadsinformatie\. \d+ van \d+ fragmenten\. Zoekopdracht: https://raadzoeker\.nl/ontwerp/zoek\.html#', c) is not None)
+    uitslag(f'{naam}: opdracht bovenaan en voetregel', c.startswith('Je krijgt hieronder letterlijke fragmenten uit') and re.search(r'Bron: Raadzoeker \(raadzoeker\.nl\), onofficieel hulpmiddel op basis van openbare raadsinformatie\. \d+ van \d+ fragmenten\. Zoekopdracht: https://raadzoeker\.nl/zoek\.html#', c) is not None)
 
 
 if __name__ == '__main__':

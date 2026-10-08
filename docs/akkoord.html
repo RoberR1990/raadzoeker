@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Coalitieakkoord 2026–2030 · raadzoeker</title>
+<link rel="stylesheet" href="stijl.css?v=20">
+<style>
+.kolom{max-width:980px}
+.kern{font-size:19px;line-height:1.6;max-width:72ch;margin:8px 0 0}
+.partijen{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0 0}.partijen span{border:1px solid var(--lijn);border-radius:999px;padding:2px 10px;background:var(--wit);font-size:14px}
+.hfd{display:grid;gap:16px;margin-top:24px}
+.dom{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.dom section{border-top:3px solid var(--groen);padding-top:8px}
+.dom h3{margin:0 0 4px;font-size:17px}.dom h3 a{text-decoration:none}
+.dom .pt{font-size:15px;padding:6px 0}
+@media (max-width:800px){.dom{grid-template-columns:minmax(0,1fr)}}
+</style></head><body>
+<header class="balk"></header>
+<main class="pagina"><div class="kolom">
+  <div class="crumb sub" style="margin:8px 0 4px"><a href="./">Start</a> › Coalitieakkoord</div>
+  <h1>Coalitieakkoord 2026–2030 ‘Vaart maken’</h1>
+  <div class="partijen" id="partijen"></div>
+  <p style="margin:12px 0 0"><a class="knop" id="pdf" target="_blank" rel="noopener">Lees het akkoord (pdf, 76 blz.)</a> <span class="sub" style="margin-left:8px">Gedeeld met de wijkraden op 15 juli 2026</span></p>
+  <section class="vlak" style="margin-top:24px" aria-labelledby="hk"><h2 id="hk">In het kort <span class="ai">AI-samenvatting</span></h2><p class="kern" id="kern"></p>
+    <p class="sub" style="font-size:13px;margin-top:8px">Wijs een zin aan of tik erop voor het letterlijke citaat en de pagina in het akkoord. Elk citaat is door een script woord voor woord met het akkoord vergeleken.</p></section>
+  <div class="hfd" id="hfd"></div>
+  <section class="vlak" style="margin-top:24px" aria-labelledby="hd"><h2 id="hd">Wat betekent het per domein?</h2><p class="intro" style="margin:4px 0 16px">Per domein van deze site wat het akkoord van plan is. Klik op een domein voor het dossier: wat de raad er eerder over zei, besloot en beloofde.</p><div class="dom" id="dom"></div></section>
+  <section class="vlak" style="margin-top:24px" aria-labelledby="hg"><h2 id="hg">Geld</h2><div id="geld"></div></section>
+  <p class="voet">Dit is een samenvatting van het akkoord zelf, geen oordeel. Wat de coalitie belooft, is een voornemen; wat ervan terechtkomt, zie je in de dossiers onder ‘Beloofd’ en ‘Gedaan’. <a href="over.html">Over deze tool</a>.</p>
+</div></main>
+<script src="ontwerp.js?v=40"></script>
+<script src="ai.js?v=2"></script>
+<script>
+kop('');
+Promise.all(['akkoord.json','d/index.json'].map(f=>fetch(f).then(r=>r.json()))).then(([A,ix])=>{
+  CIT=[];const dom=ix.d.filter(x=>x.soort==='domein');
+  $('partijen').innerHTML=(A.partijen||[]).map(p=>`<span>${esc(p)}</span>`).join('');$('pdf').href=A.url;
+  $('kern').innerHTML=alinea(A.kern);
+  $('hfd').innerHTML=A.hoofdstukken.map((h,i)=>blok('h'+i,esc(h.titel),`<p class="intro">${alinea(h.intro)}</p>`,h.punten.map(x=>`<div class="pt">${rijAI(x)}</div>`).join(''),`Toon ${h.punten.length} punten`,true)).join('');
+  const NM={wonen:'wonen-en-bouwen',buitenruimte:'buitenruimte',mobiliteit:'mobiliteit',economie:'economie-en-haven',klimaat:'klimaat-en-energie',veiligheid:'veiligheid',zorg:'zorg-welzijn-en-jeugd',onderwijs:'onderwijs',werk:'werk-inkomen-en-armoede',samenleven:'samenleven-en-participatie',cultuur:'cultuur-en-sport',bestuur:'bestuur-en-organisatie',financien:'financien'};
+  $('dom').innerHTML=Object.entries(A.domeinen).filter(([k,v])=>v.length).map(([k,v])=>{const d=dom.find(x=>x.slug===NM[k]);
+    return `<section><h3>${d?`<a href="dossier.html#${d.slug}">${esc(d.naam)}</a>`:esc(k)}</h3>${v.map(x=>`<div class="pt">${rijAI(x)}</div>`).join('')}</section>`;}).join('');
+  $('geld').innerHTML=(A.geld||[]).map(x=>`<div class="pt">${rijAI(x)}</div>`).join('');
+});
+</script></body></html>

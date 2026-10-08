@@ -1,12 +1,12 @@
-"""Test dossiertijdlijn (docs/ontwerp/lijn.js).
+"""Test dossiertijdlijn (docs/lijn.js).
 Start eerst een server:  python3 -m http.server 8773 -d docs
 Draai:                   python3 src/test_lijn.py
 """
 import json, os, re, sys
 from playwright.sync_api import sync_playwright
 
-ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'docs', 'ontwerp')
-BASE = 'http://localhost:8773/ontwerp/'
+ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'docs')
+BASE = 'http://localhost:8773/'
 SHOTS = '/tmp/claude-0/-home-claude/27462a42-c492-5a46-80c7-d7eb1ac7cf72/scratchpad/lijn/'
 os.makedirs(SHOTS, exist_ok=True)
 RUSTIG = "try{localStorage.setItem('rz-welkom','nee');for(const k of ['startpagina','zoek','dossier','vergadering','wijk','lab','domeinen','verkenner'])localStorage.setItem('rz-tour-'+k,'ja');}catch(e){}"

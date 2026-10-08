@@ -2,11 +2,11 @@
   "name": "raadzoeker",
   "short_name": "raadzoeker",
   "description": "Wat de Rotterdamse raad zegt, besluit en belooft",
-  "start_url": "/ontwerp/startpagina.html",
+  "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "background_color": "#EFF4F6",
   "theme_color": "#00811F",
   "lang": "nl",
-  "icons": [{"src": "/ontwerp/logo.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any"}]
+  "icons": [{"src": "/logo.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any"}]
 }

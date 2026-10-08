@@ -1,5 +1,5 @@
 # Samenhang van een onderwerp met andere onderwerpen, domeinen en gebieden (proef 5-10-2026, Parkeren).
-#   python src/samenhang.py [slug]  -> docs/ontwerp/d/<slug>-samenhang.json
+#   python src/samenhang.py [slug]  -> docs/d/<slug>-samenhang.json
 # Twee onderwerpen 'hangen samen' als ze in hetzelfde stuk tekst worden genoemd: binnen ca. 350 tekens van elkaar,
 # in een debatbeurt (spreker x agendapunt) of in een officieel stuk. Telling = aantal beurten/stukken, niet aantal keren.
 # Per verband één echt voorbeeld (fragment met bron), zodat je ziet waaróm ze samenhangen.
@@ -16,7 +16,7 @@ def main(sl='parkeren'):
     eigen={SLUG(n) for n,_ in OW.actief() if OW.THEMA.get(n)==CFG['naam']}|{sl}
     ANDER=[(SLUG(n),n,OW.rx(pp)) for n,pp in OW.actief() if SLUG(n) not in eigen]
     th=next(t for g in themes.T for t in g[1] if t[0]==CFG['naam']); SUB=[(n,SC.rx(t)) for n,t in th[2]]
-    ix=json.load(open(os.path.join(DOCS,'ontwerp','d','index.json'),encoding='utf8'))['d']
+    ix=json.load(open(os.path.join(DOCS,'d','index.json'),encoding='utf8'))['d']
     info={x['slug']:x for x in ix}
     dm=zload(os.path.join(DOCS,'data','debat','meta.zst')); tm=zload(os.path.join(DOCS,'data','tekst','meta.zst'))
     tel=collections.Counter(); jaar=collections.defaultdict(collections.Counter); vb={}; sub=collections.Counter(); subvb={}
@@ -85,11 +85,11 @@ def main(sl='parkeren'):
         x=info.get(k,{})
         rel.append({'slug':k,'naam':n,'domein':x.get('groep',''),'n':tel[k],'jaren':[jaar[k][j] for j in jaren],'ai':x.get('ai',False),
                     'termen':OW.termen(dict(OW.O)[n]).split('|')[0],'vb':vb.get(k,(0,None))[1]})
-    pk=json.load(open(os.path.join(DOCS,'ontwerp','d',sl+'.json'),encoding='utf8'))
+    pk=json.load(open(os.path.join(DOCS,'d',sl+'.json'),encoding='utf8'))
     uit={'slug':sl,'naam':CFG['naam'],'domein':info.get(sl,{}).get('groep',''),'stand':dm['stand'],'jaren':jaren,'totaal':[totaal[j] for j in jaren],'n':sum(totaal.values()),
          'verwant':rel,'sub':[[n,sub[n]] for n,_ in SUB],'domeinen':dom.most_common(),'gebieden':sorted(geb.items()),'fracties':sorted(fr.items()),
          'keten':{'moties':pk['moties'].get('aangenomen',0)+pk['moties'].get('verworpen',0),'toez':sum(pk['toez'].get(k,0) for k in('open','afgedaan')),'sv':pk['sv']['n']},
          'venster':VENSTER}
-    json.dump(uit,open(os.path.join(DOCS,'ontwerp','d',sl+'-samenhang.json'),'w',encoding='utf8'),ensure_ascii=False,separators=(',',':'))
+    json.dump(uit,open(os.path.join(DOCS,'d',sl+'-samenhang.json'),'w',encoding='utf8'),ensure_ascii=False,separators=(',',':'))
     print(uit['n'],'beurten/stukken;',[(r['naam'],r['n'],r['domein']) for r in rel[:20]]);print(uit['sub']);print(uit['domeinen'][:8])
 if __name__=='__main__': main(*sys.argv[1:2])

@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><script>/* voorlopig verborgen (besluit Robert 5-10-2026) */location.replace("./");</script>
+<title>Ideeën · raadzoeker</title>
+<link rel="stylesheet" href="stijl.css?v=20">
+<style>
+.kolom{max-width:880px}
+.stemstand{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:16px 0 24px;font-size:16px}
+.stip3{display:inline-flex;gap:6px}.stip3 i{width:16px;height:16px;border-radius:50%;border:2px solid var(--groen);display:inline-block}.stip3 i.vol{background:var(--groen)}
+.idee{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 24px;align-items:start;padding:16px 0;border-top:1px solid var(--grijs2)}
+.idee:first-child{border-top:0}
+.idee h3{margin:0 0 4px;font-size:18px}
+.idee p{margin:0;color:var(--sub);max-width:62ch}
+.status{display:inline-block;font-size:12px;border-radius:4px;padding:1px 8px;margin-left:8px;vertical-align:2px;background:var(--grijs)}
+.status.st-gepland{background:#FFF4CC}.status.st-gebouwd{background:var(--groen-zacht);color:var(--groen-d)}
+.stemmen{display:grid;justify-items:end;gap:6px;min-width:120px}
+.stemmen .n{font-size:22px;font-weight:700}
+.stemmen button{font:15px var(--font);border:2px solid var(--groen);background:var(--wit);color:var(--groen-d);border-radius:999px;padding:6px 14px;cursor:pointer;min-height:40px}
+.stemmen button.mijn{background:var(--groen);color:var(--wit)}
+.stemmen button:disabled{opacity:.45;cursor:not-allowed}
+.melding{min-height:24px;color:var(--groen-d)}
+.melding.fout{color:#9B2C00}
+@media (max-width:600px){.idee{grid-template-columns:minmax(0,1fr)}.stemmen{justify-items:start;grid-auto-flow:column;align-items:center}}
+</style></head><body>
+<header class="balk"></header>
+<main class="pagina"><div class="kolom">
+  <h1>Ideeën</h1>
+  <p style="margin:12px 0 0;max-width:68ch">Wat moet de raadzoeker hierna kunnen? Je hebt <b>3 stemmen</b>. Verdeel ze over de ideeën die jij het belangrijkst vindt; je kunt een stem altijd intrekken en verplaatsen. Is een idee gebouwd, dan komt je stem weer vrij. Iets anders in gedachten? <a href="over.html#contact">Laat het Robert weten</a>.</p>
+  <div class="stemstand" id="stand" aria-live="polite"></div>
+  <p class="melding" id="melding" role="status"></p>
+  <section class="vlak" aria-label="Ideeënlijst"><div id="lijst"><p class="leeg">Laden…</p></div></section>
+  <p class="voet">Stemmen zijn per persoon, via je inlog op deze site. We bewaren geen e-mailadres, alleen een versleutelde code, zodat niemand kan zien wie waarop stemde.</p>
+</div></main>
+<script src="ontwerp.js?v=40"></script>
+<script>
+kop('ideeen');
+let D=null,LIVE=false;
+const ST={idee:'idee',gepland:'gepland',gebouwd:'gebouwd'};
+function teken(){
+  const vrij=LIVE&&D.ingelogd?D.vrij:0;
+  $('stand').innerHTML=LIVE?(D.ingelogd?`<span class="stip3" aria-hidden="true">${[0,1,2].map(i=>`<i class="${i<3-vrij?'vol':''}"></i>`).join('')}</span><span>${vrij===3?'Je hebt nog 3 stemmen.':vrij===0?'Je hebt al je stemmen gebruikt. Trek er een in om te verplaatsen.':`Je hebt nog ${vrij} ${vrij===1?'stem':'stemmen'}.`}</span>`:'<span>Log in via de site om te stemmen.</span>')
+    :'<span class="sub">Stemmen is nog niet actief; hieronder de ideeën.</span>';
+  const l=[...D.ideeen].sort((a,b)=>(a.status==='gebouwd')-(b.status==='gebouwd')||b.stemmen-a.stemmen||a.id-b.id);
+  $('lijst').innerHTML=l.map(x=>`<article class="idee"><div><h3>${esc(x.titel)}<span class="status st-${x.status}">${ST[x.status]||x.status}</span></h3><p>${esc(x.toelichting||'')}</p></div>
+    <div class="stemmen"><span><span class="n num">${LIVE?nf(x.stemmen):'–'}</span> <span class="sub">${x.stemmen===1?'stem':'stemmen'}</span></span>
+    ${LIVE&&D.ingelogd&&x.status!=='gebouwd'?(x.mijn?`<button type="button" class="mijn" data-trek="${x.id}" aria-pressed="true">Gestemd · intrekken</button>`:`<button type="button" data-stem="${x.id}" ${vrij<=0?'disabled title="Trek eerst een stem in"':''}>Stem</button>`):''}</div></article>`).join('');
+}
+async function api(m,b){const r=await fetch('/api/ideeen',{method:m,headers:{'content-type':'application/json'},body:b?JSON.stringify(b):undefined,credentials:'same-origin'});const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.fout||('fout '+r.status));return j;}
+(async()=>{
+  try{D=await api('GET');LIVE=true;}catch(e){D=await (await fetch('ideeen.json')).json();D.ideeen.forEach(x=>{x.stemmen=0;x.mijn=false;});}
+  teken();
+})();
+document.addEventListener('click',async e=>{
+  const s=e.target.closest('[data-stem],[data-trek]');if(!s||!LIVE)return;s.disabled=true;$('melding').className='melding';
+  try{D=await api('POST',{actie:s.dataset.stem?'stem':'trek',id:+(s.dataset.stem||s.dataset.trek)});$('melding').textContent=s.dataset.stem?'Je stem is geteld.':'Je stem is ingetrokken.';}
+  catch(err){$('melding').className='melding fout';$('melding').textContent=err.message;}
+  teken();
+});
+</script></body></html>

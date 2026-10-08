@@ -12,7 +12,7 @@ const ub = (s) => Uint8Array.from(atob(s.replace(/-/g, '+').replace(/_/g, '/') +
 async function vapid(jwk, aud) {   // JWT voor deze pushdienst, 12 uur geldig
   const key = await crypto.subtle.importKey('jwk', jwk, { name: 'ECDSA', namedCurve: 'P-256' }, false, ['sign']);
   const kop = tekst(JSON.stringify({ typ: 'JWT', alg: 'ES256' }));
-  const inh = tekst(JSON.stringify({ aud, exp: Math.floor(Date.now() / 1000) + 12 * 3600, sub: 'https://raadzoeker.nl/ontwerp/over.html' }));
+  const inh = tekst(JSON.stringify({ aud, exp: Math.floor(Date.now() / 1000) + 12 * 3600, sub: 'https://raadzoeker.nl/over.html' }));
   const sig = await crypto.subtle.sign({ name: 'ECDSA', hash: 'SHA-256' }, key, new TextEncoder().encode(kop + '.' + inh));
   return kop + '.' + inh + '.' + b64u(sig);
 }
@@ -31,7 +31,7 @@ export async function onRequestPost({ request, env }) {
     if (!nieuw.length) continue;
     const namen = [...new Set(nieuw.map(([s]) => (D[s] || {}).naam || s))];
     const bericht = { titel: nieuw.length === 1 ? (D[nieuw[0][0]] || {}).naam || 'raadzoeker' : `Nieuw in ${namen.slice(0, 2).join(' en ')}${namen.length > 2 ? ' en meer' : ''}`,
-      tekst: nieuw.length === 1 ? nieuw[0][1][2] : `${nieuw.length} nieuwe items, o.a. ${nieuw[0][1][2]}`.slice(0, 180), link: '/ontwerp/volg.html' };
+      tekst: nieuw.length === 1 ? nieuw[0][1][2] : `${nieuw.length} nieuwe items, o.a. ${nieuw[0][1][2]}`.slice(0, 180), link: '/volg.html' };
     const aud = new URL(a.endpoint).origin; jwts[aud] = jwts[aud] || await vapid(jwk, aud);
     const r = await fetch(a.endpoint, { method: 'POST', headers: { TTL: '86400', Urgency: 'normal', Authorization: `vapid t=${jwts[aud]}, k=${pub}`, 'Content-Length': '0' } });
     if (r.status === 404 || r.status === 410) { await env.DB.prepare('DELETE FROM abonnees WHERE id = ?1').bind(a.id).run(); weg++; continue; }
@@ -44,5 +44,5 @@ export async function onRequestGet({ request, env }) {
   if (!env.DB) return json({}, 503);
   const id = new URL(request.url).searchParams.get('id') || '';
   const r = /^[0-9a-f]{64}$/.test(id) ? await env.DB.prepare('SELECT bericht FROM abonnees WHERE id = ?1').bind(id).first() : null;
-  return json(r && r.bericht ? JSON.parse(r.bericht) : { titel: 'raadzoeker', tekst: 'Er is nieuws in wat je volgt.', link: '/ontwerp/volg.html' });
+  return json(r && r.bericht ? JSON.parse(r.bericht) : { titel: 'raadzoeker', tekst: 'Er is nieuws in wat je volgt.', link: '/volg.html' });
 }

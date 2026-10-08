@@ -1,4 +1,4 @@
-# Kaart van Rotterdam voor de ontwerpschermen -> docs/ontwerp/kaart.json
+# Kaart van Rotterdam voor de ontwerpschermen -> docs/kaart.json
 # Bronnen (open data, in WERK/kaart/):
 #   wijken.json  CBS wijken 2024 via PDOK WFS (wijkenbuurten:wijken, gemeentecode GM0599, EPSG:4326)
 #   water.json   BRT TOP10NL waterdeel_vlak via PDOK OGC API (bbox 3.95,51.83,4.62,52.02), gefilterd op breed water
@@ -68,7 +68,7 @@ def main():
         if raakt or A>3000: water+=d   # in de gemeente, of een grote rivier/zee
     out={'w':W,'h':H,'gebieden':gebieden,'havens':''.join(havens),'water':water,
          'bron':'CBS Wijk- en buurtkaart 2024 en BRT TOP10NL (Kadaster), via PDOK'}
-    json.dump(out,open(os.path.join(DOCS,'ontwerp','kaart.json'),'w',encoding='utf8'),ensure_ascii=False,separators=(',',':'))
-    print(W,H,len(gebieden),'gebieden',len(havens),'havens',round(os.path.getsize(os.path.join(DOCS,'ontwerp','kaart.json'))/1000),'kB')
+    json.dump(out,open(os.path.join(DOCS,'kaart.json'),'w',encoding='utf8'),ensure_ascii=False,separators=(',',':'))
+    print(W,H,len(gebieden),'gebieden',len(havens),'havens',round(os.path.getsize(os.path.join(DOCS,'kaart.json'))/1000),'kB')
 
 if __name__=='__main__': main()

@@ -1,5 +1,5 @@
 # Extra's voor een voorbeelddossier (eerst Parkeren): de keten gezegd -> besloten -> beloofd -> gedaan, de stad in beeld, bron één klik.
-#   python src/showcase.py [slug ...]   -> docs/ontwerp/d/<slug>-extra.json (zonder argument: alle voorbeelddossiers in CONFIG)
+#   python src/showcase.py [slug ...]   -> docs/d/<slug>-extra.json (zonder argument: alle voorbeelddossiers in CONFIG)
 # Onderdelen
 #   sub        subthema's (themes.py) met per subthema de regex; elk item krijgt de subthema's waar het over gaat
 #   spoor      beloftespoor per motie/toezegging sinds 2022: ingediend/toegezegd -> tussenberichten -> afdoeningsvoorstel -> afgedaan (iBabs 'Stand van zaken')
@@ -120,7 +120,7 @@ def main(slug='parkeren'):
             else: x['toezegging']=kort(re.sub(r'\s+',' ',d.get('Omschrijving') or ''),260)
             spoor.append(x)
     spoor.sort(key=lambda x:x['datum'],reverse=True)
-    TEL={'aan':sum(1 for x in spoor if x['soort']=='motie'),'sinds':'2022'}   # aangenomen moties sinds 2022, geteld voor het afknippen (telregel: docs/ontwerp/tel.js)
+    TEL={'aan':sum(1 for x in spoor if x['soort']=='motie'),'sinds':'2022'}   # aangenomen moties sinds 2022, geteld voor het afknippen (telregel: docs/tel.js)
     if CFG.get('label'):   # een heel domein: alles wat open is, plus de 200 nieuwste afgedane (anders wordt de pagina te zwaar)
         af=[x for x in spoor if not x['open']]; spoor=[x for x in spoor if x['open'] or x in af[:200]]
     # vastgesteld: Gemeenteblad
@@ -146,7 +146,7 @@ def main(slug='parkeren'):
     # wijken
     LG=json.load(open(os.path.join(WERK,'labels','gebied.json'),encoding='utf8'))
     INFO=json.load(open(os.path.join(WERK,'labels','info.json'),encoding='utf8'))
-    WK=json.load(open(os.path.join(DOCS,'ontwerp','wijken.json'),encoding='utf8'))['wijken']
+    WK=json.load(open(os.path.join(DOCS,'wijken.json'),encoding='utf8'))['wijken']
     tel={w['slug']:collections.Counter() for w in WK}
     vb=collections.defaultdict(list)
     for k,v in LG.items():
@@ -250,7 +250,7 @@ def main(slug='parkeren'):
          'lagen':([['n','In de raad en wijkraden','stukken en debatten over dit domein die de wijk noemen of uit de wijk komen']]+
                   ([['vg',CFG['vergunning'][2],CFG['vergunning'][3]]] if CFG.get('vergunning') else [])+
                   [[k,n,'CBS 2024, ter vergelijking'] for k,n in CFG.get('cbs',[])]) if (CFG.get('vergunning') or CFG.get('cbs')) else []}
-    p=os.path.join(DOCS,'ontwerp','d',SLUG+'-extra.json'); json.dump(uit,open(p,'w',encoding='utf8'),ensure_ascii=False,separators=(',',':'))
+    p=os.path.join(DOCS,'d',SLUG+'-extra.json'); json.dump(uit,open(p,'w',encoding='utf8'),ensure_ascii=False,separators=(',',':'))
     print('spoor',len(spoor),'open',sum(x['open'] for x in spoor),'vastgesteld',len(vast),'komt',len(komt),'voorstellen',len(rv),'stemmingen',nst,'debatten',len(debatten),os.path.getsize(p)//1000,'kB')
 
 if __name__=='__main__':

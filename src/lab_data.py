@@ -1,5 +1,5 @@
 # Fase 4: gegevens voor het Lab, zo dat elke grafiek in de pagina zelf te filteren is op domein, gebied, fractie en periode.
-#   python src/lab_data.py  -> docs/ontwerp/lab2.json
+#   python src/lab_data.py  -> docs/lab2.json
 # r: één rij per motie, toezegging en schriftelijke vraag sinds 2018:
 #    [soort 0 motie / 1 toezegging / 2 vraag, datum, domein (-1), gebieden (bitmasker), fractie (-1), [mede-fracties], status, collegelid (-1), doorlooptijd in dagen (-1), over de termijn 0/1]
 #    status: 1 aangenomen, 2 verworpen, 3 ingetrokken/aangehouden, 4 open, 5 afgedaan, 0 overig
@@ -57,7 +57,7 @@ def main():
             d=LD.get(f'r:{y}:{s["i"][j]}',[None])[0]
             w[(y,SL.index(d) if d in SL else -1,idx(FR,ALIAS.get(PAR[s['pa'][j]],PAR[s['pa'][j]])))]+=len(t.split())
     out={'stand':STAND,'dom':[[s,n] for s,n in zip(SL,DN)],'geb':GL,'fr':FR,'cl':CL,'r':rows,'w':[[y,d,f,n] for (y,d,f),n in w.items()]}
-    p=os.path.join(DOCS,'ontwerp','lab2.json'); json.dump(out,open(p,'w',encoding='utf8'),ensure_ascii=False,separators=(',',':'))
+    p=os.path.join(DOCS,'lab2.json'); json.dump(out,open(p,'w',encoding='utf8'),ensure_ascii=False,separators=(',',':'))
     print(len(rows),'rijen',len(FR),'fracties',len(CL),'collegeleden',os.path.getsize(p)//1000,'kB')
 
 if __name__=='__main__': main()

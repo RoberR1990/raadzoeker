@@ -2,7 +2,7 @@
 # Een zin/punt blijft alleen staan als het citaat woordelijk in de genoemde bron staat; bij fracties moet de bron
 # van die fractie zijn (debat: partij van de spreker; motie/vragen: indiener); bij het college een college-bron.
 # Status van moties/toezeggingen komt uit iBabs (veld 'stand'), niet van het model.
-#   python src/dossier_check.py <slug> [--schrijf]   -> met --schrijf: WERK/dossier/ok_<slug>.json en docs/ontwerp/samenvattingen/
+#   python src/dossier_check.py <slug> [--schrijf]   -> met --schrijf: WERK/dossier/ok_<slug>.json en docs/samenvattingen/
 import json,os,re,sys,unicodedata
 from paden import WERK
 def norm(s):
@@ -62,7 +62,7 @@ def main(slug,schrijf):
         ok['telling']={k:f'{a} van {n}' for k,(a,n) in tel.items()}
         ok['zoek']=next((p[0].replace('\\b','') for n,p in O if n==ok['onderwerp']),'')
         json.dump(ok,open(os.path.join(WERK,'dossier',f'ok_{slug}.json'),'w',encoding='utf8'),ensure_ascii=False,indent=1)
-        d=os.path.join(DOCS,'ontwerp','samenvattingen'); os.makedirs(d,exist_ok=True)
+        d=os.path.join(DOCS,'samenvattingen'); os.makedirs(d,exist_ok=True)
         json.dump(ok,open(os.path.join(d,f'{slug}.json'),'w',encoding='utf8'),ensure_ascii=False,separators=(',',':'))
         pi=os.path.join(d,'index.json'); idx=json.load(open(pi,encoding='utf8')) if os.path.exists(pi) else []
         idx=[x for x in idx if x['slug']!=slug]+[{'slug':slug,'naam':ok['onderwerp']}]

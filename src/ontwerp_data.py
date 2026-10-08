@@ -1,4 +1,4 @@
-# Data voor de ontwerpschermen -> docs/ontwerp/{dossiers,lab}.json
+# Data voor de ontwerpschermen -> docs/{dossiers,lab}.json
 # dossiers.json: per thema (41, uit themes.py) trend, partijen, collegeleden, AI-samenvatting, moties en toezeggingen
 #   (open en afgedaan, met letterlijke kern uit de motietekst), schriftelijke vragen, rekenkamer, debatten met fragment;
 #   voor de 14 gebieden ook onderwerpen per jaar, wijkraadstukken en inwoners.
@@ -36,7 +36,7 @@ def main():
     ONDERW=[k for k,(g,t) in enumerate(TH) if g!='Wijken en gebieden' and t[0]!='Toezeggingen']
     OND=onderwerpen.actief(); DW=onderwerpen.DWARS; NT=len(TH); R2=R+[onderwerpen.rx(pp) for _,pp in OND]+[onderwerpen.rx(pp) for _,pp,_ in DW]   # concrete onderwerpen na de thema's
     tsum={d['id']:d for f in glob.glob(f'{DATA}/tsum/out_*.json') for d in json.load(open(f,encoding='utf8'))}
-    kaart=json.load(open(f'{DOCS}/ontwerp/kaart.json',encoding='utf8')); INW={g['naam']:g['inw'] for g in kaart['gebieden']}
+    kaart=json.load(open(f'{DOCS}/kaart.json',encoding='utf8')); INW={g['naam']:g['inw'] for g in kaart['gebieden']}
     ST=zload(f'{DOCS}/data/ibabs/stukken.zst'); S=ST['soorten']
     # stemuitslag uit de notulen per motie (bb-nummer), via de koppeling notulen <-> iBabs
     STEM={}
@@ -163,7 +163,7 @@ def main():
         pa=sorted([(p,round(c/max(1,WP[p])*1e5,1)) for p,c in KP[k].items() if WP[p]>20000],key=lambda x:-x[1])
         d=dossier(k,onderwerpen.THEMA[naam],(naam,onderwerpen.termen(pp),[]),tr,trn,pa,[],None); d['soort']='onderwerp'
         d['verdieping']['ver']=[v for v in d['verdieping']['ver'] if v[0]!=d['groep']]   # eigen thema is geen verband
-        d['ai']=os.path.exists(f'{DOCS}/ontwerp/samenvattingen/'+re.sub(r'[^a-z0-9]+','-',fold(naam)).strip('-')+'.json')
+        d['ai']=os.path.exists(f'{DOCS}/samenvattingen/'+re.sub(r'[^a-z0-9]+','-',fold(naam)).strip('-')+'.json')
         ond.append(d)
     # thema's dwars door de organisatie (onderwerpen.DWARS); korte samenvatting hergebruikt van het oude thema met dezelfde inhoud
     OUD={'Participatie en inspraak':'Participatie & inspraak','Discriminatie en inclusie':'Discriminatie & inclusie','Integriteit en transparantie':'Integriteit & transparantie',
@@ -177,13 +177,13 @@ def main():
         pa=sorted([(p,round(c/max(1,WP[p])*1e5,1)) for p,c in KP[k].items() if WP[p]>20000],key=lambda x:-x[1])
         ts=TSD.get(naam) or (tsum.get(THK[OUD[naam]]) if naam in OUD else None)
         d=dossier(k,'Dwars door de organisatie',(naam,onderwerpen.termen(pp),[(sn,None) for sn,_ in subs]),tr,trn,pa,[],ts); d['soort']='thema'
-        d['ai']=os.path.exists(f'{DOCS}/ontwerp/samenvattingen/'+re.sub(r'[^a-z0-9]+','-',fold(naam)).strip('-')+'.json')
+        d['ai']=os.path.exists(f'{DOCS}/samenvattingen/'+re.sub(r'[^a-z0-9]+','-',fold(naam)).strip('-')+'.json')
         dw.append(d)
     # stadsbreed: onderwerpen per jaar (per 100.000 woorden)
     stad={y:sorted([[TH[k][1][0],I['ty'][k][j]] for k in ONDERW],key=lambda x:-x[1])[:6] for j,y in enumerate(jaren)}
-    json.dump({'stand':STAND,'dossiers':out,'stad':stad},open(f'{DOCS}/ontwerp/dossiers.json','w',encoding='utf8'),ensure_ascii=False,separators=(',',':'))
-    json.dump({'stand':STAND,'onderwerpen':ond,'dwars':dw},open(f'{DOCS}/ontwerp/onderwerpen.json','w',encoding='utf8'),ensure_ascii=False,separators=(',',':'))   # concrete onderwerpen, apart geladen
-    print('dossiers',len(out),os.path.getsize(f'{DOCS}/ontwerp/dossiers.json')//1000,'kB')
+    json.dump({'stand':STAND,'dossiers':out,'stad':stad},open(f'{DOCS}/dossiers.json','w',encoding='utf8'),ensure_ascii=False,separators=(',',':'))
+    json.dump({'stand':STAND,'onderwerpen':ond,'dwars':dw},open(f'{DOCS}/onderwerpen.json','w',encoding='utf8'),ensure_ascii=False,separators=(',',':'))   # concrete onderwerpen, apart geladen
+    print('dossiers',len(out),os.path.getsize(f'{DOCS}/dossiers.json')//1000,'kB')
     lab(ST,S,I,TH,ONDERW,GEB)
     start(ST,S,I,meta,out,stad)
 def start(ST,S,I,meta,dossiers,stad):
@@ -198,7 +198,7 @@ def start(ST,S,I,meta,dossiers,stad):
          # klein genoeg voor de startpagina: zoeklijst + wolk (aandacht dit en vorig jaar) en de gebieden voor de kaart
          'ond':[[d['naam'],d['groep'],d['sub'],d['termen'],d['trend'][-1],d['trend'][-2],d['trendn'][-1]] for d in dossiers if d['naam']!='Toezeggingen'],
          'geb':{d['naam']:{'trend':d['trend'],'trendn':d['trendn'],'onderwerpen':d['onderwerpen']} for d in dossiers if 'inw' in d}}
-    json.dump(out,open(f'{DOCS}/ontwerp/start.json','w',encoding='utf8'),ensure_ascii=False,separators=(',',':'))
+    json.dump(out,open(f'{DOCS}/start.json','w',encoding='utf8'),ensure_ascii=False,separators=(',',':'))
     print('start',len(recent),'besluiten op',laatst,out['toez_open'],out['toez_laat'],out['mot_open'],out['mot_laat'])
 def lab(ST,S,I,TH,ONDERW,GEB):
     L=json.load(open(os.path.join(WERK,'ibabs','lijsten.json'),encoding='utf8'))
@@ -259,6 +259,6 @@ def lab(ST,S,I,TH,ONDERW,GEB):
          'pair':[[a,b,n] for (a,b),n in pair.items() if a in partijen and b in partijen],'door':door,'wrapped':wr,'openper':openper,
          'sv':{p:dict(svj[p]) for p in svtop},
          'thema':[[TH[k][1][0],TH[k][0]] for k in range(len(TH))],'ty':I['ty'],'jaren':I['years'],'tp':I['tp'],'tpart':I['parties']}
-    json.dump(lab,open(f'{DOCS}/ontwerp/lab.json','w',encoding='utf8'),ensure_ascii=False,separators=(',',':'))
-    print('lab',len(partijen),'partijen',len(lab['pair']),'paren',len(door),'collegeleden',os.path.getsize(f'{DOCS}/ontwerp/lab.json')//1000,'kB')
+    json.dump(lab,open(f'{DOCS}/lab.json','w',encoding='utf8'),ensure_ascii=False,separators=(',',':'))
+    print('lab',len(partijen),'partijen',len(lab['pair']),'paren',len(door),'collegeleden',os.path.getsize(f'{DOCS}/lab.json')//1000,'kB')
 if __name__=='__main__': main()

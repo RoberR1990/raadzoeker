@@ -1,0 +1,5 @@
+# Oude adressen (tot 8-10-2026 stonden alle pagina's onder /ontwerp/). Query en #hash blijven behouden.
+/ontwerp/startpagina.html  /  301
+/ontwerp/startpagina       /  301
+/startpagina.html          /  301
+/ontwerp/*  /:splat  301

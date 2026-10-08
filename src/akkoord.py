@@ -1,7 +1,7 @@
 # Coalitieakkoord 2026-2030 'Vaart maken' (PRO, D66, VVD, CDA, Volt): invoer voor een AI-samenvatting, controle en publicatie.
 #   python src/akkoord.py in        -> WERK/akkoord/in.md (per pagina een broncode A<blz>)
 #   (opdracht src/akkoord_prompt.md, één Opus-agent) -> WERK/akkoord/uit.json
-#   python src/akkoord.py check     -> controleert elk citaat woordelijk op de genoemde pagina; schrijft docs/ontwerp/akkoord.json
+#   python src/akkoord.py check     -> controleert elk citaat woordelijk op de genoemde pagina; schrijft docs/akkoord.json
 #   python src/akkoord.py passages  -> letterlijke passages per voorbeelddossier (showcase.CONFIG), voor in d/<slug>-extra.json
 # Bron: de pdf zoals gedeeld met de wijkraden (wijkraad.rotterdam.nl), WERK/akkoord/coalitieakkoord-2026-2030.pdf.
 import json,os,re,sys
@@ -34,9 +34,9 @@ def check():
          'domeinen':{k:L(v,'domein') for k,v in (U.get('domeinen') or {}).items()},'geld':L(U.get('geld'),'geld')}
     for w in weg: print(' weg',*w)
     print({k:f'{a}/{n}' for k,(a,n) in tel.items()})
-    oud=os.path.join(DOCS,'ontwerp','akkoord.json')
+    oud=os.path.join(DOCS,'akkoord.json')
     if os.path.exists(oud): out['dossiers']=json.load(open(oud,encoding='utf8')).get('dossiers',{})   # 'dossiers' blijft staan
-    json.dump(out,open(os.path.join(DOCS,'ontwerp','akkoord.json'),'w',encoding='utf8'),ensure_ascii=False,separators=(',',':'))
+    json.dump(out,open(os.path.join(DOCS,'akkoord.json'),'w',encoding='utf8'),ensure_ascii=False,separators=(',',':'))
 def passages(rx,n=10):
     """letterlijke opsommingspunten en alinea's uit het akkoord die het zoekpatroon raken: [[tekst, blz]]"""
     from ontwerp_data import fold
@@ -52,7 +52,7 @@ def passages(rx,n=10):
 def dossiers():
     """korte AI-opsomming per voorbeelddossier (uit_dossiers.json), citaten gecontroleerd; komt in akkoord.json onder 'dossiers'"""
     P=paginas(); NP={f'A{i}':norm(p) for i,p in enumerate(P,1)}
-    U=json.load(open(os.path.join(D,'uit_dossiers.json'),encoding='utf8')); A=json.load(open(os.path.join(DOCS,'ontwerp','akkoord.json'),encoding='utf8'))
+    U=json.load(open(os.path.join(D,'uit_dossiers.json'),encoding='utf8')); A=json.load(open(os.path.join(DOCS,'akkoord.json'),encoding='utf8'))
     A['dossiers']={}
     for slug,xs in U.items():
         ok=[]
@@ -61,7 +61,7 @@ def dossiers():
             if c in NP and len(cit.split())>=4 and cit in NP[c]: ok.append(dict(x,blz=int(c[1:]),url=URL+'#page='+c[1:],bron_label=TITEL+', blz. '+c[1:],bron_datum='2026-07-15'))
             else: print(' weg',slug,c,x.get('citaat','')[:70])
         A['dossiers'][slug]=ok; print(slug,len(ok),'van',len(xs))
-    json.dump(A,open(os.path.join(DOCS,'ontwerp','akkoord.json'),'w',encoding='utf8'),ensure_ascii=False,separators=(',',':'))
+    json.dump(A,open(os.path.join(DOCS,'akkoord.json'),'w',encoding='utf8'),ensure_ascii=False,separators=(',',':'))
 if __name__=='__main__':
     a=sys.argv[1] if len(sys.argv)>1 else 'in'
     if a=='in': maak_in()
