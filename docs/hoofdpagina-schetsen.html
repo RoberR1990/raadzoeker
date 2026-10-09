@@ -37,6 +37,7 @@ a{color:inherit}h1,h2,h3,h4{line-height:1.2;margin:0}.wrap{max-width:1100px;marg
 .vid .ond{position:absolute;left:8%;right:8%;bottom:26px;text-align:center;background:rgba(0,0,0,.55);padding:4px 8px;border-radius:4px;font-size:13px}
 .vid .bal{position:absolute;left:0;right:0;bottom:0;height:8px;background:rgba(255,255,255,.2)}.vid .bal i{display:block;height:100%;width:34%;background:#4EB051}
 .vid .tc{position:absolute;left:10px;top:8px;font-size:12px;background:var(--groen);padding:2px 8px;border-radius:4px;font-weight:700}
+.mini{background:var(--grijs);border-radius:8px;padding:10px 12px;font-size:14px}.mini b{display:block;margin:4px 0}.mini ul{margin:4px 0 0;padding-left:18px}.mini .chips span{font-size:13px;padding:3px 10px}.mini small{color:#555}
 .vk{display:grid;grid-template-columns:200px 1fr;gap:14px;align-items:center}
 @media(max-width:560px){.vk{grid-template-columns:1fr}}
 .tegels{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;padding:12px 20px 18px}
@@ -54,17 +55,20 @@ function ill(h=90,w=600){const t1='#DCEBDF',t2='#C3DCC8',m=h*.7;let s='';[[30,.5
 function domIll(i,h=70,w=600){const t1='#DCEBDF',t2='#C3DCC8';let s='';if(i%3===0){for(let k=0;k<7;k++){const x=34+k*82,hh=22+(k*37%25);s+=`<rect x="${x}" y="${h-5-hh}" width="52" height="${hh}" fill="${k%2?t1:t2}"/><path d="M${x-4} ${h-5-hh} L${x+26} ${h-5-hh-14} L${x+56} ${h-5-hh}Z" fill="${k%2?t1:t2}"/>`;}}else if(i%3===1){s+=`<rect x="296" y="8" width="8" height="${h-14}" fill="${t2}"/>`;for(let k=1;k<=6;k++)s+=`<path d="M300 12 L${300+k*48} ${h-8}M300 12 L${300-k*48} ${h-8}" stroke="${t2}" stroke-width="1.5" fill="none"/>`;}else{for(let k=0;k<6;k++){const x=60+k*96;s+=`<rect x="${x-3}" y="${h-30}" width="6" height="24" fill="${t2}"/><circle cx="${x}" cy="${h-36}" r="${14+(k%3)*3}" fill="${k%2?t1:t2}"/>`;}}s+=`<rect y="${h-5}" width="${w}" height="5" fill="${t2}"/>`;return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="xMidYMax slice" aria-hidden="true">${s}</svg>`;}
 const kop=`<div class="kopbalk"><span>raadzoeker</span><span>Dossiers · Gebieden · Vergaderingen · Inzichten</span></div>`;
 const zoekbalk=`<div class="zoek"><i>Zoek een onderwerp, wijk of woord…</i><span>Zoeken</span></div>`;
-let D={},BESL=[],KOMT=[],DOMS=[];
+let P0={},D={},BESL=[],KOMT=[],DOMS=[];
 const fd=d=>{const x=new Date(d+'T12:00:00');return x.toLocaleDateString('nl-NL',{day:'numeric',month:'short'});};
 const fragment='En ja, we hebben natuurlijk ook wel de reden van die parkeerregulering.';
 /* herbruikbare blokken */
 const probeer=`<div class="chips" style="margin-top:2px"><span class="sub" style="border:0;padding:5px 0">Probeer:</span><span>parkeren</span><span>vuurwerk</span><span>Feyenoord City</span><span>jeugdhulp</span></div>`;
 const videoKaart=`<div class="vk"><div class="vid"><span class="tc">90 sec</span><span class="pl">▶</span><span class="ond">Raadzoeker.nl uitgelegd</span><div class="bal"><i></i></div></div><div><h3>Raadzoeker.nl uitgelegd in 90 seconden</h3><p class="sub" style="margin:4px 0 8px">Wat je kunt vinden, en hoe je van een citaat naar het videomoment komt.</p><span class="knop">▶ Bekijk de video</span></div></div>`;
-const demoStrip=(titel)=>`<div class="sec"><h2>${titel}</h2><p class="sub">Elk fragment springt naar de seconde waarop het gezegd is.</p></div>
+const demoStrip=(titel)=>`<div class="sec"><h2>${titel}</h2></div>
 <div class="demo"><div class="stap">
-<div><span class="nr">1</span><b>Zoek</b><div class="zoek" style="margin:8px 0 0"><i style="padding:6px 12px;font-size:14px">parkeerregulering</i></div><p class="sub" style="margin:8px 0 0">In 46.932 spreekbeurten en 44.500 stukken.</p></div>
-<div><span class="nr">2</span><b>Lees het citaat</b><p class="cit">‘${esc(fragment)}’</p><p class="sub" style="margin:0">Debat Uitbreiden betaald parkeren · 1 okt 2026</p></div>
-<div><span class="nr">3</span><b>Spring naar het moment</b><div class="vid" style="margin:8px 0"><span class="tc">▶ 5:05</span><span class="pl">▶</span><span class="ond">${esc(fragment)}</span><div class="bal"><i></i></div></div><span class="bknop">▶ Bekijk het moment</span></div>
+<div><span class="nr">1</span><b>Samengevatte vergaderingen</b><p class="sub" style="margin:2px 0 8px">Na elke raads- en commissievergadering lees je in een minuut wat er gebeurde, per agendapunt.</p>
+<div class="mini"><span class="tag">Gemeenteraad · 1 okt</span><b>Uitbreiden betaald parkeren</b><ul><li>Kern van het debat in 2–3 alinea's</li><li>Moties met uitslag</li><li>▶ per onderwerp naar de video</li></ul></div></div>
+<div><span class="nr">2</span><b>Domeinpagina's</b><p class="sub" style="margin:2px 0 8px">Alles over één onderwerp op één plek: stand van zaken, standpunten, moties en toezeggingen.</p>
+<div class="mini"><span class="tag">Dossier</span><b>Parkeren</b><div class="chips" style="margin:6px 0">${(P0.sub||[]).slice(0,4).map(x=>`<span>${esc(x)}</span>`).join('')}</div><small>212 moties · 17 open · 14 toezeggingen open</small></div></div>
+<div><span class="nr">3</span><b>Zoeken met bron en videomoment</b><p class="sub" style="margin:2px 0 8px">Elk citaat met spreker, vergadering en link naar de seconde waarop het gezegd is.</p>
+<div class="mini"><p class="cit" style="font-size:15px;margin:0 0 6px">‘${esc(fragment)}’</p><small>Debat Uitbreiden betaald parkeren · 1 okt 2026</small><div style="margin-top:8px"><span class="bknop">▶ Bekijk het moment 5:05</span></div></div></div>
 </div></div>`;
 const netBesloten=()=>`<div class="kaart"><h3>Net besloten</h3><ul class="rijtjes">${BESL.map(m=>`<li><span class="tag">${esc(m.st)}</span>${esc(m.t)}<small>${esc(m.sub)}</small></li>`).join('')}</ul><p style="margin:8px 0 0"><a href="#">Alle besluiten ›</a></p></div>`;
 const komtEraan=()=>`<div class="kaart"><h3>Komt eraan</h3><ul class="rijtjes">${KOMT.map(v=>`<li><b>${fd(v.datum)}</b> · ${esc(v.naam)}<small>${esc(v.punten.filter(p=>!/HAMER|Opening|Sluiting|Rondvraag/i.test(p.titel))[0]?.titel||'')}</small></li>`).join('')}</ul><p style="margin:8px 0 0"><a href="#">Hele agenda ›</a></p></div>`;
@@ -75,7 +79,7 @@ const beweging=()=>`<div class="tegels">${DOMS.slice(0,4).map((x,i)=>`<div class
 const L={
 1:()=>`<div class="scherm">${kop}
 <div class="hero"><h1>Wat de Rotterdamse raad zegt, besluit en belooft</h1>${zoekbalk}${probeer}${ill()}</div>
-${demoStrip('Van citaat naar videomoment in drie stappen')}
+${demoStrip('Drie manieren om te vinden wat de raad deed')}
 <div class="sec"><h2>Waar de raad zich mee bezighoudt</h2></div>${domeinTegels(true)}
 <div class="cols">${netBesloten()}${komtEraan()}</div>
 ${verbanden}
@@ -84,27 +88,27 @@ ${verbanden}
 <div class="hero" style="padding-bottom:0"><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;align-items:center"><div><h1>Wat de Rotterdamse raad zegt, besluit en belooft</h1>${zoekbalk}${probeer}</div><div class="kaart" style="margin-bottom:16px"><span class="tag">Deze week in de raad</span><p class="cit">‘${esc(fragment)}’</p><p class="sub" style="margin:0 0 10px">Debat Uitbreiden betaald parkeren · 1 okt 2026</p><span class="bknop">▶ Bekijk het moment</span></div></div>${ill()}</div>
 <div class="cols">${netBesloten()}${komtEraan()}</div>
 <div class="sec"><h2>Waar de raad zich mee bezighoudt</h2></div>${domeinTegels(true)}
-${demoStrip('Zo werkt het: elk citaat heeft een videomoment')}
+${demoStrip('Wat Raadzoeker voor je doet')}
 ${verbanden}`,
 3:()=>`<div class="scherm">${kop}
 <div class="hero"><h1>Wat de Rotterdamse raad zegt, besluit en belooft</h1>${zoekbalk}${probeer}${ill()}</div>
 <div class="sec"><h2>Dossiers in beweging</h2><p class="sub">De dossiers met de meeste nieuwe punten in de afgelopen 30 dagen.</p></div>${beweging()}
 <div class="cols">${netBesloten()}${komtEraan()}</div>
-${demoStrip('Elk citaat is één klik van het videomoment')}
+${demoStrip('Wat Raadzoeker voor je doet')}
 <div class="sec"><h2>Alle domeinen</h2></div>${domeinTegels(false)}
 <div class="cols"><div class="kaart" style="grid-column:1/-1">${videoKaart}</div></div>
 ${verbanden}</div>`
 };
-const O={1:['1 · Citaat-demo voorop','Direct na de zoekbalk de drie-stappen-demo (zoek → citaat → ▶ videomoment). De USP is het eerste dat je ziet na het zoeken. Daaronder domeinen, Net besloten + Komt eraan, Verkenner, video.'],
-2:['2 · Actueel voorop, demo daaronder','Rechts van de zoekbalk het citaat van de week met ▶-knop (zoals nu), daaronder Net besloten + Komt eraan, domeinen, dan de uitleg-demo en Verkenner. Voor terugkerende bezoekers: nieuws eerst.'],
-3:['3 · Dossiers voorop (retentie)','Dossiers in beweging direct onder de zoekbalk, daarna Net besloten + Komt eraan, de citaat-demo, alle domeinen, video en Verkenner. Stuurt het meest richting dossiers.']};
+const O={1:['1 · Drie beloften voorop','Direct na de zoekbalk het blok met de drie kernbeloften: samengevatte vergaderingen, domeinpagina’s en zoeken met bron en videomoment. Daaronder domeinen, Net besloten + Komt eraan, Verkenner, video.'],
+2:['2 · Actueel voorop, demo daaronder','Rechts van de zoekbalk het citaat van de week met ▶-knop (zoals nu), daaronder Net besloten + Komt eraan, domeinen, dan het blok met de drie beloften en Verkenner. Voor terugkerende bezoekers: nieuws eerst.'],
+3:['3 · Dossiers voorop (retentie)','Dossiers in beweging direct onder de zoekbalk, daarna Net besloten + Komt eraan, het blok met de drie beloften, alle domeinen, video en Verkenner. Stuurt het meest richting dossiers.']};
 function toon(k){history.replaceState(null,'','#'+k);$('keuze').innerHTML=[1,2,3].map(i=>`<button aria-pressed="${i===k}" onclick="toon(${i})">${O[i][0].split(' · ')[0]}</button>`).join('')+`<span class="sub">schets met echte data uit de site (voorbeeldcitaat, spreker volgt uit de live data)</span>`;
   $('uit').innerHTML=`<h2 style="margin-top:20px">${esc(O[k][0])}</h2><div class="uitleg">${esc(O[k][1])}</div>${L[k]()}`;}
 (async()=>{
   const ix=(await (await fetch('d/index.json')).json()).d;
   const dom=ix.filter(x=>x.soort==='domein').slice(0,8);
   DOMS=dom.map(x=>({naam:x.naam,on:ix.filter(y=>y.soort==='onderwerp'&&y.groep===x.naam).map(y=>y.naam)}));
-  const P=await (await fetch('d/parkeren.json')).json();
+  const P=await (await fetch('d/parkeren.json')).json();P0=P;
   BESL=P.moties.lijst.filter(m=>/aangenomen|verworpen/.test(m[3])).slice(0,3).map(m=>({t:m[1],st:/aangenomen/.test(m[3])?'aangenomen':'verworpen',sub:`${fd(m[0])} · motie van ${m[2]}`}));
   try{KOMT=(await (await fetch('verg/vooruit.json')).json()).v.slice(0,3);}catch(e){KOMT=[];}
   const h=+location.hash.slice(1);toon([1,2,3].includes(h)?h:1);
