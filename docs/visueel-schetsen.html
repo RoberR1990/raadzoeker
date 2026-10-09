@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex"><title>Visuele schetsen · raadzoeker</title>
+<style>
+:root{--groen:#00811F;--groen-d:#004C31;--zacht:#E1EFE2;--mid:#4EB051;--grijs:#EFF4F6;--lijn:#d5dde0;--zwart:#111;--font:Arial,Helvetica,sans-serif}
+*{box-sizing:border-box}body{margin:0;font:16px/1.5 var(--font);color:var(--zwart);background:#fff}
+a{color:inherit}h1,h2,h3{line-height:1.2;margin:0}
+.wrap{max-width:1100px;margin:0 auto;padding:0 16px}
+.top{background:var(--groen);color:#fff;padding:14px 0}.top b{font-size:20px}
+.keuze{position:sticky;top:0;z-index:5;background:#fff;border-bottom:1px solid var(--lijn);padding:10px 0}
+.keuze .wrap{display:flex;gap:8px;flex-wrap:wrap}
+.keuze button{font:700 15px var(--font);border:2px solid var(--zwart);background:#fff;border-radius:999px;padding:0 16px;min-height:44px;cursor:pointer}
+.keuze button[aria-pressed=true]{background:var(--groen);border-color:var(--groen);color:#fff}
+.uitleg{background:var(--grijs);border-radius:8px;padding:12px 16px;margin:18px 0}
+.lab{font-size:13px;color:var(--groen);font-weight:700;margin:26px 0 8px}
+.scherm{border:1px solid var(--lijn);border-radius:10px;overflow:hidden;margin-bottom:10px}
+.kopbalk{background:var(--groen);color:#fff;padding:10px 16px;font-weight:700;display:flex;justify-content:space-between}
+.zoek{display:flex;gap:8px;margin:14px 0}.zoek i{flex:1;border:2px solid var(--zwart);border-radius:999px;padding:10px 16px;background:#fff;color:#555;font-style:normal}
+.zoek span{background:var(--groen);color:#fff;border-radius:999px;padding:10px 20px;font-weight:700}
+.hero{padding:22px 20px;background:var(--zacht)}.hero h1{font-size:30px;margin-bottom:6px}
+.hero.ill{padding:0;position:relative}.hero.ill .tekst{position:absolute;left:0;right:0;top:0;padding:22px 20px}
+.hero.ill svg{display:block;width:100%;height:auto}
+.rij{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px;padding:16px}
+.tegel{border:1px solid var(--lijn);border-radius:10px;overflow:hidden;background:#fff;text-decoration:none}
+.tegel .b{padding:10px 12px}.tegel h3{font-size:17px}.tegel p{margin:2px 0 0;font-size:13px;color:#444}
+.tegel svg{display:block;width:100%;height:auto}
+.cijfers{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;padding:16px}
+.cijfers div{background:#fff;border:1px solid var(--lijn);border-radius:10px;padding:10px 12px}
+.cijfers b{display:block;font-size:30px;line-height:1.1;color:var(--groen)}.cijfers span{font-size:13px;color:#444}
+.grafblok{padding:0 16px 16px;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.grafblok>div{border:1px solid var(--lijn);border-radius:10px;padding:12px}.grafblok h4{margin:0 0 6px;font-size:14px}
+.fb{display:grid;grid-template-columns:130px 1fr 28px;gap:6px;align-items:center;font-size:13px;margin:3px 0}.fb i{display:block;height:10px;background:var(--groen);border-radius:5px}
+.ban{background:var(--zacht);position:relative}.ban svg{display:block;width:100%;height:auto;max-height:170px}
+.ban .t{position:absolute;left:0;bottom:0;right:0;padding:14px 20px;background:linear-gradient(transparent,rgba(225,239,226,.95) 55%)}
+.ban .t h2{font-size:28px}.kern{padding:14px 20px 4px;font-size:16px}
+.kleur{height:6px}
+.knop{display:inline-block;background:var(--groen);color:#fff;border-radius:999px;padding:10px 18px;font-weight:700;text-decoration:none;margin:0 16px 16px}
+.stapel{display:flex;height:16px;border-radius:8px;overflow:hidden}
+.sub{font-size:13px;color:#555}
+</style></head><body>
+<div class="top"><div class="wrap"><b>raadzoeker</b> · schetsen visuele richting (niet live gelinkt aan de site)</div></div>
+<div class="keuze"><div class="wrap" id="keuze"></div></div>
+<div class="wrap" id="uit"><p>Laden…</p></div>
+<script>
+const $=id=>document.getElementById(id),esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const KL={wonen:'#00811F',mobil:'#0A6EA8',buiten:'#4EB051',def:'#00811F'};
+const kleur=s=>s.includes('wonen')?KL.wonen:s.includes('mobil')?KL.mobil:s.includes('buiten')?KL.buiten:KL.def;
+/* ---------- illustraties (vlak, eigen werk) ---------- */
+function ill(slug,w=600,h=150){
+  const c=kleur(slug),g='#E1EFE2',d='#004C31';let s='';
+  if(slug.includes('wonen')){const hs=[[20,70,60],[85,40,75],[150,85,50],[205,55,70],[270,35,90],[335,75,55],[400,50,72],[465,65,60],[530,45,78]];
+    hs.forEach(([x,y,b],i)=>{const hh=b+30;s+=`<rect x="${x}" y="${h-hh}" width="52" height="${hh}" fill="${i%2?c:d}"/><path d="M${x-4} ${h-hh} L${x+26} ${h-hh-22} L${x+56} ${h-hh}Z" fill="${i%2?d:c}"/>`;for(let r=0;r<2;r++)s+=`<rect x="${x+10}" y="${h-hh+12+r*28}" width="12" height="14" fill="${g}"/><rect x="${x+30}" y="${h-hh+12+r*28}" width="12" height="14" fill="${g}"/>`;});}
+  else if(slug.includes('mobil')){s+=`<rect x="0" y="${h-14}" width="${w}" height="14" fill="${d}"/><rect x="60" y="${h-62}" width="210" height="40" rx="8" fill="${c}"/>`;for(let i=0;i<5;i++)s+=`<rect x="${72+i*40}" y="${h-54}" width="28" height="16" rx="3" fill="${g}"/>`;
+    s+=`<rect x="60" y="${h-26}" width="210" height="5" fill="${d}"/><path d="M300 ${h-14} L300 20 L320 20 L320 ${h-14}Z" fill="${d}"/>`;for(let i=0;i<7;i++)s+=`<path d="M310 22 L${330+i*40} ${h-16}" stroke="${c}" stroke-width="2" fill="none"/>`;s+=`<rect x="310" y="${h-16}" width="${w-310}" height="4" fill="${d}"/><rect x="460" y="${h-52}" width="110" height="30" rx="6" fill="${c}"/><circle cx="480" cy="${h-18}" r="6" fill="${d}"/><circle cx="550" cy="${h-18}" r="6" fill="${d}"/>`;}
+  else if(slug.includes('buiten')){for(let i=0;i<9;i++){const x=30+i*65,t=50+(i*37%40);s+=`<rect x="${x}" y="${h-t}" width="8" height="${t}" fill="${d}"/><circle cx="${x+4}" cy="${h-t-16}" r="${24+(i%3)*6}" fill="${i%2?c:'#4EB051'}"/>`;}s+=`<rect y="${h-8}" width="${w}" height="8" fill="${d}"/>`;}
+  else{const hs=[[10,60],[60,100],[110,70],[160,120],[215,80],[270,140],[320,70],[375,95],[430,60],[485,110],[540,75]];hs.forEach(([x,hh],i)=>{s+=`<rect x="${x}" y="${h-hh}" width="44" height="${hh}" fill="${i%2?c:d}"/>`;});s+=`<path d="M0 ${h-6} Q300 ${h-30} 600 ${h-6} V${h} H0Z" fill="${c}" opacity=".5"/>`;}
+  return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="xMidYMax slice" role="img" aria-hidden="true">${s}</svg>`;
+}
+/* ---------- datablokken ---------- */
+function spark(tr,jr,c='#00811F',w=300,h=70){const mx=Math.max(...tr,1),n=tr.length,p=tr.map((v,i)=>[8+i*(w-16)/(n-1),h-14-(h-26)*v/mx]);
+  return `<svg viewBox="0 0 ${w} ${h}" width="100%" role="img" aria-label="Aandacht per jaar"><path d="M${p.map(a=>a.join(',')).join('L')}L${p[n-1][0]},${h-14}L${p[0][0]},${h-14}Z" fill="${c}" opacity=".15"/><polyline points="${p.map(a=>a.join(',')).join(' ')}" fill="none" stroke="${c}" stroke-width="2.5"/>${p.map(a=>`<circle cx="${a[0]}" cy="${a[1]}" r="2.5" fill="${c}"/>`).join('')}<text x="8" y="${h-2}" font-size="10" fill="#555">${jr[0]}</text><text x="${w-8}" y="${h-2}" font-size="10" text-anchor="end" fill="#555">${jr[n-1]}</text></svg>`;}
+function motiebalk(m){const t=m.aangenomen+m.verworpen+m.open+m.afgedaan,seg=[['aangenomen',m.aangenomen,'#00811F'],['afgedaan',m.afgedaan,'#4EB051'],['open',m.open,'#F5A623'],['verworpen',m.verworpen,'#B8C4C9']];
+  return `<div class="stapel">${seg.map(([n,v,c])=>`<i style="width:${v/t*100}%;background:${c}" title="${n} ${v}"></i>`).join('')}</div><p class="sub" style="margin:6px 0 0">${seg.map(([n,v,c])=>`<span style="color:${c}">●</span> ${n} ${v}`).join(' &nbsp; ')}</p>`;}
+function fractiebalk(p){const L=p.slice(0,6),mx=L[0][1];return L.map(([n,v])=>`<div class="fb"><span>${esc(n)}</span><i style="width:${v/mx*100}%"></i><span></span></div>`).join('')+'<p class="sub" style="margin:4px 0 0">Relatief aandeel in het onderwerp, op alfabet geen ranglijst-claim.</p>';}
+function cijfers(d){const m=d.moties,t=d.toez;return `<div class="cijfers"><div><b>${m.aangenomen+m.verworpen+m.open+m.afgedaan}</b><span>moties sinds 2018</span></div><div><b>${m.open}</b><span>moties nog open</span></div><div><b>${t.open}</b><span>toezeggingen open</span></div><div><b>${(m.te_laat||0)+(t.te_laat||0)}</b><span>over de termijn</span></div></div>`;}
+const kern=d=>(d.tsum&&d.tsum.kern||'').split(/(?<=[.!?])\s+/).slice(0,2).join(' ');
+/* ---------- schetsen ---------- */
+let DOM=[],P;
+const kop=`<div class="kopbalk"><span>raadzoeker</span><span>Dossiers · Gebieden · Vergaderingen · Inzichten</span></div>`;
+const zoek=`<div class="zoek"><i>Zoek in wat de raad zegt, besluit en belooft…</i><span>Zoeken</span></div>`;
+function dossierKopA(){return `<div class="scherm">${kop}<div class="ban">${ill('mobiliteit')}<div class="t"><div class="sub">Mobiliteit › dossier</div><h2>Parkeren</h2></div></div><div class="kleur" style="background:${KL.mobil}"></div><p class="kern">${esc(kern(P))}</p><a class="knop" href="#">Lees het hele dossier ›</a></div>`;}
+function dossierKopB(){return `<div class="scherm">${kop}<div style="padding:16px 20px 0"><div class="sub">Mobiliteit › dossier</div><h2 style="font-size:28px">Parkeren</h2><p style="margin:6px 0 0">${esc(kern(P).split(/(?<=[.!?])\s/)[0])}</p></div>${cijfers(P)}<div class="grafblok"><div><h4>Aandacht in de raad per jaar</h4>${spark(P.trend,P.jaren)}</div><div><h4>Wat is er van de moties geworden?</h4>${motiebalk(P.moties)}</div><div><h4>Wie praat erover</h4>${fractiebalk(P.partijen.slice().sort((a,b)=>b[1]-a[1]))}</div></div><a class="knop" href="#">Lees het hele dossier ›</a></div>`;}
+function dossierKopC(){return `<div class="scherm">${kop}<div class="ban">${ill('mobiliteit')}<div class="t"><div class="sub">Mobiliteit › dossier</div><h2>Parkeren</h2></div></div><div class="kleur" style="background:${KL.mobil}"></div><p class="kern">${esc(kern(P).split(/(?<=[.!?])\s/)[0])}</p>${cijfers(P)}<div class="grafblok"><div><h4>Aandacht in de raad per jaar</h4>${spark(P.trend,P.jaren,KL.mobil)}</div><div><h4>Wat is er van de moties geworden?</h4>${motiebalk(P.moties)}</div><div><h4>Wie praat erover</h4>${fractiebalk(P.partijen.slice().sort((a,b)=>b[1]-a[1]))}</div></div><a class="knop" href="#">Lees het hele dossier ›</a></div>`;}
+function startA(){return `<div class="scherm">${kop}<div class="hero ill">${ill('stad',600,170)}<div class="tekst"><h1>Wat de Rotterdamse raad zegt, besluit en belooft</h1>${zoek}</div></div><div class="rij">${DOM.map(x=>`<a class="tegel" href="#">${ill(x.slug,600,110)}<div class="b"><h3>${esc(x.naam)}</h3><p>${x.n} dossiers</p></div></a>`).join('')}</div></div>`;}
+function startB(){return `<div class="scherm">${kop}<div class="hero"><h1>Wat de Rotterdamse raad zegt, besluit en belooft</h1>${zoek}</div>${cijfers(P)}<div class="grafblok"><div><h4>Waar de raad over praat (voorbeeld: Parkeren)</h4>${spark(P.trend,P.jaren)}</div><div><h4>Moties: wat werd ervan?</h4>${motiebalk(P.moties)}</div></div><div class="rij">${DOM.map(x=>`<a class="tegel" href="#"><div class="b"><h3>${esc(x.naam)}</h3><p>${x.n} dossiers</p>${x.d?spark(x.d.trend,x.d.jaren,kleur(x.slug),240,56):''}</div></a>`).join('')}</div></div>`;}
+function startC(){return `<div class="scherm">${kop}<div class="hero ill">${ill('stad',600,150)}<div class="tekst"><h1>Wat de Rotterdamse raad zegt, besluit en belooft</h1>${zoek}</div></div>${cijfers(P)}<div class="rij">${DOM.map(x=>`<a class="tegel" href="#">${ill(x.slug,600,90)}<div class="kleur" style="background:${kleur(x.slug)}"></div><div class="b"><h3>${esc(x.naam)}</h3><p>${x.n} dossiers</p>${x.d?spark(x.d.trend,x.d.jaren,kleur(x.slug),240,52):''}</div></a>`).join('')}</div></div>`;}
+const OPT={
+ A:['A · Illustraties','Eigen vlakke illustraties per domein: skyline als hero, een plaatje per domein-tegel en als banner op het dossier. Cijfers blijven klein, tekst blijft de hoofdzaak.',()=>`<div class="lab">Startpagina</div>${startA()}<div class="lab">Dossier Parkeren (kop)</div>${dossierKopA()}`],
+ B:['B · Data-visuals','Grote cijfers, jaarcurve, motiebalk en fractiebalken vervangen alinea\'s. Domein-tegels met eigen mini-grafiek. Geen illustraties.',()=>`<div class="lab">Startpagina</div>${startB()}<div class="lab">Dossier Parkeren (kop)</div>${dossierKopB()}`],
+ C:['B + A · Data met illustraties op de domeinkoppen','Data-visuals als basis (B), met een illustratie en eigen kleuraccent per domein op de tegel en dossierkop (A). Kleurcodes per domein: groen wonen, blauw mobiliteit, lichtgroen buitenruimte.',()=>`<div class="lab">Startpagina</div>${startC()}<div class="lab">Dossier Parkeren (kop)</div>${dossierKopC()}`]
+};
+function toon(k){location.hash=k;$('keuze').innerHTML=Object.entries(OPT).map(([id,o])=>`<button aria-pressed="${id===k}" onclick="toon('${id}')">${esc(o[0].split(' · ')[0])}</button>`).join('')+`<span class="sub" style="align-self:center">alle drie met echte data uit de site</span>`;
+  $('uit').innerHTML=`<h2 style="margin-top:20px">${esc(OPT[k][0])}</h2><div class="uitleg">${esc(OPT[k][1])}</div>${OPT[k][2]()}`;}
+(async()=>{
+  const ix=(await (await fetch('d/index.json')).json()).d;P=await (await fetch('d/parkeren.json')).json();
+  const dom=ix.filter(x=>x.soort==='domein').slice(0,8);
+  DOM=await Promise.all(dom.map(async x=>{const n=ix.filter(y=>y.soort!=='kruising'&&y.soort!=='domein'&&y.groep===x.naam).length;let d=null;try{d=await (await fetch(`d/${x.slug}.json`)).json();}catch(e){}return {slug:x.slug,naam:x.naam,n:n||'meerdere',d};}));
+  toon(['A','B','C'].includes(location.hash.slice(1))?location.hash.slice(1):'C');
+})();
+</script></body></html>
