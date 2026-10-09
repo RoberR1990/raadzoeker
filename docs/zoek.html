@@ -63,7 +63,7 @@
 .fknop[aria-expanded="true"]{background:var(--grijs)}
 .fchips{display:flex;flex-wrap:wrap;gap:6px}
 .fchips button{font:14px var(--font);background:var(--groen-zacht);border:0;border-radius:999px;padding:4px 12px;min-height:32px;cursor:pointer}
-.dosregel{margin:10px 0 0;font-size:15px}.dosregel a{margin-right:10px}
+.dosregel{margin:14px 0 0;font-size:15px}.doskaart{background:var(--groen-zacht);border-left:6px solid var(--groen);border-radius:8px;padding:16px 18px;margin:0}.doskaart .dk-label{font-size:13px;text-transform:none;color:var(--groen);font-weight:700}.doskaart h2{margin:2px 0 6px;font-size:24px}.doskaart h2 a{color:inherit}.dk-kern{margin:0 0 8px;font-size:16px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}.dk-tel{margin:0 0 12px;font-size:15px}.dk-meer{margin:8px 0 0;font-size:15px}.dk-meer a{margin-right:10px}.dosregel .dk-meer a{margin-right:10px}.dosregel .knop{color:#fff}
 .extra{border:1px solid var(--lijn);border-radius:8px;padding:10px 14px;margin:12px 0;background:var(--wit)}.extra summary{cursor:pointer}
 .extra .analyse{margin-top:12px}
 body.zq .lead,body.zq .tip{display:none}
@@ -209,7 +209,20 @@ function analyse(){
   const gl=LB.geb.map((x,i)=>[x,gb[i]]).filter(x=>x[1]).sort((a,b)=>b[1]-a[1]).slice(0,8),gm=Math.max(1,...gl.map(x=>x[1]));
   $('ageb').innerHTML=gl.length?gl.map(([x,n])=>`<div><a href="wijk.html?g=${slug(x)}">${esc(x)}</a><i style="width:${n/gm*100}%"></i><span class="v">${n}</span></div>`).join('')+'<p class="sub" style="font-size:12px">Stukken en debatten die het gebied noemen.</p>':'<p class="sub">Geen gebied herkend.</p>';
   const q=fold(ZOEK.q),dl=IX.filter(x=>x.soort!=='kruising'&&(fold(x.naam).includes(q)||(x.termen||'').split('|').some(t=>t.trim()&&(q.includes(fold(t.trim()))||fold(t.trim()).includes(q)))));
-  const dh=dl.slice(0,3);$('dosregel').hidden=!dh.length;$('dosregel').innerHTML=dh.length?`${dh.length>1?'Dossiers':'Dossier'}: `+dh.map(x=>`<a href="${x.soort==='gebied'?'wijk.html#':'dossier.html#'}${x.slug}">${esc(x.naam)} ›</a>`).join(''):'';
+  const rang={onderwerp:0,thema:1,domein:2,gebied:3},dh=dl.slice().sort((a,b)=>((fold(b.naam)===q)-(fold(a.naam)===q))||((rang[a.soort]??4)-(rang[b.soort]??4))).slice(0,4);
+  $('dosregel').hidden=!dh.length;$('dosregel').innerHTML='';
+  if(dh.length){
+    const l=x=>(x.soort==='gebied'?'wijk.html#':'dossier.html#')+x.slug,top=dh[0],rest=dh.slice(1);
+    $('dosregel').innerHTML=`<div class="doskaart"><div class="dk-label">Dossier</div><h2><a href="${l(top)}">${esc(top.naam)}</a></h2><p class="dk-kern" id="dkkern"></p><p class="dk-tel" id="dktel"></p><a class="knop" href="${l(top)}">Open het dossier ›</a></div>`+(rest.length?`<p class="dk-meer">Ook: `+rest.map(x=>`<a href="${l(x)}">${esc(x.naam)} ›</a>`).join('')+'</p>':'');
+    fetch(`d/${top.slug}.json`).then(r=>r.json()).then(d=>{
+      const k=(d.tsum&&d.tsum.kern||'').split(/(?<=[.!?])\s+/).slice(0,2).join(' ');
+      if(k)$('dkkern').textContent=k;else $('dkkern').hidden=true;
+      const mo=d.moties&&d.moties.open,tz=d.toez&&(d.toez.open),tl=(d.moties&&d.moties.te_laat||0)+(d.toez&&d.toez.te_laat||0),t=[];
+      if(d.moties)t.push(`<b>${d.moties.aangenomen+d.moties.verworpen+d.moties.open+d.moties.afgedaan}</b> moties`);
+      if(mo!=null)t.push(`<b>${mo}</b> open`);if(tz!=null)t.push(`<b>${tz}</b> toezeggingen open`);if(tl)t.push(`<b>${tl}</b> over de termijn`);
+      $('dktel').innerHTML=t.join(' · ');$('dktel').hidden=!t.length;
+    }).catch(()=>{$('dkkern').hidden=true;$('dktel').hidden=true;});
+  }
 }
 /* ---------- lijsten ---------- */
 async function toepassen(){
