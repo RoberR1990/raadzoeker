@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex"><title>Hoofdpagina schetsen · raadzoeker</title>
+<style>
+:root{--groen:#00811F;--groen-d:#004C31;--zacht:#E1EFE2;--grijs:#EFF4F6;--lijn:#d5dde0;--zwart:#111;--font:Arial,Helvetica,sans-serif}
+*{box-sizing:border-box}body{margin:0;font:16px/1.5 var(--font);color:var(--zwart);background:#fff}
+a{color:inherit}h1,h2,h3,h4{line-height:1.2;margin:0}.wrap{max-width:1100px;margin:0 auto;padding:0 16px}
+.top{background:var(--groen);color:#fff;padding:14px 0}.top b{font-size:20px}
+.keuze{position:sticky;top:0;z-index:5;background:#fff;border-bottom:1px solid var(--lijn);padding:10px 0}.keuze .wrap{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.keuze button{font:700 15px var(--font);border:2px solid var(--zwart);background:#fff;border-radius:999px;padding:0 16px;min-height:44px;cursor:pointer}
+.keuze button[aria-pressed=true]{background:var(--groen);border-color:var(--groen);color:#fff}
+.uitleg{background:var(--grijs);border-radius:8px;padding:12px 16px;margin:18px 0}
+.scherm{border:1px solid var(--lijn);border-radius:10px;overflow:hidden;margin:14px 0 40px}
+.kopbalk{background:var(--groen);color:#fff;padding:10px 16px;font-weight:700;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.sub{font-size:13px;color:#555}.sec{padding:22px 20px 6px}.sec h2{font-size:21px}.sec p{margin:4px 0 0}
+.zoek{display:flex;gap:8px;margin:14px 0}.zoek i{flex:1;border:2px solid var(--zwart);border-radius:999px;padding:12px 18px;background:#fff;color:#555;font-style:normal}
+.zoek span{background:var(--groen);color:#fff;border-radius:999px;padding:12px 22px;font-weight:700}
+.hero{background:var(--zacht);padding:24px 20px 0;position:relative}.hero h1{font-size:30px}.hero svg{display:block;width:100%;height:auto;max-height:90px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}.chips span{background:#fff;border:1px solid var(--lijn);border-radius:999px;padding:5px 12px;font-size:14px}
+.knop{display:inline-block;background:var(--groen);color:#fff;border-radius:999px;padding:10px 18px;font-weight:700;text-decoration:none}
+.knop.rand{background:#fff;color:var(--zwart);border:2px solid var(--zwart)}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;padding:12px 20px}
+.kaart{border:1px solid var(--lijn);border-radius:10px;padding:14px 16px;background:#fff}.kaart h3{font-size:18px;margin-bottom:6px}
+.rijtjes{list-style:none;margin:0;padding:0}.rijtjes li{padding:8px 0;border-top:1px solid var(--lijn);font-size:15px}.rijtjes li:first-child{border-top:0}.rijtjes small{display:block;color:#555}
+.tag{display:inline-block;font-size:12px;font-weight:700;border-radius:4px;padding:1px 7px;background:var(--zacht);color:var(--groen-d);margin-right:6px}
+/* citaat -> video */
+.demo{background:var(--grijs);border-radius:12px;padding:16px;margin:8px 20px 16px}
+.stap{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;align-items:stretch}
+.stap>div{background:#fff;border:1px solid var(--lijn);border-radius:10px;padding:12px 14px;position:relative}
+.stap .nr{display:inline-flex;width:26px;height:26px;border-radius:50%;background:var(--groen);color:#fff;font-weight:700;align-items:center;justify-content:center;margin-bottom:6px}
+.cit{border-left:4px solid var(--groen);padding:4px 0 4px 12px;font-size:17px;margin:6px 0}
+.bknop{display:inline-flex;gap:6px;align-items:center;background:var(--groen);color:#fff;border-radius:999px;padding:8px 14px;font-weight:700;font-size:14px;animation:puls 2.4s infinite}
+@keyframes puls{0%,100%{box-shadow:0 0 0 0 rgba(0,129,31,.45)}60%{box-shadow:0 0 0 10px rgba(0,129,31,0)}}
+@media (prefers-reduced-motion:reduce){.bknop{animation:none}}
+.vid{background:#1b2a24;border-radius:8px;aspect-ratio:16/9;position:relative;color:#fff;overflow:hidden}
+.vid .pl{position:absolute;left:50%;top:42%;transform:translate(-50%,-50%);width:54px;height:54px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:22px}
+.vid .ond{position:absolute;left:8%;right:8%;bottom:26px;text-align:center;background:rgba(0,0,0,.55);padding:4px 8px;border-radius:4px;font-size:13px}
+.vid .bal{position:absolute;left:0;right:0;bottom:0;height:8px;background:rgba(255,255,255,.2)}.vid .bal i{display:block;height:100%;width:34%;background:#4EB051}
+.vid .tc{position:absolute;left:10px;top:8px;font-size:12px;background:var(--groen);padding:2px 8px;border-radius:4px;font-weight:700}
+.vk{display:grid;grid-template-columns:200px 1fr;gap:14px;align-items:center}
+@media(max-width:560px){.vk{grid-template-columns:1fr}}
+.tegels{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;padding:12px 20px 18px}
+.tegel{border:1px solid var(--lijn);border-radius:10px;overflow:hidden}.tegel svg{display:block;width:100%;height:auto}.tegel .b{padding:8px 12px 12px}.tegel h3{font-size:16px}.tegel p{margin:2px 0 0;font-size:13px;color:#555}
+.web{background:linear-gradient(135deg,#E1EFE2,#fff);border-radius:12px;display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:center;padding:16px 20px;margin:8px 20px 20px}
+@media(max-width:560px){.web{grid-template-columns:1fr}}
+.lab{font-size:13px;color:var(--groen);font-weight:700;margin:20px 0 4px}
+</style></head><body>
+<div class="top"><div class="wrap"><b>raadzoeker</b> · schetsen hoofdpagina (stap 1 van 3: hoofdpagina, zoekresultaten, dossier)</div></div>
+<div class="keuze"><div class="wrap" id="keuze"></div></div>
+<div class="wrap" id="uit"><p>Laden…</p></div>
+<script>
+const $=id=>document.getElementById(id),esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function ill(h=90,w=600){const t1='#DCEBDF',t2='#C3DCC8',m=h*.7;let s='';[[30,.5],[90,.8],[150,.6],[210,1],[280,.55],[340,.85],[400,.6],[460,.75],[520,.5]].forEach(([x,k],i)=>{s+=`<rect x="${x}" y="${h-6-m*k}" width="46" height="${m*k}" fill="${i%2?t1:t2}"/>`;});s+=`<rect y="${h-6}" width="${w}" height="6" fill="${t2}"/>`;return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="xMidYMax slice" aria-hidden="true">${s}</svg>`;}
+function domIll(i,h=70,w=600){const t1='#DCEBDF',t2='#C3DCC8';let s='';if(i%3===0){for(let k=0;k<7;k++){const x=34+k*82,hh=22+(k*37%25);s+=`<rect x="${x}" y="${h-5-hh}" width="52" height="${hh}" fill="${k%2?t1:t2}"/><path d="M${x-4} ${h-5-hh} L${x+26} ${h-5-hh-14} L${x+56} ${h-5-hh}Z" fill="${k%2?t1:t2}"/>`;}}else if(i%3===1){s+=`<rect x="296" y="8" width="8" height="${h-14}" fill="${t2}"/>`;for(let k=1;k<=6;k++)s+=`<path d="M300 12 L${300+k*48} ${h-8}M300 12 L${300-k*48} ${h-8}" stroke="${t2}" stroke-width="1.5" fill="none"/>`;}else{for(let k=0;k<6;k++){const x=60+k*96;s+=`<rect x="${x-3}" y="${h-30}" width="6" height="24" fill="${t2}"/><circle cx="${x}" cy="${h-36}" r="${14+(k%3)*3}" fill="${k%2?t1:t2}"/>`;}}s+=`<rect y="${h-5}" width="${w}" height="5" fill="${t2}"/>`;return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="xMidYMax slice" aria-hidden="true">${s}</svg>`;}
+const kop=`<div class="kopbalk"><span>raadzoeker</span><span>Dossiers · Gebieden · Vergaderingen · Inzichten</span></div>`;
+const zoekbalk=`<div class="zoek"><i>Zoek een onderwerp, wijk of woord…</i><span>Zoeken</span></div>`;
+let D={},BESL=[],KOMT=[],DOMS=[];
+const fd=d=>{const x=new Date(d+'T12:00:00');return x.toLocaleDateString('nl-NL',{day:'numeric',month:'short'});};
+const fragment='En ja, we hebben natuurlijk ook wel de reden van die parkeerregulering.';
+/* herbruikbare blokken */
+const probeer=`<div class="chips" style="margin-top:2px"><span class="sub" style="border:0;padding:5px 0">Probeer:</span><span>parkeren</span><span>vuurwerk</span><span>Feyenoord City</span><span>jeugdhulp</span></div>`;
+const videoKaart=`<div class="vk"><div class="vid"><span class="tc">90 sec</span><span class="pl">▶</span><span class="ond">Raadzoeker.nl uitgelegd</span><div class="bal"><i></i></div></div><div><h3>Raadzoeker.nl uitgelegd in 90 seconden</h3><p class="sub" style="margin:4px 0 8px">Wat je kunt vinden, en hoe je van een citaat naar het videomoment komt.</p><span class="knop">▶ Bekijk de video</span></div></div>`;
+const demoStrip=(titel)=>`<div class="sec"><h2>${titel}</h2><p class="sub">Elk fragment springt naar de seconde waarop het gezegd is.</p></div>
+<div class="demo"><div class="stap">
+<div><span class="nr">1</span><b>Zoek</b><div class="zoek" style="margin:8px 0 0"><i style="padding:6px 12px;font-size:14px">parkeerregulering</i></div><p class="sub" style="margin:8px 0 0">In 46.932 spreekbeurten en 44.500 stukken.</p></div>
+<div><span class="nr">2</span><b>Lees het citaat</b><p class="cit">‘${esc(fragment)}’</p><p class="sub" style="margin:0">Debat Uitbreiden betaald parkeren · 1 okt 2026</p></div>
+<div><span class="nr">3</span><b>Spring naar het moment</b><div class="vid" style="margin:8px 0"><span class="tc">▶ 5:05</span><span class="pl">▶</span><span class="ond">${esc(fragment)}</span><div class="bal"><i></i></div></div><span class="bknop">▶ Bekijk het moment</span></div>
+</div></div>`;
+const netBesloten=()=>`<div class="kaart"><h3>Net besloten</h3><ul class="rijtjes">${BESL.map(m=>`<li><span class="tag">${esc(m.st)}</span>${esc(m.t)}<small>${esc(m.sub)}</small></li>`).join('')}</ul><p style="margin:8px 0 0"><a href="#">Alle besluiten ›</a></p></div>`;
+const komtEraan=()=>`<div class="kaart"><h3>Komt eraan</h3><ul class="rijtjes">${KOMT.map(v=>`<li><b>${fd(v.datum)}</b> · ${esc(v.naam)}<small>${esc(v.punten.filter(p=>!/HAMER|Opening|Sluiting|Rondvraag/i.test(p.titel))[0]?.titel||'')}</small></li>`).join('')}</ul><p style="margin:8px 0 0"><a href="#">Hele agenda ›</a></p></div>`;
+const verbanden=`<div class="web"><div><h3>Ontdek verbanden</h3><p class="sub" style="margin:4px 0 10px">Alles wat in de raad is gezegd als één web: welke onderwerpen en plekken komen opvallend vaak samen voor?</p><span class="knop">Open de Verkenner</span> <span class="knop rand">Verras me</span></div><svg viewBox="0 0 400 150" aria-hidden="true"><g stroke="#99CCA0" stroke-width="1.5">${[[60,70,150,40],[150,40,250,80],[150,40,230,20],[250,80,330,50],[250,80,300,120],[60,70,110,120],[110,120,250,80]].map(a=>`<line x1="${a[0]}" y1="${a[1]}" x2="${a[2]}" y2="${a[3]}"/>`).join('')}</g>${[[60,70,9],[150,40,13],[250,80,16],[230,20,7],[330,50,10],[300,120,8],[110,120,11]].map(a=>`<circle cx="${a[0]}" cy="${a[1]}" r="${a[2]}" fill="#00811F" opacity=".75"/>`).join('')}</svg></div>`;
+const domeinTegels=(met)=>`<div class="tegels">${DOMS.map((x,i)=>`<div class="tegel">${met?domIll(i):''}<div class="b"><h3>${esc(x.naam)}</h3><p>${esc(x.on.slice(0,3).join(' · '))}</p></div></div>`).join('')}</div>`;
+const beweging=()=>`<div class="tegels">${DOMS.slice(0,4).map((x,i)=>`<div class="tegel">${domIll(i)}<div class="b"><span class="tag">nieuw</span><h3>${esc(x.on[0]||x.naam)}</h3><p>${esc(x.naam)}</p></div></div>`).join('')}</div>`;
+/* de drie opties */
+const L={
+1:()=>`<div class="scherm">${kop}
+<div class="hero"><h1>Wat de Rotterdamse raad zegt, besluit en belooft</h1>${zoekbalk}${probeer}${ill()}</div>
+${demoStrip('Van citaat naar videomoment in drie stappen')}
+<div class="sec"><h2>Waar de raad zich mee bezighoudt</h2></div>${domeinTegels(true)}
+<div class="cols">${netBesloten()}${komtEraan()}</div>
+${verbanden}
+<div class="sec"><h2>Nog even kijken</h2></div><div style="padding:8px 20px 24px">${videoKaart}</div></div>`,
+2:()=>`<div class="scherm">${kop}
+<div class="hero" style="padding-bottom:0"><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;align-items:center"><div><h1>Wat de Rotterdamse raad zegt, besluit en belooft</h1>${zoekbalk}${probeer}</div><div class="kaart" style="margin-bottom:16px"><span class="tag">Deze week in de raad</span><p class="cit">‘${esc(fragment)}’</p><p class="sub" style="margin:0 0 10px">Debat Uitbreiden betaald parkeren · 1 okt 2026</p><span class="bknop">▶ Bekijk het moment</span></div></div>${ill()}</div>
+<div class="cols">${netBesloten()}${komtEraan()}</div>
+<div class="sec"><h2>Waar de raad zich mee bezighoudt</h2></div>${domeinTegels(true)}
+${demoStrip('Zo werkt het: elk citaat heeft een videomoment')}
+${verbanden}`,
+3:()=>`<div class="scherm">${kop}
+<div class="hero"><h1>Wat de Rotterdamse raad zegt, besluit en belooft</h1>${zoekbalk}${probeer}${ill()}</div>
+<div class="sec"><h2>Dossiers in beweging</h2><p class="sub">De dossiers met de meeste nieuwe punten in de afgelopen 30 dagen.</p></div>${beweging()}
+<div class="cols">${netBesloten()}${komtEraan()}</div>
+${demoStrip('Elk citaat is één klik van het videomoment')}
+<div class="sec"><h2>Alle domeinen</h2></div>${domeinTegels(false)}
+<div class="cols"><div class="kaart" style="grid-column:1/-1">${videoKaart}</div></div>
+${verbanden}</div>`
+};
+const O={1:['1 · Citaat-demo voorop','Direct na de zoekbalk de drie-stappen-demo (zoek → citaat → ▶ videomoment). De USP is het eerste dat je ziet na het zoeken. Daaronder domeinen, Net besloten + Komt eraan, Verkenner, video.'],
+2:['2 · Actueel voorop, demo daaronder','Rechts van de zoekbalk het citaat van de week met ▶-knop (zoals nu), daaronder Net besloten + Komt eraan, domeinen, dan de uitleg-demo en Verkenner. Voor terugkerende bezoekers: nieuws eerst.'],
+3:['3 · Dossiers voorop (retentie)','Dossiers in beweging direct onder de zoekbalk, daarna Net besloten + Komt eraan, de citaat-demo, alle domeinen, video en Verkenner. Stuurt het meest richting dossiers.']};
+function toon(k){history.replaceState(null,'','#'+k);$('keuze').innerHTML=[1,2,3].map(i=>`<button aria-pressed="${i===k}" onclick="toon(${i})">${O[i][0].split(' · ')[0]}</button>`).join('')+`<span class="sub">schets met echte data uit de site (voorbeeldcitaat, spreker volgt uit de live data)</span>`;
+  $('uit').innerHTML=`<h2 style="margin-top:20px">${esc(O[k][0])}</h2><div class="uitleg">${esc(O[k][1])}</div>${L[k]()}`;}
+(async()=>{
+  const ix=(await (await fetch('d/index.json')).json()).d;
+  const dom=ix.filter(x=>x.soort==='domein').slice(0,8);
+  DOMS=dom.map(x=>({naam:x.naam,on:ix.filter(y=>y.soort==='onderwerp'&&y.groep===x.naam).map(y=>y.naam)}));
+  const P=await (await fetch('d/parkeren.json')).json();
+  BESL=P.moties.lijst.filter(m=>/aangenomen|verworpen/.test(m[3])).slice(0,3).map(m=>({t:m[1],st:/aangenomen/.test(m[3])?'aangenomen':'verworpen',sub:`${fd(m[0])} · motie van ${m[2]}`}));
+  try{KOMT=(await (await fetch('verg/vooruit.json')).json()).v.slice(0,3);}catch(e){KOMT=[];}
+  const h=+location.hash.slice(1);toon([1,2,3].includes(h)?h:1);
+})();
+</script></body></html>
