@@ -31,7 +31,7 @@ function rzAchter(laatste,nu){
 }
 window.rzAchter=rzAchter;
 const FREQ='Wordt automatisch bijgewerkt: elke nacht, en op werkdagen om 9, 12, 15, 18 en 21 uur.';
-const STAND='2026-10-09';   /* stand van de gegevens; ook in src/paden.py */
+const STAND='2026-10-10';   /* stand van de gegevens; ook in src/paden.py */
 const dagen=(a,b)=>Math.round((new Date(b)-new Date(a))/864e5);
 
 /* logo: halfrond van negen zetels (de raadzaal), één groen gemarkeerd; woordmerk in kleine letters */
