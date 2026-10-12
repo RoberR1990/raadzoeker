@@ -1,9 +1,11 @@
 #!/bin/sh
 # Werkt de raadzoeker bij en zet de site online (git push -> Cloudflare Pages).
 #   nacht:   iBabs (nieuwe stukken + open moties/toezeggingen verversen), vragen met antwoord, raadsvoorstellen, Gemeenteblad,
-#            zoekindex, domein- en gebiedslabels, dossiers, voorbeelddossiers, Lab
+#            zoekindex, domein- en gebiedslabels, dossiers, voorbeelddossiers, Lab,
+#            nieuwe raads- en commissievergaderingen (ondertiteling Company Webcast + sprekerstijdlijn iBabs) en de debatzoekindex
 #   overdag: alleen iBabs-lijsten en nieuwe moties, toezeggingen en brieven, en de pagina's die daarvan afhangen
-# Nog niet automatisch (zie ontwerp/fase6-instructies.md): nieuwe debatten (notulen/ondertiteling), wijkraadvergaderingen, AI-samenvattingen.
+# Nog niet automatisch (zie ontwerp/fase6-instructies.md): notulen van nieuwe raadsvergaderingen, wijkraadvergaderingen.
+# AI-samenvattingen van vergaderingen: wekelijkse Routine in Claude Code (src/verg_week.md), leest wat deze run klaarzet.
 # Logboek per run met wijzigingen: docs/data/logboek.json (src/logboek.py, pagina ontwerp/nieuw.html).
 # Status van elke run: /werk/status.json en in de site docs/data/status.json. Faalt een stap, dan wordt er niets gepusht.
 MODUS=${1:-nacht}
@@ -33,10 +35,13 @@ if [ "$MODUS" = "nacht" ]; then
   stap "vragen" python src/sv_qa.py --minuten 30
   stap "raadsvoorstellen" python src/bijlagen.py rv --minuten 20
   stap "Gemeenteblad" python src/bekendmakingen.py --recent
+  # nieuwe debatten: mag mislukken (bijv. Company Webcast onbereikbaar); de volgende nacht probeert het opnieuw
+  python src/debat_nieuw.py --dagen 60 >>"$LOG" 2>&1 || echo "debat_nieuw mislukt" >>"$LOG"
   stap "iBabs naar site" python src/ibabs_emit.py
   stap "zoekindex stukken" python src/teksten.py
   stap "domeinen" python src/domeinen.py
   stap "gebieden" python src/gebieden.py
+  stap "debatindex" python src/debat_index.py   # na domeinen/gebieden (labels per agendapunt)
   stap "dossiers" python src/ontwerp_data.py
   stap "RDW parkeren" python src/parkeren_rdw.py
 else
