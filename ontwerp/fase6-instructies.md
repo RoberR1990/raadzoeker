@@ -24,10 +24,10 @@ Mislukt een stap, dan wordt er niets online gezet: de site blijft op de vorige v
 
 ## Wat nog niet automatisch gaat
 
-- **Nieuwe debatten.** De notulen en ondertiteling zijn eenmalig verzameld (deels via de browser). Voor automatisch ophalen is nog een ophaler nodig voor de ondertiteling van nieuwe vergaderingen (Company Webcast) en de notulen. Tot die tijd loopt 'Gezegd' tot 2 oktober 2026.
+- **Notulen van nieuwe raadsvergaderingen.** Nieuwe raads- en commissievergaderingen komen sinds 12-10-2026 elke nacht automatisch binnen als automatische ondertiteling met sprekerstijdlijn (`src/debat_nieuw.py`, daarna `debat_index.py`). De officiële notulen (pdf) van nieuwe raadsvergaderingen worden nog niet opgehaald.
 - **Wijkraadvergaderingen en hun bijlagen**: de ophalers lezen nu uit een cache; dat moet eerst worden aangepast.
 - **Antwoorden op schriftelijke vragen die later komen**: nieuwe vragen komen erbij, maar een antwoord op een al opgehaalde vraag nog niet.
-- **AI-samenvattingen**: bewust niet automatisch. Bijwerken kost tokens en moet met de hand, zoals afgesproken in fase 6 (alleen aanvullen als er nieuwe stukken in vallen).
+- **AI-samenvattingen**: vergaderingen wekelijks via een Routine in Claude Code (zaterdagochtend, `src/verg_week.md`); dossier-, gebieds- en themasamenvattingen bewust niet automatisch. Bijwerken kost tokens en moet met de hand, zoals afgesproken in fase 6 (alleen aanvullen als er nieuwe stukken in vallen).
 
 ## Kan het nog vaker, en heeft dat zin?
 
