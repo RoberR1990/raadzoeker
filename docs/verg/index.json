@@ -440,5 +440,193 @@
 "Benoeming van de wethouders",
 "Vacatures gemeenteraad ingevuld"
 ]
+},
+{
+"id": "257aa967",
+"agendaId": "257aa967-861f-40ee-a940-7b43d32bca77",
+"datum": "2026-07-08",
+"naam": "Gemeenteraad",
+"raad": true,
+"kort": "De burgemeester schreef deze extra raadsvergadering uit op verzoek van elf raadsleden, na zorgen over een kandidaat-wethouder; het onderwerp raakt de persoonlijke levenssfeer en een deel van het debat vond daarom besloten plaats.",
+"n": 2,
+"ap": [
+"Agenda en opzet van het debat",
+"Debat over een kandidaat-wethouder"
+]
+},
+{
+"id": "d94fcd85",
+"agendaId": "d94fcd85-8a18-4a78-9932-20c82b93b2a0",
+"datum": "2026-07-08",
+"naam": "Commissie Zorg & Cultuur",
+"raad": false,
+"kort": "In de procedurevergadering van de commissie Zorg & Cultuur op 8 juli 2026 stond de planning voor na het zomerreces, met werkbezoeken over filantropie, sport en cultuur.",
+"n": 9,
+"ap": [
+"Commissieplanning",
+"Dieren in de Rotterdamse horeca",
+"Ingekomen stukken zorg",
+"Ingekomen stukken cultuur",
+"Lijst openstaande toezeggingen en moties",
+"Rondvraag procedurevergadering",
+"Technische sessie gezonde voedselomgeving",
+"Benoeming leden Cultuurhaven",
+"Fotomuseum na vonnis ontslag"
+]
+},
+{
+"id": "a7a706b5",
+"agendaId": "a7a706b5-be04-4161-a6d3-91479fb32afd",
+"datum": "2026-07-08",
+"naam": "Commissie Leefomgeving & Economie",
+"raad": false,
+"kort": "In de procedurevergadering ging de commissie de planning voor september en oktober langs en vroeg een lid om agendapunten te wisselen.",
+"n": 3,
+"ap": [
+"Procedurevergadering: planning en stukken",
+"Inspraak over kattenbeleid in Bloemhof",
+"Actieplan Spaanse Polder"
+]
+},
+{
+"id": "caaa1771",
+"agendaId": "caaa1771-246f-402d-a436-d7316773e789",
+"datum": "2026-07-07",
+"naam": "Hoorzitting-kandidaat-wethouders",
+"raad": true,
+"kort": "Op 7 juli 2026 hielden de raadsleden hoorzittingen met vijf kandidaat-wethouders: Dekkers (Volt), Postma (PRO), Harika (PRO), Van Dommelen (VVD) en Versnel (VVD).",
+"n": 5,
+"ap": [
+"Hoorzitting kandidaat Luuc Dekkers",
+"Hoorzitting kandidaat Jeroen Postma",
+"Hoorzitting kandidaat Miriam Harika",
+"Hoorzitting kandidaat Diederik van Dommelen",
+"Hoorzitting kandidaat Tim Versnel"
+]
+},
+{
+"id": "614a6535",
+"agendaId": "614a6535-f78d-4297-8af9-2acba6a86028",
+"datum": "2026-07-06",
+"naam": "Hoorzitting kandidaat-wethouders",
+"raad": true,
+"kort": "De commissie hield hoorzittingen met kandidaat-wethouders. De voorzitter beschreef het gesprek als een sollicitatie- en kennismakingsgesprek over motivatie, cv en samenwerking.",
+"n": 6,
+"ap": [
+"Opening en spelregels hoorzittingen",
+"Hoorzitting René Segers-Hoogendoorn",
+"Hoorzitting Astrid Kockelkoren",
+"Hoorzitting Sabine Biesheuvel",
+"Hoorzitting Eva Heijblom",
+"Hoorzitting Chantal Zeegers"
+]
+},
+{
+"id": "481ca715",
+"agendaId": "481ca715-7193-42bf-9a7c-7d6c531dc4b3",
+"datum": "2026-07-02",
+"naam": "Commissie Veiligheid, Bestuur & Financiën",
+"raad": false,
+"kort": "De commissie besloot de agenda van 9 juli te verplaatsen naar 3 september.",
+"n": 5,
+"ap": [
+"Commissieplanning",
+"Ingekomen stukken",
+"Lijsten openstaande toezeggingen, vragen en moties",
+"OV-verboden",
+"Beleidsplan ambtelijke integriteit 2026-2030"
+]
+},
+{
+"id": "7484678f",
+"agendaId": "7484678f-1dc6-45d8-bd48-645cefdfef18",
+"datum": "2026-07-02",
+"naam": "Actualiteitenraad",
+"raad": false,
+"kort": "Bij de actualiteit over het Fotomuseum vroegen raadsleden naar de rol van de wethouder nadat de rechter het ontslag van de directeur onterecht vond; de wethouder wees op de autonomie van de stichting.",
+"n": 9,
+"ap": [
+"Agenda en volgorde actualiteiten",
+"Fotomuseum en ontslag directeur",
+"Onduidelijke 30 km-borden",
+"Sloopplannen Meidoornsingel",
+"Zware misdrijven blijven ongestraft",
+"Geweld achter de voordeur tijdens het WK",
+"Is Rotterdam klaar voor de hitte?",
+"Evenementen afgelast door hitte",
+"Gemeenschappen en het WK"
+]
+},
+{
+"id": "835c0b90",
+"agendaId": "835c0b90-2ad0-49a8-b559-db4e31e67fd7",
+"datum": "2026-07-01",
+"naam": "Commissie Onderwijs & Samenleven",
+"raad": false,
+"kort": "De commissie sprak over de planning. Voorgesteld is om thuiszitters op 23 september te bespreken.",
+"n": 5,
+"ap": [
+"Commissieplanning",
+"Smartphonevrij opgroeien",
+"Advies subcommissie Boor",
+"Ingekomen stukken",
+"Voedselbank en discriminatiebeleid"
+]
+},
+{
+"id": "a9c84d4e",
+"agendaId": "a9c84d4e-4f77-4a42-be9e-556da1b68e70",
+"datum": "2026-07-01",
+"naam": "Commissie Leefomgeving & Economie",
+"raad": false,
+"kort": "De commissie kreeg een technische sessie van Rotterdam Partners over taken en activiteiten.",
+"n": 2,
+"ap": [
+"Technische sessie Rotterdam Partners",
+"Technische sessie Haven"
+]
+},
+{
+"id": "64966d99",
+"agendaId": "64966d99-4814-4880-8d04-14d4eb07b7a1",
+"datum": "2026-07-01",
+"naam": "Commissie Bouwen & Wonen",
+"raad": false,
+"kort": "De commissie schoof de woondebatten van 8 juli door naar na de zomer, zodat de commissievergadering van die dag vervalt.",
+"n": 4,
+"ap": [
+"Commissieplanning",
+"Regeling van werkzaamheden en ingekomen stukken",
+"Lijsten openstaande toezeggingen, vragen en moties",
+"Ambitiedocument Twentestraat"
+]
+},
+{
+"id": "c39aec37",
+"agendaId": "c39aec37-5c35-40bb-a981-6da1550dd2f1",
+"datum": "2026-06-25",
+"naam": "Gemeenteraad",
+"raad": true,
+"kort": "De raad debatteerde over de jaarstukken 2025. Fracties noemden de toelichting in de jaarstukken onduidelijk en wezen op de grote onderschrijding van de lasten.",
+"n": 5,
+"ap": [
+"Verantwoordingsdebat jaarstukken 2025",
+"Hotel Rosestraat 123",
+"Zienswijze windenergie provinciale onderzoeksopzet",
+"Onderwijsmonitor 2025",
+"Stemverklaringen stemvenster"
+]
+},
+{
+"id": "ba5eef3e",
+"agendaId": "ba5eef3e-bf14-4f45-9f64-73b3b01155f6",
+"datum": "2026-06-24",
+"naam": "Commissie Onderwijs & Samenleven",
+"raad": false,
+"kort": "De commissie Onderwijs en Samenleven hield een technische sessie over mensen zonder geldige verblijfsstatus.",
+"n": 1,
+"ap": [
+"Technische sessie ongedocumenteerden"
+]
 }
 ]
