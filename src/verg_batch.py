@@ -22,13 +22,16 @@ def lijst(vanaf,n):
         print(d,ag,k,naam)
     print('totaal',len(L[:n]),'vergaderingen',tot,'woorden', 'van',len(L),'nog te doen')
 def check():
-    G=gedaan()
+    G=gedaan(); klaar=[]
     for p in sorted(glob.glob(os.path.join(WD,'uit_*.json'))):
         k=os.path.basename(p)[4:12]
         if len(os.path.basename(p))!=17 or k in G: continue
         ag=open(os.path.join(WD,f'in_{k}.txt'),encoding='utf8').readline().split('agendaId ')[1].split(' |')[0]
-        try: verg_check.main(ag)
+        try: verg_check.main(ag); klaar.append(k)
         except Exception as e: print(k,'FOUT',e)
+    if klaar:  # 'Wat is er nieuw' (docs/data/mijlpalen.json); mag mislukken
+        try: import mijlpaal; mijlpaal.verg([k for k in klaar if k in gedaan()])
+        except Exception as e: print('mijlpaal mislukt',e)
 if __name__=='__main__':
     if sys.argv[1]=='lijst': lijst(sys.argv[2] if len(sys.argv)>2 else '2024-10-06',int(sys.argv[3]) if len(sys.argv)>3 else 9999)
     else: check()
