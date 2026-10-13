@@ -1,5 +1,119 @@
 [
 {
+"id": "55ccc78a",
+"agendaId": "55ccc78a-51bd-4b60-a15d-14f024511045",
+"datum": "2026-10-08",
+"naam": "Commissie Veiligheid, Bestuur & Financiën",
+"raad": false,
+"kort": "Aan het begin werd een fractiemedewerker van het CDA beëdigd, zodat hij toegang krijgt tot geheime informatie.",
+"n": 8,
+"ap": [
+"Opening en beëdiging fractiemedewerker",
+"Commissieplanning en investeringsnota",
+"Kennismaking raad met wijk- en dorpsraden",
+"Regelingen van werkzaamheden",
+"Ingekomen stukken",
+"Openstaande toezeggingen, vragen en moties",
+"Beleidskader Internationaal",
+"Moties over wapendoorvoer en mensenrechten"
+]
+},
+{
+"id": "9b066dd1",
+"agendaId": "9b066dd1-67be-4b9b-82ba-c0921f4da8e3",
+"datum": "2026-10-08",
+"naam": "Actualiteitenraad",
+"raad": false,
+"kort": "Leefbaar Rotterdam vroeg om duidelijkheid voor de cruisesector, die tot maart moet wachten op de uitwerking van de plannen uit het coalitieakkoord.",
+"n": 7,
+"ap": [
+"Onzekerheid over cruiseschepen",
+"Gesprek RET over gratis OV ouderen",
+"Rioolwater op fietspad Schiekadeblok",
+"Discriminatie bij het UWV",
+"Haven bereikbaar over één rijstrook",
+"Bestuurlijk welkom voor medische vereniging",
+"Toegankelijkheid voor mensen met een beperking"
+]
+},
+{
+"id": "7ef77505",
+"agendaId": "7ef77505-8e15-4f09-abc7-41b01120b335",
+"datum": "2026-10-07",
+"naam": "Commissie Onderwijs & Samenleven",
+"raad": false,
+"kort": "De commissie bepaalde de planning, met onder meer de wijziging van de participatieverordening op 18 november.",
+"n": 6,
+"ap": [
+"Commissieplanning",
+"Regelingen van werkzaamheden en agenda",
+"Ingekomen stukken en afdoening moties",
+"Agenda en spreektijd",
+"Technische sessie EU-arbeidsmigranten",
+"Debat positie ongedocumenteerde Rotterdammers"
+]
+},
+{
+"id": "ef2d4ee3",
+"agendaId": "ef2d4ee3-bc21-457b-bca7-4d1bbe1cf320",
+"datum": "2026-10-07",
+"naam": "Commissie Leefomgeving & Economie",
+"raad": false,
+"kort": "De commissie besprak een regeling van werkzaamheden over PFAS in het Rotterdamse drinkwater, met een politieke behandeling na een technische sessie.",
+"n": 6,
+"ap": [
+"Regeling van werkzaamheden over PFAS",
+"Besluitenlijst en ingekomen stukken",
+"Technische sessie warmtetransitie",
+"Publiek warmtebedrijf en klimaatactieplan",
+"Windpark Beneluxplein en Klimaatactieplan",
+"Rotterdamse aanpak netcongestie"
+]
+},
+{
+"id": "d38d783f",
+"agendaId": "d38d783f-7e2b-47d4-92e5-88b4f1e2ca2c",
+"datum": "2026-10-07",
+"naam": "Commissie Bouwen & Wonen",
+"raad": false,
+"kort": "De commissie stemde in met de planning voor raadcyclus acht, met een schriftelijke behandeling van de grondexploitatie Spaanse Polder en met een werkbezoek over Beter Benutten.",
+"n": 6,
+"ap": [
+"Commissieplanning",
+"Regelingen van werkzaamheden",
+"Lijsten met toezeggingen en moties",
+"Inspreker over volkstuinen Kweeklust",
+"Debat Verdichting en Kader Optoppen",
+"Omgevingsplan bedrijventerrein Hoeksebaan"
+]
+},
+{
+"id": "dac82e74",
+"agendaId": "dac82e74-2948-4d1e-a9ed-cab5f9b903f3",
+"datum": "2026-10-06",
+"naam": "Commissie tot Onderzoek van de Rekening",
+"raad": false,
+"kort": "Bij de terugkoppeling van de rapporteurs meldde de voorzitter dat de wethouder pas op 1 januari 2027 met een voorstel komt voor de Regeling Risicovolle Projecten, en vroeg hij hoe de commissie daar tussentijds bij betrokken wil zijn.",
+"n": 3,
+"ap": [
+"Terugkoppeling van rapporteurs",
+"Collegereactie op aanbevelingen over risico's",
+"Nieuwe planning- en controlcyclus en kaderbrief"
+]
+},
+{
+"id": "c87e3264",
+"agendaId": "c87e3264-17ce-4276-ab39-97251641fd8b",
+"datum": "2026-10-05",
+"naam": "Commissie tot Onderzoek van de Rekening",
+"raad": false,
+"kort": "De technische sessie stond in het teken van de planning-en-controlcyclus en de voorbereiding op de concept-begroting 2027.",
+"n": 1,
+"ap": [
+"Technische sessie concept-begroting 2027"
+]
+},
+{
 "id": "9f0ee187",
 "agendaId": "9f0ee187-8bf0-4ec4-994a-2c70299fd7f3",
 "datum": "2026-10-01",
@@ -618,6 +732,18 @@
 ]
 },
 {
+"id": "996856cf",
+"agendaId": "996856cf-309f-4ca3-9244-b722158c4e19",
+"datum": "2026-06-24",
+"naam": "Commissie Zorg & Cultuur",
+"raad": false,
+"kort": "De commissie Zorg en Cultuur hield een openbare technische sessie over horeca, met ambtenaren die het horecabeleid toelichtten.",
+"n": 1,
+"ap": [
+"Technische sessie horeca"
+]
+},
+{
 "id": "ba5eef3e",
 "agendaId": "ba5eef3e-bf14-4f45-9f64-73b3b01155f6",
 "datum": "2026-06-24",
@@ -627,6 +753,65 @@
 "n": 1,
 "ap": [
 "Technische sessie ongedocumenteerden"
+]
+},
+{
+"id": "a0602b26",
+"agendaId": "a0602b26-3510-410e-b513-8658b596f443",
+"datum": "2026-06-24",
+"naam": "Commissie Bouwen & Wonen",
+"raad": false,
+"kort": "De commissie Bouwen en Wonen hield een inwerksessie over wonen, in aanloop naar de commissievergadering van 8 juli over dit thema.",
+"n": 1,
+"ap": [
+"Inwerksessie Woonvisie"
+]
+},
+{
+"id": "b108cbbc",
+"agendaId": "b108cbbc-a234-4491-b207-045ede01eea7",
+"datum": "2026-06-23",
+"naam": "Commissie tot Onderzoek van de Rekening",
+"raad": false,
+"kort": "De commissie hield een inspreekmoment over de concept-eerste herziening 2026; vijf insprekers hadden zich aangemeld.",
+"n": 1,
+"ap": [
+"Inspreken Kaderbrief en eerste Herziening"
+]
+},
+{
+"id": "d3760aff",
+"agendaId": "d3760aff-88aa-4246-94d6-599cf1237534",
+"datum": "2026-06-17",
+"naam": "Commissie Zorg & Cultuur",
+"raad": false,
+"kort": "De commissie Zorg en Cultuur hield een technische inwerksessie over zorg, waarin ambtenaren het huidige stelsel uitlegden.",
+"n": 5,
+"ap": [
+"Opening en planning",
+"Basiskennis huidig stelsel: wijkteams en preventie",
+"Waar zijn we mee bezig? Nieuw stelsel",
+"Regionale ontwikkelingen en zorgakkoord",
+"Opvolging van beleidskader Heel de stad"
+]
+},
+{
+"id": "bdf5ca26",
+"agendaId": "bdf5ca26-d4e8-42ed-b700-84a04b2fdae7",
+"datum": "2026-06-17",
+"naam": "Commissie Bouwen & Wonen",
+"raad": false,
+"kort": "De commissie Bouwen en Wonen sprak in de procedurevergadering over de planning van 1 en 8 juli; de vergadering van 8 juli staat in het teken van woonbeleid.",
+"n": 8,
+"ap": [
+"Commissieplanning",
+"Ingekomen stukken Bouwen en Wonen",
+"Openstaande toezeggingen en aangehouden moties",
+"Vaststellen van de agenda",
+"Basisrapportage risicovol project erfpacht",
+"Projectambitiedocument Rozenstraat 123",
+"Urgentie bij huiselijk geweld",
+"Rondvraag en sluiting"
 ]
 }
 ]
