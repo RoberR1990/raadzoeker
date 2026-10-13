@@ -23,7 +23,8 @@ fout(){
 # eerst een eventueel blijven hangende rebase of merge opruimen (die liet elke volgende run mislukken bij 'git push')
 git rebase --abort >/dev/null 2>&1; git merge --abort >/dev/null 2>&1; rm -rf .git/rebase-merge .git/rebase-apply .git/index.lock
 stap "git fetch" git fetch -q origin
-stap "git reset" git checkout -q -f -B main origin/main
+# RZ_CODE: de door het codeslot goedgekeurde commit (zie nas/start.sh); zonder slot gewoon origin/main
+stap "git reset" git checkout -q -f -B main "${RZ_CODE:-origin/main}"
 # ontbrekende onderdelen zelf bijinstalleren (zo hoeft de container niet opnieuw gebouwd te worden na een wijziging in de Dockerfile)
 python -c "import PIL, zstandard" 2>/dev/null || pip install -q --no-cache-dir pillow zstandard >>"$LOG" 2>&1
 [ -f /usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf ] || { apt-get update -qq && apt-get install -y -qq --no-install-recommends fonts-liberation; } >>"$LOG" 2>&1
@@ -74,5 +75,8 @@ duw(){ for i in 1 2 3; do
   done; return 1; }
 stap "git push" duw
 # meldingen voor wie onderwerpen volgt (mag mislukken zonder de run te laten falen)
-python src/push_stuur.py >>"$LOG" 2>&1 || echo "push mislukt" >>"$LOG"
+# na de rebase kan er nieuwe code van GitHub in de map staan: alleen doorgaan als src/ en nas/ nog de goedgekeurde versie zijn
+if [ -z "$RZ_CODE" ] || git diff --quiet "$RZ_CODE" HEAD -- src nas; then
+  python src/push_stuur.py >>"$LOG" 2>&1 || echo "push mislukt" >>"$LOG"
+else echo "push overgeslagen: nieuwe, nog niet goedgekeurde code" >>"$LOG"; fi
 find /werk/logs -name '*.log' -mtime +30 -delete
