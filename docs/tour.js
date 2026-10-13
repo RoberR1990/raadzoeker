@@ -52,7 +52,7 @@ const STAP={
     {s:'#zf',t:'Begin met zoeken',x:'Typ een onderwerp, wijk of woord. Je krijgt alles wat de raad erover zei, met de stukken erbij.',vb:['Probeer: parkeren',()=>location.href='zoek.html?q=parkeren']},
     {s:'#cit',t:'Een echt citaat',x:'Een zin uit de laatste raadsvergadering. Met de knop met het driehoekje kijk je dat moment terug, en met Ander citaat zie je wat een andere fractie zei.'},
     {s:'.komt',t:'Komt eraan',x:'Wat er de komende weken op de agenda van de raad en de commissies staat.'},
-    {s:'#dossiers',t:'Dossiers in beweging',x:'De dossiers waar de afgelopen 30 dagen de meeste nieuwe punten bij kwamen. Klik op een titel voor het hele dossier.'},
+    {s:'#dossiers',t:'Nieuw in de dossiers',x:'De nieuwste stukken van de afgelopen 30 dagen. Staat een stuk in meer dossiers, dan zie je ze onder het stuk; klik een dossier voor het hele verhaal.'},
     {s:'#tegel',t:'Ontdek verbanden',x:'De Verkenner laat alles wat de raad zei zien als één web. Klik op Verras me voor een willekeurig begrip.'},
   ],
   zoek:[

@@ -70,6 +70,8 @@ button.videokaart:focus-visible{outline:3px solid var(--groen);outline-offset:2p
 .kaart .laatst{font-size:15px;line-height:1.4}
 .kaart .laatst a{color:var(--zwart)}
 .kaart .dat{font-size:13px;color:var(--sub)}
+.kaart .ook{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:4px}.kaart .ook .sub{font-size:13px;color:var(--sub)}
+.chip{background:var(--grijs);border-radius:999px;padding:3px 10px;font-size:13px;color:var(--zwart)}.chip.meer{color:var(--sub)}
 .besloten{list-style:none;margin:0;padding:0;background:var(--wit);border-radius:var(--r)}
 .besloten li{padding:16px 20px;border-bottom:1px solid var(--grijs2);display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:8px 24px}
 .besloten li:last-child{border-bottom:0}
@@ -131,7 +133,7 @@ button.videokaart:focus-visible{outline:3px solid var(--groen);outline-offset:2p
 </section>
 <div class="pagina">
   <section class="komt mob" aria-labelledby="hk2"><h2 id="hk2">Komt eraan</h2><div class="komtlijst"></div></section>
-  <section class="blok" aria-labelledby="hd"><h2 id="hd">Dossiers in beweging</h2><p class="sub">De dossiers met de meeste nieuwe punten in de afgelopen 30 dagen.</p><div class="raster" id="dossiers"></div></section>
+  <section class="blok" aria-labelledby="hd"><h2 id="hd">Nieuw in de dossiers</h2><p class="sub">De nieuwste stukken van de afgelopen 30 dagen, met de dossiers waar ze in spelen.</p><div class="raster" id="dossiers"></div></section>
   <section class="blok" id="nbblok" aria-labelledby="hn" hidden><h2 id="hn">Net besloten</h2><p class="sub" id="nbsub"></p><ul class="besloten" id="besloten"></ul></section>
   <section class="tegel" id="tegel" aria-labelledby="hv">
     <div><h2 id="hv">Ontdek verbanden</h2><p>Alles wat in de raad is gezegd, als één web: welke onderwerpen en plekken komen opvallend vaak samen voor?</p>
@@ -218,14 +220,23 @@ function komt(vo){
   const h=L.slice(0,3).map(({v,p})=>`<li><span class="wanneer">${fd(v.datum)} · ${esc(kortN(v.naam))}</span><a href="${IB}/Agenda/Index/${esc(v.agendaId)}" target="_blank" rel="noopener">${esc(p.titel)}</a></li>`).join('');
   document.querySelectorAll('.komtlijst').forEach(d=>{d.innerHTML=(h?`<ul>${h}</ul>`:'<p>De agenda volgt.</p>')+'<a class="alle" href="vergaderingen.html">Alle vergaderingen</a>';});}
 
-/* dossiers in beweging */
+/* nieuw in de dossiers: één kaart per stuk, met de dossiers waar het in speelt */
 function dossiers(V){
   const stand=new Date(V.stand+'T12:00:00'),gr=new Date(stand-30*864e5).toISOString().slice(0,10);
-  const L=Object.entries(V.d).map(([slug,x])=>{const i=x.i.filter(r=>r[0]>=gr);return {slug,x,i,n:i.length};}).filter(d=>d.n).sort((a,b)=>b.n-a.n||(b.i[0][0]<a.i[0][0]?-1:1)).slice(0,6);
-  const S={domein:'Dossier',onderwerp:'Onderwerp',gebied:'Gebied',thema:'Thema'};
-  $('dossiers').innerHTML=L.map(d=>{const r=d.i[0],u=/^https?:/.test(r[3])?` target="_blank" rel="noopener"`:'';
-    return `<article class="kaart"><div class="soort">${S[d.x.soort]||'Dossier'}</div><h3><a href="${d.x.soort==='gebied'?'wijk.html#':'dossier.html#'}${esc(d.slug)}">${esc(d.x.naam)}</a></h3><div class="nieuw">${d.n} nieuwe ${d.n===1?'punt':'punten'}</div>
-      <div class="laatst"><a href="${esc(r[3])}"${u}>${esc(r[2])}</a></div><div class="dat">${fd(r[0])}</div></article>`;}).join('');}
+  const SOORT={vergadering:'Vergadering',motie:'Motie',toezegging:'Toezegging',vragen:'Schriftelijke vragen',debat:'Debat'};
+  const per=new Map();
+  Object.entries(V.d).forEach(([slug,x])=>x.i.forEach(r=>{if(r[0]<gr||!r[3])return;
+    const sl=r[1]+'|'+r[0]+'|'+r[2].toLowerCase();let k=per.get(sl);if(!k){k={r,dos:[]};per.set(sl,k);}
+    if(!k.dos.some(d=>d.slug===slug))k.dos.push({slug,naam:x.naam,soort:x.soort});}));
+  const rang={onderwerp:0,domein:1,gebied:2,thema:3};
+  const alle=[...per.values()].sort((a,b)=>b.r[0]<a.r[0]?-1:b.r[0]>a.r[0]?1:b.dos.length-a.dos.length);
+  const tel={},L=alle.filter(k=>(tel[k.r[1]]=(tel[k.r[1]]||0)+1)<=3).slice(0,6); // max 3 per soort, zodat het niet één lange rij vragen wordt
+  alle.forEach(k=>{if(L.length<6&&!L.includes(k))L.push(k);});
+  const href=d=>(d.soort==='gebied'?'wijk.html#':'dossier.html#')+encodeURIComponent(d.slug);
+  $('dossiers').innerHTML=L.map(({r,dos})=>{const u=/^https?:/.test(r[3])?` target="_blank" rel="noopener"`:'';
+    dos.sort((a,b)=>(rang[a.soort]??9)-(rang[b.soort]??9)||a.naam.localeCompare(b.naam,'nl'));
+    const chips=dos.slice(0,4).map(d=>`<a class="chip" href="${href(d)}">${esc(d.naam)}</a>`).join('')+(dos.length>4?`<span class="chip meer">+${dos.length-4}</span>`:'');
+    return `<article class="kaart"><div class="soort">${SOORT[r[1]]||'Stuk'} · ${fd(r[0])}</div><h3><a href="${esc(r[3])}"${u}>${esc(r[2])}</a></h3><div class="ook"><span class="sub">Speelt in</span>${chips}</div></article>`;}).join('');}
 
 /* net besloten: uitkomsten van de nieuwste raadsvergadering */
 function besloten(V,id8){
