@@ -1,14 +1,15 @@
 # Logboek 'Wat is er nieuw' -> docs/data/logboek.json (pagina docs/nieuw.html, link achter 'bijgewerkt' in de kop).
 #   python src/logboek.py voor   vóór de run: legt de huidige stand vast in WERK/logboek_voor.json
 #   python src/logboek.py na     na de run: vergelijkt, en voegt alleen bij verschil een regel toe
-# Bewaart de regels van de laatste 3 dagen, maximaal 50, maar altijd minstens de laatste 10.
+# Bewaart alles: de laatste 7 dagen (minstens 10 regels) in logboek.json, oudere regels per maand in docs/data/logboek/JJJJ-MM.json
+# (met logboek/index.json = lijst van maanden, nieuwste eerst). De pagina laadt die maanden pas bij 'Toon oudere'.
 # Bewaart daarnaast `dagen`: totalen per dag van de laatste 60 dagen (runs, nieuwe stukken van de laatste 14 dagen, aangevulde oudere stukken, verslagen) voor de hartslag op nieuw.html.
 # Vergelijkt: officiële stukken (nieuw per soort, en moties/toezeggingen die afgedaan zijn), vergaderverslagen, komende vergaderingen.
 import json,os,sys,datetime
 import zstandard
 from paden import DOCS,WERK
 
-LOG=os.path.join(DOCS,'data','logboek.json'); VOOR=os.path.join(WERK,'logboek_voor.json')
+LOG=os.path.join(DOCS,'data','logboek.json'); ARCH=os.path.join(DOCS,'data','logboek'); VOOR=os.path.join(WERK,'logboek_voor.json')
 IB='https://gemeenteraad.rotterdam.nl/Reports/Item/'
 
 def lees(p,leeg):
@@ -56,6 +57,16 @@ def tel_dag(dagen,r):
         act=sum(1 for x in r['nieuw'] if x['datum']>=gr)
     e['r']+=1; e['n']+=act; e['g']+=max(0,r['n_nieuw']-act); e['v']+=len(r['verslagen'])
 
+def archiveer(regels):
+    os.makedirs(ARCH,exist_ok=True); per={}
+    for x in regels: per.setdefault(x['tijd'][:7],[]).append(x)
+    for m,xs in per.items():
+        p=os.path.join(ARCH,m+'.json'); al=lees(p,{'regels':[]})['regels']; tijden={x['tijd'] for x in al}
+        al=sorted(al+[x for x in xs if x['tijd'] not in tijden],key=lambda x:x['tijd'],reverse=True)
+        json.dump({'regels':al},open(p,'w',encoding='utf8'),ensure_ascii=False,separators=(',',':'))
+    maanden=sorted({f[:7] for f in os.listdir(ARCH) if len(f)==12 and f.endswith('.json')},reverse=True)
+    json.dump({'maanden':maanden},open(os.path.join(ARCH,'index.json'),'w',encoding='utf8'))
+
 def main():
     wat=sys.argv[1] if len(sys.argv)>1 else ''
     if wat=='voor':
@@ -75,8 +86,10 @@ def main():
     tel_dag(dagen,r)
     dagen={d:v for d,v in dagen.items() if d>=(nu-datetime.timedelta(days=60)).date().isoformat()}
     R=[r]+L.get('regels',[])
-    grens=(nu-datetime.timedelta(days=3)).isoformat()
-    R=[x for i,x in enumerate(R) if i<10 or x['tijd']>=grens][:50]
+    grens=(nu-datetime.timedelta(days=7)).isoformat()
+    houd=[x for i,x in enumerate(R) if i<10 or x['tijd']>=grens]
+    if len(houd)<len(R): archiveer(R[len(houd):])
+    R=houd
     json.dump({'regels':R,'dagen':dagen},open(LOG,'w',encoding='utf8'),ensure_ascii=False,separators=(',',':'))
     print(f"gelogd: {r['n_nieuw']} nieuw, {r['n_afgedaan']} afgedaan, {len(r['verslagen'])} verslagen, {len(r['agenda'])} agenda")
 

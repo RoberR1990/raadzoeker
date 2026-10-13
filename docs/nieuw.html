@@ -62,7 +62,7 @@
     <button type="button" data-f="stukken" aria-pressed="false">Stukken<span class="lang"> en vergaderingen</span><span class="n" id="n-stukken"></span></button>
   </div>
   <div id="lijst" aria-live="polite"><p class="leeg">Laden…</p></div>
-  <p class="voet">Runs worden 3 dagen bewaard (minstens de laatste 10); grote updates blijven staan. Runs zonder iets nieuws staan er niet tussen. Meer over bronnen: <a href="over.html#actueel">Hoe actueel is het?</a></p>
+  <p class="voet">Alle runs blijven bewaard; oudere maanden laad je met 'Toon oudere'. Runs zonder iets nieuws staan er niet tussen. 'Aangevuld' zijn oudere stukken die nu pas in iBabs (of bij ons) binnenkwamen. Meer over bronnen: <a href="over.html#actueel">Hoe actueel is het?</a></p>
 </div></main>
 <script src="ontwerp.js?v=41"></script>
 <script>
@@ -84,6 +84,8 @@ function mpHtml(r){const [lab,ic]=SOORT[r.soort]||[r.soort,'•'],l=r.links||[];
 const stukRij=x=>`<li>${x.link?`<a href="${esc(x.link)}" target="_blank" rel="noopener">${esc(x.titel)}</a>`:`<span>${esc(x.titel)}</span>`}<span class="s">${esc(x.soort)} · ${dd(x.datum)}</span></li>`;
 function runHtml(r){
   const delen=[r.n_nieuw?`<b>${meer(r.n_nieuw,['nieuw stuk','nieuwe stukken'])}</b>`:'',r.n_afgedaan?meer(r.n_afgedaan,['afgedaan','afgedaan']):'',r.verslagen.length?meer(r.verslagen.length,['verslag','verslagen']):'',r.agenda.length?meer(r.agenda.length,['vergadering gepland','vergaderingen gepland']):''].filter(Boolean);
+  let act=r.n_actueel;if(act==null&&r.n_nieuw<=r.nieuw.length){const g=new Date(new Date(r.tijd)-14*864e5).toISOString().slice(0,10);act=r.nieuw.filter(x=>x.datum>=g).length;}
+  const aanv=act==null?0:r.n_nieuw-act;
   const ps=Object.entries(r.nieuw_per_soort||{}),sub=ps.length?ps.map(([s,n])=>`${n} ${n===1?s.toLowerCase():(MV[s]||s.toLowerCase())}`).join(', '):'';
   let h='';
   if(r.verslagen.length)h+=`<h4>Vergaderverslagen</h4><ul class="lijst">${r.verslagen.map(v=>`<li><a href="${esc(v.link)}">${esc(v.kort||v.naam)}</a><span class="s">${esc(v.naam)} · ${dd(v.datum)}</span></li>`).join('')}</ul>`;
@@ -91,28 +93,34 @@ function runHtml(r){
   if(r.afgedaan.length)h+=`<h4>Afgedaan</h4><ul class="lijst">${r.afgedaan.map(stukRij).join('')}</ul>`;
   if(r.nieuw.length)h+=`<h4>${r.n_nieuw>r.nieuw.length?`De ${r.nieuw.length} nieuwste van ${r.n_nieuw}`:'Nieuwe stukken'}</h4><ul class="lijst">${r.nieuw.map(stukRij).join('')}</ul>`;
   const soort=r.modus==='nacht'?'nachtrun':'run';
-  return `<li class="rn"><details class="kaart run"><summary><span class="t">${uur(r.tijd)}</span><span class="w">${delen.join(' · ')}${sub&&ps.length>1?`<span class="d">${esc(sub)}</span>`:''} <span class="sr">(${soort}, klik voor details)</span></span><span class="pijl" aria-hidden="true"><span class="k">${soort} </span><span class="v">▾</span></span></summary>${h}</details></li>`;}
+  return `<li class="rn"><details class="kaart run"><summary><span class="t">${uur(r.tijd)}</span><span class="w">${delen.join(' · ')}${(sub&&ps.length>1)||aanv?`<span class="d">${[sub&&ps.length>1?esc(sub):'',aanv?(act?`${act} recent, ${aanv} ouder${aanv===1?' stuk':'e stukken'} aangevuld`:(r.n_nieuw===1?'ouder stuk, aangevuld':'allemaal oudere stukken, aangevuld')):''].filter(Boolean).join(' · ')}</span>`:''} <span class="sr">(${soort}, klik voor details)</span></span><span class="pijl" aria-hidden="true"><span class="k">${soort} </span><span class="v">▾</span></span></summary>${h}</details></li>`;}
 
-let ITEMS=[],F='alles',TOON=12;
+let ITEMS=[],F='alles',TOON=12,MAANDEN=null,GELADEN=0;
+const haal=u=>fetch(u,{cache:'no-store'}).then(r=>r.ok?r.json():null).catch(()=>null);
+const voegToe=xs=>{const al=new Set(ITEMS.filter(i=>i.k==='run').map(i=>i.tijd));ITEMS=ITEMS.concat(xs.filter(r=>!al.has(r.tijd)).map(r=>({k:'run',tijd:r.tijd,r})))
+  .sort((a,b)=>a.tijd<b.tijd?1:a.tijd>b.tijd?-1:(a.k==='mp'?-1:1));};
+async function ouder(){if(MAANDEN===null)MAANDEN=((await haal('data/logboek/index.json'))||{}).maanden||[];
+  while(GELADEN<MAANDEN.length){const n=ITEMS.length;voegToe(((await haal(`data/logboek/${MAANDEN[GELADEN++]}.json`))||{}).regels||[]);if(ITEMS.length>n)return;}}
+const nogArchief=()=>MAANDEN===null||GELADEN<MAANDEN.length;
 const pas=it=>F==='alles'||(F==='updates')===(it.k==='mp');
 function teken(){
   const L=ITEMS.filter(pas),Z=L.slice(0,TOON);
+  if(!L.length&&F!=='updates'&&nogArchief()){ouder().then(()=>{if(ITEMS.filter(pas).length)teken();else{MAANDEN=MAANDEN||[];GELADEN=MAANDEN.length;teken();}});return;}
   if(!L.length){$('lijst').innerHTML=`<p class="leeg" style="margin-top:24px">${F==='updates'?'Nog geen grote updates.':'Geen runs met nieuwe stukken in de afgelopen dagen.'}</p>`;return;}
   const dagen=[];Z.forEach(it=>{const d=it.tijd.slice(0,10);if(!dagen.length||dagen[dagen.length-1][0]!==d)dagen.push([d,[]]);dagen[dagen.length-1][1].push(it);});
   $('lijst').innerHTML=dagen.map(([d,xs])=>`<section class="dag" aria-label="${esc(dagKop(d))}"><h2>${esc(dagKop(d))}</h2><ol class="tl">${xs.map(it=>it.k==='mp'?mpHtml(it.r):runHtml(it.r)).join('')}</ol></section>`).join('')
-    +(L.length>TOON?`<button type="button" class="meer" id="meer">Toon oudere (${L.length-TOON})</button>`:'');
-  const m=$('meer');if(m)m.onclick=()=>{TOON+=20;teken();};
+    +(L.length>TOON||(F!=='updates'&&nogArchief())?`<button type="button" class="meer" id="meer">Toon oudere${L.length>TOON?` (${L.length-TOON})`:''}</button>`:'');
+  const m=$('meer');if(m)m.onclick=async()=>{m.disabled=true;m.textContent='Laden…';if(L.length<=TOON+20&&F!=='updates')await ouder();TOON+=20;teken();};
 }
 document.querySelector('.filter').onclick=e=>{const b=e.target.closest('button');if(!b)return;F=b.dataset.f;TOON=12;
   document.querySelectorAll('.filter button').forEach(x=>x.setAttribute('aria-pressed',x===b));
   history.replaceState(null,'',F==='alles'?location.pathname:'#'+F);teken();};
 {const h=location.hash.slice(1);if(h==='updates'||h==='stukken'){F=h;document.querySelectorAll('.filter button').forEach(x=>x.setAttribute('aria-pressed',x.dataset.f===h));}}
 
-const haal=u=>fetch(u,{cache:'no-store'}).then(r=>r.ok?r.json():null).catch(()=>null);
 Promise.all([haal('data/logboek.json'),haal('data/mijlpalen.json'),haal('data/status.json')]).then(([L,MP,st])=>{
   const runs=((L&&L.regels)||[]).map(r=>({k:'run',tijd:r.tijd,r})),mps=((MP&&MP.regels)||[]).map(r=>({k:'mp',tijd:r.tijd||r.datum+'T23:59',r}));
   ITEMS=[...runs,...mps].sort((a,b)=>a.tijd<b.tijd?1:a.tijd>b.tijd?-1:(a.k==='mp'?-1:1));
-  $('n-updates').textContent=mps.length?` ${mps.length}`:'';$('n-stukken').textContent=runs.length?` ${runs.length}`:'';
+  $('n-updates').textContent=mps.length?` ${mps.length}`:'';
   if(st&&st.laatste){const s=$('status'),d=new Date(st.laatste),t=`${DG[d.getDay()]} ${d.getDate()} ${M[d.getMonth()]}, ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;s.hidden=false;
     if(st.ok===false){s.classList.add('fout');$('statustekst').textContent=`De laatste run (${t}) is mislukt${st.stap?` bij '${st.stap}'`:''}. De site toont de stand van de run daarvoor.`;}
     else $('statustekst').innerHTML=`Laatst bijgewerkt: <b>${t}</b>${runs[0]&&new Date(runs[0].tijd)>=d-6e4?'':' (daarin niets nieuws)'}`;}
