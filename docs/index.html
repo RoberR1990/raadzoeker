@@ -59,6 +59,13 @@ button.videokaart:focus-visible{outline:3px solid var(--groen);outline-offset:2p
 .keuze.geen li[aria-selected="true"]:not(:hover){background:none}
 .pagina{padding-top:24px}
 .blok{margin-top:32px}
+.gem{background:var(--wit);border-radius:var(--r);padding:20px 24px;margin-top:32px;border-left:5px solid var(--groen)}
+.gem h2{margin:0 0 6px}.gem p{margin:0 0 10px;max-width:70ch}
+.gem form{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.6fr) minmax(0,1fr) auto;gap:8px;align-items:end}
+.gem label{display:flex;flex-direction:column;gap:4px;font-size:14px;font-weight:700}
+.gem input{font:16px var(--font);padding:9px 10px;border:1.5px solid var(--lijn);border-radius:6px;background:var(--wit);color:var(--zwart);min-height:44px;box-sizing:border-box}
+.gem .klein{font-size:13px;color:var(--sub);margin:8px 0 0}
+@media (max-width:860px){.gem form{grid-template-columns:minmax(0,1fr)}}
 .blok>h2{margin-bottom:4px}
 .blok>.sub{margin-bottom:16px;max-width:70ch}
 .raster{min-height:340px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
@@ -138,6 +145,14 @@ button.videokaart:focus-visible{outline:3px solid var(--groen);outline-offset:2p
       <div class="tk"><a class="knop" href="verkenner.html">Open de Verkenner</a><button type="button" class="rand2" id="verras">Verras me</button></div></div>
     <svg class="web" id="web" viewBox="0 0 400 260" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Stilstaand overzicht van de zeventig meest besproken onderwerpen en begrippen en hun verbanden"></svg>
   </section>
+  <section class="gem" id="gemeente" aria-labelledby="hg"><h2 id="hg">Ook jouw gemeente?</h2>
+    <p>Raadzoeker werkt nu alleen voor Rotterdam. Wil je dit ook voor je eigen gemeente? Meld haar aan. Dat is geen belofte, maar ik kijk welke gemeenten vaak gevraagd worden en of hun gegevens openbaar beschikbaar zijn.</p>
+    <form id="gemform"><label>Gemeente<input id="gemnaam" required maxlength="80" autocomplete="off"></label>
+      <label>Waarom? <span style="font-weight:400">(mag leeg)</span><input id="gemwaarom" maxlength="600"></label>
+      <label>E-mail voor antwoord <span style="font-weight:400">(mag leeg)</span><input id="gemmail" type="email" maxlength="120" autocomplete="email"></label>
+      <button class="knop" type="submit">Aanmelden</button></form>
+    <p class="klein" id="gemst" aria-live="polite">Anoniem tenzij je een e-mailadres invult; dat gebruik ik alleen om je te antwoorden.</p>
+  </section>
   <p class="wrapped">Terugkijken? Zie <a href="lab.html#k=wrapped">Raad Wrapped</a>: het jaar van de raad in woorden en cijfers.</p>
 </div>
 </main>
@@ -146,6 +161,11 @@ button.videokaart:focus-visible{outline:3px solid var(--groen);outline-offset:2p
 <script src="ontwerp.js?v=41"></script>
 <script>
 kop('');
+document.getElementById('gemform').onsubmit=async e=>{e.preventDefault();const g=n=>document.getElementById(n).value.trim(),st=document.getElementById('gemst'),naam=g('gemnaam');
+  if(!naam)return;st.textContent='Versturen…';
+  try{const r=await fetch('/api/fout',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({pagina:location.href,over:'Gemeente aanmelden: '+naam,tekst:['Gemeente: '+naam,g('gemwaarom')&&'Waarom: '+g('gemwaarom'),g('gemmail')&&'E-mail: '+g('gemmail')].filter(Boolean).join(' | ')})});
+    if(!r.ok)throw 0;rzMeet('gemeente_aangemeld');e.target.hidden=true;st.textContent='Dank je! '+naam+' staat op de lijst.';}
+  catch(_){st.textContent='Versturen lukte niet. Probeer het later nog eens.';}};
 {const d=document.getElementById('vid'),v=document.getElementById('vidv');
  document.getElementById('vidknop').onclick=()=>{d.showModal();v.play().catch(()=>{});};
  document.getElementById('vidsluit').onclick=()=>d.close();

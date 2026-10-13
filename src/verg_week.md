@@ -12,9 +12,9 @@ Werk vanuit de repo-root, altijd met `export RZ_WERK=/tmp/rz-werk PYTHONUTF8=1` 
    > 1. in: /tmp/rz-werk/verg/in_XXXXXXXX.txt  uit: /tmp/rz-werk/verg/uit_XXXXXXXX.json
    > (enz.)
    > Antwoord aan het eind alleen met de uitvoerpaden.
-5. **Controleren en publiceren**: `python src/verg_batch.py check` (citaatcontrole, schrapt wat niet letterlijk klopt, schrijft `docs/verg/`). Een FOUT bij één vergadering: noteren, verder gaan.
-6. **Online zetten**: alleen `docs/verg/` committen (`git add docs/verg`), bericht `Vergaderingen: N vergaderingen samengevat (week JJJJ-WW)`, pushen naar de branch van deze sessie, een PR naar `main` maken en die zelf mergen (afspraak Robert). Elke push naar `main` zet de site online.
+5. **Controleren en publiceren**: `python src/verg_batch.py check` (citaatcontrole, schrapt wat niet letterlijk klopt, schrijft `docs/verg/` en zet de samengevatte vergaderingen als grote update in `docs/data/mijlpalen.json`, pagina 'Wat is er nieuw'). Een FOUT bij één vergadering: noteren, verder gaan.
+6. **Online zetten**: alleen `docs/verg/` en `docs/data/mijlpalen.json` committen (`git add docs/verg docs/data/mijlpalen.json`), bericht `Vergaderingen: N vergaderingen samengevat (week JJJJ-WW)`, pushen naar de branch van deze sessie, een PR naar `main` maken en die zelf mergen (afspraak Robert). Elke push naar `main` zet de site online.
 7. **Melden** (kort, Nederlands): welke vergaderingen samengevat, hoeveel beweringen geschrapt, wat is overgeslagen en waarom.
 
-Niet doen: andere bestanden aanpassen, Opus-subagents gebruiken, meer dan 12 vergaderingen per run, de NAS-data (`docs/data/`) opnieuw maken.
+Niet doen: andere bestanden aanpassen (ook `docs/data/logboek.json` niet; dat is van de NAS), Opus-subagents gebruiken, meer dan 12 vergaderingen per run, de NAS-data (`docs/data/`) opnieuw maken.
 Kosten: ca. 95k Sonnet-tokens per vergadering; een gewone week (1 raad + 5 à 6 commissies) ca. 0,6 mln.
