@@ -20,7 +20,15 @@ export async function onRequestPost({ request, env }) {
   if (!env.DB) return json({ fout: 'geen database' }, 503);
   let body; try { body = await request.json(); } catch (e) { return json({ fout: 'ongeldig' }, 400); }
   const jwk = body.vapid || {}, volg = body.volg || {};
-  let past = false; try { past = !!(jwk.d && jwk.x && jwk.y) && b64u(Uint8Array.from([4, ...ub(jwk.x), ...ub(jwk.y)])) === PUB; } catch (e) {}
+  // x/y zijn openbaar, dus alleen vergelijken is niet genoeg: onderteken een proefbericht met d en controleer dat met PUB
+  let past = false; try {
+    if (jwk.d && jwk.x && jwk.y && b64u(Uint8Array.from([4, ...ub(jwk.x), ...ub(jwk.y)])) === PUB) {
+      const alg = { name: 'ECDSA', namedCurve: 'P-256' }, h = { name: 'ECDSA', hash: 'SHA-256' }, proef = crypto.getRandomValues(new Uint8Array(32));
+      const priv = await crypto.subtle.importKey('jwk', { kty: 'EC', crv: 'P-256', d: jwk.d, x: jwk.x, y: jwk.y }, alg, false, ['sign']);
+      const pubk = await crypto.subtle.importKey('raw', ub(PUB), alg, false, ['verify']);
+      past = await crypto.subtle.verify(h, pubk, await crypto.subtle.sign(h, priv, proef), proef);
+    }
+  } catch (e) {}
   if (!past) return json({ fout: 'geen toegang' }, 403);
   const D = volg.d || {}, stand = volg.stand || new Date().toISOString().slice(0, 10), pub = PUB;
   const { results } = await env.DB.prepare('SELECT id, endpoint, onderwerpen, gemeld FROM abonnees').all();

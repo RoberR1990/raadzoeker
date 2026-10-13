@@ -1,7 +1,7 @@
 /* Gedeeld door de ontwerpschermen: kop, hulpfuncties, zoeklijst (combobox), uitklapbare rijen, deellinks. */
 window.rzMeet=window.rzMeet||function(n,d){const q=window.rzMeet.q=window.rzMeet.q||[];if(q.length<40)q.push([n,d]);};   /* meetlaag: wachtrij tot meet.js er is */
 const $=id=>document.getElementById(id);
-const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const nf=n=>Number(n).toLocaleString('nl-NL');
 const MND=['jan','feb','mrt','apr','mei','jun','jul','aug','sep','okt','nov','dec'];
 const MNDL=['januari','februari','maart','april','mei','juni','juli','augustus','september','oktober','november','december'];
@@ -67,7 +67,7 @@ function kop(actief){
   if(!document.getElementById('rz-meet')){const m=document.createElement('script');m.id='rz-meet';m.src='meet.js?v=2';document.body.appendChild(m);}
   // rondleiding, hulpknop en welkomstvenster (tour.js)
   if(!document.getElementById('rz-tour')){const t=document.createElement('script');t.id='rz-tour';t.src='tour.js?v=16';document.body.appendChild(t);const w=document.createElement('script');w.src='woorden.js?v=3';document.body.appendChild(w);const r=document.createElement('script');r.src='stad.js?v=5';document.body.appendChild(r);
-    const c=document.createElement('script');c.src='citeer.js?v=1';window.rzCiteerKlaar=new Promise(ok=>{c.onload=ok;c.onerror=ok;});document.body.appendChild(c);}
+    const c=document.createElement('script');c.src='citeer.js?v=2';window.rzCiteerKlaar=new Promise(ok=>{c.onload=ok;c.onerror=ok;});document.body.appendChild(c);}
   const ic=document.createElement('link');ic.rel='icon';ic.type='image/svg+xml';ic.href='logo.svg';document.head.appendChild(ic);
 }
 /* zoekveld in de kop (vanaf 1100px) en dezelfde koppeling voor de zoeklaag op mobiel; Enter zoekt altijd, een gekozen suggestie opent dossier of gebied */
