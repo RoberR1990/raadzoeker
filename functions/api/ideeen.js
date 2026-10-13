@@ -26,6 +26,9 @@ export async function onRequestGet({ request, env }) {
   return json(await lijst(env.DB, await wie(request)));
 }
 export async function onRequestPost({ request, env }) {
+  // raadzoeker.nl staat niet achter Cloudflare Access, dus de header hierboven kan iedereen zelf meesturen: stemmen staat uit
+  // (pagina is verborgen). Weer aanzetten kan pas als het Access-token (Cf-Access-Jwt-Assertion) hier echt gecontroleerd wordt.
+  if (!env.STEMMEN_AAN) return json({ fout: 'stemmen staat uit' }, 403);
   if (!env.DB) return json({ fout: 'geen database gekoppeld' }, 503);
   const g = await wie(request);
   if (!g) return json({ fout: 'niet ingelogd' }, 401);

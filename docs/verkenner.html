@@ -112,7 +112,7 @@ a.kn2{text-decoration:none}.vv-terug{all:unset;cursor:pointer;color:#8FE0A0;font
   <aside class="pnl" id="info" aria-live="polite"></aside>
   <div id="zoom"><button id="zin" aria-label="Inzoomen">+</button><button id="zuit" aria-label="Uitzoomen">−</button><button id="zhel" aria-label="Alles tonen" style="font-size:14px">⤢</button><button id="thema" aria-label="Wissel tussen dag- en nachtmodus" title="Dag/nacht" style="font-size:17px"></button></div>
 </div>
-<script src="ontwerp.js?v=41"></script>
+<script src="ontwerp.js?v=42"></script>
 <script src="lib/graphology.umd.min.js"></script>
 <script src="lib/sigma.min.js"></script>
 <script>
@@ -247,7 +247,7 @@ function tekenHover(ctx,data,st){const fs=st.labelSize+2,lab=data.label||'';ctx.
 /* link: #n=<id>&g=..&d=..&f=..&v=..&t=.. */
 function bewaar(){const p=[];if(SEL!=null)p.push('n='+encodeURIComponent(DATA.knopen[+SEL].id));['g','d','f'].forEach(k=>F[k]!==''&&p.push(k+'='+F[k]));if(F.v)p.push('v='+F.v);if(F.t!==8)p.push('t='+F.t);if(F.o)p.push('o=1');if(F.dom>=0)p.push('k='+F.dom);history.replaceState(null,'','#'+p.join('&'));}
 function lees(){const h=new URLSearchParams(location.hash.slice(1));['g','d','f'].forEach(k=>{if(h.has(k))F[k]=h.get(k);});if(h.has('v'))F.v=+h.get('v');if(h.has('t'))F.t=+h.get('t');F.o=h.get('o')==='1';if(h.has('k'))F.dom=+h.get('k');return h.get('n');}
-fetch(new URLSearchParams(location.search).get('bron')||'verkenner.json').then(r=>r.json()).then(D=>{
+fetch((b=>/^[\w-]+\.json$/.test(b||'')?b:'verkenner.json')(new URLSearchParams(location.search).get('bron'))).then(r=>r.json()).then(D=>{
   DATA=D;el('vklaad')?.remove();G=new graphology.Graph({type:'undirected'});
   D.knopen.forEach((k,i)=>G.addNode(String(i),{x:k.x,y:-k.y,label:k.l,size:3,color:KL[k.dom],dom:k.dom,s:k.s,forceLabel:false}));
   const em=Math.max(...D.e.map(e=>e[2]));
