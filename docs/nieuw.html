@@ -3,112 +3,120 @@
 <title>Wat is er nieuw · raadzoeker</title>
 <link rel="stylesheet" href="stijl.css?v=20">
 <style>
-.kolom{max-width:860px;margin:0 auto}
-.run{background:var(--wit);border-radius:var(--r);padding:16px 20px;margin-top:12px}
-.run h2{font-size:18px;margin:0 0 2px;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}.run h2 .sub2{font-size:13px;font-weight:400;color:var(--sub)}
-.tellers{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 4px;padding:0;list-style:none}.tellers li{background:var(--grijs);border-radius:999px;padding:3px 10px;font-size:13px}
-.tellers b{font-weight:700}
-.it{display:grid;grid-template-columns:150px minmax(0,1fr);gap:2px 10px;padding:6px 0;border-top:1px solid var(--grijs2);font-size:15px}
-.it .s{font-size:13px;color:var(--sub)}
-.run details{margin-top:6px}.run summary{cursor:pointer;font-size:15px;padding:6px 0}
-.run h3{font-size:15px;margin:12px 0 2px}
-.status{background:var(--wit);border-radius:var(--r);padding:14px 20px;margin-top:16px;border-left:5px solid var(--groen);font-size:15px}
-.status.fout{border-left-color:#C25700}
-.vlak{background:var(--wit);border-radius:var(--r);padding:18px 20px;margin-top:14px}
-.vlak h2{font-size:20px;margin:0 0 8px}
-.lab{display:inline-block;font-size:12px;font-weight:700;border-radius:999px;padding:1px 9px;color:#fff;vertical-align:1px}
-.t-functie{background:var(--groen)}.t-samenvattingen{background:var(--blauw)}.t-data{background:#C25700}
-.s{font-size:13px;color:var(--sub)}
-.held{border-left:5px solid var(--groen);padding:4px 0 4px 16px;margin-top:6px}
-.held h3{font-size:20px;margin:6px 0 4px}.held p{margin:0 0 6px;font-size:15px}
-.held ul{margin:4px 0 0;padding-left:18px;font-size:15px}
-.as{overflow-x:auto;margin-top:12px}.asin{position:relative;height:104px;min-width:640px;margin:0 14px}
-.lijn{position:absolute;left:0;right:0;top:52px;height:3px;background:var(--grijs2)}
-.pt{position:absolute;top:52px;transform:translate(-50%,-50%);border:0;border-radius:50%;cursor:pointer;padding:0;box-shadow:0 0 0 3px var(--wit)}
-.pt[aria-pressed=true]{outline:3px solid var(--zwart);outline-offset:2px}
-.tick{position:absolute;top:84px;font-size:11px;color:var(--sub);transform:translateX(-50%);white-space:nowrap}
-.mk{border-top:1px solid var(--grijs2);padding:10px 0}.mk h4{margin:2px 0 2px;font-size:16px}.mk p{margin:2px 0 0;font-size:15px}
-.mk details,.held details{margin-top:4px}.mk summary,.held summary{cursor:pointer;font-size:14px}.mk ul{margin:4px 0 0;padding-left:18px;font-size:14px}
-.puls{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:15px}.stip{width:10px;height:10px;border-radius:50%;background:var(--groen-mid);display:inline-block}.stip.fout{background:var(--laat)}
-.hart{display:grid;grid-template-columns:repeat(14,minmax(0,1fr));gap:4px;margin-top:10px}
-.hart .d{background:var(--grijs);border-radius:6px;padding:6px 2px;text-align:center;font-size:11px;color:var(--sub);min-height:96px;display:flex;flex-direction:column;justify-content:flex-end;gap:2px}
-.hart .d i{display:block;background:var(--groen-mid);border-radius:3px;min-height:3px}.hart .d i.g{background:var(--laat)}
-.hart .d.nu{outline:2px solid var(--zwart)}
-.leg{font-size:12px;color:var(--sub);margin-top:8px;display:flex;gap:14px;flex-wrap:wrap}.leg span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;background:var(--groen-mid)}.leg span.g::before{background:var(--laat)}
-.alle>summary{cursor:pointer;font-size:16px;font-weight:700;padding:4px 0}
-@media (max-width:700px){.hart{grid-template-columns:repeat(7,minmax(0,1fr))}}
-@media (max-width:600px){.it{grid-template-columns:minmax(0,1fr)}}
+.kolom{max-width:820px;margin:0 auto}
+.status{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:16px 0 0;font-size:15px}
+.status .stip{width:10px;height:10px;border-radius:50%;background:var(--groen-mid);flex:none}
+.status.fout .stip{background:var(--laat)}
+/* filter: één regel, op mobiel horizontaal scrollbaar */
+.filter{display:flex;gap:8px;margin:20px 0 4px;overflow-x:auto;padding:2px;scrollbar-width:none}.filter::-webkit-scrollbar{display:none}
+.filter button{flex:none;font:400 15px var(--font);color:var(--zwart);background:var(--wit);border:1.5px solid var(--lijn);border-radius:999px;padding:0 16px;min-height:40px;cursor:pointer;white-space:nowrap}
+.filter button[aria-pressed=true]{background:var(--groen);border-color:var(--groen);color:#fff;font-weight:700}
+.filter button:focus-visible{outline:3px solid var(--zwart);outline-offset:2px}
+.filter .n{opacity:.75;margin-left:4px}
+/* tijdlijn */
+.dag{margin-top:28px}
+.dag>h2{font-size:15px;font-weight:700;margin:0 0 10px;color:var(--sub);position:sticky;top:0;background:var(--grijs);padding:6px 0;z-index:1}
+.tl{list-style:none;margin:0;padding:0;position:relative}
+.tl::before{content:"";position:absolute;left:11px;top:6px;bottom:6px;width:2px;background:var(--grijs2)}
+.tl>li{position:relative;padding-left:36px;margin-bottom:10px}
+.tl>li::before{content:"";position:absolute;left:6px;top:15px;width:12px;height:12px;border-radius:50%;background:var(--wit);border:2px solid var(--lijn)}
+.tl>li.mp::before{left:2px;top:16px;width:20px;height:20px;border:0;background:var(--groen)}
+.tl>li.mp::after{content:attr(data-ic);position:absolute;left:2px;top:16px;width:20px;height:20px;display:grid;place-items:center;color:#fff;font-size:11px;font-weight:700}
+.kaart{background:var(--wit);border-radius:var(--r);padding:14px 18px}
+.mp .kaart{border-left:4px solid var(--groen);padding:16px 20px}
+.meta{font-size:13px;color:var(--sub);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.lab{background:var(--groen-zacht);color:var(--groen-d);border-radius:999px;padding:1px 9px;font-size:12px;font-weight:700}
+.mp h3{font-size:18px;margin:4px 0 4px;line-height:1.3}.mp p{margin:0;font-size:15px;line-height:1.55}
+.links{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:8px;font-size:15px}
+.lijst{margin:8px 0 0;padding:0;list-style:none;font-size:15px}.lijst li{padding:6px 0;border-top:1px solid var(--grijs2);display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 12px}
+.lijst .s{font-size:13px;color:var(--sub);white-space:nowrap}
+/* run: één regel, klik voor details */
+.run summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:4px 12px;align-items:baseline;min-height:28px}
+.run summary::-webkit-details-marker{display:none}
+.run summary .t{font-size:14px;color:var(--sub);font-variant-numeric:tabular-nums}
+.run summary .w{font-size:15px}.run summary .w b{font-weight:700}
+.run summary .pijl{font-size:13px;color:var(--sub);white-space:nowrap}
+.run summary:focus-visible{outline:3px solid var(--zwart);outline-offset:4px;border-radius:4px}
+.run summary .d{display:block;font-size:13px;color:var(--sub);margin-top:1px}.run summary .v{display:inline-block;transition:transform .15s}.run[open] summary .v{transform:rotate(180deg)}
+@media (prefers-reduced-motion:reduce){.run summary .v{transition:none}}
+.run h4{font-size:14px;margin:14px 0 0}
+.meer{display:block;margin:20px auto 0;font:700 15px var(--font);background:var(--wit);color:var(--zwart);border:1.5px solid var(--lijn);border-radius:999px;padding:0 20px;min-height:44px;cursor:pointer}
+.voet{font-size:13px;color:var(--sub);margin-top:28px}
+@media (max-width:600px){
+  .filter .lang{display:none}.filter button{padding:0 14px}
+  .tl>li{padding-left:30px}.tl::before{left:9px}.tl>li::before{left:4px}.tl>li.mp::before,.tl>li.mp::after{left:0}
+  .kaart{padding:12px 14px}.mp .kaart{padding:14px 16px}
+  .run summary .pijl .k{display:none}.run summary .v{font-size:16px}
+  .lijst li{grid-template-columns:minmax(0,1fr)}
+}
+@media (prefers-color-scheme: dark){.lab{color:#BFEAC9}}
 </style></head><body>
 <header class="balk"></header>
 <main class="pagina"><div class="kolom">
-  <h1 style="margin-bottom:4px">Wat is er nieuw</h1>
-  <p class="intro" style="margin:0">Twee stromen: <b>grote updates</b> (nieuwe functies, samenvattingen, nieuwe gegevens) en de <b>runs</b> die elke nacht, en op werkdagen om 9, 12, 15, 18 en 21 uur, nieuwe stukken uit iBabs ophalen.</p>
-  <div class="status" id="status" hidden></div>
-  <section class="vlak" id="mijlpalen" hidden><h2>Grote updates</h2>
-    <div class="puls" id="mplegenda"></div>
-    <div class="as"><div class="asin" id="as"></div></div>
-    <div id="kaart"></div><div id="eerder"></div></section>
-  <section class="vlak"><h2>Runs</h2>
-    <div class="puls" id="runstatus"></div>
-    <div class="hart" id="hart" aria-label="Nieuwe stukken per dag, laatste 14 dagen"></div>
-    <div class="leg"><span>nieuw uit de raad (laatste 14 dagen)</span><span class="g">oudere stukken aangevuld</span></div>
-    <details class="alle" style="margin-top:14px"><summary>Per run, de laatste 3 dagen</summary><div id="lijst"><p class="leeg">Laden…</p></div></details></section>
-  <p class="sub" style="font-size:13px;margin-top:20px">Nieuwe debatten komen elke nacht mee (ondertiteling van de video); AI-samenvattingen van vergaderingen en nieuwe functies staan bij Grote updates. Een dag zonder balk betekent dat er niets nieuws bij kwam. Meer over bronnen en actualiteit: <a href="over.html#actueel">Hoe actueel is het?</a></p>
+  <h1 style="margin-bottom:6px">Wat is er nieuw</h1>
+  <p class="intro">Nieuwe functies, nieuwe samenvattingen en wat elke run uit iBabs ophaalt, op één tijdlijn. De site wordt elke nacht bijgewerkt, en op werkdagen ook om 9, 12, 15, 18 en 21 uur.</p>
+  <p class="status" id="status" hidden><span class="stip" aria-hidden="true"></span><span id="statustekst"></span></p>
+  <div class="filter" role="group" aria-label="Toon">
+    <button type="button" data-f="alles" aria-pressed="true">Alles</button>
+    <button type="button" data-f="updates" aria-pressed="false">Grote updates<span class="n" id="n-updates"></span></button>
+    <button type="button" data-f="stukken" aria-pressed="false">Stukken<span class="lang"> en vergaderingen</span><span class="n" id="n-stukken"></span></button>
+  </div>
+  <div id="lijst" aria-live="polite"><p class="leeg">Laden…</p></div>
+  <p class="voet">Runs worden 3 dagen bewaard (minstens de laatste 10); grote updates blijven staan. Runs zonder iets nieuws staan er niet tussen. Meer over bronnen: <a href="over.html#actueel">Hoe actueel is het?</a></p>
 </div></main>
 <script src="ontwerp.js?v=41"></script>
 <script>
 kop('');
-const M=['jan','feb','mrt','apr','mei','jun','jul','aug','sep','okt','nov','dec'],dd=d=>`${+d.slice(8,10)} ${M[+d.slice(5,7)-1]}`;
-const tijd=t=>{const d=new Date(t);return `${['zo','ma','di','wo','do','vr','za'][d.getDay()]} ${d.getDate()} ${M[d.getMonth()]}, ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;};
+const M=['jan','feb','mrt','apr','mei','jun','jul','aug','sep','okt','nov','dec'],DG=['zondag','maandag','dinsdag','woensdag','donderdag','vrijdag','zaterdag'];
+const dd=d=>`${+d.slice(8,10)} ${M[+d.slice(5,7)-1]}`;
+const uur=t=>t&&t.length>10?t.slice(11,16):'';
+const dagKop=d=>{const v=new Date(),g=new Date(v-864e5),iso=x=>`${x.getFullYear()}-${String(x.getMonth()+1).padStart(2,'0')}-${String(x.getDate()).padStart(2,'0')}`;
+  const w=DG[new Date(d+'T12:00').getDay()];return (d===iso(v)?'Vandaag, ':d===iso(g)?'Gisteren, ':'')+`${w} ${dd(d)}${d.slice(0,4)!==String(v.getFullYear())?' '+d.slice(0,4):''}`;};
 const MV={Toezegging:'toezeggingen',Motie:'moties',Amendement:'amendementen',Initiatiefvoorstel:'initiatiefvoorstellen',Raadsvoorstel:'raadsvoorstellen',Collegebesluit:'collegebesluiten',Collegebrief:'collegebrieven','Schriftelijke vragen':'schriftelijke vragen',Wijkraadadvies:'wijkraadadviezen',Rekenkamerrapport:'rekenkamerrapporten','Ongevraagd wijkraadadvies':'ongevraagde wijkraadadviezen','Wijkakkoord of wijkplan':'wijkakkoorden of wijkplannen','Collegereactie op wijkplan':'collegereacties op wijkplannen',Wijkverslag:'wijkverslagen'};
 const meer=(n,w)=>`${n} ${n===1?w[0]:w[1]}`;
-const stukRij=x=>`<div class="it"><span class="s">${esc(x.soort)} · ${dd(x.datum)}</span>${x.link?`<a href="${esc(x.link)}" target="_blank" rel="noopener">${esc(x.titel)}</a>`:`<span>${esc(x.titel)}</span>`}</div>`;
-function run(r){
-  const kop=[r.n_nieuw?meer(r.n_nieuw,['nieuw stuk','nieuwe stukken']):'',r.n_afgedaan?`${r.n_afgedaan} afgedaan`:'',r.verslagen.length?meer(r.verslagen.length,['vergaderverslag','vergaderverslagen']):'',r.agenda.length?meer(r.agenda.length,['vergadering op de agenda','vergaderingen op de agenda']):''].filter(Boolean).join(' · ');
-  const tel=Object.entries(r.nieuw_per_soort||{}).map(([s,n])=>`<li><b>${n}</b> ${esc(n===1?s.toLowerCase():(MV[s]||s.toLowerCase()))}</li>`).join('');
-  let h=`<section class="run"><h2>${tijd(r.tijd)}<span class="sub2">${r.modus==='nacht'?'nachtelijke run':r.modus==='overdag'?'run overdag':''}</span></h2><p style="margin:0;font-size:15px">${kop}</p>${tel?`<ul class="tellers">${tel}</ul>`:''}`;
-  if(r.verslagen.length)h+=`<h3>Vergaderverslagen</h3>${r.verslagen.map(v=>`<div class="it"><span class="s">${esc(v.naam)} · ${dd(v.datum)}</span><span><a href="${esc(v.link)}">${esc(v.kort||v.naam)}</a></span></div>`).join('')}`;
-  if(r.agenda.length)h+=`<h3>Nieuw op de agenda</h3>${r.agenda.map(v=>`<div class="it"><span class="s">${dd(v.datum)}</span><span><a href="vergaderingen.html">${esc(v.naam)}</a> · ${meer(v.punten,['punt','punten'])}</span></div>`).join('')}`;
-  if(r.afgedaan.length)h+=`<details><summary>${meer(r.n_afgedaan,['motie of toezegging afgedaan','moties en toezeggingen afgedaan'])}</summary>${r.afgedaan.map(stukRij).join('')}</details>`;
-  if(r.nieuw.length)h+=`<details${r.nieuw.length<=5?' open':''}><summary>${r.n_nieuw>r.nieuw.length?`De ${r.nieuw.length} nieuwste van ${r.n_nieuw} stukken`:'Nieuwe stukken'}</summary>${r.nieuw.map(stukRij).join('')}</details>`;
-  return h+'</section>';
+const SOORT={functie:['nieuwe functie','★'],samenvattingen:['samenvattingen','✎'],data:['nieuwe gegevens','+']};
+
+function mpHtml(r){const [lab,ic]=SOORT[r.soort]||[r.soort,'•'],l=r.links||[];
+  const links=l.length>4?`<details style="margin-top:8px"><summary style="cursor:pointer;font-size:15px">Toon de ${l.length} ${r.soort==='samenvattingen'?'vergaderingen':'links'}</summary><ul class="lijst">${l.map(x=>{const m=x.t.match(/^(.*) · (\d{4}-\d\d-\d\d)$/);return `<li><a href="${esc(x.u)}">${esc(m?m[1]:x.t)}</a>${m?`<span class="s">${dd(m[2])}</span>`:''}</li>`;}).join('')}</ul></details>`
+    :l.length?`<div class="links">${l.map(x=>`<a href="${esc(x.u)}">${esc(x.t)}</a>`).join('')}</div>`:'';
+  return `<li class="mp" data-ic="${ic}"><div class="kaart"><div class="meta"><span class="lab">${esc(lab)}</span>${uur(r.tijd)?`<span>${uur(r.tijd)}</span>`:''}</div><h3>${esc(r.titel)}</h3>${r.tekst?`<p>${esc(r.tekst)}</p>`:''}${links}</div></li>`;}
+
+const stukRij=x=>`<li>${x.link?`<a href="${esc(x.link)}" target="_blank" rel="noopener">${esc(x.titel)}</a>`:`<span>${esc(x.titel)}</span>`}<span class="s">${esc(x.soort)} · ${dd(x.datum)}</span></li>`;
+function runHtml(r){
+  const delen=[r.n_nieuw?`<b>${meer(r.n_nieuw,['nieuw stuk','nieuwe stukken'])}</b>`:'',r.n_afgedaan?meer(r.n_afgedaan,['afgedaan','afgedaan']):'',r.verslagen.length?meer(r.verslagen.length,['verslag','verslagen']):'',r.agenda.length?meer(r.agenda.length,['vergadering gepland','vergaderingen gepland']):''].filter(Boolean);
+  const ps=Object.entries(r.nieuw_per_soort||{}),sub=ps.length?ps.map(([s,n])=>`${n} ${n===1?s.toLowerCase():(MV[s]||s.toLowerCase())}`).join(', '):'';
+  let h='';
+  if(r.verslagen.length)h+=`<h4>Vergaderverslagen</h4><ul class="lijst">${r.verslagen.map(v=>`<li><a href="${esc(v.link)}">${esc(v.kort||v.naam)}</a><span class="s">${esc(v.naam)} · ${dd(v.datum)}</span></li>`).join('')}</ul>`;
+  if(r.agenda.length)h+=`<h4>Nieuw op de agenda</h4><ul class="lijst">${r.agenda.map(v=>`<li><a href="vergaderingen.html">${esc(v.naam)}</a><span class="s">${dd(v.datum)} · ${meer(v.punten,['punt','punten'])}</span></li>`).join('')}</ul>`;
+  if(r.afgedaan.length)h+=`<h4>Afgedaan</h4><ul class="lijst">${r.afgedaan.map(stukRij).join('')}</ul>`;
+  if(r.nieuw.length)h+=`<h4>${r.n_nieuw>r.nieuw.length?`De ${r.nieuw.length} nieuwste van ${r.n_nieuw}`:'Nieuwe stukken'}</h4><ul class="lijst">${r.nieuw.map(stukRij).join('')}</ul>`;
+  const soort=r.modus==='nacht'?'nachtrun':'run';
+  return `<li class="rn"><details class="kaart run"><summary><span class="t">${uur(r.tijd)}</span><span class="w">${delen.join(' · ')}${sub&&ps.length>1?`<span class="d">${esc(sub)}</span>`:''} <span class="sr">(${soort}, klik voor details)</span></span><span class="pijl" aria-hidden="true"><span class="k">${soort} </span><span class="v">▾</span></span></summary>${h}</details></li>`;}
+
+let ITEMS=[],F='alles',TOON=12;
+const pas=it=>F==='alles'||(F==='updates')===(it.k==='mp');
+function teken(){
+  const L=ITEMS.filter(pas),Z=L.slice(0,TOON);
+  if(!L.length){$('lijst').innerHTML=`<p class="leeg" style="margin-top:24px">${F==='updates'?'Nog geen grote updates.':'Geen runs met nieuwe stukken in de afgelopen dagen.'}</p>`;return;}
+  const dagen=[];Z.forEach(it=>{const d=it.tijd.slice(0,10);if(!dagen.length||dagen[dagen.length-1][0]!==d)dagen.push([d,[]]);dagen[dagen.length-1][1].push(it);});
+  $('lijst').innerHTML=dagen.map(([d,xs])=>`<section class="dag" aria-label="${esc(dagKop(d))}"><h2>${esc(dagKop(d))}</h2><ol class="tl">${xs.map(it=>it.k==='mp'?mpHtml(it.r):runHtml(it.r)).join('')}</ol></section>`).join('')
+    +(L.length>TOON?`<button type="button" class="meer" id="meer">Toon oudere (${L.length-TOON})</button>`:'');
+  const m=$('meer');if(m)m.onclick=()=>{TOON+=20;teken();};
 }
-const SOORT={functie:'nieuwe functie',samenvattingen:'samenvattingen',data:'nieuwe gegevens'},KL={functie:'var(--groen)',samenvattingen:'var(--blauw)',data:'#C25700'};
-const dagenGeleden=d=>Math.max(0,Math.round((new Date().setHours(12,0,0,0)-new Date(d+'T12:00:00'))/864e5));
-const wanneer=n=>n===0?'vandaag':n===1?'gisteren':`${n} dagen geleden`;
-const lijstje=l=>l.length>3?`<details><summary>${l.length} links</summary><ul>${l.map(x=>`<li><a href="${esc(x.u)}">${esc(x.t)}</a></li>`).join('')}</ul></details>`:l.length?`<ul>${l.map(x=>`<li><a href="${esc(x.u)}">${esc(x.t)}</a></li>`).join('')}</ul>`:'';
-const mpKaart=(r,groot)=>`<div class="${groot?'held':'mk'}"><div class="s">${dd(r.datum)} ${r.datum.slice(0,4)} <span class="lab" style="background:${KL[r.soort]||'var(--sub)'}">${esc(SOORT[r.soort]||r.soort)}</span></div>${groot?`<h3>${esc(r.titel)}</h3>`:`<h4>${esc(r.titel)}</h4>`}${r.tekst?`<p>${esc(r.tekst)}</p>`:''}${lijstje(r.links||[])}</div>`;
-function mijlpalen(R){
-  if(!R.length)return;$('mijlpalen').hidden=false;
-  R=R.slice().sort((a,b)=>b.datum<a.datum?-1:b.datum>a.datum?1:0);
-  $('mplegenda').innerHTML=Object.keys(SOORT).filter(k=>R.some(r=>r.soort===k)).map(k=>`<span class="lab" style="background:${KL[k]}">${SOORT[k]}</span>`).join('')+`<span class="s">Laatste grote update: <b style="color:var(--zwart)">${wanneer(dagenGeleden(R[0].datum))}</b></span>`;
-  const dag=x=>+new Date(x+'T12:00:00'),van=dag(R[R.length-1].datum)-3*864e5,tot=Math.max(dag(R[0].datum),Date.now())+2*864e5,br=tot-van,pos=x=>(dag(x)-van)/br*100;
-  const op={},vandaag=new Date(),nu=vandaag.getFullYear()+'-'+String(vandaag.getMonth()+1).padStart(2,'0')+'-'+String(vandaag.getDate()).padStart(2,'0');
-  const data=[...new Set(R.map(m=>m.datum))].sort();
-  $('as').innerHTML='<div class="lijn"></div>'+R.map((m,i)=>{const k=op[m.datum]=(op[m.datum]||0)+1,g=i===0?26:20;
-    return `<button type="button" class="pt" data-i="${i}" aria-pressed="${i===0}" aria-label="${esc(dd(m.datum)+': '+m.titel)}" style="left:${pos(m.datum)}%;margin-top:${-(k-1)*26}px;width:${g}px;height:${g}px;background:${KL[m.soort]||'var(--sub)'}"></button>`;}).join('')
-    +data.filter((d,i)=>i===0||pos(d)-pos(data[i-1])>7).map(d=>`<span class="tick" style="left:${pos(d)}%">${dd(d)}</span>`).join('')
-    +`<span class="tick" style="left:${pos(nu)}%;font-weight:700">nu</span>`;
-  const toon=i=>{document.querySelectorAll('.pt').forEach(b=>b.setAttribute('aria-pressed',String(+b.dataset.i===i)));
-    $('kaart').innerHTML=mpKaart(R[i],true);
-    const rest=R.filter((_,j)=>j!==i);
-    $('eerder').innerHTML=rest.length?`<h3 style="font-size:16px;margin:14px 0 0">Alle grote updates</h3>${rest.slice(0,4).map(r=>mpKaart(r)).join('')}${rest.length>4?`<details><summary style="cursor:pointer;padding:8px 0">Eerdere updates (${rest.length-4})</summary>${rest.slice(4).map(r=>mpKaart(r)).join('')}</details>`:''}`:'';};
-  document.querySelectorAll('.pt').forEach(b=>b.onclick=()=>toon(+b.dataset.i));toon(0);}
-fetch('data/mijlpalen.json',{cache:'no-store'}).then(r=>r.ok?r.json():null).catch(()=>null).then(M=>mijlpalen((M&&M.regels)||[]));
-/* hartslag: totalen per dag uit logboek.dagen (60 dagen); zonder dat veld afgeleid uit de runs van de laatste 3 dagen */
-function hartslag(L){
-  let D=L.dagen;
-  if(!D){D={};(L.regels||[]).forEach(r=>{const d=r.tijd.slice(0,10),e=D[d]=D[d]||{r:0,n:0,g:0,v:0};const g=new Date(new Date(r.tijd)-14*864e5).toISOString().slice(0,10);const a=r.n_actueel!=null?r.n_actueel:r.nieuw.filter(x=>x.datum>=g).length;e.r++;e.n+=a;e.g+=Math.max(0,r.n_nieuw-a);e.v+=r.verslagen.length;});}
-  const dagen=[];for(let i=13;i>=0;i--){const d=new Date(Date.now()-i*864e5);const k=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');dagen.push([k,D[k]||{r:0,n:0,g:0,v:0}]);}
-  const mx=Math.max(1,...dagen.map(([,e])=>Math.max(e.n,e.g)));
-  $('hart').innerHTML=dagen.map(([k,e],i)=>`<div class="d${i===13?' nu':''}" title="${dd(k)}: ${e.n} nieuw uit de raad${e.g?`, ${e.g} oudere stukken aangevuld`:''}${e.v?`, ${e.v} verslagen`:''}">${e.g?`<i class="g" style="height:${Math.max(4,e.g/mx*56)}px"></i>`:''}${e.n?`<i style="height:${Math.max(4,e.n/mx*56)}px"></i>`:''}<span>${+k.slice(8)}</span></div>`).join('');}
-Promise.all([fetch('data/logboek.json',{cache:'no-store'}).then(r=>r.ok?r.json():{regels:[]}).catch(()=>({regels:[]})),fetch('data/status.json',{cache:'no-store'}).then(r=>r.ok?r.json():null).catch(()=>null)]).then(([L,st])=>{
-  const nw=L.regels[0]&&new Date(L.regels[0].tijd);
-  if(st&&st.laatste){const fout=st.ok===false;
-    $('runstatus').innerHTML=`<span class="stip${fout?' fout':''}"></span>${fout?`Laatste run (${tijd(st.laatste)}) is mislukt${st.stap?` bij '${esc(st.stap)}'`:''}; de site toont de stand van de run daarvoor.`:`Laatste run: <b>${tijd(st.laatste)}</b>${(nw&&nw>=new Date(st.laatste)-6e4)?'':' — daarin niets nieuws'}.`}`;
-    if(fout){$('status').hidden=false;$('status').classList.add('fout');$('status').innerHTML=$('runstatus').innerHTML;}}
-  hartslag(L);
-  $('lijst').innerHTML=L.regels.length?L.regels.map(run).join(''):'<p class="leeg">Nog geen runs met nieuwe stukken in de afgelopen dagen.</p>';
+document.querySelector('.filter').onclick=e=>{const b=e.target.closest('button');if(!b)return;F=b.dataset.f;TOON=12;
+  document.querySelectorAll('.filter button').forEach(x=>x.setAttribute('aria-pressed',x===b));
+  history.replaceState(null,'',F==='alles'?location.pathname:'#'+F);teken();};
+{const h=location.hash.slice(1);if(h==='updates'||h==='stukken'){F=h;document.querySelectorAll('.filter button').forEach(x=>x.setAttribute('aria-pressed',x.dataset.f===h));}}
+
+const haal=u=>fetch(u,{cache:'no-store'}).then(r=>r.ok?r.json():null).catch(()=>null);
+Promise.all([haal('data/logboek.json'),haal('data/mijlpalen.json'),haal('data/status.json')]).then(([L,MP,st])=>{
+  const runs=((L&&L.regels)||[]).map(r=>({k:'run',tijd:r.tijd,r})),mps=((MP&&MP.regels)||[]).map(r=>({k:'mp',tijd:r.tijd||r.datum+'T23:59',r}));
+  ITEMS=[...runs,...mps].sort((a,b)=>a.tijd<b.tijd?1:a.tijd>b.tijd?-1:(a.k==='mp'?-1:1));
+  $('n-updates').textContent=mps.length?` ${mps.length}`:'';$('n-stukken').textContent=runs.length?` ${runs.length}`:'';
+  if(st&&st.laatste){const s=$('status'),d=new Date(st.laatste),t=`${DG[d.getDay()]} ${d.getDate()} ${M[d.getMonth()]}, ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;s.hidden=false;
+    if(st.ok===false){s.classList.add('fout');$('statustekst').textContent=`De laatste run (${t}) is mislukt${st.stap?` bij '${st.stap}'`:''}. De site toont de stand van de run daarvoor.`;}
+    else $('statustekst').innerHTML=`Laatst bijgewerkt: <b>${t}</b>${runs[0]&&new Date(runs[0].tijd)>=d-6e4?'':' (daarin niets nieuws)'}`;}
+  teken();
 });
 </script>
 </body></html>

@@ -13,13 +13,14 @@ def lees():
     except (OSError,ValueError): return {'regels':[]}
 
 def schrijf(L):
-    L['regels'].sort(key=lambda r:r['datum'],reverse=True)
+    L['regels'].sort(key=lambda r:r.get('tijd') or r['datum'],reverse=True)
     json.dump(L,open(LOG,'w',encoding='utf8'),ensure_ascii=False,indent=0)
 
 def vandaag(): return datetime.date.today().isoformat()
+def nu(): return datetime.datetime.now().astimezone().isoformat(timespec='minutes')
 
 def nieuw(titel,tekst,soort='functie',links=()):
-    L=lees(); L['regels'].append({'datum':vandaag(),'soort':soort,'titel':titel,'tekst':tekst,'links':[{'t':t,'u':u} for t,u in links]}); schrijf(L)
+    L=lees(); L['regels'].append({'datum':vandaag(),'tijd':nu(),'soort':soort,'titel':titel,'tekst':tekst,'links':[{'t':t,'u':u} for t,u in links]}); schrijf(L)
 
 def verg(ids):
     I={v['id']:v for v in json.load(open(os.path.join(DOCS,'verg','index.json'),encoding='utf8'))}
@@ -29,7 +30,7 @@ def verg(ids):
     r=next((r for r in L['regels'] if r['datum']==d and r['soort']=='samenvattingen' and r.get('auto')),None)
     if r is None: r={'datum':d,'soort':'samenvattingen','auto':1,'links':[]}; L['regels'].append(r)
     al={x['u'] for x in r['links']}; r['links']+=[x for x in nw if x['u'] not in al]
-    r['links'].sort(key=lambda x:x['d'],reverse=True); n=len(r['links'])
+    r['links'].sort(key=lambda x:x['d'],reverse=True); n=len(r['links']); r['tijd']=nu()
     r['titel']=f"{n} {'vergadering' if n==1 else 'vergaderingen'} samengevat"
     r['tekst']='Nieuwe AI-samenvattingen op de vergaderpagina: korte versie, per agendapunt wat er gezegd is, met letterlijke citaten die automatisch gecontroleerd zijn.'
     schrijf(L); print(f'mijlpaal: {len(nw)} vergaderingen bij {d}')
