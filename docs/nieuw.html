@@ -12,13 +12,6 @@
 .it .s{font-size:13px;color:var(--sub)}
 .run details{margin-top:6px}.run summary{cursor:pointer;font-size:15px;padding:6px 0}
 .run h3{font-size:15px;margin:12px 0 2px}
-.filter{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 0}.filter button{font:inherit;font-size:14px;border:1px solid var(--grijs2);background:var(--wit);border-radius:999px;padding:5px 14px;cursor:pointer;color:var(--zwart)}.filter button[aria-pressed=true]{background:var(--groen);border-color:var(--groen);color:#fff}
-.dag{font-size:15px;margin:24px 0 0;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}.dag span{font-size:13px;font-weight:400;color:var(--sub)}
-.run.kort{padding:0}.run.kort>summary{list-style:none;cursor:pointer;padding:12px 20px;display:flex;gap:8px 12px;align-items:baseline;flex-wrap:wrap}.run.kort>summary::-webkit-details-marker{display:none}
-.run.kort>summary::before{content:"\25B8";color:var(--sub)}.run.kort[open]>summary::before{content:"\25BE"}
-.run.kort .inh{padding:0 20px 14px}
-.tijdstip{font-weight:700;font-size:16px}.samen{font-size:14px;color:var(--sub);flex:1 1 220px}
-.badge{font-size:12px;border-radius:999px;padding:2px 9px;background:var(--grijs)}.badge.groot{background:#FCEBD9;color:#8A4300}.badge.vers{background:#E1EFE2;color:var(--groen-d)}
 .status{background:var(--wit);border-radius:var(--r);padding:14px 20px;margin-top:16px;border-left:5px solid var(--groen);font-size:15px}
 .status.fout{border-left-color:#C25700}
 .mp{background:var(--wit);border-radius:var(--r);padding:14px 20px;margin-top:10px;border-left:5px solid var(--groen)}
@@ -34,12 +27,10 @@
   <section id="mijlpalen" hidden><h2 style="margin:20px 0 0">Grote updates</h2><div id="mplijst"></div></section>
   <h2 style="margin:24px 0 0">Per run</h2>
   <div class="status" id="status" hidden></div>
-  <div class="filter" id="filter" role="group" aria-label="Wat tonen"><button type="button" data-f="alles" aria-pressed="true">Alle runs</button><button type="button" data-f="actueel" aria-pressed="false">Alleen actueel nieuws</button><button type="button" data-f="groot" aria-pressed="false">Grote aanvullingen</button></div>
-  <p class="sub" id="uitleg" style="font-size:13px;margin:8px 0 0"></p>
   <div id="lijst"><p class="leeg">Laden…</p></div>
   <p class="sub" style="font-size:13px;margin-top:20px">Nieuwe debatten komen elke nacht mee (ondertiteling van de video); AI-samenvattingen van vergaderingen en nieuwe functies staan bij Grote updates. Meer over bronnen en actualiteit: <a href="over.html#actueel">Hoe actueel is het?</a></p>
 </div></main>
-<script src="ontwerp.js?v=42"></script>
+<script src="ontwerp.js?v=41"></script>
 <script>
 kop('');
 const M=['jan','feb','mrt','apr','mei','jun','jul','aug','sep','okt','nov','dec'],dd=d=>`${+d.slice(8,10)} ${M[+d.slice(5,7)-1]}`;
@@ -47,43 +38,16 @@ const tijd=t=>{const d=new Date(t);return `${['zo','ma','di','wo','do','vr','za'
 const MV={Toezegging:'toezeggingen',Motie:'moties',Amendement:'amendementen',Initiatiefvoorstel:'initiatiefvoorstellen',Raadsvoorstel:'raadsvoorstellen',Collegebesluit:'collegebesluiten',Collegebrief:'collegebrieven','Schriftelijke vragen':'schriftelijke vragen',Wijkraadadvies:'wijkraadadviezen',Rekenkamerrapport:'rekenkamerrapporten','Ongevraagd wijkraadadvies':'ongevraagde wijkraadadviezen','Wijkakkoord of wijkplan':'wijkakkoorden of wijkplannen','Collegereactie op wijkplan':'collegereacties op wijkplannen',Wijkverslag:'wijkverslagen'};
 const meer=(n,w)=>`${n} ${n===1?w[0]:w[1]}`;
 const stukRij=x=>`<div class="it"><span class="s">${esc(x.soort)} · ${dd(x.datum)}</span>${x.link?`<a href="${esc(x.link)}" target="_blank" rel="noopener">${esc(x.titel)}</a>`:`<span>${esc(x.titel)}</span>`}</div>`;
-/* een stuk is 'actueel' als het binnen 14 dagen vóór de run is gemaakt; ouder = aanvulling (een eerder gemist stuk dat nu pas is opgehaald) */
-const grens=r=>new Date(new Date(r.tijd)-14*864e5).toISOString().slice(0,10);
-function ontleed(r){
-  const g=grens(r),act=r.nieuw.filter(x=>x.datum>=g),oud=r.nieuw.filter(x=>x.datum<g);
-  const nAct=r.n_actueel!=null?r.n_actueel:(r.n_nieuw>r.nieuw.length&&!oud.length?r.n_nieuw:act.length);
-  const nOud=Math.max(0,r.n_nieuw-nAct);
-  const groot=r.n_nieuw>=40||nOud>=15;
-  const nieuws=nAct+r.n_afgedaan+r.verslagen.length+r.agenda.length;
-  return {r,act,oud,nAct,nOud,groot,nieuws};}
-function run(o,f){
-  const {r}=o;
-  const kop=[o.nAct?meer(o.nAct,['nieuw stuk','nieuwe stukken']):'',r.n_afgedaan?`${r.n_afgedaan} afgedaan`:'',r.verslagen.length?meer(r.verslagen.length,['vergaderverslag','vergaderverslagen']):'',r.agenda.length?meer(r.agenda.length,['vergadering op de agenda','vergaderingen op de agenda']):'',o.nOud?`${o.nOud} oudere ${o.nOud===1?'stuk':'stukken'} aangevuld`:''].filter(Boolean).join(' · ');
+function run(r){
+  const kop=[r.n_nieuw?meer(r.n_nieuw,['nieuw stuk','nieuwe stukken']):'',r.n_afgedaan?`${r.n_afgedaan} afgedaan`:'',r.verslagen.length?meer(r.verslagen.length,['vergaderverslag','vergaderverslagen']):'',r.agenda.length?meer(r.agenda.length,['vergadering op de agenda','vergaderingen op de agenda']):''].filter(Boolean).join(' · ');
   const tel=Object.entries(r.nieuw_per_soort||{}).map(([s,n])=>`<li><b>${n}</b> ${esc(n===1?s.toLowerCase():(MV[s]||s.toLowerCase()))}</li>`).join('');
-  let h=tel&&f!=='actueel'?`<ul class="tellers">${tel}</ul>`:'';
+  let h=`<section class="run"><h2>${tijd(r.tijd)}<span class="sub2">${r.modus==='nacht'?'nachtelijke run':r.modus==='overdag'?'run overdag':''}</span></h2><p style="margin:0;font-size:15px">${kop}</p>${tel?`<ul class="tellers">${tel}</ul>`:''}`;
   if(r.verslagen.length)h+=`<h3>Vergaderverslagen</h3>${r.verslagen.map(v=>`<div class="it"><span class="s">${esc(v.naam)} · ${dd(v.datum)}</span><span><a href="${esc(v.link)}">${esc(v.kort||v.naam)}</a></span></div>`).join('')}`;
   if(r.agenda.length)h+=`<h3>Nieuw op de agenda</h3>${r.agenda.map(v=>`<div class="it"><span class="s">${dd(v.datum)}</span><span><a href="vergaderingen.html">${esc(v.naam)}</a> · ${meer(v.punten,['punt','punten'])}</span></div>`).join('')}`;
   if(r.afgedaan.length)h+=`<details><summary>${meer(r.n_afgedaan,['motie of toezegging afgedaan','moties en toezeggingen afgedaan'])}</summary>${r.afgedaan.map(stukRij).join('')}</details>`;
-  if(o.act.length&&f!=='groot')h+=`<details${o.act.length<=5?' open':''}><summary>${o.nAct>o.act.length?`De ${o.act.length} nieuwste van ${o.nAct} nieuwe stukken`:'Nieuwe stukken'}</summary>${o.act.map(stukRij).join('')}</details>`;
-  if(o.oud.length&&f!=='actueel')h+=`<details${f==='groot'?' open':''}><summary>${o.nOud>o.oud.length?`${o.oud.length} van ${o.nOud}`:o.oud.length} oudere stukken die nu pas zijn opgehaald</summary>${o.oud.map(stukRij).join('')}</details>`;
-  const t=new Date(r.tijd),uur=`${String(t.getHours()).padStart(2,'0')}:${String(t.getMinutes()).padStart(2,'0')}`;
-  const modus=r.modus==='nacht'?'nacht':r.modus==='overdag'?'overdag':'';
-  const open=!o.groot&&o.nieuws>0&&o.nieuws<=5;
-  return `<details class="run kort"${open?' open':''}><summary><span class="tijdstip">${uur}</span>${modus?`<span class="badge">${modus}</span>`:''}${o.groot?'<span class="badge groot">grote aanvulling</span>':o.nAct+r.verslagen.length?'<span class="badge vers">actueel</span>':''}<span class="samen">${kop||'niets bijzonders'}</span></summary><div class="inh">${h}</div></details>`;
+  if(r.nieuw.length)h+=`<details${r.nieuw.length<=5?' open':''}><summary>${r.n_nieuw>r.nieuw.length?`De ${r.nieuw.length} nieuwste van ${r.n_nieuw} stukken`:'Nieuwe stukken'}</summary>${r.nieuw.map(stukRij).join('')}</details>`;
+  return h+'</section>';
 }
-const DAG=d=>{const v=new Date();v.setHours(12,0,0,0);const x=new Date(d+'T12:00:00'),n=Math.round((v-x)/864e5);return n===0?'Vandaag':n===1?'Gisteren':['zondag','maandag','dinsdag','woensdag','donderdag','vrijdag','zaterdag'][x.getDay()];};
-let ALLE=[],F='alles';
-const UITLEG={alles:'Alle runs, per dag. Een run is “grote aanvulling” als er veel oudere stukken tegelijk zijn opgehaald; die staan ingeklapt.',actueel:'Alleen wat echt nieuw is uit de raad: stukken van de laatste 2 weken, vergaderverslagen, agenda en afgedane moties en toezeggingen.',groot:'Runs waarin oudere stukken in één keer zijn aangevuld (geen nieuws, maar de collectie is er completer door).'};
-function teken(){
-  $('uitleg').textContent=UITLEG[F];
-  document.querySelectorAll('#filter button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.f===F)));
-  const L=ALLE.filter(o=>F==='alles'||(F==='actueel'?o.nieuws>0:o.groot));
-  if(!L.length){$('lijst').innerHTML=`<p class="leeg">${F==='groot'?'Geen grote aanvullingen in de afgelopen dagen.':'Nog geen runs met nieuws in de afgelopen dagen.'}</p>`;return;}
-  const dagen=[];L.forEach(o=>{const d=o.r.tijd.slice(0,10);let g=dagen[dagen.length-1];if(!g||g.d!==d){g={d,L:[]};dagen.push(g);}g.L.push(o);});
-  $('lijst').innerHTML=dagen.map(g=>{const nA=g.L.reduce((a,o)=>a+o.nAct,0),nV=g.L.reduce((a,o)=>a+o.r.verslagen.length,0),nO=g.L.reduce((a,o)=>a+o.nOud,0);
-    const som=[nA?meer(nA,['nieuw stuk','nieuwe stukken']):'',nV?meer(nV,['verslag','verslagen']):'',nO&&F!=='actueel'?`${nO} aangevuld`:''].filter(Boolean).join(' · ');
-    return `<h2 class="dag">${DAG(g.d)} ${dd(g.d)}<span>${som||'geen nieuws'} · ${meer(g.L.length,['run','runs'])}</span></h2>`+g.L.map(o=>run(o,F)).join('');}).join('');}
-document.querySelectorAll('#filter button').forEach(b=>b.onclick=()=>{F=b.dataset.f;teken();});
 const SOORT={functie:'nieuwe functie',samenvattingen:'samenvattingen',data:'nieuwe gegevens'};
 const mp=r=>{const l=r.links||[],li=l.map(x=>`<li><a href="${esc(x.u)}">${esc(x.t)}</a></li>`).join('');
   return `<div class="mp"><div class="s">${dd(r.datum)} ${r.datum.slice(0,4)}<span class="lab">${esc(SOORT[r.soort]||r.soort)}</span></div><h3>${esc(r.titel)}</h3>${r.tekst?`<p>${esc(r.tekst)}</p>`:''}${l.length>3?`<details><summary>${l.length} links</summary><ul>${li}</ul></details>`:l.length?`<ul>${li}</ul>`:''}</div>`;};
@@ -93,7 +57,7 @@ Promise.all([fetch('data/logboek.json',{cache:'no-store'}).then(r=>r.ok?r.json()
   if(st&&st.laatste){const s=$('status');s.hidden=false;
     s.innerHTML=st.ok===false?`Laatste run (${tijd(st.laatste)}) is mislukt${st.stap?` bij '${esc(st.stap)}'`:''}; de site toont de stand van de run daarvoor.`:`Laatste run: <b>${tijd(st.laatste)}</b>${(L.regels[0]&&new Date(L.regels[0].tijd)>=new Date(st.laatste)-6e4)?'':' — daarin niets nieuws'}.`;
     if(st.ok===false)s.classList.add('fout');}
-  ALLE=L.regels.map(ontleed);teken();
+  $('lijst').innerHTML=L.regels.length?L.regels.map(run).join(''):'<p class="leeg">Nog geen runs met nieuwe stukken in de afgelopen dagen.</p>';
 });
 </script>
 </body></html>

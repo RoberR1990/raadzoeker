@@ -40,8 +40,7 @@ def regel(oud,nu):
     vo=[v for k,v in nu['vooruit'].items() if k not in oud['vooruit']]
     if not (nieuw or af or verg or vo): return None
     lijst=lambda xs:[{'soort':v[0],'datum':v[1],'titel':v[2],'link':IB+v[4] if v[4] else ''} for v in sorted(xs,key=lambda v:v[1],reverse=True)[:25]]
-    vanaf=(datetime.date.today()-datetime.timedelta(days=14)).isoformat()
-    return {'n_actueel':sum(1 for v in nieuw if v[1]>=vanaf),'nieuw_per_soort':dict(sorted(tel.items(),key=lambda x:-x[1])),'nieuw':lijst(nieuw),'n_nieuw':len(nieuw),
+    return {'nieuw_per_soort':dict(sorted(tel.items(),key=lambda x:-x[1])),'nieuw':lijst(nieuw),'n_nieuw':len(nieuw),
             'afgedaan':lijst(af),'n_afgedaan':len(af),
             'verslagen':[{'datum':d,'naam':n,'kort':k,'link':f'vergadering.html?id={i}'} for i,d,n,k in sorted(verg,key=lambda x:x[1],reverse=True)],
             'agenda':[{'datum':d,'naam':n,'punten':p} for d,n,p in sorted(vo)]}
