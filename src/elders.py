@@ -91,7 +91,8 @@ def moties(g, cfg, dos):
         if not soort or (urx and urx.search(naam)):
             continue
         tk = tekst(s)
-        if not (orx.search(naam.lower()) or over(tk.lower(), orx)):
+        in_naam = bool(orx.search(naam.lower()))
+        if not (in_naam or over(tk.lower(), orx)):
             continue
         titel, ind, us = naam, '', ''
         for r in trx:
@@ -118,6 +119,8 @@ def moties(g, cfg, dos):
             o['uitslag'] = o['uitslag'] or us
             continue
         uit[k] = dict(datum=d, soort=soort, titel=titel, indieners=ind, uitslag=us, url=s.get('original_url') or '')
+        if not orx.search(titel.lower()) and not in_naam:
+            uit[k]['tekst'] = 1   # alleen in de tekst genoemd: steekproef 17-10-2026 zwak (8 van 38 duidelijk raak), apart tonen
     return sorted(uit.values(), key=lambda m: m['datum'], reverse=True)
 
 
@@ -139,7 +142,7 @@ def main(slugs):
         for g, cfg in G.items():
             mo = moties(g, cfg, dos)
             rg = R.get(sl, {}).get(cfg['cvdr'], [])
-            gem.append(dict(naam=cfg['naam'], ris=cfg.get('ris_url', ''), sinds=SINDS[:4], n_moties=len(mo), moties=mo, regels=rg,
+            gem.append(dict(naam=cfg['naam'], ris=cfg.get('ris_url', ''), sinds=SINDS[:4], n_moties=sum(1 for m in mo if not m.get('tekst')), moties=mo, regels=rg,
                             uitslag=cfg.get('uitslag_tekst'), n_uitslag=sum(1 for m in mo if m['uitslag'])))
             print(sl, g, len(mo), 'moties', len(rg), 'regels', file=sys.stderr, flush=True)
         uit = dict(slug=sl, stand_ori=min(v for v in so.values() if v), stand_cvdr=B.get('stand_cvdr', ''), gemeenten=gem)
