@@ -191,6 +191,23 @@
 "tijd": "2026-10-17T08:50+02:00"
 },
 {
+"datum": "2026-10-17",
+"tijd": "2026-10-17T07:09+00:00",
+"soort": "functie",
+"titel": "Andere gemeenten (beta)",
+"tekst": "Bij Parkeren, Handhaving en toezicht en Deelscooters en deelfietsen zie je nu hoe Amsterdam, Den Haag, Utrecht, Eindhoven, Dordrecht en Vlaardingen het regelen en welke moties hun raad behandelde. Nieuw en experimenteel (beta): de lijsten zijn niet volledig. Feedback en wensen zijn welkom.",
+"links": [
+{
+"t": "Uitleg bij de beta",
+"u": "beta.html#elders"
+},
+{
+"t": "Parkeren",
+"u": "dossier.html#parkeren/elders"
+}
+]
+},
+{
 "datum": "2026-10-13",
 "soort": "samenvattingen",
 "auto": 1,

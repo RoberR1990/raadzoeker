@@ -339,7 +339,7 @@ function rzLijnVideo(ref,sec,titel){
   if(typeof kVideo==='function'){kVideo(ref,sec,titel);return;}
   KP=KP||new Promise((ok,nok)=>{
     const l=document.createElement('link');l.rel='stylesheet';l.href=new URL('keten.css?v=7',BASE_URL()).href;document.head.appendChild(l);
-    const s=document.createElement('script');s.src=new URL('keten.js?v=14',BASE_URL()).href;s.onload=ok;s.onerror=nok;document.head.appendChild(s);});
+    const s=document.createElement('script');s.src=new URL('keten.js?v=16',BASE_URL()).href;s.onload=ok;s.onerror=nok;document.head.appendChild(s);});
   KP.then(()=>kVideo(ref,sec,titel)).catch(()=>{alert('Het videovenster kon niet worden geladen.');});
 }
 const BASE_URL=()=>BASIS;

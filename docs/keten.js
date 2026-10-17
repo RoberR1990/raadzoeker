@@ -152,7 +152,7 @@ function kTeken(){
       :`<button type="button" class="kmeer" data-blok="stad">Open de kaart</button>`);
   // andere gemeenten (elders.js): regels en moties elders, ter vergelijking
   const EG=window.rzEldersAantal?rzEldersAantal(d.slug):0;
-  if(EG)h+=kBlok('elders','','Andere gemeenten',`${EG} gemeenten`,'Hoe andere steden het regelen en welke moties hun raad behandelde',o=>`<div class="eldershost"></div>`+(o?'':`<button type="button" class="kmeer" data-blok="elders">Toon alles</button>`));
+  if(EG)h+=kBlok('elders','',`Andere gemeenten ${window.rzBetaBadge?rzBetaBadge('elders'):''}`,`${EG} gemeenten`,'Hoe andere steden het regelen en welke moties hun raad behandelde',o=>`<div class="eldershost"></div>`+(o?'':`<button type="button" class="kmeer" data-blok="elders">Toon alles</button>`));
   // achtergrond
   const T=A&&A.tijdlijn,O=A&&A.open;
   h+=kBlok('achtergrond','','Achtergrond','het hele verhaal','Meer diepgang, belangrijkste momenten, open eindjes en cijfers',o=>{if(!o)return `<button type="button" class="kmeer" data-blok="achtergrond">Lees het hele verhaal</button>`;let a='';

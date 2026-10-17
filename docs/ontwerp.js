@@ -64,9 +64,10 @@ function kop(actief){
       document.querySelectorAll('.voetbij .t,.meersheet .t').forEach(x=>x.textContent=t+' · loopt achter');el.setAttribute('aria-label',m);}}).catch(()=>{});
   voetB();
   // meetlaag (meet.js): doet niets zolang host en website-id daar leeg zijn
-  if(!document.getElementById('rz-meet')){const m=document.createElement('script');m.id='rz-meet';m.src='meet.js?v=2';document.body.appendChild(m);}
+  if(!document.getElementById('rz-meet')){const m=document.createElement('script');m.id='rz-meet';m.src='meet.js?v=3';document.body.appendChild(m);}
   // rondleiding, hulpknop en welkomstvenster (tour.js)
   if(!document.getElementById('rz-tour')){const t=document.createElement('script');t.id='rz-tour';t.src='tour.js?v=16';document.body.appendChild(t);const w=document.createElement('script');w.src='woorden.js?v=3';document.body.appendChild(w);const r=document.createElement('script');r.src='stad.js?v=5';document.body.appendChild(r);
+    const bt=document.createElement('script');bt.src='beta.js?v=1';document.body.appendChild(bt);
     const c=document.createElement('script');c.src='citeer.js?v=2';window.rzCiteerKlaar=new Promise(ok=>{c.onload=ok;c.onerror=ok;});document.body.appendChild(c);}
   const ic=document.createElement('link');ic.rel='icon';ic.type='image/svg+xml';ic.href='logo.svg';document.head.appendChild(ic);
 }
@@ -203,13 +204,13 @@ function stemHTML(s){
 }
 
 /* fout melden: venster met tekstvak, stuurt de pagina en waar het over gaat naar /api/fout (anoniem) */
-function rzFout(over){
+function rzFout(over,opt){opt=opt||{};
   document.getElementById('rz-fout')?.remove();rzMeet('fout_open',{pagina:(location.pathname.split('/').pop()||'').replace('.html','')});
   const d=document.createElement('div');d.id='rz-fout';d.setAttribute('role','dialog');d.setAttribute('aria-modal','true');d.setAttribute('aria-labelledby','rzf-t');
-  d.innerHTML=`<div class="rzf-laag"></div><form class="rzf"><h2 id="rzf-t">Fout melden</h2>
-    <p>Klopt er iets niet, bijvoorbeeld een samenvatting, citaat, naam of koppeling? Laat het weten; dan kijk ik ernaar.</p>
+  d.innerHTML=`<div class="rzf-laag"></div><form class="rzf"><h2 id="rzf-t">${esc(opt.titel||'Fout melden')}</h2>
+    <p>${opt.intro?esc(opt.intro):'Klopt er iets niet, bijvoorbeeld een samenvatting, citaat, naam of koppeling? Laat het weten; dan kijk ik ernaar.'}</p>
     ${over?`<p class="rzf-over">Over: ${esc(over).slice(0,300)}</p>`:''}
-    <label for="rzf-x">Wat klopt er niet?</label><textarea id="rzf-x" rows="4" maxlength="2000" required></textarea>
+    <label for="rzf-x">${esc(opt.label||'Wat klopt er niet?')}</label><textarea id="rzf-x" rows="4" maxlength="2000" required></textarea>
     <p class="rzf-klein">Je melding is anoniem: we bewaren alleen de pagina en je tekst. Wil je antwoord, zet dan zelf een e-mailadres in je bericht.</p>
     <div class="rzf-rij"><button type="submit">Versturen</button><button type="button" class="wit" data-a="weg">Annuleren</button><span class="rzf-st" aria-live="polite"></span></div></form>`;
   document.body.appendChild(d);const x=d.querySelector('textarea');x.focus();
