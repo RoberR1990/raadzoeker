@@ -69,7 +69,8 @@ table.tafel .bar i{display:block;height:8px;background:var(--groen);border-radiu
 <script src="ontwerp.js?v=42"></script>
 <script src="ai.js?v=2"></script>
 <script src="tel.js?v=1"></script>
-<script src="keten.js?v=14"></script>
+<script src="keten.js?v=15"></script>
+<script src="elders.js?v=1"></script>
 <script src="lijn.js?v=1"></script>
 <script>
 kop('domeinen');
@@ -223,6 +224,8 @@ async function toon(d){
   if(A&&n(C.punten))main+=blok('c','Wat het college beloofde en deed',`<p class="intro">${alinea(C.intro||[])}</p>`,C.punten.map(x=>`<div class="pt">${rijAI(x)}</div>`).join(''),`Toon ${n(C.punten)} punten`,true);
   // 5b tijdlijn van het dossier (lijn.js): raad links, college rechts; verborgen tot lijn/index.json het dossier kent
   main+=`<section class="vlak" id="lijnsec" aria-labelledby="ljk" hidden><h2 id="ljk">Tijdlijn</h2><div class="lijnhost"></div></section>`;
+  // 5c andere gemeenten (elders.js): verborgen tot er d/elders/<slug>.json is
+  main+=`<section class="vlak" id="eldersec" aria-labelledby="elk" hidden><h2 id="elk">Andere gemeenten</h2><div class="eldershost"></div></section>`;
   // 6 moties en toezeggingen, debatten (bestaand)
   main+=`<section class="vlak accent" aria-labelledby="mtk"><h2 id="mtk">Moties en toezeggingen</h2>
       <div class="schakel" role="tablist"><button type="button" role="tab" data-soort="mot">Moties</button><button type="button" role="tab" data-soort="toez">Toezeggingen</button></div>
@@ -268,6 +271,7 @@ async function toon(d){
   $('minitxt').textContent=t3.length&&t3[0][1]>0?`${pct?'Het vaakst genoemd':'Valt het vaakst samen met'}: ${t3.map(x=>x[0]).join(', ')}. Donkerder is vaker; klik op een gebied.`:'Geen duidelijke koppeling met gebieden.';}
   deel($('deelrij'),d.naam+' in de Rotterdamse raad',new URL('dossier.html?d='+d.slug,location.href).href,d.slug);
   lijst();zetVast();window.scrollTo({top:0});
+  if(window.rzElders)rzElders(document.querySelector('#eldersec .eldershost'),d.slug,{open:true,wrap:$('eldersec')});
   if(window.rzLijn){const tl=decodeURIComponent(location.hash.slice(1)).split('/')[1]==='tijdlijn';rzLijn(document.querySelector('#lijnsec .lijnhost'),d.slug,{open:tl,scroll:tl,wrap:$('lijnsec'),onToggle:o=>history.replaceState(null,'','#'+d.slug+(o?'/tijdlijn':''))});}
 }
 </script>

@@ -1,0 +1,46 @@
+/* Elders (17-10-2026): wat andere gemeenten over hetzelfde onderwerp vastlegden (regels uit CVDR) en welke moties er
+   werden ingediend (Open Raadsinformatie). Geen AI, geen ranglijst, geen oordeel: neutraal naast elkaar, met bron.
+   Data: d/elders/index.json ({slug: aantal gemeenten}) en d/elders/<slug>.json (src/elders.py).
+   Publiek:
+     rzEldersIndex()           belofte van {slug: aantal}; zonder bestand {}
+     rzEldersAantal(slug)      aantal gemeenten (0 = geen blok), pas na rzEldersIndex()
+     rzElders(el, slug, opties) tekent in el. Opties: open (alles tonen, standaard dicht = per gemeente één regel),
+                               wrap (element dat zichtbaar wordt zodra er gegevens zijn) */
+(function(){
+'use strict';
+const BASIS=(document.currentScript&&document.currentScript.src)||location.href;
+const e=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const MND=['jan','feb','mrt','apr','mei','jun','jul','aug','sep','okt','nov','dec'];
+const fd=d=>d&&d.length>=10?`${+d.slice(8,10)} ${MND[+d.slice(5,7)-1]} ${d.slice(0,4)}`:(d||'');
+const nl=n=>Number(n).toLocaleString('nl-NL');
+let IDX=null;const CACHE={};
+function rzEldersIndex(){return IDX||(IDX=fetch(new URL('d/elders/index.json',BASIS)).then(r=>r.ok?r.json():{}).catch(()=>({})).then(x=>(window.__eldIx=x)));}
+function rzEldersAantal(s){return (window.__eldIx&&window.__eldIx[s])||0;}
+function laad(s){return CACHE[s]||(CACHE[s]=fetch(new URL('d/elders/'+s+'.json',BASIS)).then(r=>{if(!r.ok)throw 0;return r.json();}));}
+
+function regel(r){return `<li><a href="${e(r.url)}" target="_blank" rel="noopener">${e(r.titel)}</a> <span class="sub">${r.in_werking?'geldt sinds '+fd(r.in_werking):''}${r.soort?' · '+e(r.soort):''}</span></li>`;}
+function motie(m){return `<li><span class="sub num">${fd(m.datum)}</span> ${m.soort==='amendement'?'<span class="sub">amendement</span> ':''}<a href="${e(m.url)}" target="_blank" rel="noopener">${e(m.titel)}</a>${m.indieners?` <span class="sub">(${e(m.indieners)})</span>`:''}</li>`;}
+function gemeente(g,open){
+  const nm=g.moties.length,nr=g.regels.length;
+  const kop=`${nr?`${nr} ${nr===1?'regeling':'regelingen'}`:'geen regeling gevonden'} · ${nm?`${nl(g.n_moties||nm)} ${(g.n_moties||nm)===1?'motie':'moties'} sinds ${g.sinds||2022}`:'geen moties gevonden'}`;
+  const ms=open?g.moties:g.moties.slice(0,3);
+  return `<details class="elg"${open?' open':''}><summary><b>${e(g.naam)}</b> <span class="sub">${kop}</span></summary>
+    ${nr?`<h4>Geldende regels</h4><ul>${g.regels.map(regel).join('')}</ul>`:''}
+    ${nm?`<h4>Moties en amendementen${g.moties.length>ms.length?`, de ${ms.length} nieuwste`:''}</h4><ul>${ms.map(motie).join('')}</ul>${g.moties.length>ms.length?`<p class="sub">Nog ${nl(g.moties.length-ms.length)} in deze lijst: open alles hieronder.</p>`:''}`:''}
+    ${g.uitslag?`<p class="sub">${e(g.uitslag)}</p>`:`<p class="sub">Of een motie is aangenomen staat niet in deze bron; zie het stuk zelf.</p>`}
+    ${g.ris?`<p class="sub"><a href="${e(g.ris)}" target="_blank" rel="noopener">Raadsinformatie van ${e(g.naam)}</a></p>`:''}</details>`;
+}
+async function rzElders(el,slug,o={}){
+  if(!el)return;let d;try{d=await laad(slug);}catch(x){return;}
+  if(!d||!d.gemeenten||!d.gemeenten.length)return;
+  if(o.wrap)o.wrap.hidden=false;
+  el.innerHTML=`<p class="intro">Hoe andere gemeenten hetzelfde onderwerp regelen en welke moties hun raad behandelde. Ter vergelijking, zonder oordeel; de lijsten zijn niet volledig.</p>
+    <div class="elders">${d.gemeenten.map(g=>gemeente(g,!!o.open)).join('')}</div>
+    <p class="sub" style="margin-top:12px">Bronnen: <a href="https://lokaleregelgeving.overheid.nl" target="_blank" rel="noopener">overheid.nl, lokale regelgeving</a> (stand ${fd(d.stand_cvdr)}) en <a href="https://openbesluitvorming.nl" target="_blank" rel="noopener">Open Raadsinformatie</a> (vergaderingen tot ${fd(d.stand_ori)}). Moties zijn herkend aan hun naam en het onderwerp in titel of tekst; er kunnen er ontbreken of te veel tussen staan.</p>`;
+}
+window.rzEldersIndex=rzEldersIndex;window.rzEldersAantal=rzEldersAantal;window.rzElders=rzElders;
+if(!document.getElementById('elders-css')){const s=document.createElement('style');s.id='elders-css';s.textContent=
+`.elders{display:grid;gap:8px;margin-top:12px}.elg{border:1px solid var(--lijn,#d0d7dc);border-radius:4px;padding:8px 12px;background:var(--wit,#fff)}
+.elg summary{cursor:pointer;display:flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline}.elg h4{margin:12px 0 4px;font-size:15px}
+.elg ul{margin:0;padding-left:18px}.elg li{margin:4px 0;font-size:15px}`;document.head.appendChild(s);}
+})();
