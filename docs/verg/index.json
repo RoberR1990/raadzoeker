@@ -987,6 +987,18 @@
 ]
 },
 {
+"id": "4288f307",
+"agendaId": "4288f307-64d8-42eb-aa18-0bcb9461e383",
+"datum": "2026-05-28",
+"naam": "Gemeenteraad",
+"raad": true,
+"kort": "De raad debatteerde over de brief van de informateur over het beëindigen van de informatiegesprekken voor een nieuwe coalitie. De informateur was niet aanwezig, maar had schriftelijke vragen beantwoord.",
+"n": 1,
+"ap": [
+"Debat over brief informateur"
+]
+},
+{
 "id": "6120a4aa",
 "agendaId": "6120a4aa-9e9f-4199-b812-76ec74e709c9",
 "datum": "2026-05-28",
@@ -1003,6 +1015,163 @@
 "Ingekomen stukken: wijken",
 "Ingekomen stukken: vastgoed",
 "Rekenkamerrapport Nog steeds vatbaar"
+]
+},
+{
+"id": "ec7ade5a",
+"agendaId": "ec7ade5a-a25e-406f-b926-08630409326a",
+"datum": "2026-05-27",
+"naam": "Commissie Zorg & Cultuur",
+"raad": false,
+"kort": "De commissie Zorg en Cultuur hield een technische sessie over cultuur, in drie blokken met medewerkers van de afdeling Cultuur.",
+"n": 1,
+"ap": [
+"Technische sessie cultuur"
+]
+},
+{
+"id": "cf1a8c01",
+"agendaId": "cf1a8c01-034b-4deb-b197-ffa5bac1dcaa",
+"datum": "2026-05-27",
+"naam": "Commissie Onderwijs & Samenleven",
+"raad": false,
+"kort": "Ambtenaren legden de hoofdlijnen uit van het armoede- en schuldenbeleid, dat in een voortgangsrapportage aan de raad is aangeboden.",
+"n": 1,
+"ap": [
+"Inwerksessie armoedebeleid"
+]
+},
+{
+"id": "8ca8fcb4",
+"agendaId": "8ca8fcb4-a960-4dbc-8e40-9b576aa987a4",
+"datum": "2026-05-27",
+"naam": "Commissie Leefomgeving & Economie",
+"raad": false,
+"kort": "In de procedurevergadering werd de lijst met ingekomen stukken doorgenomen en bleek dat een actualiteit niet via de procedurevergadering kan worden aangevraagd.",
+"n": 4,
+"ap": [
+"Procedurevergadering",
+"Vaststellen van de agenda",
+"Technische sessie netcongestie",
+"Verkenning programma luchtkwaliteit"
+]
+},
+{
+"id": "9ce08320",
+"agendaId": "9ce08320-6174-471e-9f38-6ee333d1a0ef",
+"datum": "2026-05-27",
+"naam": "Commissie Bouwen & Wonen",
+"raad": false,
+"kort": "De commissie stelde de planning voor de komende raadscyclus vast, met onder meer een vergadering over wonen op 8 juli.",
+"n": 6,
+"ap": [
+"Commissieplanning",
+"Ingekomen stukken",
+"Openstaande toezeggingen, vragen en moties",
+"Vaststellen van de agenda",
+"Bestemmingsplan Rosestraat",
+"Richtinggevende discussie Sportdorp"
+]
+},
+{
+"id": "a307d7ba",
+"agendaId": "a307d7ba-7915-446a-bfce-9087fef27003",
+"datum": "2026-05-21",
+"naam": "Gemeenteraad",
+"raad": true,
+"kort": "De raad sprak over de zienswijze op het ontwerp-luchthavenbesluit van Rotterdam The Hague Airport, waarbij fracties verschilden over behoud, beperking of sluiting.",
+"n": 12,
+"ap": [
+"Vaststelling agenda en spreektijd",
+"Zienswijze luchthavenbesluit Rotterdam The Hague Airport",
+"Heropening luchthavendebat voor een motie",
+"Zienswijze vervoersplannen 2027",
+"Gebiedsambitiedocument Rietveld",
+"Studentenhuisvesting Erasmus Universiteit",
+"Projectambitiedocument Goereesestraat-Pleinweg",
+"Projectambitiedocument 110-Morgen",
+"Oranje kijken in de Rotterdamse horeca",
+"Sabotage treinspoor Rotterdamse haven",
+"Falend toezicht en malafide verhuur in Carnisse",
+"Stemverklaringen"
+]
+},
+{
+"id": "a778743a",
+"agendaId": "a778743a-8519-4721-b572-c5bfc5ea3967",
+"datum": "2026-05-20",
+"naam": "Commissie Bouwen & Wonen",
+"raad": false,
+"kort": "De commissie Bouwen en Wonen hield een inspreeksessie ter voorbereiding van de politieke behandeling een week later.",
+"n": 1,
+"ap": [
+"Inspreeksessie Stadionpark en Sportdorp"
+]
+},
+{
+"id": "30205711",
+"agendaId": "30205711-b9fc-4638-be0f-7831a9933933",
+"datum": "2026-05-19",
+"naam": "Commissie tot Onderzoek van de Rekening",
+"raad": false,
+"kort": "De Commissie tot Onderzoek van de Rekening sprak met wethouder Buijt over de jaarrekening 2025 van zijn zorgportefeuille.",
+"n": 1,
+"ap": [
+"Verantwoordingsgesprek jaarrekening 2025"
+]
+},
+{
+"id": "48c8da74",
+"agendaId": "48c8da74-3ac6-41c0-bddf-32b89464995f",
+"datum": "2026-05-19",
+"naam": "Commissie tot Onderzoek van de Rekening",
+"raad": false,
+"kort": "De Commissie tot Onderzoek van de Rekening sprak met wethouder Simons over de jaarrekening 2025, met risicobeheersing als centraal thema.",
+"n": 1,
+"ap": [
+"Verantwoordingsgesprek jaarrekening 2025"
+]
+},
+{
+"id": "582fa5e2",
+"agendaId": "582fa5e2-ce9b-48b0-8dde-6112009b2e4d",
+"datum": "2026-05-19",
+"naam": "Commissie tot Onderzoek van de Rekening",
+"raad": false,
+"kort": "De Commissie tot Onderzoek van de Rekening sprak met wethouder Versnel over de jaarrekening 2025 van zijn portefeuille, onder meer Werk en Inkomen.",
+"n": 1,
+"ap": [
+"Verantwoordingsgesprek jaarrekening 2025"
+]
+},
+{
+"id": "d53f23b0",
+"agendaId": "d53f23b0-16b2-4ec1-b20c-9fb10e15e900",
+"datum": "2026-05-19",
+"naam": "Commissie tot Onderzoek van de Rekening",
+"raad": false,
+"kort": "De Commissie tot Onderzoek van de Rekening hield een verantwoordingsgesprek met de wethouder over de jaarrekening 2025.",
+"n": 1,
+"ap": [
+"Verantwoordingsgesprek jaarrekening 2025"
+]
+},
+{
+"id": "f60ef311",
+"agendaId": "f60ef311-5f70-4045-851c-33b1f9af05eb",
+"datum": "2026-05-13",
+"naam": "Commissie Zorg & Cultuur",
+"raad": false,
+"kort": "De procedurevergadering van de nieuwe commissie Zorg en Cultuur ging vooral over het afdoen of aanhouden van moties.",
+"n": 7,
+"ap": [
+"Ingekomen stukken zorg",
+"Ingekomen stukken welzijn",
+"Ingekomen stukken cultuur",
+"Lijsten van openstaande toezeggingen en moties",
+"Sluiting procedurevergadering",
+"Vaststellen agenda",
+"Actieplan online grensoverschrijdend gedrag"
 ]
 }
 ]
