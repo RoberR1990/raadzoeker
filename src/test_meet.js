@@ -278,10 +278,10 @@ const BASIS = 'https://raadzoeker.nl/';
       blokken.forEach((b, i) => new Script(b, { filename: `${f}#${i}` }));
     }
   });
-  t('alle pagina\'s met ontwerp.js gebruiken versie 41; deelpagina\'s sturen utm door', () => {
+  t('alle pagina\'s met ontwerp.js gebruiken versie 43; deelpagina\'s sturen utm door', () => {
     const alle = [];
     (function loop(d) { for (const e of fs.readdirSync(d, { withFileTypes: true })) { const p = path.join(d, e.name); if (e.isDirectory()) { if (!/[\\/]data$/.test(p)) loop(p); } else if (p.endsWith('.html')) alle.push(p); } })(ONT);
-    const oud = alle.filter(f => /ontwerp\.js\?v=(?!41\b)\d+/.test(fs.readFileSync(f, 'utf8')));
+    const oud = alle.filter(f => /ontwerp\.js\?v=(?!43\b)\d+/.test(fs.readFileSync(f, 'utf8')));
     egal(oud, [], 'nog op een oude versie');
     const deel = fs.readdirSync(path.join(ONT, 'deel')).filter(f => f.endsWith('.html'));
     assert(deel.length > 50);

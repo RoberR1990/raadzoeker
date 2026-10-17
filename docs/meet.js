@@ -126,6 +126,10 @@ function groep(h){
   return h.slice(0,60);
 }
 const KLIK=[
+  ['[data-betafb]',el=>['beta_feedback',{functie:el.dataset.betafb}]],
+  ['a[href*="beta.html"]',()=>['beta_uitleg',{vanaf:PAG}]],
+  ['.elg>summary',()=>['elders_open',{pagina:PAG}]],
+  ['.elders a[target=_blank]',()=>['elders_bron',{pagina:PAG}]],
   ['button[data-rzc]',el=>['kopieer',{soort:el.dataset.rzc,pagina:PAG}]],
   ['[data-tab]',el=>PAG==='zoek'?['zoek_tab',{tab:el.dataset.tab}]:null],
   ['button[data-video]',()=>['video',{pagina:PAG}]],

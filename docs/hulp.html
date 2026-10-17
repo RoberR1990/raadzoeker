@@ -86,10 +86,11 @@ h2{margin:40px 0 4px}
   </dl>
 
   <h2 id="contact">Vraag of fout melden</h2>
+  <p>Functies met het label <span class="beta-label" style="margin-left:0">beta</span> zijn nieuw en experimenteel: ze werken, maar zijn minder gecontroleerd en kunnen veranderen. <a href="beta.html">Wat er nu in beta is, en wat dat betekent</a>.</p>
   <p>Mis je iets, of klopt er iets niet? <button type="button" class="knop" onclick="rzFout('')">Fout melden</button> <button type="button" class="knop wit" onclick="rzFout('Vraag of idee')">Vraag of idee</button></p>
   <p class="voet"><a href="#" id="welkomweer">Toon het welkomstvenster opnieuw</a></p>
 </div></main>
-<script src="ontwerp.js?v=42"></script>
+<script src="ontwerp.js?v=43"></script>
 <script>
 kop('');
 document.getElementById('zoekfaq').oninput=e=>{const q=e.target.value.toLowerCase().trim();document.querySelectorAll('#faqlijst details').forEach(d=>{const hit=!q||d.textContent.toLowerCase().includes(q);d.hidden=!hit;if(q&&hit)d.open=true;});};

@@ -1,0 +1,71 @@
+{
+  "versie": 1,
+  "functies": {
+    "elders": {
+      "naam": "Andere gemeenten",
+      "status": "beta",
+      "sinds": "2026-10-17",
+      "wat": "Bij een onderwerp zie je hoe andere gemeenten het regelen en welke moties hun raad behandelde, naast het Rotterdamse dossier.",
+      "waar": [
+        {"t": "Parkeren", "u": "dossier.html#parkeren/elders"},
+        {"t": "Handhaving en toezicht", "u": "dossier.html#handhaving-en-toezicht/elders"},
+        {"t": "Deelscooters en deelfietsen", "u": "dossier.html#deelscooters-en-deelfietsen"}
+      ],
+      "doel": [
+        "Wie een Rotterdams onderwerp onderzoekt, wil vaak weten hoe andere grote gemeenten hetzelfde regelen en wat hun raden erover vroegen. Nu is dat handwerk: googelen, collega's bellen, de raadsinformatie van een andere stad doorzoeken.",
+        "Dit blok zet de geldende gemeentelijke regelingen en de moties van andere gemeenten naast het Rotterdamse dossier, met een link naar de bron. Het is een startpunt om verder te zoeken, geen vergelijkend onderzoek."
+      ],
+      "waarom_beta_kort": "De lijsten zijn niet volledig en kunnen nog veranderen; lees het stuk zelf voordat je ermee verder gaat.",
+      "waarom_beta": "Het is nieuw, groot en experimenteel. De gegevens komen uit bronnen die per gemeente anders zijn opgebouwd, en moties worden herkend aan hun naam en tekst. Daardoor kunnen er moties ontbreken of er ten onrechte tussen staan. We zetten het liever nu al online om te leren wat collega's ermee doen, dan het maanden te laten liggen.",
+      "extra": [
+        {
+          "kop": "Waarom deze gemeenten?",
+          "tekst": [
+            "Gekozen op twee dingen: lijken ze genoeg op Rotterdam om een vergelijking nuttig te maken, en is hun raadsinformatie bruikbaar beschikbaar. Niet gekozen betekent niet dat een gemeente niet interessant is."
+          ],
+          "tabel": {
+            "kop": ["Gemeente", "Waarom"],
+            "rijen": [
+              ["Amsterdam, Den Haag, Utrecht", "De andere grote steden (G4). Vaak het eerste waar collega's naar kijken. Utrecht zet losse moties niet in Open Raadsinformatie; daar zie je alleen de regelingen en een verwijzing."],
+              ["Eindhoven", "De grootste stad buiten de Randstad, met vergelijkbare vragen over verkeer, parkeren en deelvervoer."],
+              ["Dordrecht, Vlaardingen", "Gemeenten in de eigen regio, met goed beschikbare raadsinformatie. Dordrecht heeft veel documenten zonder tekstlaag; daardoor vinden we daar minder moties."]
+            ]
+          }
+        }
+      ],
+      "wel": [
+        "De nu geldende gemeentelijke regelingen per gemeente en onderwerp, uit de officiële regelingenbank, met datum van inwerkingtreding en een link.",
+        "Moties en amendementen sinds 2022 waarvan het onderwerp in de titel staat of duidelijk uit het verzoek blijkt (die staan gemarkeerd), met datum, indieners en uitslag waar het stuk die zelf vermeldt.",
+        "Bij elke bron de peildatum."
+      ],
+      "niet": [
+        "Geen oordeel en geen ranglijst: we zeggen niet welke gemeente het beter doet.",
+        "Geen volledige lijst: er kunnen moties ontbreken en een enkele staat er ten onrechte tussen.",
+        "Geen uitslag bij elke motie: die staat niet in de bron en alleen soms in het stuk zelf.",
+        "Geen AI-samenvatting van de moties of regelingen: je ziet titels en links.",
+        "Geen moties van vóór 2022 en geen gemeenten buiten deze zes.",
+        "Geen juridisch advies: lees de regeling zelf in de bron."
+      ],
+      "beperkingen": [
+        "Open Raadsinformatie loopt achter: de nieuwste vergaderingen die erin staan zijn van begin juli 2026. De peildatum staat onder het blok.",
+        "De regelingen zijn een momentopname van 17 oktober 2026 en worden niet automatisch ververst. Wat 'geldend' is, volgt uit de data in de regelingenbank; we hebben het niet per regeling nagelezen.",
+        "Moties worden herkend aan de naam van het document. Elke gemeente noemt die anders; per gemeente is dat apart ingesteld en getoetst op een steekproef.",
+        "In een toets van 87 gevonden moties bleek 83% duidelijk over het onderwerp te gaan, 13% deels en 5% niet. Die toets deed een taalmodel, geen mens. Moties waarvan het onderwerp niet in de titel en niet in het verzoek staat, vinden we niet.",
+        "Bij Dordrecht heeft een groot deel van de documenten geen tekstlaag, bij Utrecht zijn losse moties nauwelijks beschikbaar."
+      ],
+      "bronnen": [
+        {"t": "Open Raadsinformatie", "u": "https://openbesluitvorming.nl", "tekst": "Open State Foundation en VNG: raadsinformatie van veel gemeenten in één systeem."},
+        {"t": "Lokale regelgeving", "u": "https://lokaleregelgeving.overheid.nl", "tekst": "Officiële regelingenbank van gemeenten (CVDR)."}
+      ],
+      "hoe": "Moties komen elke week uit Open Raadsinformatie; de regelingen zijn handmatig bepaald en worden bijgewerkt als daar aanleiding voor is.",
+      "meten": "We tellen anoniem hoe vaak het blok wordt geopend en of er op een bron wordt doorgeklikt. Geen zoektermen, geen namen.",
+      "volgende": [
+        "Over vier tot zes weken kijken we naar het gebruik en jullie reacties.",
+        "Dan besluiten we: uitbreiden (meer onderwerpen, meer gemeenten, uitslagen uit de raadsinformatiesystemen zelf), aanpassen of stoppen.",
+        "Mis je een gemeente? Meld hem aan via het formulier onderaan de voorpagina; dat telt mee bij de keuze voor de volgende stap.",
+        "Wordt het blijvend, dan verdwijnt het label beta."
+      ],
+      "feedback_vraag": "Welke gemeente of welk onderwerp mis je? Klopt een motie of regeling niet? Wat zou je ermee willen doen?"
+    }
+  }
+}

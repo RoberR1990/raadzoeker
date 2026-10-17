@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Beta-functies · raadzoeker</title>
+<meta name="description" content="Wat een beta-functie op de raadzoeker is, welke er nu zijn en hoe je feedback geeft.">
+<link rel="stylesheet" href="stijl.css?v=20">
+<style>
+.kolom{max-width:760px;margin:0 auto}
+.kolom>.vlak{padding:40px}
+.kolom p,.kolom li{line-height:1.55}
+.kolom h2{margin:40px 0 12px}
+.kolom h3{margin:24px 0 8px;font-size:18px}
+.lead{font-size:20px;line-height:1.5}
+.wat{display:grid;gap:8px;margin:12px 0 0;padding:0;list-style:none}
+.wat li{border-left:4px solid var(--open);background:var(--grijs);padding:8px 14px;border-radius:0 4px 4px 0}
+.kaart{border:1px solid var(--lijn);border-radius:6px;padding:16px 20px;margin:12px 0;background:var(--wit)}
+.kaart h3{margin:0 0 4px}
+.kaart p{margin:4px 0}
+.functie{border-top:4px solid var(--open);margin-top:40px;padding-top:8px;scroll-margin-top:80px}
+.twee{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.twee>div{background:var(--grijs);border-radius:6px;padding:12px 18px}
+.twee h3{margin:0 0 4px}
+.twee ul{margin:4px 0 0;padding-left:18px}
+.tafel{width:100%;border-collapse:collapse;font-size:15px;margin-top:8px}
+.tafel th,.tafel td{text-align:left;vertical-align:top;padding:8px 10px;border-bottom:1px solid var(--grijs2)}
+.tafel th{font-weight:700}
+.acties{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+@media (max-width:700px){.kolom>.vlak{padding:24px}.twee{grid-template-columns:minmax(0,1fr)}}
+</style></head>
+<body>
+<header class="balk"></header>
+<main class="pagina">
+ <div class="kolom"><div class="vlak" id="beta">
+  <h1>Beta-functies</h1>
+  <p class="lead" style="margin-top:16px">Soms is een functie nieuw, groot of experimenteel, en wil ik hem toch al laten zien. Zo'n functie krijgt het label <span class="beta-label" style="margin-left:0">beta</span> en een eigen uitleg op deze pagina.</p>
+
+  <h2>Wat betekent beta hier?</h2>
+  <ul class="wat">
+    <li><b>Het werkt en staat live.</b> Je mag het gebruiken, ook in je werk.</li>
+    <li><b>Het is minder gecontroleerd</b> dan de rest van de site. Controleer wat je overneemt in de bron zelf; bij elk onderdeel staat een link.</li>
+    <li><b>Het kan veranderen of verdwijnen.</b> Links en uitleg kunnen verschuiven, en een beta-functie kan ook weer worden uitgezet.</li>
+    <li><b>Jouw reactie bepaalt wat ermee gebeurt.</b> Wordt het gebruikt en klopt het, dan wordt het uitgebreid en verdwijnt het label. Wordt het niet gebruikt, dan stop ik ermee.</li>
+  </ul>
+
+  <h2>Welke beta-functies zijn er nu?</h2>
+  <div id="overzicht"><p class="sub">Laden…</p></div>
+  <div id="functies"></div>
+
+  <h2>Feedback en wensen</h2>
+  <p>Beta-functies zijn er om van te leren. Mis je iets, klopt er iets niet, of heb je een idee voor wat er nog bij moet? Laat het weten; je melding is anoniem (zet je e-mailadres in je bericht als je antwoord wilt).</p>
+  <p class="acties"><button type="button" class="knop" onclick="rzFout('Beta',{titel:'Feedback op beta-functies',intro:'Wat werkt, wat mis je, wat klopt niet?',label:'Je feedback of wens'})">Feedback geven</button>
+  <a class="knop wit" href="index.html#gemeente">Mis je een gemeente? Meld hem aan</a></p>
+ </div></div>
+</main>
+<script src="ontwerp.js?v=43"></script>
+<script src="beta.js?v=1"></script>
+<script>kop('hulp');
+const e=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const lijst=a=>a&&a.length?`<ul>${a.map(x=>`<li>${e(x)}</li>`).join('')}</ul>`:'';
+const par=a=>(Array.isArray(a)?a:[a]).filter(Boolean).map(x=>`<p>${e(x)}</p>`).join('');
+const datumNl=d=>{const M=['januari','februari','maart','april','mei','juni','juli','augustus','september','oktober','november','december'];return d&&d.length>=10?`${+d.slice(8,10)} ${M[+d.slice(5,7)-1]} ${d.slice(0,4)}`:'';};
+function tabel(t){return t?`<table class="tafel"><thead><tr>${t.kop.map(k=>`<th>${e(k)}</th>`).join('')}</tr></thead><tbody>${t.rijen.map(r=>`<tr>${r.map(c=>`<td>${e(c)}</td>`).join('')}</tr>`).join('')}</tbody></table>`:'';}
+function functie(id,f){
+  const st={beta:'Beta',live:'Niet meer beta',uit:'Tijdelijk uitgezet'}[f.status]||'';
+  return `<section class="functie" id="${e(id)}"><h2 style="margin-top:16px">${e(f.naam)} ${f.status==='beta'?'<span class="beta-label">beta</span>':`<span class="sub" style="font-size:15px;font-weight:400">· ${st}</span>`}</h2>
+  <p class="sub">Sinds ${datumNl(f.sinds)}${(f.waar||[]).length?` · te vinden bij: ${f.waar.map(w=>`<a href="${e(w.u)}">${e(w.t)}</a>`).join(', ')}`:''}</p>
+  <p class="lead" style="font-size:18px">${e(f.wat)}</p>
+  <h3>Waarom bestaat dit?</h3>${par(f.doel)}
+  ${f.waarom_beta?`<h3>Waarom is het een beta?</h3>${par(f.waarom_beta)}`:''}
+  ${(f.extra||[]).map(x=>`<h3>${e(x.kop)}</h3>${par(x.tekst)}${tabel(x.tabel)}`).join('')}
+  <div class="twee" style="margin-top:24px"><div><h3>Dit doet het wel</h3>${lijst(f.wel)}</div><div><h3>Dit doet het niet</h3>${lijst(f.niet)}</div></div>
+  ${(f.beperkingen||[]).length?`<h3>Waar je op moet letten</h3>${lijst(f.beperkingen)}`:''}
+  ${(f.bronnen||[]).length?`<h3>Bronnen</h3><ul>${f.bronnen.map(b=>`<li><a href="${e(b.u)}" target="_blank" rel="noopener">${e(b.t)}</a>${b.tekst?` – ${e(b.tekst)}`:''}</li>`).join('')}</ul>`:''}
+  ${f.hoe?`<h3>Hoe wordt het bijgewerkt?</h3>${par(f.hoe)}`:''}
+  ${f.meten?`<h3>Wat wordt er gemeten?</h3>${par(f.meten)}`:''}
+  ${(f.volgende||[]).length?`<h3>Hoe nu verder?</h3>${lijst(f.volgende)}`:''}
+  <p class="acties"><button type="button" class="knop" data-betafb="${e(id)}">Feedback of een wens</button></p></section>`;
+}
+rzBetaLaad().then(R=>{
+  const ids=Object.keys(R);
+  $('overzicht').innerHTML=ids.length?ids.map(id=>`<div class="kaart"><h3><a href="#${e(id)}">${e(R[id].naam)}</a> ${R[id].status==='beta'?'<span class="beta-label">beta</span>':''}</h3><p>${e(R[id].wat)}</p></div>`).join(''):'<p>Er zijn nu geen beta-functies.</p>';
+  $('functies').innerHTML=ids.map(id=>functie(id,R[id])).join('');
+  if(location.hash){const t=document.getElementById(decodeURIComponent(location.hash.slice(1)));if(t)t.scrollIntoView();}
+});
+</script>
+</body></html>
