@@ -6,6 +6,21 @@
 "auto": 1,
 "links": [
 {
+"t": "Gemeenteraad · 2026-10-15",
+"u": "vergadering.html?id=03f160e4",
+"d": "2026-10-15"
+},
+{
+"t": "Commissie Bouwen & Wonen · 2026-10-14",
+"u": "vergadering.html?id=85e4bfc9",
+"d": "2026-10-14"
+},
+{
+"t": "Commissie tot Onderzoek van de Rekening · 2026-10-14",
+"u": "vergadering.html?id=cbc3bc1f",
+"d": "2026-10-14"
+},
+{
 "t": "Commissie Onderwijs & Samenleven · 2026-06-17",
 "u": "vergadering.html?id=37307258",
 "d": "2026-06-17"
@@ -124,11 +139,56 @@
 "t": "Commissie Zorg & Cultuur · 2026-05-13",
 "u": "vergadering.html?id=f60ef311",
 "d": "2026-05-13"
+},
+{
+"t": "Commissie Onderwijs & Samenleven · 2026-05-13",
+"u": "vergadering.html?id=2d38bf7d",
+"d": "2026-05-13"
+},
+{
+"t": "Commissie Leefomgeving & Economie · 2026-05-13",
+"u": "vergadering.html?id=36b63059",
+"d": "2026-05-13"
+},
+{
+"t": "Commissie Bouwen & Wonen · 2026-05-13",
+"u": "vergadering.html?id=aa477c08",
+"d": "2026-05-13"
+},
+{
+"t": "Commissie tot Onderzoek van de Rekening · 2026-05-12",
+"u": "vergadering.html?id=a1557ced",
+"d": "2026-05-12"
+},
+{
+"t": "Actualiteitenraad · 2026-04-23",
+"u": "vergadering.html?id=de8bc3bd",
+"d": "2026-04-23"
+},
+{
+"t": "Commissie Leefomgeving & Economie · 2026-04-21",
+"u": "vergadering.html?id=8fa428d6",
+"d": "2026-04-21"
+},
+{
+"t": "Commissie tot Onderzoek van de Rekening · 2026-04-21",
+"u": "vergadering.html?id=c697786f",
+"d": "2026-04-21"
+},
+{
+"t": "Gemeenteraad · 2026-04-16",
+"u": "vergadering.html?id=f9b8b1c0",
+"d": "2026-04-16"
+},
+{
+"t": "Commissie Leefomgeving & Economie · 2026-04-15",
+"u": "vergadering.html?id=2b6a7ede",
+"d": "2026-04-15"
 }
 ],
-"titel": "24 vergaderingen samengevat",
+"titel": "36 vergaderingen samengevat",
 "tekst": "Nieuwe AI-samenvattingen op de vergaderpagina: korte versie, per agendapunt wat er gezegd is, met letterlijke citaten die automatisch gecontroleerd zijn.",
-"tijd": "2026-10-17T08:45+02:00"
+"tijd": "2026-10-17T08:50+02:00"
 },
 {
 "datum": "2026-10-13",

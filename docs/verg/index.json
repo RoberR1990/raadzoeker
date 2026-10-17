@@ -1,5 +1,55 @@
 [
 {
+"id": "03f160e4",
+"agendaId": "03f160e4-9833-4cc8-989c-eb1485206ca2",
+"datum": "2026-10-15",
+"naam": "Gemeenteraad",
+"raad": true,
+"kort": "De raad besprak het FNV-onderzoek naar de sociale veiligheid bij de afdeling THPM; de wethouder verwacht in januari de uitkomst van een cultuuronderzoek.",
+"n": 13,
+"ap": [
+"Agenda en spreektijd",
+"Sociale veiligheid bij THPM",
+"Positie van ongedocumenteerde Rotterdammers",
+"Permanente winteropvang voor daklozen",
+"Haven en de Zuurhofbruggen",
+"Verdichting en Kader optoppen",
+"Gebiedsambitie Wijkcentrum Het Lage Land",
+"Zesde update Klimaatactieplan",
+"Geen wapenbeurs in Ahoy",
+"Beleidskader Rotterdam Internationaal",
+"Goederen van of naar Israël via Rotterdam",
+"Bomenkap bij de Parkkade",
+"Fietsenmaker op Boulevard Zuid"
+]
+},
+{
+"id": "cbc3bc1f",
+"agendaId": "cbc3bc1f-1e87-4c0f-875c-f71dcb07019b",
+"datum": "2026-10-14",
+"naam": "Commissie tot Onderzoek van de Rekening",
+"raad": false,
+"kort": "De commissie hield een inspreekmoment over de concept-begroting 2027 met 24 aangemelde insprekers.",
+"n": 1,
+"ap": [
+"Inspreekmoment concept-begroting 2027"
+]
+},
+{
+"id": "85e4bfc9",
+"agendaId": "85e4bfc9-d8c1-4734-b9a6-5d42f4922ba8",
+"datum": "2026-10-14",
+"naam": "Commissie Bouwen & Wonen",
+"raad": false,
+"kort": "De commissie hield een technische sessie over coöperatief wonen, om kennis op te doen over het stimuleren en faciliteren daarvan door de gemeente.",
+"n": 3,
+"ap": [
+"Opening en programma",
+"Coöperatief wonen: algemeen en praktijk",
+"Coöperatief wonen in Rotterdam en grondbeleid"
+]
+},
+{
 "id": "55ccc78a",
 "agendaId": "55ccc78a-51bd-4b60-a15d-14f024511045",
 "datum": "2026-10-08",
@@ -1172,6 +1222,145 @@
 "Sluiting procedurevergadering",
 "Vaststellen agenda",
 "Actieplan online grensoverschrijdend gedrag"
+]
+},
+{
+"id": "2d38bf7d",
+"agendaId": "2d38bf7d-3abc-48bf-a447-c0cab668bb8b",
+"datum": "2026-05-13",
+"naam": "Commissie Onderwijs & Samenleven",
+"raad": false,
+"kort": "De commissie koos voor de inwerksessie van 27 mei het onderwerp armoedebeleid.",
+"n": 5,
+"ap": [
+"Commissieplanning",
+"Positie van ongedocumenteerde Rotterdammers",
+"Ingekomen stukken",
+"Openstaande toezeggingen, vragen en moties",
+"Inwerksessie Onderwijs"
+]
+},
+{
+"id": "36b63059",
+"agendaId": "36b63059-5cea-433a-bb42-fcd73b746fce",
+"datum": "2026-05-13",
+"naam": "Commissie Leefomgeving & Economie",
+"raad": false,
+"kort": "De commissie kreeg een inwerksessie over de MRDH, de gemeenschappelijke regeling voor bereikbaarheid en economisch vestigingsklimaat.",
+"n": 6,
+"ap": [
+"Inwerksessie MRDH",
+"Commissieplanning",
+"Ingekomen stukken mobiliteit",
+"Openstaande toezeggingen en moties",
+"Agenda en spreektijd overleg",
+"Vervoerplannen 2027"
+]
+},
+{
+"id": "aa477c08",
+"agendaId": "aa477c08-6e73-4db5-a727-3876fea9b810",
+"datum": "2026-05-13",
+"naam": "Commissie Bouwen & Wonen",
+"raad": false,
+"kort": "De commissie Bouwen en Wonen stelde in haar procedurevergadering de planning voor de volgende raadscyclus vast, met onder meer de jaarrekening 2025 op 3 juni.",
+"n": 5,
+"ap": [
+"Commissieplanning",
+"Naar aanleiding van het startberaad",
+"Ingekomen stukken",
+"Gebiedsambitiedocument Rietveld",
+"Projectambitiedocument 110 Morgen"
+]
+},
+{
+"id": "a1557ced",
+"agendaId": "a1557ced-bac6-4b84-b020-f33736f7beb7",
+"datum": "2026-05-12",
+"naam": "Commissie tot Onderzoek van de Rekening",
+"raad": false,
+"kort": "Het college stuurde de jaarstukken naar de raad zonder getekende controleverklaring van de accountant.",
+"n": 3,
+"ap": [
+"Terugkoppeling van rapporteurs",
+"Jaarrekeningcontrole 2025",
+"Opvolging aanbevelingen COR en accountant"
+]
+},
+{
+"id": "de8bc3bd",
+"agendaId": "de8bc3bd-b9ba-4cbe-bb17-bc190bdcacb3",
+"datum": "2026-04-23",
+"naam": "Actualiteitenraad",
+"raad": false,
+"kort": "Bij de vliegenoverlast op Heijplaat zei de wethouder dat het Havenbedrijf niet bevoegd is en dat de gemeente het probleem niet loslaat.",
+"n": 8,
+"ap": [
+"Agenda en afwezigheid wethouder",
+"Vliegenoverlast Heijplaat",
+"Aanrandingen en hardlopende vrouwen",
+"Overlast parkeerterrein voetbalvereniging Zevenkamp",
+"Duiven verstrikt in netten",
+"Sluiting Dierenvoedselbank",
+"Kader WK-wedstrijden horeca en terrassen",
+"Verkoop attractiepark Rivoli"
+]
+},
+{
+"id": "c697786f",
+"agendaId": "c697786f-8e37-490e-9372-0abe6f3d4478",
+"datum": "2026-04-21",
+"naam": "Commissie tot Onderzoek van de Rekening",
+"raad": false,
+"kort": "De commissie hield een raadsbrede inwerksessie over de planning en control cyclus met de accountant.",
+"n": 1,
+"ap": [
+"Inwerksessie planning en control met accountant"
+]
+},
+{
+"id": "8fa428d6",
+"agendaId": "8fa428d6-14b4-41a6-88f1-a16dd538d118",
+"datum": "2026-04-21",
+"naam": "Commissie Leefomgeving & Economie",
+"raad": false,
+"kort": "De commissie hield een extra vergadering om insprekers te horen over het ontwerp-luchthavenbesluit voor Rotterdam The Hague Airport.",
+"n": 1,
+"ap": [
+"Inspreken over luchthavenbesluit Rotterdam The Hague Airport"
+]
+},
+{
+"id": "f9b8b1c0",
+"agendaId": "f9b8b1c0-0073-4528-96cb-c78e3f9aafd8",
+"datum": "2026-04-16",
+"naam": "Gemeenteraad",
+"raad": true,
+"kort": "Leefbaar Rotterdam diende twee initiatiefnotities in, over een gemeentelijk woonbedrijf en een Deltaplan Energie, die naar raadscommissies gaan voor advies van het college.",
+"n": 10,
+"ap": [
+"Toelating burgercommissieleden",
+"Beëdiging burgercommissieleden",
+"Twee initiatiefnotities ingediend",
+"Vaststelling agenda en spreektijd",
+"Bereikbaarheid van de haven",
+"Stemming Eerste Kamer over asielwetten",
+"Gevaarlijke omstandigheden op de Silja",
+"Zuid moet vooruit: Speelstad",
+"Motie vreemd: handen af van onze chauffeurs",
+"Stemverklaringen bij het stemvenster"
+]
+},
+{
+"id": "2b6a7ede",
+"agendaId": "2b6a7ede-692e-4985-b843-8d1e5e66feb1",
+"datum": "2026-04-15",
+"naam": "Commissie Leefomgeving & Economie",
+"raad": false,
+"kort": "De commissie kreeg een technische sessie over het ontwerp-luchthavenbesluit voor Rotterdam The Hague Airport.",
+"n": 1,
+"ap": [
+"Technische sessie luchthavenbesluit RTHA"
 ]
 }
 ]
