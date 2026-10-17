@@ -1,0 +1,429 @@
+{
+ "rotterdam": {
+  "types": {
+   "MediaObject": 50722,
+   "AgendaItem": 14001,
+   "Report": 4643,
+   "Meeting": 1986,
+   "Membership": 369,
+   "Person": 332,
+   "ImageObject": 108,
+   "Organization": 82
+  },
+  "laatste_vergadering": "2026-07-10T09:00:00.000Z",
+  "vergaderingen_per_jaar": {
+   "2018": 135,
+   "2019": 216,
+   "2020": 239,
+   "2021": 276,
+   "2022": 214,
+   "2023": 267,
+   "2024": 288,
+   "2025": 255,
+   "2026": 96
+  },
+  "documenten_met_tekst": 50593,
+  "motie_in_naam_sinds_2022": 3471,
+  "docs_deelvervoer": 1030,
+  "moties_deelvervoer": 34,
+  "docs_parkeren": 895,
+  "moties_parkeren": 34,
+  "docs_handhaving": 873,
+  "moties_handhaving": 47,
+  "cvdr": {
+   "parkeerbelastingen": {
+    "n": 3,
+    "nieuwste": "2026-01-01"
+   },
+   "parkeerverordening": {
+    "n": 0,
+    "nieuwste": null
+   },
+   "plaatselijke verordening": {
+    "n": 128,
+    "nieuwste": "2026-03-10"
+   }
+  }
+ },
+ "amsterdam": {
+  "types": {
+   "MediaObject": 224023,
+   "AgendaItem": 115225,
+   "Meeting": 2260,
+   "Organization": 86
+  },
+  "laatste_vergadering": "2026-07-02T08:00:00.000Z",
+  "vergaderingen_per_jaar": {
+   "2018": 128,
+   "2019": 157,
+   "2020": 157,
+   "2021": 187,
+   "2022": 122,
+   "2023": 151,
+   "2024": 134,
+   "2025": 120,
+   "2026": 52
+  },
+  "documenten_met_tekst": 222256,
+  "motie_in_naam_sinds_2022": 7645,
+  "docs_deelvervoer": 1912,
+  "moties_deelvervoer": 113,
+  "docs_parkeren": 2678,
+  "moties_parkeren": 143,
+  "docs_handhaving": 1634,
+  "moties_handhaving": 58,
+  "cvdr": {
+   "parkeerbelastingen": {
+    "n": 2,
+    "nieuwste": "2024-07-01"
+   },
+   "parkeerverordening": {
+    "n": 23,
+    "nieuwste": "2026-07-01"
+   },
+   "plaatselijke verordening": {
+    "n": 223,
+    "nieuwste": "2026-10-14"
+   }
+  }
+ },
+ "den_haag": {
+  "types": {
+   "MediaObject": 69524,
+   "AgendaItem": 29025,
+   "Meeting": 4032,
+   "Organization": 104
+  },
+  "laatste_vergadering": "2026-07-09T08:00:00.000Z",
+  "vergaderingen_per_jaar": {
+   "2018": 204,
+   "2019": 244,
+   "2020": 214,
+   "2021": 252,
+   "2022": 206,
+   "2023": 282,
+   "2024": 248,
+   "2025": 271,
+   "2026": 109
+  },
+  "documenten_met_tekst": 68959,
+  "motie_in_naam_sinds_2022": 7439,
+  "docs_deelvervoer": 879,
+  "moties_deelvervoer": 119,
+  "docs_parkeren": 1135,
+  "moties_parkeren": 228,
+  "docs_handhaving": 873,
+  "moties_handhaving": 106,
+  "cvdr": {
+   "parkeerbelastingen": {
+    "n": 9,
+    "nieuwste": "2026-01-01"
+   },
+   "parkeerverordening": {
+    "n": 0,
+    "nieuwste": null
+   },
+   "plaatselijke verordening": {
+    "n": 101,
+    "nieuwste": "2026-10-13"
+   }
+  }
+ },
+ "utrecht": {
+  "types": {
+   "MediaObject": 46093,
+   "AgendaItem": 17452,
+   "Meeting": 2498,
+   "Report": 1971,
+   "Person": 1718,
+   "Membership": 491,
+   "ImageObject": 79,
+   "Organization": 55
+  },
+  "laatste_vergadering": "2026-07-02T13:00:00.000Z",
+  "vergaderingen_per_jaar": {
+   "2018": 176,
+   "2019": 214,
+   "2020": 190,
+   "2021": 202,
+   "2022": 204,
+   "2023": 207,
+   "2024": 214,
+   "2025": 230,
+   "2026": 87
+  },
+  "documenten_met_tekst": 45981,
+  "motie_in_naam_sinds_2022": 57,
+  "docs_deelvervoer": 665,
+  "moties_deelvervoer": 2,
+  "docs_parkeren": 1131,
+  "moties_parkeren": 2,
+  "docs_handhaving": 599,
+  "moties_handhaving": 2,
+  "cvdr": {
+   "parkeerbelastingen": {
+    "n": 7,
+    "nieuwste": "2026-01-01"
+   },
+   "parkeerverordening": {
+    "n": 0,
+    "nieuwste": null
+   },
+   "plaatselijke verordening": {
+    "n": 155,
+    "nieuwste": "2026-11-01"
+   }
+  }
+ },
+ "eindhoven": {
+  "types": {
+   "MediaObject": 31877,
+   "AgendaItem": 15289,
+   "Meeting": 4490,
+   "Organization": 90
+  },
+  "laatste_vergadering": "2026-07-08T16:00:00.000Z",
+  "vergaderingen_per_jaar": {
+   "2018": 210,
+   "2019": 256,
+   "2020": 191,
+   "2021": 142,
+   "2022": 276,
+   "2023": 339,
+   "2024": 350,
+   "2025": 368,
+   "2026": 218
+  },
+  "documenten_met_tekst": 30913,
+  "motie_in_naam_sinds_2022": 601,
+  "docs_deelvervoer": 292,
+  "moties_deelvervoer": 6,
+  "docs_parkeren": 222,
+  "moties_parkeren": 14,
+  "docs_handhaving": 105,
+  "moties_handhaving": 7,
+  "cvdr": {
+   "parkeerbelastingen": {
+    "n": 2,
+    "nieuwste": "2025-12-03"
+   },
+   "parkeerverordening": {
+    "n": 0,
+    "nieuwste": null
+   },
+   "plaatselijke verordening": {
+    "n": 80,
+    "nieuwste": "2026-07-01"
+   }
+  }
+ },
+ "tilburg": {
+  "types": {
+   "MediaObject": 64793,
+   "AgendaItem": 32769,
+   "Meeting": 3776,
+   "Organization": 58
+  },
+  "laatste_vergadering": "2026-07-07T08:30:00.000Z",
+  "vergaderingen_per_jaar": {
+   "2018": 343,
+   "2019": 508,
+   "2020": 363,
+   "2021": 256,
+   "2022": 391,
+   "2023": 195,
+   "2024": 111,
+   "2025": 128,
+   "2026": 74
+  },
+  "documenten_met_tekst": 63320,
+  "motie_in_naam_sinds_2022": 794,
+  "docs_deelvervoer": 588,
+  "moties_deelvervoer": 2,
+  "docs_parkeren": 473,
+  "moties_parkeren": 8,
+  "docs_handhaving": 471,
+  "moties_handhaving": 9,
+  "cvdr": {
+   "parkeerbelastingen": {
+    "n": 3,
+    "nieuwste": "2025-12-10"
+   },
+   "parkeerverordening": {
+    "n": 0,
+    "nieuwste": null
+   },
+   "plaatselijke verordening": {
+    "n": 75,
+    "nieuwste": "2027-01-01"
+   }
+  }
+ },
+ "groningen": {
+  "types": {
+   "MediaObject": 35252,
+   "AgendaItem": 23245,
+   "Meeting": 2376,
+   "Organization": 78
+  },
+  "laatste_vergadering": "2026-07-01T15:00:00.000Z",
+  "vergaderingen_per_jaar": {
+   "2018": 242,
+   "2019": 153,
+   "2020": 159,
+   "2021": 118,
+   "2022": 108,
+   "2023": 123,
+   "2024": 118,
+   "2025": 121,
+   "2026": 50
+  },
+  "documenten_met_tekst": 35103,
+  "motie_in_naam_sinds_2022": 57,
+  "docs_deelvervoer": 260,
+  "moties_deelvervoer": 1,
+  "docs_parkeren": 480,
+  "moties_parkeren": 5,
+  "docs_handhaving": 322,
+  "moties_handhaving": 1,
+  "cvdr": {
+   "parkeerbelastingen": {
+    "n": 6,
+    "nieuwste": "2025-11-22"
+   },
+   "parkeerverordening": {
+    "n": 11,
+    "nieuwste": "2026-01-01"
+   },
+   "plaatselijke verordening": {
+    "n": 107,
+    "nieuwste": "2026-09-30"
+   }
+  }
+ },
+ "schiedam": {
+  "types": {
+   "MediaObject": 22242,
+   "AgendaItem": 7933,
+   "Meeting": 954,
+   "Organization": 47
+  },
+  "laatste_vergadering": "2026-07-08T17:30:00.000Z",
+  "vergaderingen_per_jaar": {
+   "2018": 46,
+   "2019": 45,
+   "2020": 63,
+   "2021": 66,
+   "2022": 87,
+   "2023": 54,
+   "2024": 52,
+   "2025": 52,
+   "2026": 30
+  },
+  "documenten_met_tekst": 21624,
+  "motie_in_naam_sinds_2022": 222,
+  "docs_deelvervoer": 118,
+  "moties_deelvervoer": 1,
+  "docs_parkeren": 148,
+  "moties_parkeren": 0,
+  "docs_handhaving": 127,
+  "moties_handhaving": 1,
+  "cvdr": {
+   "parkeerbelastingen": {
+    "n": 11,
+    "nieuwste": "2026-05-01"
+   },
+   "parkeerverordening": {
+    "n": 2,
+    "nieuwste": "2026-05-01"
+   },
+   "plaatselijke verordening": {
+    "n": 67,
+    "nieuwste": "2026-09-01"
+   }
+  }
+ },
+ "dordrecht": {
+  "types": {
+   "MediaObject": 37189,
+   "AgendaItem": 16083,
+   "Meeting": 754,
+   "Organization": 36
+  },
+  "laatste_vergadering": "2026-07-07T17:45:00.000Z",
+  "vergaderingen_per_jaar": {
+   "2019": 20,
+   "2020": 116,
+   "2021": 147,
+   "2022": 110,
+   "2023": 106,
+   "2024": 106,
+   "2025": 96,
+   "2026": 53
+  },
+  "documenten_met_tekst": 36692,
+  "motie_in_naam_sinds_2022": 1020,
+  "docs_deelvervoer": 526,
+  "moties_deelvervoer": 2,
+  "docs_parkeren": 686,
+  "moties_parkeren": 2,
+  "docs_handhaving": 712,
+  "moties_handhaving": 7,
+  "cvdr": {
+   "parkeerbelastingen": {
+    "n": 4,
+    "nieuwste": "2026-01-01"
+   },
+   "parkeerverordening": {
+    "n": 4,
+    "nieuwste": "2026-01-07"
+   },
+   "plaatselijke verordening": {
+    "n": 80,
+    "nieuwste": "2026-10-01"
+   }
+  }
+ },
+ "vlaardingen": {
+  "types": {
+   "MediaObject": 16877,
+   "AgendaItem": 7065,
+   "Meeting": 926,
+   "Organization": 34
+  },
+  "laatste_vergadering": "2026-07-09T17:00:00.000Z",
+  "vergaderingen_per_jaar": {
+   "2018": 56,
+   "2019": 46,
+   "2020": 43,
+   "2021": 47,
+   "2022": 62,
+   "2023": 76,
+   "2024": 70,
+   "2025": 87,
+   "2026": 56
+  },
+  "documenten_met_tekst": 16583,
+  "motie_in_naam_sinds_2022": 764,
+  "docs_deelvervoer": 110,
+  "moties_deelvervoer": 4,
+  "docs_parkeren": 146,
+  "moties_parkeren": 11,
+  "docs_handhaving": 135,
+  "moties_handhaving": 9,
+  "cvdr": {
+   "parkeerbelastingen": {
+    "n": 4,
+    "nieuwste": "2026-01-01"
+   },
+   "parkeerverordening": {
+    "n": 0,
+    "nieuwste": null
+   },
+   "plaatselijke verordening": {
+    "n": 56,
+    "nieuwste": "2026-10-10"
+   }
+  }
+ }
+}
