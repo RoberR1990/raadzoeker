@@ -1,6 +1,75 @@
 {
 "regels": [
 {
+"datum": "2026-10-17",
+"soort": "samenvattingen",
+"auto": 1,
+"links": [
+{
+"t": "Commissie Onderwijs & Samenleven · 2026-06-17",
+"u": "vergadering.html?id=37307258",
+"d": "2026-06-17"
+},
+{
+"t": "Commissie Leefomgeving & Economie · 2026-06-17",
+"u": "vergadering.html?id=4a872f20",
+"d": "2026-06-17"
+},
+{
+"t": "Subcommissie Bestuur Openbaar Onderwijs (BOOR) · 2026-06-15",
+"u": "vergadering.html?id=e33f050f",
+"d": "2026-06-15"
+},
+{
+"t": "Gemeenteraad · 2026-06-11",
+"u": "vergadering.html?id=65a3b2b5",
+"d": "2026-06-11"
+},
+{
+"t": "Commissie Bouwen & Wonen · 2026-06-10",
+"u": "vergadering.html?id=08b18108",
+"d": "2026-06-10"
+},
+{
+"t": "Commissie Veiligheid, Bestuur & Financiën · 2026-06-04",
+"u": "vergadering.html?id=0fa38164",
+"d": "2026-06-04"
+},
+{
+"t": "Actualiteitenraad · 2026-06-04",
+"u": "vergadering.html?id=5ad7b955",
+"d": "2026-06-04"
+},
+{
+"t": "Commissie Zorg & Cultuur · 2026-06-03",
+"u": "vergadering.html?id=0358223a",
+"d": "2026-06-03"
+},
+{
+"t": "Commissie Onderwijs & Samenleven · 2026-06-03",
+"u": "vergadering.html?id=63d67bcd",
+"d": "2026-06-03"
+},
+{
+"t": "Commissie Bouwen & Wonen · 2026-06-03",
+"u": "vergadering.html?id=6401b079",
+"d": "2026-06-03"
+},
+{
+"t": "Commissie Leefomgeving & Economie · 2026-06-03",
+"u": "vergadering.html?id=ae49a171",
+"d": "2026-06-03"
+},
+{
+"t": "Commissie Veiligheid, Bestuur & Financiën · 2026-05-28",
+"u": "vergadering.html?id=6120a4aa",
+"d": "2026-05-28"
+}
+],
+"titel": "12 vergaderingen samengevat",
+"tekst": "Nieuwe AI-samenvattingen op de vergaderpagina: korte versie, per agendapunt wat er gezegd is, met letterlijke citaten die automatisch gecontroleerd zijn."
+},
+{
 "datum": "2026-10-13",
 "soort": "samenvattingen",
 "auto": 1,

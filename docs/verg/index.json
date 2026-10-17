@@ -796,6 +796,36 @@
 ]
 },
 {
+"id": "37307258",
+"agendaId": "37307258-c221-4b07-b392-97f3f4b601d6",
+"datum": "2026-06-17",
+"naam": "Commissie Onderwijs & Samenleven",
+"raad": false,
+"kort": "De commissie Onderwijs en Samenleven sprak over de Onderwijsmonitor 2025; wethouder Zeegers verving daarbij de afwezige wethouder Kasmi.",
+"n": 4,
+"ap": [
+"Procedurevergadering",
+"Opening en afwezige wethouder",
+"Insprekers over de Onderwijsmonitor",
+"Onderwijsmonitor 2025"
+]
+},
+{
+"id": "4a872f20",
+"agendaId": "4a872f20-c5b3-4eed-89f0-75cb17d50f48",
+"datum": "2026-06-17",
+"naam": "Commissie Leefomgeving & Economie",
+"raad": false,
+"kort": "De griffie adviseert het raadsvoorstel over de eerste herziening 2026 als hamerstuk naar de raad te sturen, zodat de commissie op 1 juli geen debat voert.",
+"n": 4,
+"ap": [
+"Commissieplanning",
+"Regelingen van werkzaamheden",
+"Ingekomen stukken: mobiliteit",
+"Zienswijze windenergie nieuwe locaties"
+]
+},
+{
 "id": "bdf5ca26",
 "agendaId": "bdf5ca26-d4e8-42ed-b700-84a04b2fdae7",
 "datum": "2026-06-17",
@@ -812,6 +842,167 @@
 "Projectambitiedocument Rozenstraat 123",
 "Urgentie bij huiselijk geweld",
 "Rondvraag en sluiting"
+]
+},
+{
+"id": "e33f050f",
+"agendaId": "e33f050f-dc67-441b-a168-b824eeb158dc",
+"datum": "2026-06-15",
+"naam": "Subcommissie Bestuur Openbaar Onderwijs (BOOR)",
+"raad": false,
+"kort": "De subcommissie Bestuur Openbaar Onderwijs (BOOR) kwam voor het eerst in nieuwe samenstelling bijeen; leden en bestuurders stelden zich voor.",
+"n": 2,
+"ap": [
+"Opening en kennismaking",
+"Jaarstukken 2025 en voortgangsrapportage 2026 van Bor"
+]
+},
+{
+"id": "65a3b2b5",
+"agendaId": "65a3b2b5-60df-40eb-8468-862268aa58f2",
+"datum": "2026-06-11",
+"naam": "Gemeenteraad",
+"raad": true,
+"kort": "De voorzitter van de commissie tot onderzoek van de rekening bood het adviesrapport over de jaarstukken 2025 aan; het debat daarover volgt op 25 juni.",
+"n": 14,
+"ap": [
+"In memoriam Maddy Knol",
+"Adviesrapport commissie rekening aangeboden",
+"Vaststelling van de agenda",
+"Richtinggevende discussie over Sportdorp",
+"Ambitiedocument Stadiondriehoek",
+"Bestemmingsplan Rosestraat",
+"Projectambitiedocument Aarhof en Imkerstraat Zevenkamp",
+"Rozenburgers eerst",
+"Rekenkamerrapport Nog steeds vatbaar",
+"Nota van uitgangspunten Schansweg 61-63",
+"Overlast op de Meent",
+"Dreigend faillissement Miniworld",
+"Keti Koti vergadervrij",
+"Het college gaat niet naar het CHIO"
+]
+},
+{
+"id": "08b18108",
+"agendaId": "08b18108-370b-44eb-9b28-427c01e91bf2",
+"datum": "2026-06-10",
+"naam": "Commissie Bouwen & Wonen",
+"raad": false,
+"kort": "De werksessie van de commissie Bouwen en Wonen ging over de wijzigingen in het erfpachtbeleid en het erfpachtproject, waarin erfpachters een aanbod krijgen.",
+"n": 1,
+"ap": [
+"Werksessie over erfpacht en erfpachtproject"
+]
+},
+{
+"id": "0fa38164",
+"agendaId": "0fa38164-1f80-44a4-9854-da49c750204f",
+"datum": "2026-06-04",
+"naam": "Commissie Veiligheid, Bestuur & Financiën",
+"raad": false,
+"kort": "De commissie Veiligheid, Bestuur & Financiën stelde de agenda vast en besloot een technische sessie over projectmatig werken te houden voor de begroting.",
+"n": 3,
+"ap": [
+"Vaststellen van de agenda",
+"Inspreker over overlast in een wijk",
+"Jaarstukken 2025"
+]
+},
+{
+"id": "5ad7b955",
+"agendaId": "5ad7b955-0b9f-4c20-8000-b10fbb694183",
+"datum": "2026-06-04",
+"naam": "Actualiteitenraad",
+"raad": false,
+"kort": "Over het tekort aan stageplekken voor mbo-studenten zei de wethouder dat dit een landelijk probleem is dat ook in Rotterdam speelt, en hij deed drie toezeggingen.",
+"n": 7,
+"ap": [
+"Vaststelling van de agenda",
+"Tekort aan stageplekken voor het mbo",
+"Politiek geweld en spoorblokkades",
+"Kinderen buiten beeld door vrijstelling leerplicht",
+"Vechtpartijen bij strand Nesselande",
+"Aanval op een moskee",
+"Rozenburgers eerst"
+]
+},
+{
+"id": "0358223a",
+"agendaId": "0358223a-22ea-4517-b6d9-e6fc88f49d85",
+"datum": "2026-06-03",
+"naam": "Commissie Zorg & Cultuur",
+"raad": false,
+"kort": "De commissie Zorg & Cultuur besprak eerst de planning en kwam daarbij op de procedurevergadering van 1 juli.",
+"n": 5,
+"ap": [
+"Commissieplanning",
+"Ingekomen stukken: algemeen",
+"Ingekomen stukken: cultuur",
+"Rondvraag en sluiting",
+"Jaarstukken 2025"
+]
+},
+{
+"id": "63d67bcd",
+"agendaId": "63d67bcd-8f54-4845-9f02-dae1bfbd4589",
+"datum": "2026-06-03",
+"naam": "Commissie Onderwijs & Samenleven",
+"raad": false,
+"kort": "De commissie Onderwijs & Samenleven plande een technische sessie over ongedocumenteerden op 24 juni.",
+"n": 4,
+"ap": [
+"Commissieplanning",
+"Ingekomen stukken",
+"Lijsten openstaande toezeggingen en moties",
+"Jaarstukken 2025"
+]
+},
+{
+"id": "ae49a171",
+"agendaId": "ae49a171-2fd5-473f-86a7-16c8e5b9ffce",
+"datum": "2026-06-03",
+"naam": "Commissie Leefomgeving & Economie",
+"raad": false,
+"kort": "De commissie Leefomgeving & Economie nam een petitie van bewoners van de Cecilia Boulevard in ontvangst.",
+"n": 3,
+"ap": [
+"Opening, petitie en planning",
+"Vaststellen van de agenda",
+"Jaarstukken 2025"
+]
+},
+{
+"id": "6401b079",
+"agendaId": "6401b079-a9b0-4843-9d28-96858bcf6fcd",
+"datum": "2026-06-03",
+"naam": "Commissie Bouwen & Wonen",
+"raad": false,
+"kort": "Een inspreker namens een moskee vraagt het college opnieuw te kijken naar de afwijzing van een uitbreiding naast het gebouw.",
+"n": 4,
+"ap": [
+"Inspreker over uitbreiding moskee",
+"Jaarstukken 2025",
+"Projectambitiedocument Aarhof Imkerstraat",
+"Nota van uitgangspunten Danshuis"
+]
+},
+{
+"id": "6120a4aa",
+"agendaId": "6120a4aa-9e9f-4199-b812-76ec74e709c9",
+"datum": "2026-05-28",
+"naam": "Commissie Veiligheid, Bestuur & Financiën",
+"raad": false,
+"kort": "De commissie stelt de planning tot de zomer vast en kijkt vooruit naar de behandeling van de jaarstukken en de monitor grote projecten op 4 juni.",
+"n": 8,
+"ap": [
+"Commissieplanning",
+"Regelingen van werkzaamheden",
+"Vacatures in de commissie",
+"Ingekomen stukken: veiligheid",
+"Ingekomen stukken: bestuur",
+"Ingekomen stukken: wijken",
+"Ingekomen stukken: vastgoed",
+"Rekenkamerrapport Nog steeds vatbaar"
 ]
 }
 ]
