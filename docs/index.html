@@ -220,8 +220,14 @@ function toonCitaat(c){
   $('cit').innerHTML=`<blockquote style="margin:0"><p>‘${esc(c.t)}’</p></blockquote><footer><b>${esc(c.wie)}</b>, ${esc(c.fractie)}<div class="ap">${esc(c.naam)} · ${fdl(c.datum)} · ${esc(c.ap)}</div></footer>`;
   $('acties').innerHTML=`${c.video?`<button type="button" class="bknop hoofd" data-video="${esc(c.video)}" data-sec="${c.sec}" data-titel="${esc(c.naam+' · '+fdl(c.datum)+' · '+c.wie)}">▶ <span class="lang">Bekijk het moment</span><span class="kort">Moment</span></button>`:''}<a class="bknop" href="vergadering.html?id=${c.id8}#ap-${encodeURIComponent(c.nr)}"><span class="lang">Hele vergadering</span><span class="kort">Vergadering</span></a><button type="button" class="bknop" id="ander">Ander citaat</button>`;
   $('ander').onclick=ander;}
-let POOL=null,HUIDIG=null,VORIG=[];
+let POOL=null,HUIDIG=null,VORIG=[],LIJST=null,LI=0;
+/* uitgelichte citaten (verg/citaten.json, gemaakt door src/citaten_uit.py): per bezoek het volgende in de lijst, onthouden in localStorage;
+   zonder opslag: vaste keuze per dag. Buurcitaten zijn van een andere fractie. */
+const citLaatste=()=>{try{const n=+localStorage.getItem('rz-cit');return Number.isFinite(n)&&localStorage.getItem('rz-cit')!==null?n:null;}catch(_){return null;}};
+const citOnthoud=i=>{try{localStorage.setItem('rz-cit',String(i));}catch(_){}};
+function citStart(n){const l=citLaatste();return l===null?Math.floor(Date.now()/864e5)%n:(l+1)%n;}
 async function ander(){
+  if(LIJST&&LIJST.length){LI=(LI+1)%LIJST.length;citOnthoud(LI);HUIDIG=LIJST[LI];toonCitaat(HUIDIG);$('ander').focus();return;}
   const b=$('ander');b.disabled=true;
   if(!POOL){const idx=await J('verg/index.json');const nw=idx[0].datum,grens=new Date(new Date(nw+'T12:00:00')-14*864e5).toISOString().slice(0,10);
     const ms=idx.filter(m=>m.datum>=grens&&m.n);const V=await Promise.all(ms.map(m=>J('verg/'+m.id+'.json').then(v=>citaten(m.id,v)).catch(()=>[])));
@@ -269,7 +275,9 @@ function besloten(V,id8){
     const idx=await J('verg/index.json');
     const m=idx.find(x=>x.raad&&x.n)||idx[0];const V=await J('verg/'+m.id+'.json');
     $('kopdat').textContent='· '+fdl(V.datum||m.datum);
-    const c=kies(V,m.id);if(c){HUIDIG=c;toonCitaat(c);}else{$('cit').innerHTML='<p>Er is nog geen citaat.</p>';}
+    const uit=await J('verg/citaten.json').catch(()=>null);
+    if(uit&&uit.c&&uit.c.length>=5){LIJST=uit.c;$('kopdat').textContent='';LI=citStart(LIJST.length);citOnthoud(LI);HUIDIG=LIJST[LI];toonCitaat(HUIDIG);}
+    else{const c=kies(V,m.id);if(c){HUIDIG=c;toonCitaat(c);}else{$('cit').innerHTML='<p>Er is nog geen citaat.</p>';}}
     besloten(V,m.id);
   }catch(e){$('cit').innerHTML='<p>De laatste vergadering kon niet worden geladen. <a href="vergaderingen.html">Naar de vergaderingen</a></p>';}
 })();

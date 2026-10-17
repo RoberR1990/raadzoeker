@@ -61,6 +61,7 @@ stap "Lab" python src/lab_data.py
 python src/tracker.py >>"$LOG" 2>&1 || echo "tracker mislukt" >>"$LOG"
 stap "vergaderingen koppelen" python src/verg_koppel.py
 stap "vooruitblik" python src/vooruit.py
+python src/citaten_uit.py >>"$LOG" 2>&1 || echo "citaten mislukt" >>"$LOG"
 stap "volgen" python src/volg_data.py
 RZ_MODUS=$MODUS python src/logboek.py na >>"$LOG" 2>&1 || echo "logboek na mislukt" >>"$LOG"
 printf '{"laatste":"%s","modus":"%s","ok":true,"stand":"%s"}\n' "$(date -Iseconds)" "$MODUS" "$RZ_STAND" | tee /werk/status.json > docs/data/status.json
