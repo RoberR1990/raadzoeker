@@ -46,39 +46,79 @@ def tekst(s):
     return ' '.join(t) if isinstance(t, list) else t
 
 
+UITSLAG = r'aangenomen|verworpen|ingetrokken|aangehouden|vervallen'
+# uitslag in de tekst (fase 0): Eindhoven slotregel, Amsterdam/Den Haag kopblok bovenaan het stuk
+TEKST_UITSLAG = {
+    'eindhoven': r'deze (?:vrije )?(?:motie|amendement) is (aangenomen|verworpen|ingetrokken)',
+    'amsterdam': r'^.{0,400}?\b(aangenomen|verworpen|ingetrokken)\b',
+    'den_haag': r'(?:uitslag stemming:?\s*|^.{0,400}?\b)(aangenomen|verworpen|ingetrokken|aangehouden)\b',
+}
+STAT = re.compile(r'\s*[-–(]?\s*\b(?:aangenomen|verworpen|ingetrokken(?: na toezegging)?|aangehouden|gewijzigd|getekend|aangepast|vervallen)\b\)?\s*', re.I)
+
+
+DICTUM = re.compile(r'verzoekt|draagt [^.]{0,40}op|roept [^.]{0,40}op|besluit|spreekt uit')
+
+
+def over(t, orx):
+    # alleen uit de tekst: minstens 3 keer genoemd en ook in het verzoek zelf (niet alleen in de overwegingen)
+    if len(orx.findall(t)) < 3:
+        return False
+    m = DICTUM.search(t)
+    return bool(m and orx.search(t, m.start()))
+
+
+def norm(t):
+    return re.sub(r'[^a-z0-9]+', ' ', STAT.sub(' ', t.lower())).strip()
+
+
 def moties(g, cfg, dos):
-    idx = f"ori_{g}_2*"
+    if cfg.get('geen_moties'):
+        return []
     body = {'size': MAX, '_source': ['name', 'last_discussed_at', 'original_url', 'text'],
             'sort': [{'last_discussed_at': 'desc'}],
-            'query': {'bool': {'must': [{'term': {'@type': 'MediaObject'}}, cfg['ori_query'],
-                                        {'query_string': {'query': dos['q'], 'fields': ['name', 'text']}},
-                                        {'range': {'last_discussed_at': {'gte': SINDS}}}]}}}
-    h = ori(idx, body)['hits']['hits']
+            'query': {'bool': {'must': [cfg['ori_query'], {'query_string': {'query': dos['q'], 'fields': ['name', 'text']}}]}}}
+    h = ori(f"ori_{g}_2*", body)['hits']['hits']
     mrx, arx = re.compile(cfg['motie_rx'], re.I), re.compile(cfg.get('amendement_rx') or r'(?!x)x', re.I)
     urx = re.compile(cfg['uitsluit_rx'], re.I) if cfg.get('uitsluit_rx') else None
-    trx = re.compile(cfg['titel_rx'], re.I) if cfg.get('titel_rx') else None
+    trx = [re.compile(r, re.I) for r in cfg.get('titel_rx') or []]
+    unx = re.compile(cfg['uitslag_naam_rx'], re.I) if cfg.get('uitslag_naam_rx') else None
+    ttx = re.compile(TEKST_UITSLAG[g], re.I | re.S) if g in TEKST_UITSLAG else None
     orx = re.compile(dos['rx'])
-    uit, gezien = [], set()
+    uit = {}
     for x in h:
-        s = x['_source']; naam = (s.get('name') or '').strip()
+        s = x['_source']; naam = re.sub(r'\.(pdf|docx?)$', '', (s.get('name') or '').strip(), flags=re.I)
         soort = 'amendement' if arx.search(naam) else 'motie' if mrx.search(naam) else None
         if not soort or (urx and urx.search(naam)):
             continue
-        if not (orx.search(naam.lower()) or len(orx.findall(tekst(s).lower())) >= 2):
+        tk = tekst(s)
+        if not (orx.search(naam.lower()) or over(tk.lower(), orx)):
             continue
-        titel, ind = naam, ''
-        m = trx.search(naam) if trx else None
-        if m:
-            gd = m.groupdict()
-            titel = (gd.get('titel') or naam).strip(' -–.')
-            ind = (gd.get('indieners') or '').strip(' -–.()')
-        titel = re.sub(r'\.(pdf|docx?)$', '', titel, flags=re.I)
-        k = (titel.lower(), (s.get('last_discussed_at') or '')[:10])
-        if k in gezien:
+        titel, ind, us = naam, '', ''
+        for r in trx:
+            m = r.search(naam)
+            if m:
+                gd = m.groupdict()
+                titel = (gd.get('titel') or naam).strip(' -–.:')
+                ind = (gd.get('indieners') or '').strip(' -–.()')
+                us = next((gd[k] for k in ('uitslag', 'uitslag0', 'uitslag1') if gd.get(k)), '') or ''
+                break
+        if not us and unx:
+            m = unx.search(naam); us = m.group(1) if m else ''
+        if not us and ttx:
+            m = ttx.search(tk[:4000] if g != 'eindhoven' else tk[-3000:]); us = m.group(1) if m else ''
+        us = us.lower() if re.fullmatch(UITSLAG, us.lower() or 'x') else ''
+        titel = STAT.sub(' ', titel).strip(' -–.:') if re.search(r'\s[-–(]\s*(?:%s)\)?\s*$' % UITSLAG, titel, re.I) else titel
+        titel = re.sub(r'\.(pdf|docx?)\s*$', '', titel, flags=re.I).strip()
+        if len(titel) < 4:
             continue
-        gezien.add(k)
-        uit.append(dict(datum=(s.get('last_discussed_at') or '')[:10], soort=soort, titel=titel, indieners=ind, url=s.get('original_url') or ''))
-    return uit
+        d = (s.get('last_discussed_at') or '')[:10]
+        k = norm(titel)
+        o = uit.get(k)
+        if o:   # dezelfde motie in meerdere vergaderingen of versies: nieuwste datum, uitslag als die ergens staat
+            o['uitslag'] = o['uitslag'] or us
+            continue
+        uit[k] = dict(datum=d, soort=soort, titel=titel, indieners=ind, uitslag=us, url=s.get('original_url') or '')
+    return sorted(uit.values(), key=lambda m: m['datum'], reverse=True)
 
 
 def stand_ori(g):
@@ -100,11 +140,11 @@ def main(slugs):
             mo = moties(g, cfg, dos)
             rg = R.get(sl, {}).get(cfg['cvdr'], [])
             gem.append(dict(naam=cfg['naam'], ris=cfg.get('ris_url', ''), sinds=SINDS[:4], n_moties=len(mo), moties=mo, regels=rg,
-                            uitslag=cfg.get('uitslag_tekst')))
+                            uitslag=cfg.get('uitslag_tekst'), n_uitslag=sum(1 for m in mo if m['uitslag'])))
             print(sl, g, len(mo), 'moties', len(rg), 'regels', file=sys.stderr, flush=True)
         uit = dict(slug=sl, stand_ori=min(v for v in so.values() if v), stand_cvdr=B.get('stand_cvdr', ''), gemeenten=gem)
         json.dump(uit, open(os.path.join(uitmap, sl + '.json'), 'w', encoding='utf8'), ensure_ascii=False, separators=(',', ':'))
-        index[sl] = sum(1 for x in gem if x['moties'] or x['regels'])
+        index[sl] = len(gem)
     json.dump(index, open(ip, 'w', encoding='utf8'), ensure_ascii=False)
 
 

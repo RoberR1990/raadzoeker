@@ -4,7 +4,7 @@
    op subthema, direct boven de lijst die het filtert. Een open blok staat in de link (#parkeren/besloten). */
 let KX=null,KD=null,KA=null,KWK=null,KKAART=null,KBEL='open',KAKK=null,KPK=null;
 let KOPEN=new Set(),KSUB={},KDICHT=new Set();
-const KBLOKKEN=['komt','akkoord','tijdlijn','gezegd','besloten','beloofd','gedaan','stad','achtergrond'];
+const KBLOKKEN=['komt','akkoord','tijdlijn','gezegd','besloten','beloofd','gedaan','stad','elders','achtergrond'];
 const kslug=s=>slug(s);
 async function toonKeten(d,X,A){
   KD=d;KX=X;KA=A;CIT=[];verberg();KLAAG='n';KJR='alle';PJR='2026';if(KSPEEL){clearInterval(KSPEEL);KSPEEL=null;}KSUB={};KBEL='open';KDICHT=new Set();

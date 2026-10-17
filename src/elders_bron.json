@@ -1,0 +1,301 @@
+{
+ "stand_cvdr": "",
+ "gemeenten": {
+  "amsterdam": {
+   "naam": "Amsterdam",
+   "cvdr": "Amsterdam",
+   "ris_url": "https://amsterdam.raadsinformatie.nl",
+   "motie_rx": "^\\s*(?:\\d{1,2}[.\\s]+)?(?:\\d{1,4}(?:\\s?(?:dubbel\\s?)?accent)?(?:[._ ]\\d{2})?[.\\s]+(?:(?:dubbel\\s?)?accent\\s+)?motie\\b|motie\\s+\\d{1,4}(?:[._]\\d{2})?\\.?\\s|motie\\s+(?:(?i:van\\s+(?:het\\s+lid|de\\s+leden)\\s+))?(?:(?i:(?:van|von|de|der|den|ten|ter|el|ait|bin|te|op|ben))\\s+)*(?-i:[A-ZÀ-Ý])[\\w'’\\-]+(?:[ ,]+c\\.?s\\.?)?\\s+(?i:inzake|over)\\b)",
+   "amendement_rx": "^\\s*(?:\\d{1,2}[.\\s]+)?(?:\\d{1,4}(?:\\s?(?:dubbel\\s?)?accent)?(?:[._ ]\\d{2})?[.\\s]+(?:(?:dubbel\\s?)?accent\\s+)?amendement\\b|amendement\\s+\\d{1,4}(?:[._]\\d{2})?\\.?\\s|amendement\\s+(?:(?i:van\\s+(?:het\\s+lid|de\\s+leden)\\s+))?(?:(?i:(?:van|von|de|der|den|ten|ter|el|ait|bin|te|op|ben))\\s+)*(?-i:[A-ZÀ-Ý])[\\w'’\\-]+(?:[ ,]+c\\.?s\\.?)?\\s+(?i:inzake|over)\\b)",
+   "titel_rx": [
+    "^\\s*(?:\\d{1,2}[.\\s]+)?(?:\\d{1,4}(?:\\s?(?:dubbel\\s?)?accent)?(?:[._ ]\\d{2})?[.\\s]+(?:(?:dubbel\\s?)?accent\\s+)?)?(?i:motie|amendement)(?:\\s+\\d{1,4}(?:[._]\\d{2})?\\.?)?\\s+(?:(?i:van\\s+(?:de\\s+leden|het\\s+lid|de\\s+raadsleden)\\s+))?(?P<indieners>(?:(?i:(?:van|von|de|der|den|ten|ter|el|ait|bin|te|op|ben))\\s+)*(?-i:[A-ZÀ-Ý])[\\w'’\\-]+(?:(?:\\s*,\\s*|\\s+en\\s+|\\s+&\\s+)(?:(?i:(?:van|von|de|der|den|ten|ter|el|ait|bin|te|op|ben))\\s+)*(?-i:[A-ZÀ-Ý])[\\w'’\\-]+)*)(?:,?\\s*c\\.?\\s?s\\.?)?[\\s,.:–-]+(?:(?i:inzake|over)\\s+)?(?P<titel>.+?)(?:\\.(?:pdf|docx?))?\\s*$",
+    "^\\s*(?:\\d{1,2}[.\\s]+)?(?:\\d{1,4}(?:\\s?(?:dubbel\\s?)?accent)?(?:[._ ]\\d{2})?[.\\s]+(?:(?:dubbel\\s?)?accent\\s+)?)?(?i:motie|amendement)(?:\\s+\\d{1,4}(?:[._]\\d{2})?\\.?)?\\s+(?:(?i:inzake|over)\\s+)?(?P<titel>.+?)(?:\\.(?:pdf|docx?))?\\s*$"
+   ],
+   "uitsluit_rx": "afdoening|afhandeling|afhandelen|raadsinformatiebrief|raadsbrief|\\bRIB\\b|reactie op|overzicht|lijst|preadvies|sjabloon|stemming|uitslagen|^\\s*(?:bijlage|afd)",
+   "ori_query": {
+    "bool": {
+     "filter": [
+      {
+       "terms": {
+        "@type": [
+         "MediaObject"
+        ]
+       }
+      },
+      {
+       "range": {
+        "last_discussed_at": {
+         "gte": "2022-01-01"
+        }
+       }
+      }
+     ],
+     "must": [
+      {
+       "query_string": {
+        "default_field": "name",
+        "query": "motie* OR amendement*"
+       }
+      }
+     ],
+     "must_not": [
+      {
+       "query_string": {
+        "default_field": "name",
+        "query": "afdoening OR afhandeling OR raadsinformatiebrief OR raadsbrief OR RIB OR overzicht OR lijst OR tussenbericht OR beantwoording OR raadsmemo"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "den_haag": {
+   "naam": "Den Haag",
+   "cvdr": "'s-Gravenhage",
+   "ris_url": "https://denhaag.raadsinformatie.nl",
+   "motie_rx": "^\\s*(?:(?:AANGEHOUDEN|GEWIJZIGD|INGETROKKEN)\\s+)?(?:[A-Z]{1,3}[. ](?:\\d{1,2}(?:\\.\\d)?|[A-Z])|[A-Za-z0-9]+(?:[-.][A-Za-z0-9]+)?\\.(?:\\d{1,3}|[A-Z]))\\s+(?:(?:(?!motie\\b|amendement\\b)\\S+\\s+){0,5}?)(?:(?:AANGEHOUDEN|GEWIJZIGD|INGETROKKEN)\\s+)?motie\\b|^[^()]+\\((?:motie)\\s+[\\w.]+(?:\\s+[^)]*)?\\)\\s*Gemeente Den Haag\\s*$",
+   "amendement_rx": "^\\s*(?:(?:AANGEHOUDEN|GEWIJZIGD|INGETROKKEN)\\s+)?(?:[A-Z]{1,3}[. ](?:\\d{1,2}(?:\\.\\d)?|[A-Z])|[A-Za-z0-9]+(?:[-.][A-Za-z0-9]+)?\\.(?:\\d{1,3}|[A-Z]))\\s+(?:(?:(?!motie\\b|amendement\\b)\\S+\\s+){0,5}?)(?:(?:AANGEHOUDEN|GEWIJZIGD|INGETROKKEN)\\s+)?amendement\\b",
+   "titel_rx": [
+    "^\\s*(?:(?P<uitslag0>(?:AANGEHOUDEN|GEWIJZIGD|INGETROKKEN))\\s+)?(?P<code>[A-Z]{1,3}[. ](?:\\d{1,2}(?:\\.\\d)?|[A-Z]))\\s+(?P<indieners>(?:(?!motie\\b|amendement\\b|(?:AANGEHOUDEN|GEWIJZIGD|INGETROKKEN))\\S+\\s?){1,5}?)\\s+(?:(?P<uitslag1>(?:AANGEHOUDEN|GEWIJZIGD|INGETROKKEN))\\s+)?(?i:motie|amendement)\\s+(?P<titel>.+?)(?:\\s+(?P<uitslag>(?:AANGEHOUDEN|GEWIJZIGD|INGETROKKEN)))?\\s*$",
+    "^\\s*(?:(?P<uitslag0>(?:AANGEHOUDEN|GEWIJZIGD|INGETROKKEN))\\s+)?(?P<code>(?P<indieners>[A-Za-z0-9]+(?:[-.][A-Za-z0-9]+)?)\\.(?:\\d{1,3}|[A-Z]))\\s+(?i:motie|amendement)\\s+(?P<titel>.+?)(?:\\s+(?P<uitslag>(?:AANGEHOUDEN|GEWIJZIGD|INGETROKKEN)))?\\s*$",
+    "^(?P<titel>[^()]+?)\\s+\\((?i:motie)\\s+(?P<code>[\\w.]+)(?:\\s+(?P<indieners>[^)]*))?\\)\\s*Gemeente Den Haag\\s*$"
+   ],
+   "uitsluit_rx": "^\\s*(?:RIS|afdoening|tussenbericht|derde|tweede|voortgang|toelichting|memo|stemming)|afdoening|tweeminutendebat|raadsmededeling|commissiebrief",
+   "ori_query": {
+    "bool": {
+     "filter": [
+      {
+       "terms": {
+        "@type": [
+         "MediaObject"
+        ]
+       }
+      },
+      {
+       "range": {
+        "last_discussed_at": {
+         "gte": "2022-01-01"
+        }
+       }
+      }
+     ],
+     "must": [
+      {
+       "query_string": {
+        "default_field": "name",
+        "query": "motie* OR amendement*"
+       }
+      }
+     ],
+     "must_not": [
+      {
+       "query_string": {
+        "default_field": "name",
+        "query": "afdoening OR afhandeling OR raadsinformatiebrief OR raadsbrief OR RIB OR overzicht OR lijst OR tussenbericht OR beantwoording OR raadsmemo"
+       }
+      }
+     ]
+    }
+   },
+   "uitslag_naam_rx": "\\b(AANGEHOUDEN|GEWIJZIGD|INGETROKKEN)\\s*$"
+  },
+  "utrecht": {
+   "naam": "Utrecht",
+   "cvdr": "Utrecht",
+   "ris_url": "https://ris2.utrecht.nl",
+   "motie_rx": "^\\s*motie(?:\\s*[-_]\\s*|\\s+)(?!en\\b|lijst|van\\s+de\\s+gemeente)\\S",
+   "amendement_rx": "^\\s*(?:gecorrigeerd\\s+)?amendement(?:\\s*[-_]\\s*|\\s+)\\S",
+   "titel_rx": [
+    "^\\s*(?i:motie)(?:\\s+M?(?P<code>\\d{1,4}))?(?:\\s*[-_]\\s*|\\s+)(?P<titel>.+?)(?:\\.(?:pdf|docx?))?\\s*$"
+   ],
+   "uitsluit_rx": "lijst|na verwerking|raadsbrief|beantwoording|advies|toezegging|aangenomen\\s+motie|\\bbrief\\b",
+   "ori_query": {
+    "bool": {
+     "filter": [
+      {
+       "term": {
+        "@type": "MediaObject"
+       }
+      },
+      {
+       "range": {
+        "last_discussed_at": {
+         "gte": "2022-01-01"
+        }
+       }
+      }
+     ],
+     "must": [
+      {
+       "query_string": {
+        "default_field": "name",
+        "query": "motie* OR amendement*"
+       }
+      }
+     ],
+     "must_not": [
+      {
+       "query_string": {
+        "default_field": "name",
+        "query": "afdoening OR afhandeling OR raadsinformatiebrief OR raadsbrief OR RIB OR overzicht OR lijst OR tussenbericht OR beantwoording OR raadsmemo"
+       }
+      }
+     ]
+    }
+   },
+   "geen_moties": true,
+   "uitslag_tekst": "Utrecht zet losse moties niet in Open Raadsinformatie, alleen lijsten van aangenomen moties. Zie de raadsinformatie van Utrecht."
+  },
+  "eindhoven": {
+   "naam": "Eindhoven",
+   "cvdr": "Eindhoven",
+   "ris_url": "https://eindhoven.raadsinformatie.nl",
+   "motie_rx": "^\\s*(?:(?:aangenomen|verworpen|ingetrokken(?:\\s+na\\s+toezegging)?|vervallen|aangekondigd|niet\\s+ingediend|aangehouden|gewijzigd|niet\\s+in\\s+stemming\\s+gebracht|afgevoerd\\s+van\\s+de\\s+raadsagenda)\\s+)?(?:vrij(?:e)?\\s+)?motie\\s+[A-Z]{1,3}\\d{1,2}[A-Z]{0,2}\\b|^\\s*[A-Z]{1,3}\\d{1,2}[A-Z]{0,2}\\s+(?:vrij(?:e)?\\s+)?motie\\b|^[^()]{3,}\\((?:vrij(?:e)?\\s+)?motie\\s+[A-Z]{1,3}\\d{1,2}[A-Z]{0,2}\\)[\\s.]*$|^\\s*\\d{1,3}\\s+motie\\s+[A-Z]",
+   "amendement_rx": "^\\s*(?:(?:aangenomen|verworpen|ingetrokken(?:\\s+na\\s+toezegging)?|vervallen|aangekondigd|niet\\s+ingediend|aangehouden|gewijzigd|niet\\s+in\\s+stemming\\s+gebracht|afgevoerd\\s+van\\s+de\\s+raadsagenda)\\s+)?(?:vrij(?:e)?\\s+)?amendement\\s+[A-Z]{1,3}\\d{1,2}[A-Z]{0,2}\\b|^\\s*[A-Z]{1,3}\\d{1,2}[A-Z]{0,2}\\s+(?:vrij(?:e)?\\s+)?amendement\\b|^[^()]{3,}\\((?:vrij(?:e)?\\s+)?amendement\\s+[A-Z]{1,3}\\d{1,2}[A-Z]{0,2}\\)[\\s.]*$",
+   "titel_rx": [
+    "^\\s*(?:(?P<uitslag>(?:aangenomen|verworpen|ingetrokken(?:\\s+na\\s+toezegging)?|vervallen|aangekondigd|niet\\s+ingediend|aangehouden|gewijzigd|niet\\s+in\\s+stemming\\s+gebracht|afgevoerd\\s+van\\s+de\\s+raadsagenda))\\s+)?(?:vrije\\s+)?(?i:motie|amendement)\\s+(?P<code>[A-Z]{1,3}\\d{1,2}[A-Z]{0,2})\\s*[-–:]?\\s*(?P<titel>.+?)\\s*(?:\\((?P<indieners>[^()]*)\\))?[\\s.]*$",
+    "^\\s*(?P<code>[A-Z]{1,3}\\d{1,2}[A-Z]{0,2})\\s+(?:vrije\\s+)?(?i:motie|amendement)\\s*[-–:]?\\s*(?P<titel>.+?)\\s*(?:\\((?P<indieners>[^()]*)\\))?[\\s.]*$",
+    "^(?P<titel>[^()]{3,}?)\\s*\\((?:vrije\\s+)?(?i:motie|amendement)\\s+(?P<code>[A-Z]{1,3}\\d{1,2}[A-Z]{0,2})\\)[\\s.]*$"
+   ],
+   "uitsluit_rx": "niet\\s+ingediend|^\\s*(?:toezegging|collegebrief|mail|overzicht|bijlage|beantwoording|reactie|technische)|collegebrief|overzicht|\\bbijlage\\b|beantwoording|\\bmail\\b|vragen",
+   "ori_query": {
+    "bool": {
+     "filter": [
+      {
+       "terms": {
+        "@type": [
+         "MediaObject"
+        ]
+       }
+      },
+      {
+       "range": {
+        "last_discussed_at": {
+         "gte": "2022-01-01"
+        }
+       }
+      }
+     ],
+     "must": [
+      {
+       "query_string": {
+        "default_field": "name",
+        "query": "motie* OR amendement*"
+       }
+      }
+     ],
+     "must_not": [
+      {
+       "query_string": {
+        "default_field": "name",
+        "query": "afdoening OR afhandeling OR raadsinformatiebrief OR raadsbrief OR RIB OR overzicht OR lijst OR tussenbericht OR beantwoording OR raadsmemo"
+       }
+      }
+     ]
+    }
+   },
+   "uitslag_naam_rx": "^\\s*(aangenomen|verworpen|ingetrokken(?: na toezegging)?|vervallen|aangekondigd|aangehouden|niet in stemming gebracht|afgevoerd van de raadsagenda)\\b"
+  },
+  "dordrecht": {
+   "naam": "Dordrecht",
+   "cvdr": "Dordrecht",
+   "ris_url": "https://dordrecht.raadsinformatie.nl",
+   "motie_rx": "^\\s*(?:\\d{1,3}:\\s+)?(?:stemming\\s+)?motie\\s+(?:(?:sub|vreemd)\\s+)?(?:\\d{6}[-/])?[MA]\\d{1,3}[A-Za-z]?\\b|^\\s*(?:\\d{1,3}:\\s+)?(?:stemming\\s+)?(?:\\d{6}[-/])?[MA]\\d{1,3}[A-Za-z]?\\s*[-–:]?\\s*(?:technisch\\s+)?motie\\b|^\\s*(?:\\d{1,3}:\\s+)?(?:concept[\\s-]*)motie\\b|^\\s*\\d{1,3}:\\s+motie\\s+(?:vreemd|van\\s+fractie)",
+   "amendement_rx": "^\\s*(?:\\d{1,3}:\\s+)?(?:stemming\\s+)?amendement\\s+(?:(?:sub|vreemd)\\s+)?A\\d{1,3}[A-Za-z]?\\b|^\\s*(?:\\d{1,3}:\\s+)?(?:stemming\\s+)?A\\d{1,3}[A-Za-z]?\\s*[-–:]?\\s*(?:technisch\\s+)?amendement\\b|^\\s*(?:\\d{1,3}:\\s+)?(?:concept[\\s-]*)amendement\\b|^\\s*\\d{1,3}:\\s+amendement\\s+(?:vreemd|van\\s+fractie)",
+   "titel_rx": [
+    "^\\s*(?:\\d{1,3}:\\s+)?(?:(?P<soort>stemming|concept)[\\s-]+)?(?i:motie|amendement)\\s+(?:(?i:sub|vreemd)\\s+)?(?P<code>(?:\\d{6}[-/])?[MA]\\d{1,3}[A-Za-z]?)\\s*[-–:]?\\s*(?:(?i:vreemd(?:\\s+aan\\s+de\\s+orde(?:\\s+van\\s+de\\s+dag)?)?)\\s*[-–:]?\\s*)?(?P<titel>.+?)(?:\\s*[-–(]\\s*(?P<uitslag>(?:aangenomen|verworpen|aangehouden|ingetrokken|vervallen|gewijzigd))\\)?)?(?:\\.(?:pdf|docx?))?\\s*$",
+    "^\\s*(?:\\d{1,3}:\\s+)?(?:stemming\\s+)?(?P<code>(?:\\d{6}[-/])?[MA]\\d{1,3}[A-Za-z]?)\\s*[-–:]?\\s*(?i:motie|amendement)\\s*[-–:]?\\s*(?:(?i:vreemd\\s+aan\\s+de\\s+orde(?:\\s+van\\s+de\\s+dag)?)\\s*[-–:]?\\s*)?(?P<titel>.+?)(?:\\s*[-–(]\\s*(?P<uitslag>(?:aangenomen|verworpen|aangehouden|ingetrokken|vervallen|gewijzigd))\\)?)?(?:\\.(?:pdf|docx?))?\\s*$",
+    "^\\s*(?:\\d{1,3}:\\s+)?(?i:concept[\\s-]*)(?i:motie|amendement)\\s+(?P<indieners>[\\w\\-/ ]+?)\\s*(?:[-–]|over|bij)\\s*(?P<titel>.+?)(?:\\.(?:pdf|docx?))?\\s*$"
+   ],
+   "uitsluit_rx": "^\\s*(?:\\d{1,3}:\\s+)?concept|raadsinformatiebrief|\\bRIB\\b|wethoudersbericht|overzicht|presentatie|bijlage|stand van zaken|beantwoord|afhandel|financi[eë]le consequenties|ongetekende|kopie van|\\bbrief\\b|voorstel",
+   "ori_query": {
+    "bool": {
+     "filter": [
+      {
+       "terms": {
+        "@type": [
+         "MediaObject",
+         "AgendaItem"
+        ]
+       }
+      },
+      {
+       "range": {
+        "last_discussed_at": {
+         "gte": "2022-01-01"
+        }
+       }
+      }
+     ],
+     "must": [
+      {
+       "query_string": {
+        "default_field": "name",
+        "query": "motie* OR amendement*"
+       }
+      }
+     ],
+     "must_not": [
+      {
+       "query_string": {
+        "default_field": "name",
+        "query": "afdoening OR afhandeling OR raadsinformatiebrief OR raadsbrief OR RIB OR overzicht OR lijst OR tussenbericht OR beantwoording OR raadsmemo"
+       }
+      }
+     ]
+    }
+   },
+   "uitslag_naam_rx": "[-–(\\s](aangenomen|verworpen|ingetrokken|aangehouden|stemmen staken)\\)?(?:\\.pdf)?\\s*$",
+   "uitslag_tekst": null
+  },
+  "vlaardingen": {
+   "naam": "Vlaardingen",
+   "cvdr": "Vlaardingen",
+   "ris_url": "https://vlaardingen.raadsinformatie.nl",
+   "motie_rx": "^\\s*(?:(?:aangenomen|verworpen|ingetrokken|aangehouden|getekend|aangepast|vervallen|gewijzigd)\\s*-?\\s+)?(?:\\d{8}\\s+|\\d{1,2}\\.\\s+|[a-z]\\.\\s+|[MA]\\d{1,3}[a-z]?(?:-\\d{2})?[.:]?\\s+)?motie\\b",
+   "amendement_rx": "^\\s*(?:(?:aangenomen|verworpen|ingetrokken|aangehouden|getekend|aangepast|vervallen|gewijzigd)\\s*-?\\s+)?(?:\\d{8}\\s+|\\d{1,2}\\.\\s+|[a-z]\\.\\s+|[MA]\\d{1,3}[a-z]?(?:-\\d{2})?[.:]?\\s+)?amendement\\b",
+   "titel_rx": [
+    "^\\s*(?:(?P<uitslag0>(?:aangenomen|verworpen|ingetrokken|aangehouden|getekend|aangepast|vervallen|gewijzigd))\\s*-?\\s+)?(?:(?P<datum>\\d{8})\\s+|\\d{1,2}\\.\\s+|[a-z]\\.\\s+|(?P<code>[MA]\\d{1,3}[a-z]?(?:-\\d{2})?)[.:]?\\s+)?(?i:motie|amendement)\\s+(?:(?i:buiten\\s+de\\s+orde|vreemd\\s+aan\\s+de\\s+orde(?:\\s+van\\s+de\\s+dag)?)\\s+)?(?P<titel>.+?)(?:\\s+[-–]\\s+(?P<indieners>(?!(?:aangenomen|verworpen|ingetrokken|aangehouden|getekend|aangepast|vervallen|gewijzigd)\\b).+?))?(?:[\\s,–-]+(?P<uitslag>(?:aangenomen|verworpen|ingetrokken|aangehouden|getekend|aangepast|vervallen|gewijzigd)))?(?:\\s+docx|\\.(?:pdf|docx?))?\\s*$"
+   ],
+   "uitsluit_rx": "^\\s*(?:raadsmemo|overzicht|stand van zaken|rm\\b)|overzicht|raadsmemo|raadsinformatiebrief|\\bbrief\\b|reactie|beantwoording|voorstel",
+   "ori_query": {
+    "bool": {
+     "filter": [
+      {
+       "terms": {
+        "@type": [
+         "MediaObject"
+        ]
+       }
+      },
+      {
+       "range": {
+        "last_discussed_at": {
+         "gte": "2022-01-01"
+        }
+       }
+      }
+     ],
+     "must": [
+      {
+       "query_string": {
+        "default_field": "name",
+        "query": "motie* OR amendement*"
+       }
+      }
+     ],
+     "must_not": [
+      {
+       "query_string": {
+        "default_field": "name",
+        "query": "afdoening OR afhandeling OR raadsinformatiebrief OR raadsbrief OR RIB OR overzicht OR lijst OR tussenbericht OR beantwoording OR raadsmemo"
+       }
+      }
+     ]
+    }
+   },
+   "uitslag_naam_rx": "\\b(aangenomen|verworpen|ingetrokken|aangehouden|getekend|aangepast)\\)?\\s*$"
+  }
+ },
+ "regels": {}
+}

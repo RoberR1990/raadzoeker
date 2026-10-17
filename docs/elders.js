@@ -19,7 +19,7 @@ function rzEldersAantal(s){return (window.__eldIx&&window.__eldIx[s])||0;}
 function laad(s){return CACHE[s]||(CACHE[s]=fetch(new URL('d/elders/'+s+'.json',BASIS)).then(r=>{if(!r.ok)throw 0;return r.json();}));}
 
 function regel(r){return `<li><a href="${e(r.url)}" target="_blank" rel="noopener">${e(r.titel)}</a> <span class="sub">${r.in_werking?'geldt sinds '+fd(r.in_werking):''}${r.soort?' · '+e(r.soort):''}</span></li>`;}
-function motie(m){return `<li><span class="sub num">${fd(m.datum)}</span> ${m.soort==='amendement'?'<span class="sub">amendement</span> ':''}<a href="${e(m.url)}" target="_blank" rel="noopener">${e(m.titel)}</a>${m.indieners?` <span class="sub">(${e(m.indieners)})</span>`:''}</li>`;}
+function motie(m){return `<li><span class="sub num">${fd(m.datum)}</span> ${m.soort==='amendement'?'<span class="sub">amendement</span> ':''}<a href="${e(m.url)}" target="_blank" rel="noopener">${e(m.titel)}</a>${m.indieners?` <span class="sub">(${e(m.indieners)})</span>`:''}${m.uitslag?` <span class="sub">· ${e(m.uitslag)}</span>`:''}</li>`;}
 function gemeente(g,open){
   const nm=g.moties.length,nr=g.regels.length;
   const kop=`${nr?`${nr} ${nr===1?'regeling':'regelingen'}`:'geen regeling gevonden'} · ${nm?`${nl(g.n_moties||nm)} ${(g.n_moties||nm)===1?'motie':'moties'} sinds ${g.sinds||2022}`:'geen moties gevonden'}`;
@@ -27,7 +27,7 @@ function gemeente(g,open){
   return `<details class="elg"${open?' open':''}><summary><b>${e(g.naam)}</b> <span class="sub">${kop}</span></summary>
     ${nr?`<h4>Geldende regels</h4><ul>${g.regels.map(regel).join('')}</ul>`:''}
     ${nm?`<h4>Moties en amendementen${g.moties.length>ms.length?`, de ${ms.length} nieuwste`:''}</h4><ul>${ms.map(motie).join('')}</ul>${g.moties.length>ms.length?`<p class="sub">Nog ${nl(g.moties.length-ms.length)} in deze lijst: open alles hieronder.</p>`:''}`:''}
-    ${g.uitslag?`<p class="sub">${e(g.uitslag)}</p>`:`<p class="sub">Of een motie is aangenomen staat niet in deze bron; zie het stuk zelf.</p>`}
+    ${g.uitslag?`<p class="sub">${e(g.uitslag)}</p>`:nm?`<p class="sub">${g.n_uitslag?`Bij ${nl(g.n_uitslag)} van de ${nl(nm)} staat de uitslag in het stuk zelf; bij de rest niet.`:'De uitslag staat niet in deze bron; zie het stuk zelf.'}</p>`:''}
     ${g.ris?`<p class="sub"><a href="${e(g.ris)}" target="_blank" rel="noopener">Raadsinformatie van ${e(g.naam)}</a></p>`:''}</details>`;
 }
 async function rzElders(el,slug,o={}){
@@ -36,7 +36,7 @@ async function rzElders(el,slug,o={}){
   if(o.wrap)o.wrap.hidden=false;
   el.innerHTML=`<p class="intro">Hoe andere gemeenten hetzelfde onderwerp regelen en welke moties hun raad behandelde. Ter vergelijking, zonder oordeel; de lijsten zijn niet volledig.</p>
     <div class="elders">${d.gemeenten.map(g=>gemeente(g,!!o.open)).join('')}</div>
-    <p class="sub" style="margin-top:12px">Bronnen: <a href="https://lokaleregelgeving.overheid.nl" target="_blank" rel="noopener">overheid.nl, lokale regelgeving</a> (stand ${fd(d.stand_cvdr)}) en <a href="https://openbesluitvorming.nl" target="_blank" rel="noopener">Open Raadsinformatie</a> (vergaderingen tot ${fd(d.stand_ori)}). Moties zijn herkend aan hun naam en het onderwerp in titel of tekst; er kunnen er ontbreken of te veel tussen staan.</p>`;
+    <p class="sub" style="margin-top:12px">Bronnen: <a href="https://lokaleregelgeving.overheid.nl" target="_blank" rel="noopener">overheid.nl, lokale regelgeving</a> ${d.stand_cvdr?`(stand ${fd(d.stand_cvdr)})`:''} en <a href="https://openbesluitvorming.nl" target="_blank" rel="noopener">Open Raadsinformatie</a> (vergaderingen tot ${fd(d.stand_ori)}). Moties zijn herkend aan hun naam en het onderwerp in titel of tekst; er kunnen er ontbreken of te veel tussen staan.</p>`;
 }
 window.rzEldersIndex=rzEldersIndex;window.rzEldersAantal=rzEldersAantal;window.rzElders=rzElders;
 if(!document.getElementById('elders-css')){const s=document.createElement('style');s.id='elders-css';s.textContent=
