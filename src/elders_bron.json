@@ -1,0 +1,933 @@
+{
+ "stand_cvdr": "2026-10-17",
+ "gemeenten": {
+  "amsterdam": {
+   "naam": "Amsterdam",
+   "cvdr": "Amsterdam",
+   "ris_url": "https://amsterdam.raadsinformatie.nl",
+   "motie_rx": "^\\s*(?:\\d{1,2}[.\\s]+)?(?:\\d{1,4}(?:\\s?(?:dubbel\\s?)?accent)?(?:[._ ]\\d{2})?[.\\s]+(?:(?:dubbel\\s?)?accent\\s+)?motie\\b|motie\\s+\\d{1,4}(?:[._]\\d{2})?\\.?\\s|motie\\s+(?:(?i:van\\s+(?:het\\s+lid|de\\s+leden)\\s+))?(?:(?i:(?:van|von|de|der|den|ten|ter|el|ait|bin|te|op|ben))\\s+)*(?-i:[A-ZÀ-Ý])[\\w'’\\-]+(?:[ ,]+c\\.?s\\.?)?\\s+(?i:inzake|over)\\b)",
+   "amendement_rx": "^\\s*(?:\\d{1,2}[.\\s]+)?(?:\\d{1,4}(?:\\s?(?:dubbel\\s?)?accent)?(?:[._ ]\\d{2})?[.\\s]+(?:(?:dubbel\\s?)?accent\\s+)?amendement\\b|amendement\\s+\\d{1,4}(?:[._]\\d{2})?\\.?\\s|amendement\\s+(?:(?i:van\\s+(?:het\\s+lid|de\\s+leden)\\s+))?(?:(?i:(?:van|von|de|der|den|ten|ter|el|ait|bin|te|op|ben))\\s+)*(?-i:[A-ZÀ-Ý])[\\w'’\\-]+(?:[ ,]+c\\.?s\\.?)?\\s+(?i:inzake|over)\\b)",
+   "titel_rx": [
+    "^\\s*(?:\\d{1,2}[.\\s]+)?(?:\\d{1,4}(?:\\s?(?:dubbel\\s?)?accent)?(?:[._ ]\\d{2})?[.\\s]+(?:(?:dubbel\\s?)?accent\\s+)?)?(?i:motie|amendement)(?:\\s+\\d{1,4}(?:[._]\\d{2})?\\.?)?\\s+(?:(?i:van\\s+(?:de\\s+leden|het\\s+lid|de\\s+raadsleden)\\s+))?(?P<indieners>(?:(?i:(?:van|von|de|der|den|ten|ter|el|ait|bin|te|op|ben))\\s+)*(?-i:[A-ZÀ-Ý])[\\w'’\\-]+(?:(?:\\s*,\\s*|\\s+en\\s+|\\s+&\\s+)(?:(?i:(?:van|von|de|der|den|ten|ter|el|ait|bin|te|op|ben))\\s+)*(?-i:[A-ZÀ-Ý])[\\w'’\\-]+)*)(?:,?\\s*c\\.?\\s?s\\.?)?[\\s,.:–-]+(?:(?i:inzake|over)\\s+)?(?P<titel>.+?)(?:\\.(?:pdf|docx?))?\\s*$",
+    "^\\s*(?:\\d{1,2}[.\\s]+)?(?:\\d{1,4}(?:\\s?(?:dubbel\\s?)?accent)?(?:[._ ]\\d{2})?[.\\s]+(?:(?:dubbel\\s?)?accent\\s+)?)?(?i:motie|amendement)(?:\\s+\\d{1,4}(?:[._]\\d{2})?\\.?)?\\s+(?:(?i:inzake|over)\\s+)?(?P<titel>.+?)(?:\\.(?:pdf|docx?))?\\s*$"
+   ],
+   "uitsluit_rx": "afdoening|afhandeling|afhandelen|raadsinformatiebrief|raadsbrief|\\bRIB\\b|reactie op|overzicht|lijst|preadvies|sjabloon|stemming|uitslagen|^\\s*(?:bijlage|afd)",
+   "ori_query": {
+    "bool": {
+     "filter": [
+      {
+       "terms": {
+        "@type": [
+         "MediaObject"
+        ]
+       }
+      },
+      {
+       "range": {
+        "last_discussed_at": {
+         "gte": "2022-01-01"
+        }
+       }
+      }
+     ],
+     "must": [
+      {
+       "query_string": {
+        "default_field": "name",
+        "query": "motie* OR amendement*"
+       }
+      }
+     ],
+     "must_not": [
+      {
+       "query_string": {
+        "default_field": "name",
+        "query": "afdoening OR afhandeling OR raadsinformatiebrief OR raadsbrief OR RIB OR overzicht OR lijst OR tussenbericht OR beantwoording OR raadsmemo"
+       }
+      }
+     ]
+    }
+   }
+  },
+  "den_haag": {
+   "naam": "Den Haag",
+   "cvdr": "'s-Gravenhage",
+   "ris_url": "https://denhaag.raadsinformatie.nl",
+   "motie_rx": "^\\s*(?:(?:AANGEHOUDEN|GEWIJZIGD|INGETROKKEN)\\s+)?(?:[A-Z]{1,3}[. ](?:\\d{1,2}(?:\\.\\d)?|[A-Z])|[A-Za-z0-9]+(?:[-.][A-Za-z0-9]+)?\\.(?:\\d{1,3}|[A-Z]))\\s+(?:(?:(?!motie\\b|amendement\\b)\\S+\\s+){0,5}?)(?:(?:AANGEHOUDEN|GEWIJZIGD|INGETROKKEN)\\s+)?motie\\b|^[^()]+\\((?:motie)\\s+[\\w.]+(?:\\s+[^)]*)?\\)\\s*Gemeente Den Haag\\s*$",
+   "amendement_rx": "^\\s*(?:(?:AANGEHOUDEN|GEWIJZIGD|INGETROKKEN)\\s+)?(?:[A-Z]{1,3}[. ](?:\\d{1,2}(?:\\.\\d)?|[A-Z])|[A-Za-z0-9]+(?:[-.][A-Za-z0-9]+)?\\.(?:\\d{1,3}|[A-Z]))\\s+(?:(?:(?!motie\\b|amendement\\b)\\S+\\s+){0,5}?)(?:(?:AANGEHOUDEN|GEWIJZIGD|INGETROKKEN)\\s+)?amendement\\b",
+   "titel_rx": [
+    "^\\s*(?:(?P<uitslag0>(?:AANGEHOUDEN|GEWIJZIGD|INGETROKKEN))\\s+)?(?P<code>[A-Z]{1,3}[. ](?:\\d{1,2}(?:\\.\\d)?|[A-Z]))\\s+(?P<indieners>(?:(?!motie\\b|amendement\\b|(?:AANGEHOUDEN|GEWIJZIGD|INGETROKKEN))\\S+\\s?){1,5}?)\\s+(?:(?P<uitslag1>(?:AANGEHOUDEN|GEWIJZIGD|INGETROKKEN))\\s+)?(?i:motie|amendement)\\s+(?P<titel>.+?)(?:\\s+(?P<uitslag>(?:AANGEHOUDEN|GEWIJZIGD|INGETROKKEN)))?\\s*$",
+    "^\\s*(?:(?P<uitslag0>(?:AANGEHOUDEN|GEWIJZIGD|INGETROKKEN))\\s+)?(?P<code>(?P<indieners>[A-Za-z0-9]+(?:[-.][A-Za-z0-9]+)?)\\.(?:\\d{1,3}|[A-Z]))\\s+(?i:motie|amendement)\\s+(?P<titel>.+?)(?:\\s+(?P<uitslag>(?:AANGEHOUDEN|GEWIJZIGD|INGETROKKEN)))?\\s*$",
+    "^(?P<titel>[^()]+?)\\s+\\((?i:motie)\\s+(?P<code>[\\w.]+)(?:\\s+(?P<indieners>[^)]*))?\\)\\s*Gemeente Den Haag\\s*$"
+   ],
+   "uitsluit_rx": "^\\s*(?:RIS|afdoening|tussenbericht|derde|tweede|voortgang|toelichting|memo|stemming)|afdoening|tweeminutendebat|raadsmededeling|commissiebrief",
+   "ori_query": {
+    "bool": {
+     "filter": [
+      {
+       "terms": {
+        "@type": [
+         "MediaObject"
+        ]
+       }
+      },
+      {
+       "range": {
+        "last_discussed_at": {
+         "gte": "2022-01-01"
+        }
+       }
+      }
+     ],
+     "must": [
+      {
+       "query_string": {
+        "default_field": "name",
+        "query": "motie* OR amendement*"
+       }
+      }
+     ],
+     "must_not": [
+      {
+       "query_string": {
+        "default_field": "name",
+        "query": "afdoening OR afhandeling OR raadsinformatiebrief OR raadsbrief OR RIB OR overzicht OR lijst OR tussenbericht OR beantwoording OR raadsmemo"
+       }
+      }
+     ]
+    }
+   },
+   "uitslag_naam_rx": "\\b(AANGEHOUDEN|GEWIJZIGD|INGETROKKEN)\\s*$"
+  },
+  "utrecht": {
+   "naam": "Utrecht",
+   "cvdr": "Utrecht",
+   "ris_url": "https://ris2.utrecht.nl",
+   "motie_rx": "^\\s*motie(?:\\s*[-_]\\s*|\\s+)(?!en\\b|lijst|van\\s+de\\s+gemeente)\\S",
+   "amendement_rx": "^\\s*(?:gecorrigeerd\\s+)?amendement(?:\\s*[-_]\\s*|\\s+)\\S",
+   "titel_rx": [
+    "^\\s*(?i:motie)(?:\\s+M?(?P<code>\\d{1,4}))?(?:\\s*[-_]\\s*|\\s+)(?P<titel>.+?)(?:\\.(?:pdf|docx?))?\\s*$"
+   ],
+   "uitsluit_rx": "lijst|na verwerking|raadsbrief|beantwoording|advies|toezegging|aangenomen\\s+motie|\\bbrief\\b",
+   "ori_query": {
+    "bool": {
+     "filter": [
+      {
+       "term": {
+        "@type": "MediaObject"
+       }
+      },
+      {
+       "range": {
+        "last_discussed_at": {
+         "gte": "2022-01-01"
+        }
+       }
+      }
+     ],
+     "must": [
+      {
+       "query_string": {
+        "default_field": "name",
+        "query": "motie* OR amendement*"
+       }
+      }
+     ],
+     "must_not": [
+      {
+       "query_string": {
+        "default_field": "name",
+        "query": "afdoening OR afhandeling OR raadsinformatiebrief OR raadsbrief OR RIB OR overzicht OR lijst OR tussenbericht OR beantwoording OR raadsmemo"
+       }
+      }
+     ]
+    }
+   },
+   "geen_moties": true,
+   "uitslag_tekst": "Utrecht zet losse moties niet in Open Raadsinformatie, alleen lijsten van aangenomen moties. Zie de raadsinformatie van Utrecht."
+  },
+  "eindhoven": {
+   "naam": "Eindhoven",
+   "cvdr": "Eindhoven",
+   "ris_url": "https://eindhoven.raadsinformatie.nl",
+   "motie_rx": "^\\s*(?:(?:aangenomen|verworpen|ingetrokken(?:\\s+na\\s+toezegging)?|vervallen|aangekondigd|niet\\s+ingediend|aangehouden|gewijzigd|niet\\s+in\\s+stemming\\s+gebracht|afgevoerd\\s+van\\s+de\\s+raadsagenda)\\s+)?(?:vrij(?:e)?\\s+)?motie\\s+[A-Z]{1,3}\\d{1,2}[A-Z]{0,2}\\b|^\\s*[A-Z]{1,3}\\d{1,2}[A-Z]{0,2}\\s+(?:vrij(?:e)?\\s+)?motie\\b|^[^()]{3,}\\((?:vrij(?:e)?\\s+)?motie\\s+[A-Z]{1,3}\\d{1,2}[A-Z]{0,2}\\)[\\s.]*$|^\\s*\\d{1,3}\\s+motie\\s+[A-Z]",
+   "amendement_rx": "^\\s*(?:(?:aangenomen|verworpen|ingetrokken(?:\\s+na\\s+toezegging)?|vervallen|aangekondigd|niet\\s+ingediend|aangehouden|gewijzigd|niet\\s+in\\s+stemming\\s+gebracht|afgevoerd\\s+van\\s+de\\s+raadsagenda)\\s+)?(?:vrij(?:e)?\\s+)?amendement\\s+[A-Z]{1,3}\\d{1,2}[A-Z]{0,2}\\b|^\\s*[A-Z]{1,3}\\d{1,2}[A-Z]{0,2}\\s+(?:vrij(?:e)?\\s+)?amendement\\b|^[^()]{3,}\\((?:vrij(?:e)?\\s+)?amendement\\s+[A-Z]{1,3}\\d{1,2}[A-Z]{0,2}\\)[\\s.]*$",
+   "titel_rx": [
+    "^\\s*(?:(?P<uitslag>(?:aangenomen|verworpen|ingetrokken(?:\\s+na\\s+toezegging)?|vervallen|aangekondigd|niet\\s+ingediend|aangehouden|gewijzigd|niet\\s+in\\s+stemming\\s+gebracht|afgevoerd\\s+van\\s+de\\s+raadsagenda))\\s+)?(?:vrije\\s+)?(?i:motie|amendement)\\s+(?P<code>[A-Z]{1,3}\\d{1,2}[A-Z]{0,2})\\s*[-–:]?\\s*(?P<titel>.+?)\\s*(?:\\((?P<indieners>[^()]*)\\))?[\\s.]*$",
+    "^\\s*(?P<code>[A-Z]{1,3}\\d{1,2}[A-Z]{0,2})\\s+(?:vrije\\s+)?(?i:motie|amendement)\\s*[-–:]?\\s*(?P<titel>.+?)\\s*(?:\\((?P<indieners>[^()]*)\\))?[\\s.]*$",
+    "^(?P<titel>[^()]{3,}?)\\s*\\((?:vrije\\s+)?(?i:motie|amendement)\\s+(?P<code>[A-Z]{1,3}\\d{1,2}[A-Z]{0,2})\\)[\\s.]*$"
+   ],
+   "uitsluit_rx": "niet\\s+ingediend|^\\s*(?:toezegging|collegebrief|mail|overzicht|bijlage|beantwoording|reactie|technische)|collegebrief|overzicht|\\bbijlage\\b|beantwoording|\\bmail\\b|vragen",
+   "ori_query": {
+    "bool": {
+     "filter": [
+      {
+       "terms": {
+        "@type": [
+         "MediaObject"
+        ]
+       }
+      },
+      {
+       "range": {
+        "last_discussed_at": {
+         "gte": "2022-01-01"
+        }
+       }
+      }
+     ],
+     "must": [
+      {
+       "query_string": {
+        "default_field": "name",
+        "query": "motie* OR amendement*"
+       }
+      }
+     ],
+     "must_not": [
+      {
+       "query_string": {
+        "default_field": "name",
+        "query": "afdoening OR afhandeling OR raadsinformatiebrief OR raadsbrief OR RIB OR overzicht OR lijst OR tussenbericht OR beantwoording OR raadsmemo"
+       }
+      }
+     ]
+    }
+   },
+   "uitslag_naam_rx": "^\\s*(aangenomen|verworpen|ingetrokken(?: na toezegging)?|vervallen|aangekondigd|aangehouden|niet in stemming gebracht|afgevoerd van de raadsagenda)\\b"
+  },
+  "dordrecht": {
+   "naam": "Dordrecht",
+   "cvdr": "Dordrecht",
+   "ris_url": "https://dordrecht.raadsinformatie.nl",
+   "motie_rx": "^\\s*(?:\\d{1,3}:\\s+)?(?:stemming\\s+)?motie\\s+(?:(?:sub|vreemd)\\s+)?(?:\\d{6}[-/])?[MA]\\d{1,3}[A-Za-z]?\\b|^\\s*(?:\\d{1,3}:\\s+)?(?:stemming\\s+)?(?:\\d{6}[-/])?[MA]\\d{1,3}[A-Za-z]?\\s*[-–:]?\\s*(?:technisch\\s+)?motie\\b|^\\s*(?:\\d{1,3}:\\s+)?(?:concept[\\s-]*)motie\\b|^\\s*\\d{1,3}:\\s+motie\\s+(?:vreemd|van\\s+fractie)",
+   "amendement_rx": "^\\s*(?:\\d{1,3}:\\s+)?(?:stemming\\s+)?amendement\\s+(?:(?:sub|vreemd)\\s+)?A\\d{1,3}[A-Za-z]?\\b|^\\s*(?:\\d{1,3}:\\s+)?(?:stemming\\s+)?A\\d{1,3}[A-Za-z]?\\s*[-–:]?\\s*(?:technisch\\s+)?amendement\\b|^\\s*(?:\\d{1,3}:\\s+)?(?:concept[\\s-]*)amendement\\b|^\\s*\\d{1,3}:\\s+amendement\\s+(?:vreemd|van\\s+fractie)",
+   "titel_rx": [
+    "^\\s*(?:\\d{1,3}:\\s+)?(?:(?P<soort>stemming|concept)[\\s-]+)?(?i:motie|amendement)\\s+(?:(?i:sub|vreemd)\\s+)?(?P<code>(?:\\d{6}[-/])?[MA]\\d{1,3}[A-Za-z]?)\\s*[-–:]?\\s*(?:(?i:vreemd(?:\\s+aan\\s+de\\s+orde(?:\\s+van\\s+de\\s+dag)?)?)\\s*[-–:]?\\s*)?(?P<titel>.+?)(?:\\s*[-–(]\\s*(?P<uitslag>(?:aangenomen|verworpen|aangehouden|ingetrokken|vervallen|gewijzigd))\\)?)?(?:\\.(?:pdf|docx?))?\\s*$",
+    "^\\s*(?:\\d{1,3}:\\s+)?(?:stemming\\s+)?(?P<code>(?:\\d{6}[-/])?[MA]\\d{1,3}[A-Za-z]?)\\s*[-–:]?\\s*(?i:motie|amendement)\\s*[-–:]?\\s*(?:(?i:vreemd\\s+aan\\s+de\\s+orde(?:\\s+van\\s+de\\s+dag)?)\\s*[-–:]?\\s*)?(?P<titel>.+?)(?:\\s*[-–(]\\s*(?P<uitslag>(?:aangenomen|verworpen|aangehouden|ingetrokken|vervallen|gewijzigd))\\)?)?(?:\\.(?:pdf|docx?))?\\s*$",
+    "^\\s*(?:\\d{1,3}:\\s+)?(?i:concept[\\s-]*)(?i:motie|amendement)\\s+(?P<indieners>[\\w\\-/ ]+?)\\s*(?:[-–]|over|bij)\\s*(?P<titel>.+?)(?:\\.(?:pdf|docx?))?\\s*$"
+   ],
+   "uitsluit_rx": "^\\s*(?:\\d{1,3}:\\s+)?concept|raadsinformatiebrief|\\bRIB\\b|wethoudersbericht|overzicht|presentatie|bijlage|stand van zaken|beantwoord|afhandel|financi[eë]le consequenties|ongetekende|kopie van|\\bbrief\\b|voorstel",
+   "ori_query": {
+    "bool": {
+     "filter": [
+      {
+       "terms": {
+        "@type": [
+         "MediaObject",
+         "AgendaItem"
+        ]
+       }
+      },
+      {
+       "range": {
+        "last_discussed_at": {
+         "gte": "2022-01-01"
+        }
+       }
+      }
+     ],
+     "must": [
+      {
+       "query_string": {
+        "default_field": "name",
+        "query": "motie* OR amendement*"
+       }
+      }
+     ],
+     "must_not": [
+      {
+       "query_string": {
+        "default_field": "name",
+        "query": "afdoening OR afhandeling OR raadsinformatiebrief OR raadsbrief OR RIB OR overzicht OR lijst OR tussenbericht OR beantwoording OR raadsmemo"
+       }
+      }
+     ]
+    }
+   },
+   "uitslag_naam_rx": "[-–(\\s](aangenomen|verworpen|ingetrokken|aangehouden|stemmen staken)\\)?(?:\\.pdf)?\\s*$",
+   "uitslag_tekst": null
+  },
+  "vlaardingen": {
+   "naam": "Vlaardingen",
+   "cvdr": "Vlaardingen",
+   "ris_url": "https://vlaardingen.raadsinformatie.nl",
+   "motie_rx": "^\\s*(?:(?:aangenomen|verworpen|ingetrokken|aangehouden|getekend|aangepast|vervallen|gewijzigd)\\s*-?\\s+)?(?:\\d{8}\\s+|\\d{1,2}\\.\\s+|[a-z]\\.\\s+|[MA]\\d{1,3}[a-z]?(?:-\\d{2})?[.:]?\\s+)?motie\\b",
+   "amendement_rx": "^\\s*(?:(?:aangenomen|verworpen|ingetrokken|aangehouden|getekend|aangepast|vervallen|gewijzigd)\\s*-?\\s+)?(?:\\d{8}\\s+|\\d{1,2}\\.\\s+|[a-z]\\.\\s+|[MA]\\d{1,3}[a-z]?(?:-\\d{2})?[.:]?\\s+)?amendement\\b",
+   "titel_rx": [
+    "^\\s*(?:(?P<uitslag0>(?:aangenomen|verworpen|ingetrokken|aangehouden|getekend|aangepast|vervallen|gewijzigd))\\s*-?\\s+)?(?:(?P<datum>\\d{8})\\s+|\\d{1,2}\\.\\s+|[a-z]\\.\\s+|(?P<code>[MA]\\d{1,3}[a-z]?(?:-\\d{2})?)[.:]?\\s+)?(?i:motie|amendement)\\s+(?:(?i:buiten\\s+de\\s+orde|vreemd\\s+aan\\s+de\\s+orde(?:\\s+van\\s+de\\s+dag)?)\\s+)?(?P<titel>.+?)(?:\\s+[-–]\\s+(?P<indieners>(?!(?:aangenomen|verworpen|ingetrokken|aangehouden|getekend|aangepast|vervallen|gewijzigd)\\b).+?))?(?:[\\s,–-]+(?P<uitslag>(?:aangenomen|verworpen|ingetrokken|aangehouden|getekend|aangepast|vervallen|gewijzigd)))?(?:\\s+docx|\\.(?:pdf|docx?))?\\s*$"
+   ],
+   "uitsluit_rx": "^\\s*(?:raadsmemo|overzicht|stand van zaken|rm\\b)|overzicht|raadsmemo|raadsinformatiebrief|\\bbrief\\b|reactie|beantwoording|voorstel",
+   "ori_query": {
+    "bool": {
+     "filter": [
+      {
+       "terms": {
+        "@type": [
+         "MediaObject"
+        ]
+       }
+      },
+      {
+       "range": {
+        "last_discussed_at": {
+         "gte": "2022-01-01"
+        }
+       }
+      }
+     ],
+     "must": [
+      {
+       "query_string": {
+        "default_field": "name",
+        "query": "motie* OR amendement*"
+       }
+      }
+     ],
+     "must_not": [
+      {
+       "query_string": {
+        "default_field": "name",
+        "query": "afdoening OR afhandeling OR raadsinformatiebrief OR raadsbrief OR RIB OR overzicht OR lijst OR tussenbericht OR beantwoording OR raadsmemo"
+       }
+      }
+     ]
+    }
+   },
+   "uitslag_naam_rx": "\\b(aangenomen|verworpen|ingetrokken|aangehouden|getekend|aangepast)\\)?\\s*$"
+  }
+ },
+ "regels": {
+  "parkeren": {
+   "Rotterdam": [
+    {
+     "titel": "Verordening parkeerregulering en parkeerbelastingen 2026",
+     "cvdr": "CVDR748617",
+     "versie_id": "CVDR748617_1",
+     "in_werking": "2026-01-01",
+     "url": "https://lokaleregelgeving.overheid.nl/CVDR748617",
+     "soort": "verordening"
+    },
+    {
+     "titel": "Tarievenbesluit privaatrechtelijke parkeertarieven Rotterdam 2026",
+     "cvdr": "CVDR755611",
+     "versie_id": "CVDR755611_2",
+     "in_werking": "2026-04-22",
+     "url": "https://lokaleregelgeving.overheid.nl/CVDR755611",
+     "soort": "besluit"
+    },
+    {
+     "titel": "Besluit van de directeur Toezicht en Handhaving van het cluster Stadsbeheer van de gemeente Rotterdam houdende regels omtrent het mandateren van de bevoegdheid om parkeerbelasting te heffen en uit te voeren (Ondermandaat heffing en uitvoering Parkeerbelasting 2021)",
+     "cvdr": "CVDR654837",
+     "versie_id": "CVDR654837_1",
+     "in_werking": "2021-02-27",
+     "url": "https://lokaleregelgeving.overheid.nl/CVDR654837",
+     "soort": "besluit"
+    }
+   ],
+   "Amsterdam": [
+    {
+     "titel": "Parkeerverordening Amsterdam 2025",
+     "cvdr": "CVDR732612",
+     "versie_id": "CVDR732612_5",
+     "in_werking": "2026-07-01",
+     "url": "https://lokaleregelgeving.overheid.nl/CVDR732612",
+     "soort": "verordening"
+    },
+    {
+     "titel": "Nadere regels Parkeerverordening Amsterdam 2025",
+     "cvdr": "CVDR733886",
+     "versie_id": "CVDR733886_10",
+     "in_werking": "2026-07-01",
+     "url": "https://lokaleregelgeving.overheid.nl/CVDR733886",
+     "soort": "nadere regels"
+    },
+    {
+     "titel": "Nadere regels experimenten Parkeerverordening Amsterdam 2025",
+     "cvdr": "CVDR733623",
+     "versie_id": "CVDR733623_4",
+     "in_werking": "2026-06-23",
+     "url": "https://lokaleregelgeving.overheid.nl/CVDR733623",
+     "soort": "nadere regels"
+    }
+   ],
+   "'s-Gravenhage": [
+    {
+     "titel": "Regeling parkeerregulering Den Haag 2026",
+     "cvdr": "CVDR755197",
+     "versie_id": "CVDR755197_1",
+     "in_werking": "2026-01-10",
+     "url": "https://lokaleregelgeving.overheid.nl/CVDR755197",
+     "soort": "verordening"
+    },
+    {
+     "titel": "Verordening parkeerregulering en parkeerbelasting Den Haag 2022",
+     "cvdr": "CVDR668677",
+     "versie_id": "CVDR668677_7",
+     "in_werking": "2026-01-01",
+     "url": "https://lokaleregelgeving.overheid.nl/CVDR668677",
+     "soort": "verordening"
+    }
+   ],
+   "Utrecht": [
+    {
+     "titel": "Verordening parkeerbelastingen gemeente Utrecht 2026",
+     "cvdr": "CVDR747206",
+     "versie_id": "CVDR747206_2",
+     "in_werking": "2026-01-01",
+     "url": "https://lokaleregelgeving.overheid.nl/CVDR747206",
+     "soort": "verordening"
+    },
+    {
+     "titel": "Verordening op het gebruik van parkeerplaatsen en de verlening van vergunningen voor het parkeren 2014",
+     "cvdr": "CVDR313219",
+     "versie_id": "CVDR313219_4",
+     "in_werking": "2025-07-25",
+     "url": "https://lokaleregelgeving.overheid.nl/CVDR313219",
+     "soort": "verordening"
+    },
+    {
+     "titel": "Ondermandaatregeling parkeerbelastingen Utrecht",
+     "cvdr": "CVDR732972",
+     "versie_id": "CVDR732972_1",
+     "in_werking": "2025-01-01",
+     "url": "https://lokaleregelgeving.overheid.nl/CVDR732972",
+     "soort": "besluit"
+    }
+   ],
+   "Eindhoven": [
+    {
+     "titel": "Verordening op de heffing en de invordering van parkeerbelastingen 2026",
+     "cvdr": "CVDR746560",
+     "versie_id": "CVDR746560_1",
+     "in_werking": "2025-12-03",
+     "url": "https://lokaleregelgeving.overheid.nl/CVDR746560",
+     "soort": "verordening"
+    }
+   ],
+   "Dordrecht": [
+    {
+     "titel": "Verordening op de heffing en de invordering van parkeerbelastingen Dordrecht",
+     "cvdr": "CVDR754215",
+     "versie_id": "CVDR754215_1",
+     "in_werking": "2026-01-01",
+     "url": "https://lokaleregelgeving.overheid.nl/CVDR754215",
+     "soort": "verordening"
+    },
+    {
+     "titel": "Verordening op het gebruik van parkeerplaatsen en de verlening van vergunningen voor het parkeren Dordrecht",
+     "cvdr": "CVDR754230",
+     "versie_id": "CVDR754230_1",
+     "in_werking": "2026-01-01",
+     "url": "https://lokaleregelgeving.overheid.nl/CVDR754230",
+     "soort": "verordening"
+    },
+    {
+     "titel": "Nadere regels Parkeerverordening Dordrecht",
+     "cvdr": "CVDR755145",
+     "versie_id": "CVDR755145_1",
+     "in_werking": "2026-01-07",
+     "url": "https://lokaleregelgeving.overheid.nl/CVDR755145",
+     "soort": "nadere regels"
+    },
+    {
+     "titel": "Beleidsregels invoering en uitbreiding van parkeerregulering Dordrecht",
+     "cvdr": "CVDR636534",
+     "versie_id": "CVDR636534_1",
+     "in_werking": "2020-01-28",
+     "url": "https://lokaleregelgeving.overheid.nl/CVDR636534",
+     "soort": "beleidsregel"
+    },
+    {
+     "titel": "Besluit aanwijzing plaatsen en tijdstippen parkeerbelasting Dordrecht",
+     "cvdr": "CVDR749214",
+     "versie_id": "CVDR749214_1",
+     "in_werking": "2026-01-01",
+     "url": "https://lokaleregelgeving.overheid.nl/CVDR749214",
+     "soort": "besluit"
+    }
+   ],
+   "Vlaardingen": [
+    {
+     "titel": "Verordening parkeerbelastingen Vlaardingen 2026-1",
+     "cvdr": "CVDR747245",
+     "versie_id": "CVDR747245_1",
+     "in_werking": "2026-01-01",
+     "url": "https://lokaleregelgeving.overheid.nl/CVDR747245",
+     "soort": "verordening"
+    },
+    {
+     "titel": "Beleidsregel van het college van burgemeester en wethouders van de gemeente Vlaardingen houdende regels omtrent de invordering van naheffingsaanslagen parkeerbelastingen Beleidsregels invordering naheffings­aan­slagen parkeerbelastingen Vlaardingen 2017",
+     "cvdr": "CVDR446091",
+     "versie_id": "CVDR446091_1",
+     "in_werking": "2017-03-31",
+     "url": "https://lokaleregelgeving.overheid.nl/CVDR446091",
+     "soort": "beleidsregel"
+    },
+    {
+     "titel": "Deelomgevingsprogramma Parkeerregulering Vlaardingen",
+     "cvdr": "CVDR765022",
+     "versie_id": "CVDR765022_1",
+     "in_werking": "2026-07-22",
+     "url": "https://lokaleregelgeving.overheid.nl/CVDR765022",
+     "soort": "besluit"
+    },
+    {
+     "titel": "Besluit van het college van burgemeester en wethouders van de gemeente Vlaardingen houdende regels omtrent parkeerbelastingen (Aanstellings- en aanwijzingsbesluit inzake heffing en invordering parkeerbelastingen Vlaardingen 2020)",
+     "cvdr": "CVDR630619",
+     "versie_id": "CVDR630619_1",
+     "in_werking": "2019-12-10",
+     "url": "https://lokaleregelgeving.overheid.nl/CVDR630619",
+     "soort": "besluit"
+    }
+   ]
+  },
+  "deelscooters-en-deelfietsen": {
+   "Rotterdam": [
+    {
+     "titel": "Algemene Plaatselijke Verordening Rotterdam 2012",
+     "cvdr": "CVDR373493",
+     "versie_id": "CVDR373493_22",
+     "in_werking": "2025-12-13",
+     "url": "https://lokaleregelgeving.overheid.nl/CVDR373493",
+     "soort": "APV"
+    },
+    {
+     "titel": "Nadere regels deelmobiliteit",
+     "cvdr": "CVDR705582",
+     "versie_id": "CVDR705582_2",
+     "in_werking": "2024-06-08",
+     "url": "https://lokaleregelgeving.overheid.nl/CVDR705582",
+     "soort": "nadere regels"
+    },
+    {
+     "titel": "Kansen benutten, overlast voorkomen. De Rotterdamse aanpak voor deelvervoer en vervoerhubs",
+     "cvdr": "CVDR705076",
+     "versie_id": "CVDR705076_1",
+     "in_werking": "2024-01-01",
+     "url": "https://lokaleregelgeving.overheid.nl/CVDR705076",
+     "soort": "beleidsregel"
+    },
+    {
+     "titel": "Openstellingsbesluit aanvraag vergunning deelmobiliteit voor de deelvoertuigcategorieën fiets/e-bike en bakfiets 2025",
+     "cvdr": "CVDR736797",
+     "versie_id": "CVDR736797_1",
+     "in_werking": "2025-03-20",
+     "url": "https://lokaleregelgeving.overheid.nl/CVDR736797",
+     "soort": "besluit"
+    },
+    {
+     "titel": "Openstellingsbesluit aanvraag vergunning deelmobiliteit voor de deelvoertuigcategorieën e-scooter en fiets/e-bike",
+     "cvdr": "CVDR720638",
+     "versie_id": "CVDR720638_1",
+     "in_werking": "2024-06-08",
+     "url": "https://lokaleregelgeving.overheid.nl/CVDR720638",
+     "soort": "besluit"
+    }
+   ],
+   "Amsterdam": [
+    {
+     "titel": "Algemene Plaatselijke Verordening 2008",
+     "cvdr": "CVDR72510",
+     "versie_id": "CVDR72510_57",
+     "in_werking": "2026-10-14",
+     "url": "https://lokaleregelgeving.overheid.nl/CVDR72510",
+     "soort": "APV"
+    },
+    {
+     "titel": "Nadere regels voor deelscooters Amsterdam 2023",
+     "cvdr": "CVDR700060",
+     "versie_id": "CVDR700060_2",
+     "in_werking": "2023-09-27",
+     "url": "https://lokaleregelgeving.overheid.nl/CVDR700060",
+     "soort": "nadere regels"
+    }
+   ],
+   "'s-Gravenhage": [],
+   "Utrecht": [
+    {
+     "titel": "Algemene plaatselijke verordening Utrecht 2010",
+     "cvdr": "CVDR318782",
+     "versie_id": "CVDR318782_30",
+     "in_werking": "2026-02-02",
+     "url": "https://lokaleregelgeving.overheid.nl/CVDR318782",
+     "soort": "APV"
+    },
+    {
+     "titel": "Nadere regel 5.14a Algemene Plaatselijke Verordening Utrecht 2010, vergunningplicht commercieel aanbieden voertuigen gemeente Utrecht",
+     "cvdr": "CVDR698298",
+     "versie_id": "CVDR698298_3",
+     "in_werking": "2025-04-01",
+     "url": "https://lokaleregelgeving.overheid.nl/CVDR698298",
+     "soort": "nadere regels"
+    }
+   ],
+   "Eindhoven": [
+    {
+     "titel": "Algemene plaatselijke verordening Eindhoven",
+     "cvdr": "CVDR415534",
+     "versie_id": "CVDR415534_18",
+     "in_werking": "2025-09-26",
+     "url": "https://lokaleregelgeving.overheid.nl/CVDR415534",
+     "soort": "APV"
+    },
+    {
+     "titel": "Besluit van burgemeester en wethouders van Eindhoven tot vaststelling van Nadere regels deelvoertuigen",
+     "cvdr": "CVDR696728",
+     "versie_id": "CVDR696728_4",
+     "in_werking": "2025-12-02",
+     "url": "https://lokaleregelgeving.overheid.nl/CVDR696728",
+     "soort": "nadere regels"
+    },
+    {
+     "titel": "Besluit van burgemeester en wethouders van Eindhoven tot aanwijzing van deelvoertuigen (aanwijzingsbesluit deelvervoer)",
+     "cvdr": "CVDR696734",
+     "versie_id": "CVDR696734_1",
+     "in_werking": "2023-06-01",
+     "url": "https://lokaleregelgeving.overheid.nl/CVDR696734",
+     "soort": "besluit"
+    }
+   ],
+   "Dordrecht": [
+    {
+     "titel": "Algemene plaatselijke verordening Dordrecht",
+     "cvdr": "CVDR337918",
+     "versie_id": "CVDR337918_25",
+     "in_werking": "2026-10-01",
+     "url": "https://lokaleregelgeving.overheid.nl/CVDR337918",
+     "soort": "APV"
+    },
+    {
+     "titel": "Nadere regels deelvoertuigen Dordrecht",
+     "cvdr": "CVDR675989",
+     "versie_id": "CVDR675989_3",
+     "in_werking": "2023-02-08",
+     "url": "https://lokaleregelgeving.overheid.nl/CVDR675989",
+     "soort": "nadere regels"
+    },
+    {
+     "titel": "Beleidsregels Deelfietsen Dordrecht",
+     "cvdr": "CVDR603041",
+     "versie_id": "CVDR603041_2",
+     "in_werking": "2018-11-16",
+     "url": "https://lokaleregelgeving.overheid.nl/CVDR603041",
+     "soort": "beleidsregel"
+    },
+    {
+     "titel": "Vaststellingsbesluit voertuigenplafond en vergunningenplafond deelvoertuigen Dordrecht",
+     "cvdr": "CVDR675972",
+     "versie_id": "CVDR675972_1",
+     "in_werking": "2022-04-22",
+     "url": "https://lokaleregelgeving.overheid.nl/CVDR675972",
+     "soort": "besluit"
+    },
+    {
+     "titel": "Aanwijzingsbesluit deelvoertuigen",
+     "cvdr": "CVDR665437",
+     "versie_id": "CVDR665437_1",
+     "in_werking": "2021-06-09",
+     "url": "https://lokaleregelgeving.overheid.nl/CVDR665437",
+     "soort": "besluit"
+    }
+   ],
+   "Vlaardingen": [
+    {
+     "titel": "Algemene Plaatselijke Verordening Vlaardingen 2019",
+     "cvdr": "CVDR625146",
+     "versie_id": "CVDR625146_11",
+     "in_werking": "2025-04-15",
+     "url": "https://lokaleregelgeving.overheid.nl/CVDR625146",
+     "soort": "APV"
+    },
+    {
+     "titel": "Nadere regels Deelmobiliteit",
+     "cvdr": "CVDR705220",
+     "versie_id": "CVDR705220_1",
+     "in_werking": "2023-12-06",
+     "url": "https://lokaleregelgeving.overheid.nl/CVDR705220",
+     "soort": "nadere regels"
+    }
+   ]
+  },
+  "handhaving-en-toezicht": {
+   "Rotterdam": [
+    {
+     "titel": "Algemene Plaatselijke Verordening Rotterdam 2012",
+     "cvdr": "CVDR373493",
+     "versie_id": "CVDR373493_22",
+     "in_werking": "2025-12-13",
+     "url": "https://lokaleregelgeving.overheid.nl/CVDR373493",
+     "soort": "APV"
+    },
+    {
+     "titel": "Verordening uitvoering en handhaving omgevingsrecht Rotterdam",
+     "cvdr": "CVDR677581",
+     "versie_id": "CVDR677581_1",
+     "in_werking": "2024-01-01",
+     "url": "https://lokaleregelgeving.overheid.nl/CVDR677581",
+     "soort": "verordening"
+    },
+    {
+     "titel": "Beleidsregel handhavingsstrategie omgevingsrecht Rotterdam",
+     "cvdr": "CVDR739655",
+     "versie_id": "CVDR739655_1",
+     "in_werking": "2025-05-28",
+     "url": "https://lokaleregelgeving.overheid.nl/CVDR739655",
+     "soort": "beleidsregel"
+    },
+    {
+     "titel": "Horecanota, stedelijk beleidskader vergunningen, toezicht en handhaving",
+     "cvdr": "CVDR717300",
+     "versie_id": "CVDR717300_1",
+     "in_werking": "2024-03-23",
+     "url": "https://lokaleregelgeving.overheid.nl/CVDR717300",
+     "soort": "beleidsregel"
+    },
+    {
+     "titel": "Beleidslijn bestuurlijke handhaving artikel 13b Opiumwet Rotterdam 2022",
+     "cvdr": "CVDR666391",
+     "versie_id": "CVDR666391_1",
+     "in_werking": "2022-01-03",
+     "url": "https://lokaleregelgeving.overheid.nl/CVDR666391",
+     "soort": "beleidsregel"
+    }
+   ],
+   "Amsterdam": [
+    {
+     "titel": "Algemene Plaatselijke Verordening 2008",
+     "cvdr": "CVDR72510",
+     "versie_id": "CVDR72510_57",
+     "in_werking": "2026-10-14",
+     "url": "https://lokaleregelgeving.overheid.nl/CVDR72510",
+     "soort": "APV"
+    },
+    {
+     "titel": "Verordening Bestuurlijke Boete Overlast in de Openbare Ruimte",
+     "cvdr": "CVDR436209",
+     "versie_id": "CVDR436209_12",
+     "in_werking": "2026-05-12",
+     "url": "https://lokaleregelgeving.overheid.nl/CVDR436209",
+     "soort": "verordening"
+    },
+    {
+     "titel": "Verordening kwaliteit vergunningverlening, toezicht en handhaving omgevingsrecht gemeente Amsterdam",
+     "cvdr": "CVDR756461",
+     "versie_id": "CVDR756461_1",
+     "in_werking": "2026-02-06",
+     "url": "https://lokaleregelgeving.overheid.nl/CVDR756461",
+     "soort": "verordening"
+    },
+    {
+     "titel": "Verordening ex artikel 176 van de Gemeentewet houdende voorschriften ter handhaving van de openbare orde en ter beperking van gevaar voor, tijdens en na de Nationale Herdenking op de Dam (Noodverordening Nationale Herdenking 2024)",
+     "cvdr": "CVDR719497",
+     "versie_id": "CVDR719497_1",
+     "in_werking": "2024-05-04",
+     "url": "https://lokaleregelgeving.overheid.nl/CVDR719497",
+     "soort": "verordening"
+    },
+    {
+     "titel": "Handhavingsstrategie vergund en onvergund sekswerk",
+     "cvdr": "CVDR763075",
+     "versie_id": "CVDR763075_1",
+     "in_werking": "2026-06-19",
+     "url": "https://lokaleregelgeving.overheid.nl/CVDR763075",
+     "soort": "beleidsregel"
+    }
+   ],
+   "'s-Gravenhage": [
+    {
+     "titel": "Algemene plaatselijke verordening voor de gemeente Den Haag",
+     "cvdr": "CVDR11313",
+     "versie_id": "CVDR11313_71",
+     "in_werking": "2026-10-13",
+     "url": "https://lokaleregelgeving.overheid.nl/CVDR11313",
+     "soort": "APV"
+    },
+    {
+     "titel": "Verordening bestuurlijke boete overlast openbare ruimte Den Haag 2023.",
+     "cvdr": "CVDR697515",
+     "versie_id": "CVDR697515_3",
+     "in_werking": "2025-05-01",
+     "url": "https://lokaleregelgeving.overheid.nl/CVDR697515",
+     "soort": "verordening"
+    },
+    {
+     "titel": "Verordening kwaliteit vergunningverlening, toezicht en handhaving Omgevingsrecht (milieu) Den Haag 2016",
+     "cvdr": "CVDR443707",
+     "versie_id": "CVDR443707_1",
+     "in_werking": "2017-03-01",
+     "url": "https://lokaleregelgeving.overheid.nl/CVDR443707",
+     "soort": "verordening"
+    },
+    {
+     "titel": "Algemene verordening kwaliteit vergunningverlening, toezicht en handhaving Den Haag 2017",
+     "cvdr": "CVDR443704",
+     "versie_id": "CVDR443704_1",
+     "in_werking": "2017-03-01",
+     "url": "https://lokaleregelgeving.overheid.nl/CVDR443704",
+     "soort": "verordening"
+    },
+    {
+     "titel": "Beleidsregel handhavingsstrategie omgevingsrecht Den Haag 2026",
+     "cvdr": "CVDR757928",
+     "versie_id": "CVDR757928_1",
+     "in_werking": "2026-03-04",
+     "url": "https://lokaleregelgeving.overheid.nl/CVDR757928",
+     "soort": "beleidsregel"
+    }
+   ],
+   "Utrecht": [
+    {
+     "titel": "Algemene plaatselijke verordening Utrecht 2010",
+     "cvdr": "CVDR318782",
+     "versie_id": "CVDR318782_30",
+     "in_werking": "2026-02-02",
+     "url": "https://lokaleregelgeving.overheid.nl/CVDR318782",
+     "soort": "APV"
+    },
+    {
+     "titel": "Verordening Uitvoering en handhaving omgevingsrecht gemeente Utrecht",
+     "cvdr": "CVDR748044",
+     "versie_id": "CVDR748044_1",
+     "in_werking": "2026-01-01",
+     "url": "https://lokaleregelgeving.overheid.nl/CVDR748044",
+     "soort": "verordening"
+    },
+    {
+     "titel": "Beleidsregel Algemene Handhavingsstrategie Bebouwde Omgeving en Openbare Ruimte",
+     "cvdr": "CVDR758973",
+     "versie_id": "CVDR758973_1",
+     "in_werking": "2026-03-19",
+     "url": "https://lokaleregelgeving.overheid.nl/CVDR758973",
+     "soort": "beleidsregel"
+    },
+    {
+     "titel": "Beleidsregel Toezichts- en Handhavingsstrategie Nieuwbouw, Verbouw en Constructiecontrole 2026, gemeente Utrecht",
+     "cvdr": "CVDR758939",
+     "versie_id": "CVDR758939_1",
+     "in_werking": "2026-03-19",
+     "url": "https://lokaleregelgeving.overheid.nl/CVDR758939",
+     "soort": "beleidsregel"
+    },
+    {
+     "titel": "Beleidsregel Handhavingsstrategie Bestaande Bouw gemeente Utrecht",
+     "cvdr": "CVDR758854",
+     "versie_id": "CVDR758854_1",
+     "in_werking": "2026-03-18",
+     "url": "https://lokaleregelgeving.overheid.nl/CVDR758854",
+     "soort": "beleidsregel"
+    }
+   ],
+   "Eindhoven": [
+    {
+     "titel": "Algemene plaatselijke verordening Eindhoven",
+     "cvdr": "CVDR415534",
+     "versie_id": "CVDR415534_18",
+     "in_werking": "2025-09-26",
+     "url": "https://lokaleregelgeving.overheid.nl/CVDR415534",
+     "soort": "APV"
+    },
+    {
+     "titel": "Verordening uitvoering en handhaving (omgevingsrecht)",
+     "cvdr": "CVDR736179",
+     "versie_id": "CVDR736179_1",
+     "in_werking": "2025-03-04",
+     "url": "https://lokaleregelgeving.overheid.nl/CVDR736179",
+     "soort": "verordening"
+    },
+    {
+     "titel": "Besluit van het college van burgemeester en wethouders van de gemeente Eindhoven tot vaststelling van de beleidsregel voor de uitvoering van beleidsregel Landelijke Handhavingsstrategie Omgevingsrecht van de gemeente Eindhoven",
+     "cvdr": "CVDR758643",
+     "versie_id": "CVDR758643_1",
+     "in_werking": "2026-03-13",
+     "url": "https://lokaleregelgeving.overheid.nl/CVDR758643",
+     "soort": "beleidsregel"
+    },
+    {
+     "titel": "Beleidsregels bestuurlijke boete artikel 18.12 Omgevingswet - gemeente Eindhoven 2025",
+     "cvdr": "CVDR734273",
+     "versie_id": "CVDR734273_1",
+     "in_werking": "2025-01-24",
+     "url": "https://lokaleregelgeving.overheid.nl/CVDR734273",
+     "soort": "beleidsregel"
+    }
+   ],
+   "Dordrecht": [
+    {
+     "titel": "Algemene plaatselijke verordening Dordrecht",
+     "cvdr": "CVDR337918",
+     "versie_id": "CVDR337918_25",
+     "in_werking": "2026-10-01",
+     "url": "https://lokaleregelgeving.overheid.nl/CVDR337918",
+     "soort": "APV"
+    },
+    {
+     "titel": "Verordening uitvoering en handhaving omgevingsrecht Dordrecht",
+     "cvdr": "CVDR695740",
+     "versie_id": "CVDR695740_1",
+     "in_werking": "2024-01-01",
+     "url": "https://lokaleregelgeving.overheid.nl/CVDR695740",
+     "soort": "verordening"
+    },
+    {
+     "titel": "Verordening kwaliteit vergunningverlening, toezicht en handhaving omgevingsrecht",
+     "cvdr": "CVDR600256",
+     "versie_id": "CVDR600256_1",
+     "in_werking": "2016-10-20",
+     "url": "https://lokaleregelgeving.overheid.nl/CVDR600256",
+     "soort": "verordening"
+    },
+    {
+     "titel": "Beleidsregel handhavingsstrategie voor de uitvoering van omgevingstaken gemeente Dordrecht 2024",
+     "cvdr": "CVDR717070",
+     "versie_id": "CVDR717070_1",
+     "in_werking": "2024-03-15",
+     "url": "https://lokaleregelgeving.overheid.nl/CVDR717070",
+     "soort": "beleidsregel"
+    },
+    {
+     "titel": "Handhavingsbeleid horeca en alcohol Dordrecht",
+     "cvdr": "CVDR681101",
+     "versie_id": "CVDR681101_1",
+     "in_werking": "2017-07-17",
+     "url": "https://lokaleregelgeving.overheid.nl/CVDR681101",
+     "soort": "beleidsregel"
+    }
+   ],
+   "Vlaardingen": [
+    {
+     "titel": "Algemene Plaatselijke Verordening Vlaardingen 2019",
+     "cvdr": "CVDR625146",
+     "versie_id": "CVDR625146_11",
+     "in_werking": "2025-04-15",
+     "url": "https://lokaleregelgeving.overheid.nl/CVDR625146",
+     "soort": "APV"
+    },
+    {
+     "titel": "Verordening Bestuurlijke Boete Overlast in de Openbare Ruimte Vlaardingen",
+     "cvdr": "CVDR625030",
+     "versie_id": "CVDR625030_4",
+     "in_werking": "2025-01-01",
+     "url": "https://lokaleregelgeving.overheid.nl/CVDR625030",
+     "soort": "verordening"
+    },
+    {
+     "titel": "Verordening van de gemeenteraad van de gemeente Vlaardingen houdende regels omtrent verrekening van bestuurlijke boete Verordening verrekening bestuurlijke boete bij recidive Vlaardingen 2015",
+     "cvdr": "CVDR445974",
+     "versie_id": "CVDR445974_1",
+     "in_werking": "2017-03-30",
+     "url": "https://lokaleregelgeving.overheid.nl/CVDR445974",
+     "soort": "verordening"
+    },
+    {
+     "titel": "Beleidsregels bestuurlijke boete Omgevingswet 2026",
+     "cvdr": "CVDR750456",
+     "versie_id": "CVDR750456_1",
+     "in_werking": "2025-12-18",
+     "url": "https://lokaleregelgeving.overheid.nl/CVDR750456",
+     "soort": "beleidsregel"
+    }
+   ]
+  }
+ }
+}

@@ -1,0 +1,399 @@
+{
+ "amsterdam": {
+  "ris": "https://amsterdam.raadsinformatie.nl",
+  "motie_rx": "^\\s*(?:\\d{1,2}[.\\s]+)?(?:\\d{1,4}(?:\\s?(?:dubbel\\s?)?accent)?(?:[._ ]\\d{2})?[.\\s]+(?:(?:dubbel\\s?)?accent\\s+)?motie\\b|motie\\s+\\d{1,4}(?:[._]\\d{2})?\\.?\\s|motie\\s+(?:(?i:van\\s+(?:het\\s+lid|de\\s+leden)\\s+))?(?:(?i:(?:van|von|de|der|den|ten|ter|el|ait|bin|te|op|ben))\\s+)*(?-i:[A-ZÀ-Ý])[\\w'’\\-]+(?:[ ,]+c\\.?s\\.?)?\\s+(?i:inzake|over)\\b)",
+  "amendement_rx": "^\\s*(?:\\d{1,2}[.\\s]+)?(?:\\d{1,4}(?:\\s?(?:dubbel\\s?)?accent)?(?:[._ ]\\d{2})?[.\\s]+(?:(?:dubbel\\s?)?accent\\s+)?amendement\\b|amendement\\s+\\d{1,4}(?:[._]\\d{2})?\\.?\\s|amendement\\s+(?:(?i:van\\s+(?:het\\s+lid|de\\s+leden)\\s+))?(?:(?i:(?:van|von|de|der|den|ten|ter|el|ait|bin|te|op|ben))\\s+)*(?-i:[A-ZÀ-Ý])[\\w'’\\-]+(?:[ ,]+c\\.?s\\.?)?\\s+(?i:inzake|over)\\b)",
+  "titel_rx": [
+   "^\\s*(?:\\d{1,2}[.\\s]+)?(?:\\d{1,4}(?:\\s?(?:dubbel\\s?)?accent)?(?:[._ ]\\d{2})?[.\\s]+(?:(?:dubbel\\s?)?accent\\s+)?)?(?i:motie|amendement)(?:\\s+\\d{1,4}(?:[._]\\d{2})?\\.?)?\\s+(?:(?i:van\\s+(?:de\\s+leden|het\\s+lid|de\\s+raadsleden)\\s+))?(?P<indieners>(?:(?i:(?:van|von|de|der|den|ten|ter|el|ait|bin|te|op|ben))\\s+)*(?-i:[A-ZÀ-Ý])[\\w'’\\-]+(?:(?:\\s*,\\s*|\\s+en\\s+|\\s+&\\s+)(?:(?i:(?:van|von|de|der|den|ten|ter|el|ait|bin|te|op|ben))\\s+)*(?-i:[A-ZÀ-Ý])[\\w'’\\-]+)*)(?:,?\\s*c\\.?\\s?s\\.?)?[\\s,.:–-]+(?:(?i:inzake|over)\\s+)?(?P<titel>.+?)(?:\\.(?:pdf|docx?))?\\s*$",
+   "^\\s*(?:\\d{1,2}[.\\s]+)?(?:\\d{1,4}(?:\\s?(?:dubbel\\s?)?accent)?(?:[._ ]\\d{2})?[.\\s]+(?:(?:dubbel\\s?)?accent\\s+)?)?(?i:motie|amendement)(?:\\s+\\d{1,4}(?:[._]\\d{2})?\\.?)?\\s+(?:(?i:inzake|over)\\s+)?(?P<titel>.+?)(?:\\.(?:pdf|docx?))?\\s*$"
+  ],
+  "uitsluit_rx": "afdoening|afhandeling|afhandelen|raadsinformatiebrief|raadsbrief|\\bRIB\\b|reactie op|overzicht|lijst|preadvies|sjabloon|stemming|uitslagen|^\\s*(?:bijlage|afd)",
+  "ori_query": {
+   "bool": {
+    "filter": [
+     {
+      "terms": {
+       "@type": [
+        "MediaObject"
+       ]
+      }
+     },
+     {
+      "range": {
+       "last_discussed_at": {
+        "gte": "2022-01-01"
+       }
+      }
+     }
+    ],
+    "must": [
+     {
+      "query_string": {
+       "default_field": "name",
+       "query": "motie* OR amendement*"
+      }
+     }
+    ],
+    "must_not": [
+     {
+      "query_string": {
+       "default_field": "name",
+       "query": "afdoening OR afhandeling OR raadsinformatiebrief OR raadsbrief OR RIB OR overzicht OR lijst OR tussenbericht OR beantwoording OR raadsmemo"
+      }
+     }
+    ]
+   }
+  },
+  "uitslag": "Ja, in de tekst van het motiedocument (niet in de naam). Het document begint met een kopblok 'Motie | Datum raadsvergadering | Ingekomen onder nummer | Status | Onderwerp | <datum> | <nr> | <Aangenomen/Verworpen/Ingetrokken> | Motie van …'. Bij ca. de helft van de motiedocumenten staat daar een uitslag; bij de rest staat letterlijk 'Status' (document van vóór de stemming; ORI heeft vaak meerdere versies). Voorbeeld: '631.23 Motie Havelaar Aandacht hebben voor Weesp' (8-11-2023) -> 'Verworpen'. Leesregel: neem de tekst vóór 'Aan de gemeenteraad' (max 600 tekens) en zoek \\b(aangenomen|verworpen|ingetrokken|aangehouden)\\b. Daarnaast bestaan PDF's 'Uitslagen amendementen en moties Begroting 2025' (alleen bij begroting/voorjaarsnota; kolommen staan door elkaar, niet per motie te koppelen). Een afdoeningsbrief ('Afd. motie 255 22') wijst op een aangenomen motie (aanname: alleen aangenomen moties worden afgedaan; niet gecontroleerd).",
+  "treffers_sinds_2022": 5695,
+  "unieke_namen_sinds_2022": 3258,
+  "amendement_treffers_sinds_2022": 686,
+  "precisie": "30/30",
+  "voorbeelden": [
+   "529.24 Motie Kabamba gerichte intensivering van het hitteplan in kwetsbare stadsdelen",
+   "2. Motie 115.25 van Munster schetsboek Samen haven Stad maken SDZ",
+   "712.23 Motie Aslami cs inburgeraars en AZC bewoners naar de OBA",
+   "3. 050.25 Motie Norbruis c.s. inzake isolatieoffensief - neem ook hittestress mee.pdf",
+   "motie 864.19 MKB-toets.docx"
+  ],
+  "indieners": "in titel_rx[0] (named group 'indieners', achternamen; ontbreekt bij vormen zonder naam)",
+  "opmerking": "Naamvorm '<nr>.<jj> Motie <Indiener(s)> [inzake] <titel>'; nr kan 'NNNaccent' / 'NNNdubbelaccent' of '_' i.p.v. '.' hebben. Raadsleden zonder voornaam, dus indieners zijn achternamen ('Van Pijpen', 'Bloemberg-Issa'); lastig bij tweedelige namen zonder tussenvoegsel (bv. 'Naoum Néhmé') en als geen 'c.s./inzake' staat (dan blijft de eerste hoofdletterwoord als indiener staan). Documenten komen vaak meerdere keren voor (zelfde motie bij meerdere vergaderingen): 5.695 documenten = ca. 3.260 unieke namen. Bijlagen waarin een motie in een raadsvoorstel is gekopieerd ('A - 28 … Bijlage 7 401.23 Motie …', 'Bijlage 3, 333.23 Motie …') zijn bewust uitgesloten. Er zijn ook losse moties van andere gemeenteraden (Landsmeer, Diemen) in de index; die beginnen niet met een nummer en vallen af."
+ },
+ "den_haag": {
+  "ris": "https://denhaag.raadsinformatie.nl",
+  "motie_rx": "^\\s*(?:(?:AANGEHOUDEN|GEWIJZIGD|INGETROKKEN)\\s+)?(?:[A-Z]{1,3}[. ](?:\\d{1,2}(?:\\.\\d)?|[A-Z])|[A-Za-z0-9]+(?:[-.][A-Za-z0-9]+)?\\.(?:\\d{1,3}|[A-Z]))\\s+(?:(?:(?!motie\\b|amendement\\b)\\S+\\s+){0,5}?)(?:(?:AANGEHOUDEN|GEWIJZIGD|INGETROKKEN)\\s+)?motie\\b|^[^()]+\\((?:motie)\\s+[\\w.]+(?:\\s+[^)]*)?\\)\\s*Gemeente Den Haag\\s*$",
+  "amendement_rx": "^\\s*(?:(?:AANGEHOUDEN|GEWIJZIGD|INGETROKKEN)\\s+)?(?:[A-Z]{1,3}[. ](?:\\d{1,2}(?:\\.\\d)?|[A-Z])|[A-Za-z0-9]+(?:[-.][A-Za-z0-9]+)?\\.(?:\\d{1,3}|[A-Z]))\\s+(?:(?:(?!motie\\b|amendement\\b)\\S+\\s+){0,5}?)(?:(?:AANGEHOUDEN|GEWIJZIGD|INGETROKKEN)\\s+)?amendement\\b",
+  "titel_rx": [
+   "^\\s*(?:(?P<uitslag0>(?:AANGEHOUDEN|GEWIJZIGD|INGETROKKEN))\\s+)?(?P<code>[A-Z]{1,3}[. ](?:\\d{1,2}(?:\\.\\d)?|[A-Z]))\\s+(?P<indieners>(?:(?!motie\\b|amendement\\b|(?:AANGEHOUDEN|GEWIJZIGD|INGETROKKEN))\\S+\\s?){1,5}?)\\s+(?:(?P<uitslag1>(?:AANGEHOUDEN|GEWIJZIGD|INGETROKKEN))\\s+)?(?i:motie|amendement)\\s+(?P<titel>.+?)(?:\\s+(?P<uitslag>(?:AANGEHOUDEN|GEWIJZIGD|INGETROKKEN)))?\\s*$",
+   "^\\s*(?:(?P<uitslag0>(?:AANGEHOUDEN|GEWIJZIGD|INGETROKKEN))\\s+)?(?P<code>(?P<indieners>[A-Za-z0-9]+(?:[-.][A-Za-z0-9]+)?)\\.(?:\\d{1,3}|[A-Z]))\\s+(?i:motie|amendement)\\s+(?P<titel>.+?)(?:\\s+(?P<uitslag>(?:AANGEHOUDEN|GEWIJZIGD|INGETROKKEN)))?\\s*$",
+   "^(?P<titel>[^()]+?)\\s+\\((?i:motie)\\s+(?P<code>[\\w.]+)(?:\\s+(?P<indieners>[^)]*))?\\)\\s*Gemeente Den Haag\\s*$"
+  ],
+  "uitsluit_rx": "^\\s*(?:RIS|afdoening|tussenbericht|derde|tweede|voortgang|toelichting|memo|stemming)|afdoening|tweeminutendebat|raadsmededeling|commissiebrief",
+  "ori_query": {
+   "bool": {
+    "filter": [
+     {
+      "terms": {
+       "@type": [
+        "MediaObject"
+       ]
+      }
+     },
+     {
+      "range": {
+       "last_discussed_at": {
+        "gte": "2022-01-01"
+       }
+      }
+     }
+    ],
+    "must": [
+     {
+      "query_string": {
+       "default_field": "name",
+       "query": "motie* OR amendement*"
+      }
+     }
+    ],
+    "must_not": [
+     {
+      "query_string": {
+       "default_field": "name",
+       "query": "afdoening OR afhandeling OR raadsinformatiebrief OR raadsbrief OR RIB OR overzicht OR lijst OR tussenbericht OR beantwoording OR raadsmemo"
+      }
+     }
+    ]
+   }
+  },
+  "uitslag": "Ja, op twee plaatsen. (1) Naam: staart AANGEHOUDEN / GEWIJZIGD / INGETROKKEN (ca. 10% van de moties), bv. 'PvdD.2 motie Geef burgerwetenschap een plek AANGEHOUDEN'. Aangenomen of verworpen staat nooit in de naam. (2) Tekst van het motiedocument: kopblok met 'Aangenomen' / 'Verworpen' / 'Aangehouden' bij RIS-nummer of 'Uitslag stemming:' (bij ca. 50% ingevuld, bij de rest leeg). Voorbeeld: 'I.2 HvDH motie Een goede transparante communicatielijn…' -> 'Uitslag stemming: Verworpen'. Documenten 'RIS… Afdoening motie …' horen vermoedelijk alleen bij aangenomen moties (niet gecontroleerd).",
+  "treffers_sinds_2022": 5112,
+  "unieke_namen_sinds_2022": 2740,
+  "amendement_treffers_sinds_2022": 712,
+  "precisie": "30/30",
+  "voorbeelden": [
+   "VVD.8 motie Zorg voor nabestaanden na moord",
+   "J.6 CU-SGP motie Uitzonderingen opkoopbescherming",
+   "N.3 CU-SGP motie Ga in gesprek met ontwikkelaar over sociale woningbouw",
+   "Y.1 PvdD motie Papierpers of poezenpletter",
+   "S.1 PvdD motie Van de regen in de drup"
+  ],
+  "indieners": "in titel_rx (fractie, group 'indieners'); personen alleen in tekst",
+  "opmerking": "Naamvorm '<letter>.<nr> <PARTIJ> motie <titel> [STATUS]' (letter = agendapunt van die vergadering, dus de code is alleen binnen één vergadering uniek) of '<PARTIJ>.<nr> motie <titel>' bij partijmoties zonder letter. Amendementen: '<letter>.<letter> <PARTIJ> amendement <titel>'. Indiener is dus een fractie (niet een persoon); de persoon staat in de tekst ('Indiener: Alexander Roep, Haagse VVD'). Medeondertekenaars staan niet in de naam. Afdoening/tussenbericht-documenten ('RIS… Afdoening motie <titel>') zijn bewust uitgesloten maar vormen een goede kruisverwijzing (titel + RIS-nummer). Ca. 2% heeft een oudere vorm 'Titel (Motie U.2 HvDH/GdM) Gemeente Den Haag'. Moties vóór mei 2022 staan er door de naamvorm 'RIS…' soms alleen als afdoening.",
+  "uitslag_naam_rx": "\\b(AANGEHOUDEN|GEWIJZIGD|INGETROKKEN)\\s*$",
+  "aandeel_met_uitslag_in_naam": 0.1
+ },
+ "eindhoven": {
+  "ris": "https://eindhoven.raadsinformatie.nl",
+  "motie_rx": "^\\s*(?:(?:aangenomen|verworpen|ingetrokken(?:\\s+na\\s+toezegging)?|vervallen|aangekondigd|niet\\s+ingediend|aangehouden|gewijzigd|niet\\s+in\\s+stemming\\s+gebracht|afgevoerd\\s+van\\s+de\\s+raadsagenda)\\s+)?(?:vrij(?:e)?\\s+)?motie\\s+[A-Z]{1,3}\\d{1,2}[A-Z]{0,2}\\b|^\\s*[A-Z]{1,3}\\d{1,2}[A-Z]{0,2}\\s+(?:vrij(?:e)?\\s+)?motie\\b|^[^()]{3,}\\((?:vrij(?:e)?\\s+)?motie\\s+[A-Z]{1,3}\\d{1,2}[A-Z]{0,2}\\)[\\s.]*$|^\\s*\\d{1,3}\\s+motie\\s+[A-Z]",
+  "amendement_rx": "^\\s*(?:(?:aangenomen|verworpen|ingetrokken(?:\\s+na\\s+toezegging)?|vervallen|aangekondigd|niet\\s+ingediend|aangehouden|gewijzigd|niet\\s+in\\s+stemming\\s+gebracht|afgevoerd\\s+van\\s+de\\s+raadsagenda)\\s+)?(?:vrij(?:e)?\\s+)?amendement\\s+[A-Z]{1,3}\\d{1,2}[A-Z]{0,2}\\b|^\\s*[A-Z]{1,3}\\d{1,2}[A-Z]{0,2}\\s+(?:vrij(?:e)?\\s+)?amendement\\b|^[^()]{3,}\\((?:vrij(?:e)?\\s+)?amendement\\s+[A-Z]{1,3}\\d{1,2}[A-Z]{0,2}\\)[\\s.]*$",
+  "titel_rx": [
+   "^\\s*(?:(?P<uitslag>(?:aangenomen|verworpen|ingetrokken(?:\\s+na\\s+toezegging)?|vervallen|aangekondigd|niet\\s+ingediend|aangehouden|gewijzigd|niet\\s+in\\s+stemming\\s+gebracht|afgevoerd\\s+van\\s+de\\s+raadsagenda))\\s+)?(?:vrije\\s+)?(?i:motie|amendement)\\s+(?P<code>[A-Z]{1,3}\\d{1,2}[A-Z]{0,2})\\s*[-–:]?\\s*(?P<titel>.+?)\\s*(?:\\((?P<indieners>[^()]*)\\))?[\\s.]*$",
+   "^\\s*(?P<code>[A-Z]{1,3}\\d{1,2}[A-Z]{0,2})\\s+(?:vrije\\s+)?(?i:motie|amendement)\\s*[-–:]?\\s*(?P<titel>.+?)\\s*(?:\\((?P<indieners>[^()]*)\\))?[\\s.]*$",
+   "^(?P<titel>[^()]{3,}?)\\s*\\((?:vrije\\s+)?(?i:motie|amendement)\\s+(?P<code>[A-Z]{1,3}\\d{1,2}[A-Z]{0,2})\\)[\\s.]*$"
+  ],
+  "uitsluit_rx": "niet\\s+ingediend|^\\s*(?:toezegging|collegebrief|mail|overzicht|bijlage|beantwoording|reactie|technische)|collegebrief|overzicht|\\bbijlage\\b|beantwoording|\\bmail\\b|vragen",
+  "ori_query": {
+   "bool": {
+    "filter": [
+     {
+      "terms": {
+       "@type": [
+        "MediaObject"
+       ]
+      }
+     },
+     {
+      "range": {
+       "last_discussed_at": {
+        "gte": "2022-01-01"
+       }
+      }
+     }
+    ],
+    "must": [
+     {
+      "query_string": {
+       "default_field": "name",
+       "query": "motie* OR amendement*"
+      }
+     }
+    ],
+    "must_not": [
+     {
+      "query_string": {
+       "default_field": "name",
+       "query": "afdoening OR afhandeling OR raadsinformatiebrief OR raadsbrief OR RIB OR overzicht OR lijst OR tussenbericht OR beantwoording OR raadsmemo"
+      }
+     }
+    ]
+   }
+  },
+  "uitslag": "Ja, op twee plaatsen. (1) Naam: voorvoegsel 'Aangenomen/Verworpen/Ingetrokken (na toezegging)/Vervallen/Aangekondigd …' bij ca. 9% van de moties en bij veel amendementen, bv. 'Ingetrokken na toezegging Motie M1 Parkeren in het groen …'. (2) Slotregel in de tekst: 'Deze (vrije) motie is aangenomen|verworpen|ingetrokken (toezegging wethouder) in de vergadering van <datum>.' (ca. 57% van de motiedocumenten; bij de rest staat het sjabloon 'aangenomen/verworpen' nog niet ingevuld). Per begroting bestaat ook 'Overzicht besluitvorming moties' met uitslag per motienummer, maar de tabel is in de tekst door elkaar geraakt.",
+  "treffers_sinds_2022": 583,
+  "unieke_namen_sinds_2022": 570,
+  "amendement_treffers_sinds_2022": 291,
+  "precisie": "30/30",
+  "voorbeelden": [
+   "Jeugddata delen tussen gemeente en WIJeindhoven (Motie BM03)",
+   "Overschotten omzetten in lastenverlichtingen (Vrije Motie VM6)",
+   "Wachttijd is geen beleid (Motie BM09)",
+   "Afschaffing hondenbelasting (Motie KM07A)",
+   "Vaart zetten achter de asielopvang, want Ter Apel stroomt over (Motie BM11)"
+  ],
+  "indieners": "fracties tussen haakjes aan het eind (group 'indieners'); niet bij alle vormen",
+  "opmerking": "Naamvormen: 'Titel (Motie M5)', 'Titel (Vrije Motie VM3)', 'M2 Motie <titel> (VVD, EVE)', 'VM7 Vrije motie - <titel> (fracties)', 'Aangenomen Amendement A3 - <titel> (fracties)'. Codes: M = motie, VM = vrije motie, BM/KM/JM/JRM = motie bij begroting/kadernota/jaarrekening, A/BA/KA = amendement. Tussen haakjes staan fracties, geen personen. Uitgesloten: 'Niet ingediend …', overzichten, collegebrieven, 'Toezegging …'. Omdat codes per vergadering herbruikt worden (M1 komt elke keer terug) moeten dubbelen gekoppeld worden op code + vergaderdatum (last_discussed_at). Raadsbesluiten 'inclusief aangenomen amendement' vallen af omdat de regex een code eist.",
+  "uitslag_naam_rx": "^\\s*(aangenomen|verworpen|ingetrokken(?: na toezegging)?|vervallen|aangekondigd|aangehouden|niet in stemming gebracht|afgevoerd van de raadsagenda)\\b",
+  "aandeel_met_uitslag_in_naam": 0.09
+ },
+ "dordrecht": {
+  "ris": "https://dordrecht.raadsinformatie.nl",
+  "motie_rx": "^\\s*(?:\\d{1,3}:\\s+)?(?:stemming\\s+)?motie\\s+(?:(?:sub|vreemd)\\s+)?(?:\\d{6}[-/])?[MA]\\d{1,3}[A-Za-z]?\\b|^\\s*(?:\\d{1,3}:\\s+)?(?:stemming\\s+)?(?:\\d{6}[-/])?[MA]\\d{1,3}[A-Za-z]?\\s*[-–:]?\\s*(?:technisch\\s+)?motie\\b|^\\s*(?:\\d{1,3}:\\s+)?(?:concept[\\s-]*)motie\\b|^\\s*\\d{1,3}:\\s+motie\\s+(?:vreemd|van\\s+fractie)",
+  "amendement_rx": "^\\s*(?:\\d{1,3}:\\s+)?(?:stemming\\s+)?amendement\\s+(?:(?:sub|vreemd)\\s+)?A\\d{1,3}[A-Za-z]?\\b|^\\s*(?:\\d{1,3}:\\s+)?(?:stemming\\s+)?A\\d{1,3}[A-Za-z]?\\s*[-–:]?\\s*(?:technisch\\s+)?amendement\\b|^\\s*(?:\\d{1,3}:\\s+)?(?:concept[\\s-]*)amendement\\b|^\\s*\\d{1,3}:\\s+amendement\\s+(?:vreemd|van\\s+fractie)",
+  "titel_rx": [
+   "^\\s*(?:\\d{1,3}:\\s+)?(?:(?P<soort>stemming|concept)[\\s-]+)?(?i:motie|amendement)\\s+(?:(?i:sub|vreemd)\\s+)?(?P<code>(?:\\d{6}[-/])?[MA]\\d{1,3}[A-Za-z]?)\\s*[-–:]?\\s*(?:(?i:vreemd(?:\\s+aan\\s+de\\s+orde(?:\\s+van\\s+de\\s+dag)?)?)\\s*[-–:]?\\s*)?(?P<titel>.+?)(?:\\s*[-–(]\\s*(?P<uitslag>(?:aangenomen|verworpen|aangehouden|ingetrokken|vervallen|gewijzigd))\\)?)?(?:\\.(?:pdf|docx?))?\\s*$",
+   "^\\s*(?:\\d{1,3}:\\s+)?(?:stemming\\s+)?(?P<code>(?:\\d{6}[-/])?[MA]\\d{1,3}[A-Za-z]?)\\s*[-–:]?\\s*(?i:motie|amendement)\\s*[-–:]?\\s*(?:(?i:vreemd\\s+aan\\s+de\\s+orde(?:\\s+van\\s+de\\s+dag)?)\\s*[-–:]?\\s*)?(?P<titel>.+?)(?:\\s*[-–(]\\s*(?P<uitslag>(?:aangenomen|verworpen|aangehouden|ingetrokken|vervallen|gewijzigd))\\)?)?(?:\\.(?:pdf|docx?))?\\s*$",
+   "^\\s*(?:\\d{1,3}:\\s+)?(?i:concept[\\s-]*)(?i:motie|amendement)\\s+(?P<indieners>[\\w\\-/ ]+?)\\s*(?:[-–]|over|bij)\\s*(?P<titel>.+?)(?:\\.(?:pdf|docx?))?\\s*$"
+  ],
+  "uitsluit_rx": "^\\s*(?:\\d{1,3}:\\s+)?concept|raadsinformatiebrief|\\bRIB\\b|wethoudersbericht|overzicht|presentatie|bijlage|stand van zaken|beantwoord|afhandel|financi[eë]le consequenties|ongetekende|kopie van|\\bbrief\\b|voorstel",
+  "ori_query": {
+   "bool": {
+    "filter": [
+     {
+      "terms": {
+       "@type": [
+        "MediaObject",
+        "AgendaItem"
+       ]
+      }
+     },
+     {
+      "range": {
+       "last_discussed_at": {
+        "gte": "2022-01-01"
+       }
+      }
+     }
+    ],
+    "must": [
+     {
+      "query_string": {
+       "default_field": "name",
+       "query": "motie* OR amendement*"
+      }
+     }
+    ],
+    "must_not": [
+     {
+      "query_string": {
+       "default_field": "name",
+       "query": "afdoening OR afhandeling OR raadsinformatiebrief OR raadsbrief OR RIB OR overzicht OR lijst OR tussenbericht OR beantwoording OR raadsmemo"
+      }
+     }
+    ]
+   }
+  },
+  "uitslag": "Ja, maar onregelmatig. Naam: suffix ' - Aangenomen' / '(verworpen)' / '- Ingetrokken' bij ca. 16% van de moties, bv. 'M8 Motie Veilige oversteekplaatsen - aangenomen.pdf'. De documenten 'Stemming Motie M5 …' hebben in de steekproef geen tekstlaag (70 van 100 motiedocumenten hebben geen tekst), dus de uitslag is er niet uit te lezen; de motiedocumenten zelf bevatten die ook niet (0 van 100 met uitslagwoord).",
+  "treffers_sinds_2022": 769,
+  "unieke_namen_sinds_2022": 657,
+  "amendement_treffers_sinds_2022": 296,
+  "precisie": "30/30",
+  "voorbeelden": [
+   "Stemming Motie M9 Onderhoud groen Wantijkade nu al geregeld.pdf",
+   "M5 - Motie Zet Hanneken van Dordt op haar Sokkel (aangenomen).pdf",
+   "Stemming Motie M1 Stop de levende kerststal op de Dordtse Kerstmarkt.pdf",
+   "Stemming Motie M3A Borg de rust in de Biesbosch.pdf",
+   "43: M1 - Motie Vreemd aan de Orde van de Dag - Verstrekking verdichtingsstudie Ravenkop - DZH 2024"
+  ],
+  "indieners": "bijna nooit in naam; alleen titel_rx[2] ('Concept Motie SP over …')",
+  "opmerking": "Naamvormen: 'M5  Motie <titel>.pdf', 'Motie M25 - <titel>.pdf', 'Stemming Motie M5 <titel>.pdf', 'M1 - Motie Vreemd aan de orde van de dag - <titel> - Verworpen.pdf', agendapunt '44: M3  Motie Vreemd aan de orde van de dag - <titel>'. Voor elke motie zijn doorgaans twee documenten: de motie zelf en het 'Stemming'-blad (zonder tekstlaag). Indieners staan zelden in de naam (alleen bij 'Concept Motie SP over …' en 'Motie M4 Fractie D66 …'), dus indieners_rx is er niet voor de gewone vorm; het fractielogo staat als OCR-ruis in de tekst. Uitgesloten: 'Concept …' (ontwerp, nog niet ingediend), raadsinformatiebrieven ('Beantwoorden motie M9'), wethoudersberichten, overzichten, inwonersbrieven. Motie 'vreemd aan de orde van de dag' wordt wel meegeteld. Codes herhalen per vergadering (M1 …): koppel op code + datum.",
+  "uitslag_naam_rx": "[-–(\\s](aangenomen|verworpen|ingetrokken|aangehouden|stemmen staken)\\)?(?:\\.pdf)?\\s*$",
+  "aandeel_met_uitslag_in_naam": 0.16
+ },
+ "vlaardingen": {
+  "ris": "https://vlaardingen.raadsinformatie.nl",
+  "motie_rx": "^\\s*(?:(?:aangenomen|verworpen|ingetrokken|aangehouden|getekend|aangepast|vervallen|gewijzigd)\\s*-?\\s+)?(?:\\d{8}\\s+|\\d{1,2}\\.\\s+|[a-z]\\.\\s+|[MA]\\d{1,3}[a-z]?(?:-\\d{2})?[.:]?\\s+)?motie\\b",
+  "amendement_rx": "^\\s*(?:(?:aangenomen|verworpen|ingetrokken|aangehouden|getekend|aangepast|vervallen|gewijzigd)\\s*-?\\s+)?(?:\\d{8}\\s+|\\d{1,2}\\.\\s+|[a-z]\\.\\s+|[MA]\\d{1,3}[a-z]?(?:-\\d{2})?[.:]?\\s+)?amendement\\b",
+  "titel_rx": [
+   "^\\s*(?:(?P<uitslag0>(?:aangenomen|verworpen|ingetrokken|aangehouden|getekend|aangepast|vervallen|gewijzigd))\\s*-?\\s+)?(?:(?P<datum>\\d{8})\\s+|\\d{1,2}\\.\\s+|[a-z]\\.\\s+|(?P<code>[MA]\\d{1,3}[a-z]?(?:-\\d{2})?)[.:]?\\s+)?(?i:motie|amendement)\\s+(?:(?i:buiten\\s+de\\s+orde|vreemd\\s+aan\\s+de\\s+orde(?:\\s+van\\s+de\\s+dag)?)\\s+)?(?P<titel>.+?)(?:\\s+[-–]\\s+(?P<indieners>(?!(?:aangenomen|verworpen|ingetrokken|aangehouden|getekend|aangepast|vervallen|gewijzigd)\\b).+?))?(?:[\\s,–-]+(?P<uitslag>(?:aangenomen|verworpen|ingetrokken|aangehouden|getekend|aangepast|vervallen|gewijzigd)))?(?:\\s+docx|\\.(?:pdf|docx?))?\\s*$"
+  ],
+  "uitsluit_rx": "^\\s*(?:raadsmemo|overzicht|stand van zaken|rm\\b)|overzicht|raadsmemo|raadsinformatiebrief|\\bbrief\\b|reactie|beantwoording|voorstel",
+  "ori_query": {
+   "bool": {
+    "filter": [
+     {
+      "terms": {
+       "@type": [
+        "MediaObject"
+       ]
+      }
+     },
+     {
+      "range": {
+       "last_discussed_at": {
+        "gte": "2022-01-01"
+       }
+      }
+     }
+    ],
+    "must": [
+     {
+      "query_string": {
+       "default_field": "name",
+       "query": "motie* OR amendement*"
+      }
+     }
+    ],
+    "must_not": [
+     {
+      "query_string": {
+       "default_field": "name",
+       "query": "afdoening OR afhandeling OR raadsinformatiebrief OR raadsbrief OR RIB OR overzicht OR lijst OR tussenbericht OR beantwoording OR raadsmemo"
+      }
+     }
+    ]
+   }
+  },
+  "uitslag": "Ja, in de naam: suffix ' - aangenomen' / ' - verworpen' / ' - ingetrokken' / 'getekend' bij ca. 27% van de moties, bv. 'Motie Doorbraakmethode in Vlaardingen - aangenomen'. 'getekend' betekent ingediend, geen uitslag. Bij de rest staat geen uitslag in de naam en de tekst van het document bevat die zelden (4 van 100). Overzichten ('Overzicht stand van zaken moties en amendementen 2024') bestaan, niet per motie uitgelezen.",
+  "treffers_sinds_2022": 782,
+  "unieke_namen_sinds_2022": 673,
+  "amendement_treffers_sinds_2022": 460,
+  "precisie": "30/30",
+  "voorbeelden": [
+   "Motie uitvoeringsprogramma Woonzorgvisie ouderen 2023-2030-VVD, CDA",
+   "M7. Motie Een nieuwe wijk voor Vlaardingen - VVD SP",
+   "Motie Duidelijke doelen integrale aanpak - HdS",
+   "Motie wijziging subsidiebeleid klimaat adaptieve activiteiten - ingetrokken",
+   "Motie Verhuurdersvergunning Arbeidsmigranten aangenomen"
+  ],
+  "indieners": "fracties na laatste ' - ' (group 'indieners')",
+  "opmerking": "Naamvormen: 'M7. Motie <titel> - <fractie(s)> [- aangenomen]', '20250612 Motie <titel> - <fracties>' (datum als prefix), 'Motie <titel> - aangenomen', 'A5. Amendement <titel> - <fractie>'. Fracties staan na de laatste ' - ', soms gevolgd door uitslag zonder koppelteken ('… - D66 aangenomen'). Indieners_rx mag dus ook de titel opslokken als een titel zelf een ' - ' bevat (bv. 'Westhavenkade - verbindende entree & Museumkwartier'): dan komt een deel van de titel in 'indieners'. Raadsmemo's ('RM Motie …') zijn uitgesloten, net als overzichten. Bijlagen ('Bijlage motie M3') zijn uitgesloten.",
+  "uitslag_naam_rx": "\\b(aangenomen|verworpen|ingetrokken|aangehouden|getekend|aangepast)\\)?\\s*$",
+  "aandeel_met_uitslag_in_naam": 0.27
+ },
+ "utrecht": {
+  "ris": "https://ris2.utrecht.nl",
+  "motie_rx": "^\\s*motie(?:\\s*[-_]\\s*|\\s+)(?!en\\b|lijst|van\\s+de\\s+gemeente)\\S",
+  "amendement_rx": "^\\s*(?:gecorrigeerd\\s+)?amendement(?:\\s*[-_]\\s*|\\s+)\\S",
+  "titel_rx": [
+   "^\\s*(?i:motie)(?:\\s+M?(?P<code>\\d{1,4}))?(?:\\s*[-_]\\s*|\\s+)(?P<titel>.+?)(?:\\.(?:pdf|docx?))?\\s*$"
+  ],
+  "uitsluit_rx": "lijst|na verwerking|raadsbrief|beantwoording|advies|toezegging|aangenomen\\s+motie|\\bbrief\\b",
+  "ori_query": {
+   "bool": {
+    "filter": [
+     {
+      "term": {
+       "@type": "MediaObject"
+      }
+     },
+     {
+      "range": {
+       "last_discussed_at": {
+        "gte": "2022-01-01"
+       }
+      }
+     }
+    ],
+    "must": [
+     {
+      "query_string": {
+       "default_field": "name",
+       "query": "motie* OR amendement*"
+      }
+     }
+    ],
+    "must_not": [
+     {
+      "query_string": {
+       "default_field": "name",
+       "query": "afdoening OR afhandeling OR raadsinformatiebrief OR raadsbrief OR RIB OR overzicht OR lijst OR tussenbericht OR beantwoording OR raadsmemo"
+      }
+     }
+    ]
+   }
+  },
+  "uitslag": "Alleen via lijsten. 'Lijst aangenomen moties commissie …', 'Motielijst …' en 'Lijst toezeggingen-moties-brieven …' bevatten per motie: code (M594), titel, indiener en mede-indieners, beleidsveld, deadline, stand van zaken. De lijsten bevatten per definitie alleen aangenomen moties, dus 'aangenomen' is af te leiden, 'verworpen' ontbreekt. De tekst is kolomsgewijs uitgelezen (titel staat vaak over meerdere regels); de motiecode is wel betrouwbaar (29 van 30 in de steekproef; de ene fout was 'M2017/1', een jaartal). Raadsbrieven 'Raadsbrief Uitvoering Motie M299 kwijtschelden belastingen' geven nummer + titel van een aangenomen motie.",
+  "treffers_sinds_2022": 11,
+  "unieke_namen_sinds_2022": 11,
+  "amendement_treffers_sinds_2022": 1,
+  "precisie": "11/11 (alle treffers; minder dan 30)",
+  "voorbeelden": [
+   "Motie_ ch_en_Van_Meenen_over_landelijke_implementatie_van_de_gezonde_schoollunch_.pdf",
+   "Motie Openbaar maken persoonsgegevens",
+   "Motie Stevige lobby 2023-03-09 1.docx",
+   "Motie - Geen hoger beroep.docx",
+   "Motie Verban vleesreclames in A0 concessie.pdf"
+  ],
+  "indieners": "niet in naam; in tekst van de lijsten",
+  "opmerking": "Losse moties staan nauwelijks in ORI: sinds 2022 zijn maar 11 documenten (10 unieke namen) met een motie als titel, plus 1 amendement ('Gecorrigeerd Amendement …'); dat is minder dan 1% van wat de raad besluit (de lijsten bevatten alleen al ca. 618 verschillende motiecodes). Moties zitten wel in (a) de PDF-lijsten 'Lijst aangenomen moties commissie …' / 'Motielijst …' / 'Lijst toezeggingen-moties-brieven …' (223 documenten sinds 2022), die per motie code (Mnnn), titel, indieners, mede-indieners, beleidsveld, deadline en stand van zaken geven; de lijsten bevatten ook moties van vóór 2022 omdat ze openstaande moties volgen; en (b) afdoeningsbrieven 'Raadsbrief Uitvoering/Afdoening motie M299 <titel>' (aangenomen moties). Amendementen: alleen in zinnen als '(na verwerking amendement)' in raadsvoorstellen en 'Raadsbrief … amendement A82 …'; amendement_rx is dus nagenoeg leeg. Motiecodes zijn 'M' + 1-3 cijfers (soms met letter: M11a, M724a); ook '2024/83', '2022M53', 'M20-2025' komen voor als schrijfwijze. Nummering loopt per jaar of raadsperiode door, dus code + jaar is nodig om te koppelen.",
+  "ori_query_lijsten": {
+   "bool": {
+    "filter": [
+     {
+      "term": {
+       "@type": "MediaObject"
+      }
+     },
+     {
+      "range": {
+       "last_discussed_at": {
+        "gte": "2022-01-01"
+       }
+      }
+     }
+    ],
+    "must": [
+     {
+      "query_string": {
+       "default_field": "name",
+       "query": "motielijst OR \"aangenomen moties\" OR \"lijst moties\" OR \"toezeggingen moties\" OR \"toezeggingen-moties-brieven\""
+      }
+     }
+    ]
+   }
+  },
+  "tekst_motiecode_rx": "(?<![\\w/])M\\d{1,3}[a-z]?\\b(?![/-]\\d)",
+  "tekst_motieregel_rx": "(?m)^(?:\\(\\d+/\\d+\\)\\s*)?(?:\\d{2}/)?(?P<code>M\\d{1,3}[a-z]?)\\s+(?P<titel>\\S.*)$",
+  "afdoeningsbrief_rx": "^Raadsbrief\\s+(?:Uitvoering|Afdoening|Beantwoording|Voortgang|Uitwerking|Motie)\\s+(?i:motie\\s+)?(?P<code>M?\\d{1,3}[a-z]?)\\s+(?P<titel>.+)$"
+ }
+}

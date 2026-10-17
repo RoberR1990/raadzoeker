@@ -4,7 +4,7 @@
    op subthema, direct boven de lijst die het filtert. Een open blok staat in de link (#parkeren/besloten). */
 let KX=null,KD=null,KA=null,KWK=null,KKAART=null,KBEL='open',KAKK=null,KPK=null;
 let KOPEN=new Set(),KSUB={},KDICHT=new Set();
-const KBLOKKEN=['komt','akkoord','tijdlijn','gezegd','besloten','beloofd','gedaan','stad','achtergrond'];
+const KBLOKKEN=['komt','akkoord','tijdlijn','gezegd','besloten','beloofd','gedaan','stad','elders','achtergrond'];
 const kslug=s=>slug(s);
 async function toonKeten(d,X,A){
   KD=d;KX=X;KA=A;CIT=[];verberg();KLAAG='n';KJR='alle';PJR='2026';if(KSPEEL){clearInterval(KSPEEL);KSPEEL=null;}KSUB={};KBEL='open';KDICHT=new Set();
@@ -12,6 +12,7 @@ async function toonKeten(d,X,A){
   if(!KAKK){try{const r=await fetch('akkoord.json');if(r.ok)KAKK=await r.json();}catch(e){}}
   KPK=null;if((ALLE.find(x=>x.slug===d.slug)||{}).kaart){try{const r=await fetch('d/'+d.slug+'-kaart.json');if(r.ok)KPK=await r.json();}catch(e){}}
   kLeesHash();
+  if(window.rzEldersIndex)await rzEldersIndex();   // elders.js: blok 'Andere gemeenten' alleen als er een bestand is
   if(window.rzLijnIndex){await rzLijnIndex();if(KOPEN.has('tijdlijn')&&rzLijnAantal(d.slug)){try{await rzLijnLaad(d.slug);}catch(e){}}}   // lijn.js: tijdlijn alleen tonen als er een bestand is
   document.title=d.naam+' · raadzoeker';
   const crumb=(d.pad||[]).map(([t,u])=>`<a href="${u}">${esc(t)}</a>`).join(' › ')+' › '+esc(d.naam);
@@ -149,6 +150,9 @@ function kTeken(){
   h+=kBlok('stad','','In de stad',KPK?'kaart 2016–2026':'kaart',KPK?'Waar betaald parkeren geldt, door de jaren, en waar het nog komt':'Waar in Rotterdam het speelt, per wijk',
     o=>o?(KPK?kParkeerkaart():'')+kStadInhoud()+(W&&W.punten&&W.punten.length?kBinnen(blok('kw','Signalen uit de wijken',`<p class="intro">${alinea(W.intro||[])}</p>`,W.punten.map(x=>`<div class="pt"><b>${esc(x.wijk)}</b> ${rijAI(x)}</div>`).join(''),`Toon ${W.punten.length} signalen`,true)):'')
       :`<button type="button" class="kmeer" data-blok="stad">Open de kaart</button>`);
+  // andere gemeenten (elders.js): regels en moties elders, ter vergelijking
+  const EG=window.rzEldersAantal?rzEldersAantal(d.slug):0;
+  if(EG)h+=kBlok('elders','','Andere gemeenten',`${EG} gemeenten`,'Hoe andere steden het regelen en welke moties hun raad behandelde',o=>`<div class="eldershost"></div>`+(o?'':`<button type="button" class="kmeer" data-blok="elders">Toon alles</button>`));
   // achtergrond
   const T=A&&A.tijdlijn,O=A&&A.open;
   h+=kBlok('achtergrond','','Achtergrond','het hele verhaal','Meer diepgang, belangrijkste momenten, open eindjes en cijfers',o=>{if(!o)return `<button type="button" class="kmeer" data-blok="achtergrond">Lees het hele verhaal</button>`;let a='';
@@ -159,6 +163,7 @@ function kTeken(){
     return a;});
   $('kinh').innerHTML=h;
   kLijnVul();
+  {const eh=document.querySelector('#kinh .eldershost');if(eh&&window.rzElders)rzElders(eh,d.slug,{open:KOPEN.has('elders')});}
   if(KOPEN.has('stad')){kKaart();kPkTeken();}
 }
 /* tijdlijn: lijn.js tekent in het blok; een klik in het voorproefje opent het blok (en zet #slug/tijdlijn in de link) */

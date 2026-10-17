@@ -52,6 +52,8 @@ else
 fi
 # Verkenner (kennisgraaf, ca. 35 min): wekelijks, in de nacht van zaterdag op zondag
 if [ "$MODUS" = "nacht" ] && [ "$(date +%u)" = "7" ]; then stap "verkenner" python src/verkenner.py; fi
+# Elders (andere gemeenten, Open Raadsinformatie): wekelijks, mag mislukken
+if [ "$MODUS" = "nacht" ] && [ "$(date +%u)" = "7" ]; then python src/elders.py >>"$LOG" 2>&1 || echo "elders mislukt" >>"$LOG"; fi
 stap "dossierbestanden" python src/dossier_data.py
 stap "voorbeelddossiers" python src/showcase.py
 stap "deelkaarten" python src/deelkaart.py   # leest dossier_data en showcase; lettertype Liberation Sans (of RZ_FONTS)
